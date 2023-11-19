@@ -1,4 +1,15 @@
+<<<<<<< HEAD
 paying/clocks
 pyaging_data/
 example_data/
 testing.ipynb
+=======
+pyaging/clocks/
+pyaging_data/
+example_data/
+testing.ipynb
+.ipynb_checkpoints/
+*.pyc
+.DS_Store
+pyaging.egg-info/
+>>>>>>> fd1440b (first commit)
