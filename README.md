@@ -16,7 +16,7 @@
 [![test](https://github.com/rsinghlab/pyaging/actions/workflows/python-plain-run-test.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/python-plain-run-test.yml)
 -->
 
-## 🐍 **pyaging**: a Python package with a compendium of GPU-optimized biological aging clocks
+## 🐍 **pyaging**: a Python-based compendium of GPU-optimized biological aging clocks
 
 pyaging is a Python-based package with the latest and greatest aging clocks available to the longevity research community.
 

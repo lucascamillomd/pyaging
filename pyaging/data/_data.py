@@ -46,8 +46,8 @@ def download_example_data(data_type: str) -> None:
     logger.first_info("Starting download_example_data function")
 
     data_type_to_file_id = {
-        "methylation": ['', ''],
-        "histone_mark": ['', ''],
+        "methylation": ['1y3fgki3NPT1rvuxjww-B4LrQNLPKLyCv', 'GSE139307.pkl'],
+        "histone_mark": ['19xejGDPuA0OlK7_bnmRLnHS-t46WpgVN', 'ENCFF386QWG.bigWig'],
         "rnaseq": ['1oDxTtAmCYn7GquRPDhoWQMMKiumikNBe', 'GSE65765_CPM.pkl'],
         "atac": ['1T8oBiqtXyBRxTa16hHrSMkjdSGJVANA9', 'atac_example.pkl'],
     }
