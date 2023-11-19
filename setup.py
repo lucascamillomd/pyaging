@@ -22,9 +22,9 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests", "docs")),
     install_requires=read_requirements("requirements.txt"),
-    extras_require={
-        "docs": read_requirements(os.path.join("docs", "requirements.txt")),
-    },
+    #extras_require={
+    #    "docs": read_requirements(os.path.join("docs", "requirements.txt")),
+    #},
     license="BSD",
     classifiers=[
         "Programming Language :: Python :: 3",

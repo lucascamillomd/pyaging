@@ -1,39 +1,43 @@
-[![Beta](https://img.shields.io/badge/status-beta-yellow)](https://github.com/rsinghlab/pyaging)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-[![GitHub stars](https://img.shields.io/github/stars/rsinghlab/pyaging)](https://github.com/rsinghlab/pyaging/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/rsinghlab/pyaging)](https://github.com/rsinghlab/pyaging/network/members)
-![Downloads](https://img.shields.io/github/downloads/rsinghlab/pyaging/total)
+<p align="center">
+  <img height="150" src="logo.png" />
+</p>
 
-# 🧬🕡 pyaging 🕡🧬
+##
 
-This repository hosts the code for python package pyaging.
+[![beta](https://img.shields.io/badge/status-beta-yellow)](https://github.com/rsinghlab/pyaging)
+[![upload](https://img.shields.io/pypi/v/pyaging?logo=PyPI)](https://pypi.org/project/pyaging/) 
+[![download](https://static.pepy.tech/badge/pyaging)](https://pepy.tech/project/pyaging)
+[![star](https://img.shields.io/github/stars/rsinghlab/pyaging?logo=GitHub&color=red)](https://github.com/rsinghlab/pyaging/stargazers)
 
-## 🚀 Installation
+<!--
+[![build](https://github.com/rsinghlab/pyaging/actions/workflows/python-package.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/python-package.yml)
+[![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
+[![upload_python_package](https://github.com/rsinghlab/pyaging/actions/workflows/python-publish.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/python-publish.yml)
+[![test](https://github.com/rsinghlab/pyaging/actions/workflows/python-plain-run-test.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/python-plain-run-test.yml)
+-->
 
-TODO
+## 🐍 **pyaging**: a Python package with a compendium of GPU-optimized biological aging clocks
 
-```pip install pyaging```
+pyaging is a Python-based package with the latest and greatest aging clocks available to the longevity research community.
 
-## 📝 TODO list
+<!--
+[Installation](https://dynamo-release.readthedocs.io/en/latest/ten_minutes_to_dynamo.html#how-to-install) - [Ten minutes to dynamo](https://dynamo-release.readthedocs.io/en/latest/ten_minutes_to_dynamo.html) - [Tutorials](https://dynamo-release.readthedocs.io/en/latest/notebooks/Differential_geometry.html) - [API](https://dynamo-release.readthedocs.io/en/latest/API.html) - [Citation](https://www.sciencedirect.com/science/article/pii/S0092867421015774?via%3Dihub) - [Theory](https://dynamo-release.readthedocs.io/en/latest/notebooks/Primer.html)
+-->
 
-TODO
+Given the increasing number of aging clocks, it is often cumbersome to compare them side by side. Moreover, for large amounts of data, the time for inference starts to become considerable. For such, we have developed a single package that can take in different molecular layers (DNA methylation, histone ChIP-Seq, ATAC-seq, transcriptomics, etc.) and utilize several aging clocks in a GPU-backed manner for fast inference. Moreover, this allows easy analysis of paired data from more than one molecular layer. 
 
-Add scAge, proteomic clocks, blood chemistry PhenoAge, etc.
+## 📝 To-Do List
 
-## 📝 Citation
+- [ ] Add scAge
+- [ ] Add murine DNAm clocks
+- [ ] Add proteomic clocks
+- [ ] Add blood chemistry PhenoAge
+- [ ] Add more example data!
 
-TODO
+## 📰 News
+* 19/11/2023: First commit!
 
-```
-@article {de_Lima_Camillo_pyaging,
-	author = {de Lima Camillo, Lucas Paulo and Asif, Muhammad H. and Horvath, Steve and Larschan, Erica and Singh, Ritambhara},
-	title = {Histone mark age of human tissues and cells},
-	year = {2023},
-	doi = {10.1101/2023.08.21.554165},
-	publisher = {Cold Spring Harbor Laboratory},
-	URL = {ttps://www.biorxiv.org/content/10.1101/2023.08.21.554165v1},
-	journal = {bioRxiv}
-}
-```
+## 💬 Discussion 
+Please use GitHub issue tracker to report coding-related [issues](https://github.com/rsinghlab/pyaging/issues) of pyaging.
 
 
