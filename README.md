@@ -2,6 +2,8 @@
   <img height="150" src="logo.png" />
 </p>
 
+<!--![Logo](https://url-to-your-logo/logo.png)-->
+
 ##
 
 [![beta](https://img.shields.io/badge/status-beta-yellow)](https://github.com/rsinghlab/pyaging)
@@ -33,6 +35,7 @@ Given the increasing number of aging clocks, it is often cumbersome to compare t
 - [ ] Check docstring for each function
 - [ ] Add documentation with sphinx
 - [ ] Create Read The Docs website
+- [ ] Add argument to choose dir for file download (as opposed to always "pyaging_data")
 - [ ] Add scAge
 - [ ] Add murine DNAm clocks
 - [ ] Add proteomic clocks
