@@ -215,10 +215,9 @@ def load_ensembl_metadata(logger) -> pd.DataFrame:
     Returns:
     - pandas DataFrame with genome metadata.
     """
-    file_id = "1vV3Kzp2LL67OPC0FrmX-H6jg7D-zqug8"
-    url = f"https://drive.google.com/uc?id={file_id}"
+    url = "https://pyaging.s3.amazonaws.com/supporting_files/Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv"
+    file_path = url.split('/')[-1]
     dir="./pyaging_data"
-    file_path = 'Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv'
     file_path = os.path.join(dir, file_path)
 
     if os.path.exists(file_path):

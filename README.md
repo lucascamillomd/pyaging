@@ -28,6 +28,11 @@ Given the increasing number of aging clocks, it is often cumbersome to compare t
 
 ## 📝 To-Do List
 
+- [ ] Add and run tests
+- [ ] Use black for PEP8 formatting
+- [ ] Check docstring for each function
+- [ ] Add documentation with sphinx
+- [ ] Create Read The Docs website
 - [ ] Add scAge
 - [ ] Add murine DNAm clocks
 - [ ] Add proteomic clocks

@@ -142,3 +142,54 @@ def cite_clock(clock_name: str) -> None:
 
     logger.finish_progress(f"{message} finished")
     logger.done()
+    
+
+def show_all_clocks() -> None:
+    """
+    Loads all clock metadata and shows the name of all of them.
+    
+    """
+    logger = LoggerManager.gen_logger("show_all_clocks")
+    logger.first_info("Starting show_all_clocks function")
+
+    # Load all metadata
+    all_clock_metadata = load_clock_metadata(logger)
+
+    # Message to indicate the start of the search process
+    message = "Showing all available clock names"
+    logger.start_progress(f"{message} started")
+    for clock_name in list(all_clock_metadata.keys()):
+        logger.info(clock_name, indent_level=2)
+    logger.finish_progress(f"{message} finished")
+
+    logger.done()
+    
+
+def get_clock_metadata(clock_name: str) -> None:
+    """
+    Loads all clock metadata and prints the metadata for .
+    
+    Parameters:
+    - clock_name (str): The name of the clock for which the metadata is requested.
+
+    Returns:
+    - str: Citation metadata for the specified clock, or an empty string if not found.
+    """
+    logger = LoggerManager.gen_logger("get_clock_metadata")
+    logger.first_info("Starting get_clock_metadata function")
+
+    # Load all metadata
+    all_clock_metadata = load_clock_metadata(logger)
+
+    # Lowercase clock name
+    clock_name = clock_name.lower()
+    clock_dict = all_clock_metadata[clock_name]
+
+    # Message to indicate the start of the search process
+    message = f"Showing {clock_name} metadata"
+    logger.start_progress(f"{message} started")
+    for key in list(clock_dict.keys()):
+        logger.info(f"{key}: {clock_dict[key]}", indent_level=2)
+    logger.finish_progress(f"{message} finished")
+
+    logger.done()

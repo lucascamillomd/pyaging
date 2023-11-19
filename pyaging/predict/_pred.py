@@ -6,8 +6,8 @@ import anndata
 import ntpath
 from urllib.request import urlretrieve
 from ..models import *
+from ..utils import progress
 from ..logger import LoggerManager, main_tqdm
-from ..utils import progress, load_clock_metadata
 from ._preprocessing import *
 from ._postprocessing import *
 
@@ -24,21 +24,11 @@ def load_clock(clock_name, logger):
     - Tuple containing features, weight dictionary, preprocessing, postprocessing, and the entire clock dictionary.
     """
 
-    clock_name_to_file_id = {
-        "altumage": "1RuPIi_J3mt5C1aN3PDZjq5RacJs_4mFc",
-        "h3k4me3": "197bdk4Q9XEEcenlmrtgTydeGFr-v_clh",
-        "h3k9me3": "1Nabuvx44JkfI9mBUm-Xm6Tm8u-T_DaGP",
-    }
-    
-    if clock_name not in list(clock_name_to_file_id.keys()):
-        logger.error(f"{clock_name} has not yet been implemented in pyaging. If you'd like it implemented, please send us an email. We hope to have a two-week max turnaround time.", indent_level=3)
-        
-    file_id = clock_name_to_file_id[clock_name]
-    url = f"https://drive.google.com/uc?id={file_id}"
+    url = f"https://pyaging.s3.amazonaws.com/clocks/weights/{clock_name}.pt"
     dir="./pyaging_data"
     file_path = clock_name + '.pt'
     file_path = os.path.join(dir, file_path)
-    
+
     if os.path.exists(file_path):
         logger.info(f'Data found in {file_path}', indent_level=3)
     else:
@@ -46,7 +36,10 @@ def load_clock(clock_name, logger):
             os.mkdir("pyaging_data")
         logger.info(f"Downloading data to {file_path}", indent_level=3)
         logger.indent_level = 3
-        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
+        try:
+            urlretrieve(url, file_path, reporthook=logger.request_report_hook)
+        except:
+            logger.error(f"{clock_name} has not yet been implemented in pyaging. If you'd like it implemented, please send us an email. We hope to have a two-week max turnaround time.", indent_level=3)
         
     # Define the path to the clock weights file
     weights_path = os.path.join("./pyaging_data", f"{clock_name}.pt")
@@ -61,6 +54,36 @@ def load_clock(clock_name, logger):
     postprocessing = clock_dict.get("postprocessing", None)
 
     return features, weight_dict, preprocessing, postprocessing, clock_dict
+
+@progress("Load all clock metadata", indent_level=2)
+def load_clock_metadata(logger) -> dict:
+    """
+    Loads the metadata of all available clocks.
+
+    Args:
+    - logger: Logger object for logging messages.
+
+    Returns:
+    - pandas DataFrame with genome metadata.
+    """
+    file_id = '1w4aR_Z6fY4HAWFk1seYf6ELbZYb3GSmZ'
+    url = f"https://drive.google.com/uc?id={file_id}"
+    dir="./pyaging_data"
+    file_path =  'all_clock_metadata.pt'
+    file_path = os.path.join(dir, file_path)
+    
+    if os.path.exists(file_path):
+        logger.info(f'Data found in {file_path}', indent_level=3)
+    else:
+        if not os.path.exists(dir):
+            os.mkdir("pyaging_data")
+        logger.info(f"Downloading data to {file_path}", indent_level=3)
+        logger.indent_level = 3
+        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
+
+    # Read data
+    all_clock_metadata = torch.load("./pyaging_data/all_clock_metadata.pt")
+    return all_clock_metadata
 
 
 @progress("Check features in adata", indent_level=2)
