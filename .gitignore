@@ -14,4 +14,7 @@ testing.ipynb
 pyaging.egg-info/
 dist/
 build/
+docs/_build
+docs/_static
+docs/_templates
 >>>>>>> fd1440b (first commit)
