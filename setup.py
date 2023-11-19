@@ -11,8 +11,8 @@ with open("README.md", "r") as fh:
 
 setup(
     name='pyaging',
-    version='v0.0.1',
-    python_requires=">=3.8",
+    version='v0.0.2',
+    python_requires=">=3.9",
     url='https://github.com/rsinghlab/pyaging.git',
     download_url='https://github.com/rsinghlab/pyaging.git',
     author='Lucas Paulo de Lima Camillo',
