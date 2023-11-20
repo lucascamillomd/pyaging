@@ -35,6 +35,8 @@ Given the increasing number of aging clocks, it is often cumbersome to compare t
 - [ ] Check docstring for each function
 - [ ] Add documentation with sphinx
 - [ ] Create Read The Docs website
+- [ ] Create tutorials
+- [ ] Add documentation to each function
 - [ ] Add argument to choose dir for file download (as opposed to always "pyaging_data")
 - [ ] Add scAge
 - [ ] Add murine DNAm clocks
