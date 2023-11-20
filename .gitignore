@@ -1,10 +1,12 @@
 <<<<<<< HEAD
-paying/clocks
+pyaing/clocks
 pyaging_data/
 example_data/
 testing.ipynb
 =======
 pyaging/clocks/
+clocks/weights/
+*.pt
 pyaging_data/
 example_data/
 testing.ipynb
@@ -17,4 +19,5 @@ build/
 docs/_build
 docs/_static
 docs/_templates
+*.RData
 >>>>>>> fd1440b (first commit)

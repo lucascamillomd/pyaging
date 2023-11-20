@@ -29,7 +29,7 @@ Welcome to the documentation for pyaging, a Python package designed to bring tog
    installation
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Tutorials:
 
    tutorial_utils
