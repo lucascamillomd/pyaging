@@ -1,8 +1,5 @@
-pyaging.utils package
-======================
-
-Submodules
-----------
+pyaging.utils
+=============
 
 pyaging.utils._utils module
 ---------------------------

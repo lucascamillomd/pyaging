@@ -37,8 +37,7 @@ def binarize(data_tensor):
     - data_tensor: A torch tensor where rows represent samples and columns represent features.
 
     Returns:
-    - A binarized tensor where each element is 1 if it is greater than the median (excluding zeros) of its row,
-      and 0 otherwise.
+    - A binarized tensor where each element is 1 if it is greater than the median (excluding zeros) of its row, and 0 otherwise.
     """
 
     # Store the device (CPU/GPU) of the input tensor to restore it later

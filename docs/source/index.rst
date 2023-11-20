@@ -3,19 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pyaging's documentation!
-
 .. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
-    :target: https://scgpt.readthedocs.io/en/latest/?badge=latest
+    :target: https://pyaging.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://img.shields.io/pypi/v/scgpt.svg
-      :target: https://pypi.python.org/pypi/scgpt
+.. image:: https://img.shields.io/pypi/v/pyaging.svg
+      :target: https://pypi.python.org/pypi/pyaging
       :alt: PyPI version
 
-.. image:: https://img.shields.io/pypi/pyversions/scgpt.svg
-      :target: https://pypi.python.org/pypi/scgpt
+.. image:: https://img.shields.io/pypi/pyversions/pyaging.svg
+      :target: https://pypi.python.org/pypi/pyaging
       :alt: PyPI supported Python versions
+
 
 Welcome to the documentation for pyaging, a Python package designed to bring together biological aging clocks for fast inference through a GPU-optimized PyTorch backend (`GitHub <https://github.com/rsinghlab/pyaging>`_).
 
@@ -29,7 +28,7 @@ Welcome to the documentation for pyaging, a Python package designed to bring tog
    installation
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Tutorials:
 
    tutorial_utils
@@ -39,8 +38,8 @@ Welcome to the documentation for pyaging, a Python package designed to bring tog
    tutorial_transcriptomics
 
 .. toctree::
-   :maxdepth: 2
-   :caption: API Reference:
+   :maxdepth: 3
+   :caption: API:
 
    pyaging
 

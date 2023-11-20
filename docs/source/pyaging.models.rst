@@ -1,9 +1,6 @@
 pyaging.models package
 ======================
 
-Submodules
-----------
-
 pyaging.models._models module
 -----------------------------
 
