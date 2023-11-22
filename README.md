@@ -37,6 +37,7 @@ Given the increasing number of aging clocks, it is often cumbersome to compare t
 - [ ] Use black for PEP8 formatting
 - [ ] Check docstring for each function
 - [ ] Create Read The Docs website
+- [ ] Improve logo
 - [ ] Add argument to choose dir for file download (as opposed to always "pyaging_data")
 - [ ] Add scAge
 - [ ] Add murine DNAm clocks

@@ -8,8 +8,8 @@ from ..utils import progress
 from ..logger import LoggerManager, main_tqdm
 
 
-@progress("Download example data", indent_level=2)
-def download(url: str, logger):
+@progress("Download data")
+def download(url: str, logger, indent_level: int = 1):
     """
     Downloads a specific file given a file_id.
 
@@ -25,12 +25,12 @@ def download(url: str, logger):
     file_path = os.path.join(dir, file_path)
     
     if os.path.exists(file_path):
-        logger.info(f'Data found in {file_path}', indent_level=3)
+        logger.info(f'Data found in {file_path}', indent_level=indent_level+1)
     else:
         if not os.path.exists(dir):
             os.mkdir("pyaging_data")
-        logger.info(f"Downloading data to {file_path}", indent_level=3)
-        logger.indent_level = 3
+        logger.info(f"Downloading data to {file_path}", indent_level=indent_level+1)
+        logger.indent_level = indent_level+1
         urlretrieve(url, file_path, reporthook=logger.request_report_hook)
 
 
@@ -55,6 +55,6 @@ def download_example_data(data_type: str) -> None:
         logger.error(f"Example data of {data_type} has not yet been implemented in pyaging. If you'd like it implemented, please send us an email. We hope to have a two-week max turnaround time.", indent_level=2)
 
     url = data_type_to_url[data_type]
-    download(url, logger)
+    download(url, logger, indent_level=1)
 
     logger.done()

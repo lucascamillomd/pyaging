@@ -10,10 +10,11 @@ import anndata
 from functools import wraps
 from ..logger import LoggerManager, main_tqdm
 from ..utils import progress
+from ..data import *
 
 
 @progress("Impute missing values")
-def impute_missing_values(X: np.ndarray, strategy: str, logger) -> np.ndarray:
+def impute_missing_values(X: np.ndarray, strategy: str, logger, indent_level: int = 1) -> np.ndarray:
     """
     Imputes missing values in a numpy array using the specified strategy.
 
@@ -50,7 +51,7 @@ def impute_missing_values(X: np.ndarray, strategy: str, logger) -> np.ndarray:
 
 
 @progress("Log data statistics")
-def log_data_statistics(X: np.ndarray, logger) -> None:
+def log_data_statistics(X: np.ndarray, logger, indent_level: int = 1) -> None:
     """
     Logs statistics about the data array.
 
@@ -73,7 +74,7 @@ def log_data_statistics(X: np.ndarray, logger) -> None:
 
 @progress("Create anndata object")
 def create_anndata_object(
-    X_imputed: np.ndarray, obs_names: list, var_names: list, logger
+    X_imputed: np.ndarray, obs_names: list, var_names: list, logger, indent_level: int = 1
 ) -> anndata.AnnData:
     """
     Creates an AnnData object from imputed data.
@@ -92,7 +93,7 @@ def create_anndata_object(
 
 @progress("Add metadata to anndata")
 def add_metadata_to_anndata(
-    adata: anndata.AnnData, metadata: Optional[pd.DataFrame], logger
+    adata: anndata.AnnData, metadata: Optional[pd.DataFrame], logger, indent_level: int = 1
 ) -> None:
     """
     Adds metadata to an AnnData object.
@@ -119,7 +120,7 @@ def add_metadata_to_anndata(
 
 @progress("Add unstructured data to anndata")
 def add_unstructured_data(
-    adata: anndata.AnnData, imputer_strategy: str, logger
+    adata: anndata.AnnData, imputer_strategy: str, logger, indent_level: int = 1
 ) -> None:
     """
     Adds unstructured data to an AnnData object.
@@ -178,34 +179,10 @@ def df_to_adata(
 
     logger.done()
     return adata
-
-@progress("Downloading clock weights", indent_level=2)
-def download_data(clock_name, logger):
-
-    dir="./pyaging_data"
-    file_path = clock_name + '.pt'
-
-    clock_name_to_url = {
-        "altumage": "https://drive.google.com/uc?id=1RuPIi_J3mt5C1aN3PDZjq5RacJs_4mFc",
-    }
-
-    url = clock_name_to_url[clock_name]
-    file_path = ntpath.basename(url) if file_path is None else file_path
-    file_path = os.path.join(dir, file_path)
-    logger.info(f"Downloading data to {file_path}", indent_level=3)
-
-    if os.path.exists(file_path):
-        logger.info('Data has previously been downloaded', indent_level=3)
-    else:
-        if not os.path.exists("./pyaging_data/"):
-            os.mkdir("pyaging_data")
-
-        # download the data
-        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
-
+    
 
 @progress("Load Ensembl genome metadata")
-def load_ensembl_metadata(logger) -> pd.DataFrame:
+def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
     """
     Loads Ensembl genome metadata.
 
@@ -216,18 +193,8 @@ def load_ensembl_metadata(logger) -> pd.DataFrame:
     - pandas DataFrame with genome metadata.
     """
     url = "https://pyaging.s3.amazonaws.com/supporting_files/Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv"
-    file_path = url.split('/')[-1]
-    dir="./pyaging_data"
-    file_path = os.path.join(dir, file_path)
 
-    if os.path.exists(file_path):
-        logger.info(f'Data found in {file_path}', indent_level=2)
-    else:
-        if not os.path.exists(dir):
-            os.mkdir("pyaging_data")
-        logger.info(f"Downloading data to {file_path}", indent_level=2)
-        logger.indent_level = 2
-        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
+    download(url, logger, indent_level=1)
         
     # Define chromosomes of interest
     chromosomes = [
@@ -283,7 +250,7 @@ def bigwig_to_df(
         bw_files = [bw_files]
 
     # Get genomic annotation data
-    genes = load_ensembl_metadata(logger)
+    genes = load_ensembl_metadata(logger, indent_level=1)
 
     all_samples = []  # List to store signal data for each sample
     
