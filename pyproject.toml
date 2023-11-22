@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyaging"
-version = "0.0.4"
+version = "v0.0.5"
 description = "A Python package for predicting age using various biological clocks with PyTorch."
 authors = ["Lucas Paulo de Lima Camillo <lucas_camillo@alumni.brown.edu>"]
 license = "BSD"
