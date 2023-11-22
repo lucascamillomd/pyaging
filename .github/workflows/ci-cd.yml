@@ -15,6 +15,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Configure Git
+      run: git config --global --add safe.directory /github/workspace
 
     - name: Set up Python
       uses: actions/setup-python@v2
