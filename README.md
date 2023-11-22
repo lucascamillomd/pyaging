@@ -31,7 +31,7 @@ Given the increasing number of aging clocks, it is often cumbersome to compare t
 ## 📝 To-Do List
 
 - [X] Condense download_data into single function in utils
-- [ ] Add and run tests for each module
+- [ ] Add and run tests for each module 
 - [X] Polish tutorials 
 - [ ] Write better readthedocs documentation
 - [X] Use black for PEP8 formatting
