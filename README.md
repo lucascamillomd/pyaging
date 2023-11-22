@@ -30,16 +30,17 @@ Given the increasing number of aging clocks, it is often cumbersome to compare t
 
 ## 📝 To-Do List
 
-- [ ] Condense download_data into single function in utils
+- [X] Condense download_data into single function in utils
 - [ ] Add and run tests for each module
-- [ ] Polish tutorials 
+- [X] Polish tutorials 
 - [ ] Write better readthedocs documentation
-- [ ] Use black for PEP8 formatting
+- [X] Use black for PEP8 formatting
 - [ ] Check docstring for each function
 - [ ] Create Read The Docs website
 - [ ] Improve logo
 - [ ] Add argument to choose dir for file download (as opposed to always "pyaging_data")
 - [ ] Add scAge
+- [ ] Add scRNAseq clock from Matt Buckley
 - [ ] Add murine DNAm clocks
 - [ ] Add proteomic clocks
 - [ ] Add blood chemistry PhenoAge
