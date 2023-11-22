@@ -7,31 +7,6 @@ from functools import wraps
 from ..logger import LoggerManager, main_tqdm
 
 
-#def progress(message: str, indent_level: int = 1):
-#    """
-#    Decorator to log the progress of a function.
-#
-#    Parameters:
-#    - message (str): Description of the function's purpose or current step.
-#    - indent_level (int): Indentation level for the log message.
-#
-#    Returns:
-#    - Function: A wrapped function with added logging for progress tracking.
-#    """
-#
-#    def decorator(func):
-#        @wraps(func)
-#        def wrapper(*args, **kwargs):
-#            logger = args[-1]  # Assumes logger is the last argument
-#            logger.start_progress(f"{message} started", indent_level=indent_level)
-#            result = func(*args, **kwargs)
-#            logger.finish_progress(f"{message} finished", indent_level=indent_level)
-#            return result
-#
-#        return wrapper
-#
-#    return decorator
-
 def progress(message: str):
     """
     Decorator to log the progress of a function.
@@ -43,11 +18,12 @@ def progress(message: str):
     Returns:
     - Function: A wrapped function with added logging for progress tracking.
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             # Extract indent_level from kwargs, default to 1 if not provided
-            indent_level = kwargs.pop('indent_level', 1)
+            indent_level = kwargs.pop("indent_level", 1)
 
             logger = args[-1]  # Assumes logger is the last positional argument
             logger.start_progress(f"{message} started", indent_level=indent_level)
@@ -59,7 +35,6 @@ def progress(message: str):
 
     return decorator
 
-    
 
 @progress("Load all clock metadata")
 def load_clock_metadata(logger, indent_level: int = 1) -> dict:
@@ -72,14 +47,14 @@ def load_clock_metadata(logger, indent_level: int = 1) -> dict:
     Returns:
     - pandas DataFrame with genome metadata.
     """
-    file_id = '1w4aR_Z6fY4HAWFk1seYf6ELbZYb3GSmZ'
+    file_id = "1w4aR_Z6fY4HAWFk1seYf6ELbZYb3GSmZ"
     url = f"https://drive.google.com/uc?id={file_id}"
-    dir="./pyaging_data"
-    file_path =  'all_clock_metadata.pt'
+    dir = "./pyaging_data"
+    file_path = "all_clock_metadata.pt"
     file_path = os.path.join(dir, file_path)
-    
+
     if os.path.exists(file_path):
-        logger.info(f'Data found in {file_path}', indent_level=2)
+        logger.info(f"Data found in {file_path}", indent_level=2)
     else:
         if not os.path.exists(dir):
             os.mkdir("pyaging_data")
@@ -122,7 +97,8 @@ def find_clock_by_doi(search_doi: str) -> None:
     # Logging the results
     if matching_clocks:
         logger.info(
-            f"Clocks with DOI {search_doi}: {', '.join(matching_clocks)}", indent_level=2
+            f"Clocks with DOI {search_doi}: {', '.join(matching_clocks)}",
+            indent_level=2,
         )
     else:
         logger.warning(f"No files found with DOI {search_doi}", indent_level=2)
@@ -160,9 +136,7 @@ def cite_clock(clock_name: str) -> None:
             logger.info(f"Citation for {clock_name}:", indent_level=2)
             logger.info(citation, indent_level=2)
         else:
-            logger.warning(
-                f"Citation not found in {clock_name}", indent_level=2
-            )
+            logger.warning(f"Citation not found in {clock_name}", indent_level=2)
     else:
         logger.warning(
             f"{clock_name} is not currently available in pyaging", indent_level=2
@@ -170,7 +144,7 @@ def cite_clock(clock_name: str) -> None:
 
     logger.finish_progress(f"{message} finished")
     logger.done()
-    
+
 
 def show_all_clocks() -> None:
     """
@@ -185,7 +159,7 @@ def show_all_clocks() -> None:
     model : object
         A pre-trained machine learning model. This model should implement the `predict` method,
         such as models from scikit-learn or a custom model adhering to this interface.
-        
+
     data : array-like, shape (n_samples, n_features)
         Methylation data for the samples. Each row corresponds to a sample, and each column
         corresponds to a specific methylation site. The data should be preprocessed and normalized
@@ -242,12 +216,12 @@ def show_all_clocks() -> None:
     logger.finish_progress(f"{message} finished")
 
     logger.done()
-    
+
 
 def get_clock_metadata(clock_name: str) -> None:
     """
     Loads all clock metadata and prints the metadata for .
-    
+
     Parameters:
     - clock_name (str): The name of the clock for which the metadata is requested.
 

@@ -20,17 +20,17 @@ def download(url: str, logger, indent_level: int = 1):
     Returns:
     - pandas DataFrame with genome metadata.
     """
-    file_path = url.split('/')[-1]
-    dir="./pyaging_data"
+    file_path = url.split("/")[-1]
+    dir = "./pyaging_data"
     file_path = os.path.join(dir, file_path)
-    
+
     if os.path.exists(file_path):
-        logger.info(f'Data found in {file_path}', indent_level=indent_level+1)
+        logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
     else:
         if not os.path.exists(dir):
             os.mkdir("pyaging_data")
-        logger.info(f"Downloading data to {file_path}", indent_level=indent_level+1)
-        logger.indent_level = indent_level+1
+        logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
+        logger.indent_level = indent_level + 1
         urlretrieve(url, file_path, reporthook=logger.request_report_hook)
 
 
@@ -45,14 +45,17 @@ def download_example_data(data_type: str) -> None:
     logger.first_info("Starting download_example_data function")
 
     data_type_to_url = {
-        "methylation": 'https://pyaging.s3.amazonaws.com/example_data/GSE139307.pkl',
-        "histone_mark":'https://pyaging.s3.amazonaws.com/example_data/ENCFF386QWG.bigWig',
-        "rnaseq": 'https://pyaging.s3.amazonaws.com/example_data/GSE65765_CPM.pkl',
-        "atac": 'https://pyaging.s3.amazonaws.com/example_data/atac_example.pkl',
+        "methylation": "https://pyaging.s3.amazonaws.com/example_data/GSE139307.pkl",
+        "histone_mark": "https://pyaging.s3.amazonaws.com/example_data/ENCFF386QWG.bigWig",
+        "rnaseq": "https://pyaging.s3.amazonaws.com/example_data/GSE65765_CPM.pkl",
+        "atac": "https://pyaging.s3.amazonaws.com/example_data/atac_example.pkl",
     }
 
     if data_type not in list(data_type_to_url.keys()):
-        logger.error(f"Example data of {data_type} has not yet been implemented in pyaging. If you'd like it implemented, please send us an email. We hope to have a two-week max turnaround time.", indent_level=2)
+        logger.error(
+            f"Example data of {data_type} has not yet been implemented in pyaging. If you'd like it implemented, please send us an email. We hope to have a two-week max turnaround time.",
+            indent_level=2,
+        )
 
     url = data_type_to_url[data_type]
     download(url, logger, indent_level=1)

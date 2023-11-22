@@ -29,6 +29,7 @@ def scale(data_tensor, scaler):
 
     return data_scaled
 
+
 def binarize(data_tensor):
     """
     Binarizes a torch tensor based on the median of each row, excluding zeros.

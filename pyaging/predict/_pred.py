@@ -12,6 +12,7 @@ from ._preprocessing import *
 from ._postprocessing import *
 from ..data import *
 
+
 @progress("Load clock")
 def load_clock(clock_name, logger, indent_level: int = 2):
     """
@@ -27,7 +28,7 @@ def load_clock(clock_name, logger, indent_level: int = 2):
 
     url = f"https://pyaging.s3.amazonaws.com/clocks/weights/{clock_name}.pt"
     download(url, logger, indent_level=2)
-        
+
     # Define the path to the clock weights file
     weights_path = os.path.join("./pyaging_data", f"{clock_name}.pt")
 
@@ -42,6 +43,7 @@ def load_clock(clock_name, logger, indent_level: int = 2):
 
     return features, weight_dict, preprocessing, postprocessing, clock_dict
 
+
 @progress("Load all clock metadata")
 def load_clock_metadata(logger, indent_level: int = 2) -> dict:
     """
@@ -53,14 +55,14 @@ def load_clock_metadata(logger, indent_level: int = 2) -> dict:
     Returns:
     - pandas DataFrame with genome metadata.
     """
-    file_id = '1w4aR_Z6fY4HAWFk1seYf6ELbZYb3GSmZ'
+    file_id = "1w4aR_Z6fY4HAWFk1seYf6ELbZYb3GSmZ"
     url = f"https://drive.google.com/uc?id={file_id}"
-    dir="./pyaging_data"
-    file_path =  'all_clock_metadata.pt'
+    dir = "./pyaging_data"
+    file_path = "all_clock_metadata.pt"
     file_path = os.path.join(dir, file_path)
-    
+
     if os.path.exists(file_path):
-        logger.info(f'Data found in {file_path}', indent_level=3)
+        logger.info(f"Data found in {file_path}", indent_level=3)
     else:
         if not os.path.exists(dir):
             os.mkdir("pyaging_data")
@@ -296,7 +298,9 @@ def convert_tensor_to_numpy_array(tensor, logger, indent_level: int = 2):
 
 
 @progress("Convert adata.X to torch.tensor and filter features")
-def convert_adata_to_tensor_and_filter_features(adata, features, logger, indent_level: int = 2):
+def convert_adata_to_tensor_and_filter_features(
+    adata, features, logger, indent_level: int = 2
+):
     """
     Convert an AnnData object to a PyTorch tensor.
 
@@ -312,7 +316,9 @@ def convert_adata_to_tensor_and_filter_features(adata, features, logger, indent_
 
 
 @progress("Add predicted ages to adata")
-def add_pred_ages_adata(adata, predicted_ages, clock_name, logger, indent_level: int = 2):
+def add_pred_ages_adata(
+    adata, predicted_ages, clock_name, logger, indent_level: int = 2
+):
     """
     Add predicted ages to adata.obs.
 
@@ -326,7 +332,9 @@ def add_pred_ages_adata(adata, predicted_ages, clock_name, logger, indent_level:
 
 
 @progress("Add clock metadata to adata.uns")
-def add_clock_metadata_adata(adata, clock_name, all_clock_metadata, logger, indent_level: int = 2):
+def add_clock_metadata_adata(
+    adata, clock_name, all_clock_metadata, logger, indent_level: int = 2
+):
     """
     Add clock metadata to adata.
 
@@ -384,9 +392,11 @@ def predict_age(adata, clock_names="horvath1"):
         features, weight_dict, preprocessing, postprocessing, clock_dict = load_clock(
             clock_name, logger, indent_level=2
         )
-        
+
         # Check and update adata for missing features
-        adata_expanded = check_features_in_adata(adata, features, logger, indent_level=2)
+        adata_expanded = check_features_in_adata(
+            adata, features, logger, indent_level=2
+        )
 
         # Convert adata to tensor and filter features
         x_tensor = convert_adata_to_tensor_and_filter_features(
@@ -395,17 +405,23 @@ def predict_age(adata, clock_names="horvath1"):
 
         # Apply preprocessing if specified
         if preprocessing:
-            x_tensor = preprocess_data(preprocessing, x_tensor, clock_dict, logger, indent_level=2)
+            x_tensor = preprocess_data(
+                preprocessing, x_tensor, clock_dict, logger, indent_level=2
+            )
 
         # Move tensor to the appropriate device
         x_tensor = x_tensor.to(device)
 
         # Initialize and configure the model
-        clock_model = initialize_model(clock_name, features, weight_dict, logger, indent_level=2)
+        clock_model = initialize_model(
+            clock_name, features, weight_dict, logger, indent_level=2
+        )
         clock_model = clock_model.to(device)  # Move model to the appropriate device
 
         # Perform age prediction using the model
-        predicted_ages_tensor = predict_ages_with_model(clock_model, x_tensor, logger, indent_level=2)
+        predicted_ages_tensor = predict_ages_with_model(
+            clock_model, x_tensor, logger, indent_level=2
+        )
 
         # Convert adata tensor to numpy array
         predicted_ages = convert_tensor_to_numpy_array(
@@ -420,12 +436,14 @@ def predict_age(adata, clock_names="horvath1"):
 
         # Add predicted ages to adata
         add_pred_ages_adata(adata, predicted_ages, clock_name, logger, indent_level=2)
-        
+
         # Load all clocks metadata
         all_clock_metadata = load_clock_metadata(logger, indent_level=2)
 
         # Add clock metadata to adata object
-        add_clock_metadata_adata(adata, clock_name, all_clock_metadata, logger, indent_level=2)
+        add_clock_metadata_adata(
+            adata, clock_name, all_clock_metadata, logger, indent_level=2
+        )
 
     logger.done()
     return adata

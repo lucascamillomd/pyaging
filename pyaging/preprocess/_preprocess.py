@@ -14,7 +14,9 @@ from ..data import *
 
 
 @progress("Impute missing values")
-def impute_missing_values(X: np.ndarray, strategy: str, logger, indent_level: int = 1) -> np.ndarray:
+def impute_missing_values(
+    X: np.ndarray, strategy: str, logger, indent_level: int = 1
+) -> np.ndarray:
     """
     Imputes missing values in a numpy array using the specified strategy.
 
@@ -74,7 +76,11 @@ def log_data_statistics(X: np.ndarray, logger, indent_level: int = 1) -> None:
 
 @progress("Create anndata object")
 def create_anndata_object(
-    X_imputed: np.ndarray, obs_names: list, var_names: list, logger, indent_level: int = 1
+    X_imputed: np.ndarray,
+    obs_names: list,
+    var_names: list,
+    logger,
+    indent_level: int = 1,
 ) -> anndata.AnnData:
     """
     Creates an AnnData object from imputed data.
@@ -88,12 +94,20 @@ def create_anndata_object(
     Returns:
     - AnnData object containing the imputed data.
     """
-    return anndata.AnnData(X=X_imputed, obs=pd.DataFrame(index=obs_names), var=pd.DataFrame(index=var_names), dtype="float")
+    return anndata.AnnData(
+        X=X_imputed,
+        obs=pd.DataFrame(index=obs_names),
+        var=pd.DataFrame(index=var_names),
+        dtype="float",
+    )
 
 
 @progress("Add metadata to anndata")
 def add_metadata_to_anndata(
-    adata: anndata.AnnData, metadata: Optional[pd.DataFrame], logger, indent_level: int = 1
+    adata: anndata.AnnData,
+    metadata: Optional[pd.DataFrame],
+    logger,
+    indent_level: int = 1,
 ) -> None:
     """
     Adds metadata to an AnnData object.
@@ -179,7 +193,7 @@ def df_to_adata(
 
     logger.done()
     return adata
-    
+
 
 @progress("Load Ensembl genome metadata")
 def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
@@ -195,7 +209,7 @@ def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
     url = "https://pyaging.s3.amazonaws.com/supporting_files/Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv"
 
     download(url, logger, indent_level=1)
-        
+
     # Define chromosomes of interest
     chromosomes = [
         "1",
@@ -230,9 +244,7 @@ def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
     return genes
 
 
-def bigwig_to_df(
-    bw_files
-) -> pd.DataFrame:
+def bigwig_to_df(bw_files) -> pd.DataFrame:
     """
     Converts a list of bigWig files to a pandas DataFrame.
 
@@ -253,7 +265,7 @@ def bigwig_to_df(
     genes = load_ensembl_metadata(logger, indent_level=1)
 
     all_samples = []  # List to store signal data for each sample
-    
+
     message = "Processing bigWig files"
     logger.start_progress(f"{message} started")
     for bw_file in bw_files:
@@ -282,7 +294,9 @@ def bigwig_to_df(
                 signal_sample = np.append(signal_sample, signal_transformed)
 
         # Append DataFrame for the current sample
-        all_samples.append(pd.DataFrame(signal_sample[None, :], columns=genes.gene_id.tolist()))
+        all_samples.append(
+            pd.DataFrame(signal_sample[None, :], columns=genes.gene_id.tolist())
+        )
     logger.finish_progress(f"{message} finished")
 
     # Concatenate all sample dataframes
@@ -290,6 +304,6 @@ def bigwig_to_df(
 
     # Add file name as index
     df_concat.index = bw_files
-    
+
     logger.done()
     return df_concat

@@ -333,12 +333,16 @@ class Logger:
         cur_percent = rs * bn / ts
 
         if cur_percent - self.report_hook_percent_state > 0.01:
-            self.report_progress(count=rs * bn, total=ts, indent_level=self.indent_level)
+            self.report_progress(
+                count=rs * bn, total=ts, indent_level=self.indent_level
+            )
             self.report_hook_percent_state = cur_percent
         if rs * bn >= ts:
             self.report_hook_percent_state = None
-            self.report_progress(count=100, total=100, indent_level=self.indent_level) # 100%
-            #self.finish_progress(progress_name="download")
+            self.report_progress(
+                count=100, total=100, indent_level=self.indent_level
+            )  # 100%
+            # self.finish_progress(progress_name="download")
 
 
 class LoggerManager:
