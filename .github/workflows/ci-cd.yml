@@ -40,6 +40,14 @@ jobs:
       shell: bash
 
     - if: env.VERSION_CHANGED == 'true'
+      name: Create and Push Tag
+      run: |
+        git config --global user.email "lucas_camillo@alumni.brown.edu"
+        git config --global user.name "Lucas Camillo"
+        git tag $VERSION
+        git push origin $VERSION
+
+    - if: env.VERSION_CHANGED == 'true'
       name: Install dependencies
       run: |
         python -m pip install --upgrade pip
