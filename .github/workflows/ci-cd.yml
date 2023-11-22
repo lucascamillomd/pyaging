@@ -15,9 +15,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
-    - name: Configure Git
-      run: git config --global --add safe.directory /github/workspace
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -26,7 +23,7 @@ jobs:
 
     - name: Automated Version Bumping
       id: autobump
-      uses: anothrNick/github-tag-action@1.34.0
+      uses: anothrNick/github-tag-action@1.67.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: patch # or minor, major
