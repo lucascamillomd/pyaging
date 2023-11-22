@@ -36,6 +36,7 @@ jobs:
         else
           echo "No version change detected, stopping the workflow."
           echo "VERSION_CHANGED=false" >> $GITHUB_ENV
+        fi
       shell: bash
 
     - if: env.VERSION_CHANGED == 'true'
@@ -48,7 +49,7 @@ jobs:
     - if: env.VERSION_CHANGED == 'true'
       name: Run Notebooks
       run: |
-        # Add commands to execute notebooks here
+        poetry run pytest --nbmake tutorials/
 
     - if: env.VERSION_CHANGED == 'true'
       name: Build Documentation

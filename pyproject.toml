@@ -27,6 +27,7 @@ ipykernel = "^5.1.0"
 nbsphinx = "^0.8.11"
 pygments = "^2.6.1"
 pytest = "^6.2.5"
+nbmake = "^0.1"
 
 [tool.poetry.scripts]
 pyaging = "pyaging:main"
