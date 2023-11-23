@@ -30,7 +30,7 @@ Given the increasing number of aging clocks, it is often cumbersome to compare t
 
 ## 📝 To-Do List
 
-- [X] Condense download_data into single function in utils
+- [X] Condense download_data into single function in utils fwef
 - [ ] Add and run tests for each module 
 - [X] Polish tutorials 
 - [ ] Write better readthedocs documentation
