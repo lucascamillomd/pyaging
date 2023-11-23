@@ -31,12 +31,13 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Enhance tutorials for better user experience
 - [X] Integrate `black` for PEP8 compliant code formatting
 - [ ] Improve and expand `readthedocs` documentation
-- [ ] Review and update docstrings for all functions
+- [X] Review and update docstrings for all functions
+- [ ] Move helper functions to new .py files
+- [ ] Move preprocessing and postprocessing to models
 - [ ] Launch a dedicated Read The Docs website
 - [ ] Add option to specify download directory for datasets
 - [ ] Include mammalian array example datasets
 - [ ] Rename datasets to reflect source publications
-- [ ] Implement error handling for dataset availability
 - [ ] Add feature to control logging verbosity
 - [ ] Integrate scAge and scRNAseq clocks
 - [ ] Incorporate murine DNA methylation and proteomic clocks

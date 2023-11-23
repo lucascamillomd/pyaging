@@ -4,42 +4,43 @@ import ntpath
 import os
 from urllib.request import urlretrieve
 from functools import wraps
-from ..utils import progress
+from ..utils import progress, download
 from ..logger import LoggerManager, main_tqdm
-
-
-@progress("Download data")
-def download(url: str, logger, indent_level: int = 1):
-    """
-    Downloads a specific file given a file_id.
-
-    Args:
-    - url: url of the file to be downloaded.
-    - logger: Logger object for logging messages.
-
-    Returns:
-    - pandas DataFrame with genome metadata.
-    """
-    file_path = url.split("/")[-1]
-    dir = "./pyaging_data"
-    file_path = os.path.join(dir, file_path)
-
-    if os.path.exists(file_path):
-        logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
-    else:
-        if not os.path.exists(dir):
-            os.mkdir("pyaging_data")
-        logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
-        logger.indent_level = indent_level + 1
-        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
 
 
 def download_example_data(data_type: str) -> None:
     """
-    Download an example data file.
+    Downloads example datasets for various types of biological data used in aging studies.
 
-    Parameters:
-    - data_type (str): the type of data to be downloaded.
+    This function facilitates the download of example datasets for different types of biological data,
+    including methylation, histone mark, RNA-seq, and ATAC-seq data. It is designed to provide quick
+    access to standard datasets for users to test and explore the functionalities of the pyaging package.
+
+    Parameters
+    ----------
+    data_type : str
+        The type of data to download. Valid options are 'methylation', 'histone_mark', 'rnaseq', and 'atac'.
+
+    Raises
+    ------
+    ValueError
+        If the specified data_type is not implemented, a ValueError is raised with a message suggesting
+        the user to request its implementation.
+
+    Notes
+    -----
+    The function maps the specified data_type to its corresponding URL and then calls the `download`
+    function to retrieve the dataset. The datasets are sourced from AWS S3
+    and are chosen to represent typical data formats and structures used in aging research.
+
+    The downloaded data can be used for various analyses, including testing the pyaging package's
+    functionalities, learning data processing techniques, or as a benchmark for custom analyses.
+
+    Examples
+    --------
+    >>> download_example_data("methylation")
+    # This will download the example methylation dataset to the local system.
+
     """
     logger = LoggerManager.gen_logger("download_example_data")
     logger.first_info("Starting download_example_data function")
@@ -53,7 +54,7 @@ def download_example_data(data_type: str) -> None:
 
     if data_type not in list(data_type_to_url.keys()):
         logger.error(
-            f"Example data of {data_type} has not yet been implemented in pyaging. If you'd like it implemented, please send us an email. We hope to have a two-week max turnaround time.",
+            f"Example data {data_type} has not yet been implemented in pyaging.",
             indent_level=2,
         )
 

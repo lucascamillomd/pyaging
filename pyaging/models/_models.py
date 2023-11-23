@@ -1,33 +1,19 @@
+import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class LinearModel(nn.Module):
     def __init__(self, input_dim):
         """
         Initialize a simple linear model.
-
-        Args:
-        - input_dim: Dimension of input features.
         """
         super(LinearModel, self).__init__()
         self.linear = nn.Linear(input_dim, 1)  # Define a linear layer
 
     def forward(self, x):
-        """
-        Forward pass of the model.
-
-        Args:
-        - x: Input data.
-
-        Returns:
-        - Output of the linear layer.
-        """
         x = self.linear(x)
         return x
-
-
-import torch.nn as nn
-import torch.nn.functional as F
 
 
 class AltumAge(nn.Module):
@@ -54,15 +40,6 @@ class AltumAge(nn.Module):
         self.bn6 = nn.BatchNorm1d(32, eps=0.001, momentum=0.99)
 
     def forward(self, x):
-        """
-        Forward pass of the model.
-
-        Args:
-        - x: Input data.
-
-        Returns:
-        - Output after passing through layers and activation functions.
-        """
         x = self.bn1(x)
         x = self.linear1(x)
         x = F.selu(x)
@@ -89,18 +66,10 @@ class AltumAge(nn.Module):
         return x
 
 
-import torch
-import torch.nn as nn
-
-
 class PCARDModel(nn.Module):
     def __init__(self, input_dim, pc_dim):
         """
-        Initialize a PCA Rotation and Linear Discriminant (PCARD) model.
-
-        Args:
-        - input_dim: Dimension of input features.
-        - pc_dim: Dimension of PCA rotation.
+        Initialize a PCA ARD (PCARD) model.
         """
         super(PCARDModel, self).__init__()
         self.rotation = nn.Parameter(
@@ -109,32 +78,15 @@ class PCARDModel(nn.Module):
         self.linear = nn.Linear(pc_dim, 1)
 
     def forward(self, x):
-        """
-        Forward pass of the model.
-
-        Args:
-        - x: Input data.
-
-        Returns:
-        - Output after PCA rotation and linear layer.
-        """
         x = torch.mm(x, self.rotation)  # Apply PCA rotation
         x = self.linear(x)
         return x
-
-
-import torch
-import torch.nn as nn
 
 
 class PCLinearModel(nn.Module):
     def __init__(self, input_dim, pc_dim):
         """
         Initialize a Principal Component Linear Model.
-
-        Args:
-        - input_dim: Dimension of input features.
-        - pc_dim: Dimension of PCA rotation.
         """
         super(PCLinearModel, self).__init__()
         self.center = nn.Parameter(torch.empty(input_dim), requires_grad=False)
@@ -144,34 +96,16 @@ class PCLinearModel(nn.Module):
         self.linear = nn.Linear(pc_dim, 1)
 
     def forward(self, x):
-        """
-        Forward pass of the model.
-
-        Args:
-        - x: Input data.
-
-        Returns:
-        - Output after centering, PCA rotation, and linear layer.
-        """
         x = x - self.center  # Apply centering
         x = torch.mm(x, self.rotation)  # Apply PCA rotation
         x = self.linear(x)
         return x
 
 
-import torch
-import torch.nn as nn
-
-
 class PCGrimAge(nn.Module):
     def __init__(self, input_dim, pc_dim, comp_dims=[]):
         """
         Initialize a PC Grim Age model.
-
-        Args:
-        - input_dim: Dimension of input features.
-        - pc_dim: Dimension of PCA rotation.
-        - comp_dims: List of component dimensions for linear layers.
         """
         super(PCGrimAge, self).__init__()
 
@@ -194,15 +128,6 @@ class PCGrimAge(nn.Module):
         self.step2 = nn.Linear(len(comp_dims) + 2, 1)
 
     def forward(self, x):
-        """
-        Forward pass of the model.
-
-        Args:
-        - x: Input data.
-
-        Returns:
-        - Output after various transformations and linear layers.
-        """
         # Extract and separate age and gender features
         age = x[:, -1]
         female = x[:, -2]

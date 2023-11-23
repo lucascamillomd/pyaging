@@ -1,8 +1,10 @@
-pyaging.preprocess package
-==========================
+Preprocess
+==========
 
-pyaging.preprocess._preprocess module
--------------------------------------
+Please note that most functions are helper functions and are not meant to be used directly.
+
+pyaging.preprocess._preprocess
+------------------------------
 
 .. automodule:: pyaging.preprocess._preprocess
    :members:

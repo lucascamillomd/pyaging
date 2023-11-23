@@ -1,24 +1,26 @@
-pyaging.predict package
-=======================
+Predict
+=======
 
-pyaging.predict._pred module
-----------------------------
+Please note that most functions are helper functions and are not meant to be used directly.
+
+pyaging.predict._pred
+---------------------
 
 .. automodule:: pyaging.predict._pred
    :members:
    :undoc-members:
    :show-inheritance:
 
-pyaging.predict._preprocessing module
--------------------------------------
+pyaging.predict._preprocessing
+------------------------------
 
 .. automodule:: pyaging.predict._preprocessing
    :members:
    :undoc-members:
    :show-inheritance:
 
-pyaging.predict._postprocessing module
---------------------------------------
+pyaging.predict._postprocessing
+-------------------------------
 
 .. automodule:: pyaging.predict._postprocessing
    :members:

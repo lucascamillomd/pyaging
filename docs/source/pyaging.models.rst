@@ -1,8 +1,10 @@
-pyaging.models package
-======================
+Models
+======
 
-pyaging.models._models module
------------------------------
+Please note that most functions are helper functions and are not meant to be used directly.
+
+pyaging.models._models
+----------------------
 
 .. automodule:: pyaging.models._models
    :members:

@@ -1,3 +1,4 @@
+from typing import Union, List
 import ntpath
 import os
 from urllib.request import urlretrieve
@@ -18,15 +19,53 @@ def impute_missing_values(
     X: np.ndarray, strategy: str, logger, indent_level: int = 1
 ) -> np.ndarray:
     """
-    Imputes missing values in a numpy array using the specified strategy.
+    Imputes missing values in a given dataset using a specified strategy.
 
-    Args:
-    - X: numpy array with potentially missing values.
-    - strategy: String specifying the imputation strategy ('mean', 'median', 'constant', 'knn').
-    - logger: Logger object for logging messages.
+    This function handles missing data in a numpy array by applying various imputation strategies.
+    It checks the array for missing values and applies the chosen imputation method, which can
+    be mean, median, constant, or K-nearest neighbors (KNN). The function is useful in preprocessing
+    steps for datasets where missing data could affect subsequent analyses.
 
-    Returns:
-    - numpy array with missing values imputed.
+    Parameters
+    ----------
+    X : np.ndarray
+        A numpy array containing the dataset with potential missing values.
+
+    strategy : str
+        The imputation strategy to apply. Valid options are 'mean', 'median', 'constant', and 'knn'.
+
+    logger : Logger
+        A logging object for tracking the progress and outcomes of the function.
+
+    indent_level : int, optional
+        The level of indentation for the logger, with 1 being the default.
+
+    Returns
+    -------
+    np.ndarray
+        The imputed dataset as a numpy array.
+
+    Raises
+    ------
+    ValueError
+        If an invalid imputation strategy is specified.
+
+    Notes
+    -----
+    The 'constant' strategy fills missing values with 0 by default. The 'knn' strategy uses
+    the K-nearest neighbors algorithm to estimate missing values based on similar samples.
+    This function is particularly useful in datasets where missing values are common, such as
+    in biological or medical data.
+
+    The function ensures that no imputation is performed if there are no missing values in the
+    dataset, thus preserving the original data integrity.
+
+    Examples
+    --------
+    >>> data = np.array([[1, np.nan, 3], [4, 5, np.nan], [7, 8, 9]])
+    >>> imputed_data = impute_missing_values(data, "mean")
+    # Imputes missing values using the mean of each column.
+
     """
     # Check for missing values
     if not np.isnan(X).any():
@@ -55,13 +94,40 @@ def impute_missing_values(
 @progress("Log data statistics")
 def log_data_statistics(X: np.ndarray, logger, indent_level: int = 1) -> None:
     """
-    Logs statistics about the data array.
+    Logs various statistical properties of a given dataset.
 
-    Args:
-    - X: numpy array containing the data.
-    - logger: Logger object for logging messages.
+    This function provides a quick summary of key statistics for a numpy array. It calculates
+    and logs the number of observations (rows), features (columns), total missing values, and
+    the percentage of missing values in the dataset. This function is particularly useful for
+    initial data exploration and quality assessment in data analysis workflows.
 
-    No return value; function only logs information.
+    Parameters
+    ----------
+    X : np.ndarray
+        A numpy array containing the dataset to be analyzed.
+
+    logger : Logger
+        A logging object for documenting the statistics and observations.
+
+    indent_level : int, optional
+        The level of indentation for the logger, with 1 being the default.
+
+    Notes
+    -----
+    Understanding the basic statistics of a dataset is crucial in data preprocessing and
+    analysis. This function highlights potential issues with data, like high levels of missing
+    values, which could impact subsequent analyses.
+
+    The function is designed to work seamlessly with datasets of varying sizes and complexities.
+    The statistical summary provided helps in making informed decisions about further steps in
+    data processing, such as imputation or feature selection.
+
+    Example
+    -------
+    >>> data = np.random.rand(100, 5)
+    >>> log_data_statistics(data, logger)
+    # Logs number of observations, features, and details about missing values.
+
     """
     n_obs, n_features = X.shape
     total_nas = np.isnan(X).sum()
@@ -83,16 +149,55 @@ def create_anndata_object(
     indent_level: int = 1,
 ) -> anndata.AnnData:
     """
-    Creates an AnnData object from imputed data.
+    Creates an AnnData object from imputed data, observation names, and variable names.
 
-    Args:
-    - X_imputed: numpy array with imputed data.
-    - obs_names: list of obs names.
-    - var_names: list of feature names.
-    - logger: Logger object for logging messages.
+    This function constructs an AnnData object, a central data structure for storing and
+    manipulating high-dimensional biological data such as single-cell genomics data. It takes
+    an imputed numpy array, lists of observation names, and variable names, and returns an
+    AnnData object suitable for downstream analyses in bioinformatics pipelines.
 
-    Returns:
-    - AnnData object containing the imputed data.
+    Parameters
+    ----------
+    X_imputed : np.ndarray
+        A numpy array containing the imputed data where rows are observations and columns
+        are variables.
+
+    obs_names : list
+        A list of strings representing the names of the observations (e.g., cell names in
+        single-cell analysis).
+
+    var_names : list
+        A list of strings representing the names of the variables (e.g., gene names).
+
+    logger : Logger
+        A logging object for documenting the process and any relevant observations.
+
+    indent_level : int, optional
+        The level of indentation for the logger, with 1 being the default.
+
+    Returns
+    -------
+    anndata.AnnData
+        An AnnData object populated with the imputed data, observation names, and variable names.
+
+    Notes
+    -----
+    AnnData objects are widely used in computational biology for storing large, annotated
+    datasets. Their structured format ensures easy access and manipulation of data for
+    various analytical purposes.
+
+    This function is essential for converting raw or processed data into a format readily
+    usable with tools and libraries that support AnnData objects, facilitating a seamless
+    integration into existing bioinformatics workflows.
+
+    Example
+    -------
+    >>> data = np.random.rand(100, 5)
+    >>> obs_names = [f'Cell_{i}' for i in range(100)]
+    >>> var_names = [f'Gene_{i}' for i in range(5)]
+    >>> ann_data = create_anndata_object(data, obs_names, var_names, logger)
+    # Creates an AnnData object with 100 observations and 5 variables.
+
     """
     return anndata.AnnData(
         X=X_imputed,
@@ -110,14 +215,49 @@ def add_metadata_to_anndata(
     indent_level: int = 1,
 ) -> None:
     """
-    Adds metadata to an AnnData object.
+    Adds metadata to an AnnData object's observation (obs) attribute.
 
-    Args:
-    - adata: AnnData object to which metadata should be added.
-    - metadata: pandas DataFrame containing metadata. If None, no action is taken.
-    - logger: Logger object for logging messages.
+    This function enriches an AnnData object by integrating metadata. The metadata, provided as
+    a pandas DataFrame, is aligned with the observation names in the AnnData object, ensuring
+    consistency and completeness of data annotations. This process is crucial for downstream
+    analyses where metadata (e.g., sample conditions, phenotypes) is key for interpretation.
 
-    No return value; function modifies AnnData object in place.
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The AnnData object to which metadata will be added. The obs attribute of this object
+        will be modified.
+
+    metadata : Optional[pd.DataFrame]
+        A pandas DataFrame containing the metadata. Each row corresponds to an observation,
+        and columns represent different metadata fields.
+
+    logger : Logger
+        A logging object for documenting the process and any observations.
+
+    indent_level : int, optional
+        The level of indentation for the logger, with 1 being the default.
+
+    Raises
+    ------
+    TypeError
+        If the provided metadata is not a pandas DataFrame.
+
+    Notes
+    -----
+    The metadata DataFrame's index should match the observation names in the AnnData object for
+    proper alignment. This function will reindex the metadata to match the AnnData obs_names,
+    ensuring that each sample in the AnnData object is associated with its corresponding metadata.
+
+    Example
+    -------
+    >>> import pandas as pd
+    >>> from anndata import AnnData
+    >>> adata = AnnData(np.random.rand(5, 3))
+    >>> metadata = pd.DataFrame({'Condition': ['A', 'B', 'A', 'B', 'A']}, index=[f'Sample_{i}' for i in range(5)])
+    >>> add_metadata_to_anndata(adata, metadata, logger)
+    # Adds the 'Condition' metadata to the AnnData object.
+
     """
     if metadata is None:
         logger.warning("No metadata provided. Leaving adata.obs empty", indent_level=2)
@@ -137,14 +277,42 @@ def add_unstructured_data(
     adata: anndata.AnnData, imputer_strategy: str, logger, indent_level: int = 1
 ) -> None:
     """
-    Adds unstructured data to an AnnData object.
+    Adds unstructured data, such as imputer strategy and data type, to an AnnData object.
 
-    Args:
-    - adata: AnnData object to be updated.
-    - imputer_strategy: String denoting the imputation strategy used.
-    - logger: Logger object for logging messages.
+    This function is designed to annotate an AnnData object with additional unstructured
+    information, enhancing data transparency and traceability. Key information, like the
+    imputation strategy used and the type of biological data represented, is stored in the
+    unstructured (uns) attribute of the AnnData object. This enrichment is vital for ensuring
+    clarity and reproducibility in bioinformatics analyses.
 
-    No return value; function modifies AnnData object in place.
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The AnnData object to which the unstructured data will be added.
+
+    imputer_strategy : str
+        The strategy used for imputing missing values in the dataset, which will be recorded
+        in the AnnData object for reference.
+
+    logger : Logger
+        A logging object for documenting the process and any important observations.
+
+    indent_level : int, optional
+        The level of indentation for the logger, with 1 being the default.
+
+    Notes
+    -----
+    This function updates the 'uns' attribute of the AnnData object with the 'imputer_strategy'
+    and 'data_type' keys. The 'data_type' is currently hard-coded as 'dna_methylation', which
+    may need modification based on different dataset types in future applications.
+
+    Example
+    -------
+    >>> from anndata import AnnData
+    >>> adata = AnnData(np.random.rand(5, 3))
+    >>> add_unstructured_data(adata, 'mean', logger)
+    # This will add the imputer strategy 'mean' and the data type 'dna_methylation' to the AnnData object.
+
     """
     # Add imputer strategy and data type to the AnnData object
     adata.uns["imputer_strategy"] = imputer_strategy
@@ -157,17 +325,52 @@ def df_to_adata(
     imputer_strategy: str = "knn",
 ) -> anndata.AnnData:
     """
-    Converts a DataFrame to an AnnData object.
+    Converts a pandas DataFrame to an AnnData object.
 
-    Args:
-    - df: pandas DataFrame with methylation data.
-    - metadata: Optional DataFrame with metadata.
-    - imputer_strategy: String specifying the imputation method.
+    This function transforms a DataFrame containing biological data (such as gene expression
+    levels, methylation data, etc.) into an AnnData object. It includes steps for handling
+    missing values, logging data statistics, and embedding metadata into the AnnData object.
+    The function is particularly useful in preparing datasets for downstream analyses in
+    bioinformatics and computational biology.
 
-    Returns:
-    - AnnData object.
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing biological data. Rows represent samples, and columns represent features.
 
-    Raises TypeError if input types are incorrect or ValueError for invalid imputer strategy.
+    metadata : Optional[pd.DataFrame], optional
+        A DataFrame containing metadata associated with the samples. Each row should correspond to a
+        sample in 'df', and columns should represent various metadata attributes. Defaults to None.
+
+    imputer_strategy : str, optional
+        The strategy for imputing missing values in 'df'. Supported strategies include 'mean',
+        'median', 'constant', and 'knn'. Defaults to 'knn'.
+
+    Returns
+    -------
+    anndata.AnnData
+        The AnnData object containing the processed data, metadata, and additional annotations.
+
+    Raises
+    ------
+    TypeError
+        If the input 'df' is not a pandas DataFrame.
+
+    Notes
+    -----
+    The AnnData object produced by this function is ready for various computational biology analyses,
+    such as differential expression analysis, clustering, or trajectory inference. The embedded metadata
+    and annotations enhance data understanding and facilitate more robust analyses.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> df = pd.DataFrame(np.random.rand(5, 3), columns=['gene1', 'gene2', 'gene3'])
+    >>> metadata = pd.DataFrame({'condition': ['A', 'A', 'B', 'B', 'C']}, index=df.index)
+    >>> adata = df_to_adata(df, metadata)
+    # This returns an AnnData object with the data from 'df', imputed missing values,
+    # and embedded sample metadata.
+
     """
     logger = LoggerManager.gen_logger("df_to_adata")
     logger.first_info("Starting df_to_adata function")
@@ -198,16 +401,39 @@ def df_to_adata(
 @progress("Load Ensembl genome metadata")
 def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
     """
-    Loads Ensembl genome metadata.
+    Load and filter Ensembl genome metadata specific to Homo sapiens.
 
-    Args:
-    - logger: Logger object for logging messages.
+    This function downloads the Ensembl gene metadata for Homo sapiens from a predefined URL and
+    filters it to include only the genes located on specified chromosomes.
 
-    Returns:
-    - pandas DataFrame with genome metadata.
+    Parameters
+    ----------
+    logger : Logger
+        A logging object for recording the progress and status of the download and filtering process.
+
+    indent_level : int, optional
+        The indentation level for logging messages. It helps to organize the log output when this
+        function is part of larger workflows. Defaults to 1.
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame containing filtered gene metadata from Ensembl. Rows correspond to genes, indexed
+        by their Ensembl gene IDs, and columns include various gene attributes.
+
+    Notes
+    -----
+    The function currently filters genes based on a predefined set of chromosomes (1-22, X). If different
+    chromosomes or additional filtering criteria are needed, modifications to the function will be required.
+
+    Examples
+    --------
+    >>> logger = LoggerManager.gen_logger("ensembl_metadata")
+    >>> ensembl_genes = load_ensembl_metadata(logger)
+    # This returns a DataFrame with Ensembl gene metadata for Homo sapiens filtered by specified chromosomes.
+
     """
     url = "https://pyaging.s3.amazonaws.com/supporting_files/Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv"
-
     download(url, logger, indent_level=1)
 
     # Define chromosomes of interest
@@ -244,15 +470,38 @@ def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
     return genes
 
 
-def bigwig_to_df(bw_files) -> pd.DataFrame:
+def bigwig_to_df(bw_files: Union[str, List[str]]) -> pd.DataFrame:
     """
-    Converts a list of bigWig files to a pandas DataFrame.
+    Convert bigWig files to a DataFrame, extracting signal data for genomic regions.
 
-    Args:
-    - bw_files: List of bigWig file paths.
+    This function processes a list of bigWig files, extracting signal data (such as chromatin accessibility
+    or histone modification levels) for each gene based on genomic annotations from Ensembl. It computes the
+    mean signal over the genomic region of each gene, applies an arcsinh transformation for normalization,
+    and organizes the data into a DataFrame format.
 
-    Returns:
-    - DataFrame with transformed signal values from each file as a separate sample.
+    Parameters
+    ----------
+    bw_files: Union[str, List[str]]
+        A list of bigWig file paths. If a single string is provided, it is converted to a list.
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame where each row represents a bigWig file and each column corresponds to a gene.
+        The values in the DataFrame are the transformed signal data for each gene in each bigWig file.
+
+    Notes
+    -----
+    The function utilizes Ensembl gene annotations and assumes the presence of genes on standard chromosomes
+    (1-22, X). Non-standard chromosomes or regions outside annotated genes are not processed. The signal
+    transformation uses the arcsinh function for normalization.
+
+    Examples
+    --------
+    >>> bigwig_files = ["sample1.bw", "sample2.bw"]
+    >>> signals_df = bigwig_to_df(bigwig_files)
+    # This returns a DataFrame where rows are bigWig files and columns are genes, with signal values.
+
     """
     logger = LoggerManager.gen_logger("bigwig_to_df")
     logger.first_info("Starting bigwig_to_df function")

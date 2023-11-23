@@ -7,18 +7,49 @@ from functools import wraps
 from ..logger import LoggerManager, main_tqdm
 
 
-def progress(message: str):
+def progress(message: str) -> None:
     """
-    Decorator to log the progress of a function.
+    A decorator to add progress logging to a function.
 
-    Parameters:
-    - message (str): Description of the function's purpose or current step.
-    - indent_level (int): Indentation level for the log message.
+    This decorator wraps a function to add starting and finishing progress messages to the
+    logger. It extracts the `indent_level` from keyword arguments, defaults to 1 if not provided,
+    and assumes the logger is the last positional argument. It logs the start and end of the
+    function execution with the provided message.
 
-    Returns:
-    - Function: A wrapped function with added logging for progress tracking.
+    Parameters
+    ----------
+    message : str
+        The message to be logged before and after the function execution. This message is 
+        formatted as '{message} started' at the beginning and '{message} finished' at the end.
+
+    Returns
+    -------
+    decorator : function
+        A decorator function that wraps the original function with progress logging.
+
+    Raises
+    ------
+    AttributeError
+        If the logger object is not found as the last positional argument, an AttributeError 
+        might be raised when attempting to call `start_progress` or `finish_progress`.
+
+    Notes
+    -----
+    The decorator assumes that the logger object is passed as the last positional argument to the 
+    function being decorated. It manipulates `kwargs` to extract `indent_level` if provided, 
+    otherwise defaults to 1. The `indent_level` controls the indentation of the log messages.
+
+    This will log 'Processing data started' before the `data_processing` function begins and 
+    'Processing data finished' after it completes.
+
+    Examples
+    --------
+    >>> @progress("Processing data")
+    ... def data_processing(data, logger):
+    ...     # data processing logic
+    ...     return processed_data
+
     """
-
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -39,43 +70,144 @@ def progress(message: str):
 @progress("Load all clock metadata")
 def load_clock_metadata(logger, indent_level: int = 1) -> dict:
     """
-    Loads the metadata of all available clocks.
+    Loads the clock metadata from a specified source.
 
-    Args:
-    - logger: Logger object for logging messages.
+    This function checks if the metadata file exists locally in the specified directory.
+    If it doesn't, the function downloads the file from AWS S3 using the provided file name
+    and saves it in the 'pyaging_data' directory. After downloading or confirming the file's 
+    existence, it reads and returns the metadata.
 
-    Returns:
-    - pandas DataFrame with genome metadata.
+    Parameters
+    ----------
+    logger : object
+        Logger object used for logging information, warnings, and errors.
+    indent_level : int, optional
+        The level of indentation for logging messages, by default 1.
+
+    Returns
+    -------
+    all_clock_metadata : dict
+        A dictionary containing the loaded clock metadata.
+
+    Raises
+    ------
+    IOError
+        If the file download fails or the file cannot be read after downloading.
+
+    Notes
+    -----
+    The function assumes the presence of a folder named 'pyaging_data' in the current directory 
+    or creates it if it doesn't exist. It uses a predefined AWS S3 url to download the 
+    metadata file. The function is decorated with `@progress`, which adds start and end log 
+    messages for this process.
+
+    Examples
+    --------
+    >>> logger = pyaging.logger.LoggerManager.gen_logger("example")
+    >>> metadata = load_clock_metadata(logger)
+    >>> type(metadata)
+    <class 'dict'>
+
     """
-    file_id = "1w4aR_Z6fY4HAWFk1seYf6ELbZYb3GSmZ"
-    url = f"https://drive.google.com/uc?id={file_id}"
-    dir = "./pyaging_data"
-    file_path = "all_clock_metadata.pt"
-    file_path = os.path.join(dir, file_path)
-
-    if os.path.exists(file_path):
-        logger.info(f"Data found in {file_path}", indent_level=2)
-    else:
-        if not os.path.exists(dir):
-            os.mkdir("pyaging_data")
-        logger.info(f"Downloading data to {file_path}", indent_level=2)
-        logger.indent_level = 2
-        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
-
-    # Read data
+    url = f"https://pyaging.s3.amazonaws.com/clocks/metadata/all_clock_metadata.pt"
+    download(url, logger, indent_level=2)
     all_clock_metadata = torch.load("./pyaging_data/all_clock_metadata.pt")
     return all_clock_metadata
 
 
+@progress("Download data")
+def download(url: str, logger, indent_level: int = 1):
+    """
+    Downloads a file from a specified URL to a local directory.
+
+    This function checks if the file specified by the URL already exists in the local
+    'pyaging_data' directory. If the file is not present, it downloads the file from the URL
+    and saves it in this directory. The function logs the progress of the download, including
+    whether the file is found locally or needs to be downloaded.
+
+    Parameters
+    ----------
+    url : str
+        The URL of the file to be downloaded.
+    logger : object
+        Logger object for logging messages at various stages of the download process.
+    indent_level : int, optional
+        The level of indentation for logging messages, by default 1.
+
+    Raises
+    ------
+    IOError
+        If the download fails or the file cannot be saved to the local directory.
+
+    Notes
+    -----
+    The function assumes the presence of a folder named 'pyaging_data' in the current directory,
+    creating it if it doesn't exist. It uses Python's `urlretrieve` function from the `urllib` 
+    module for downloading the file. The function is decorated with `@progress`, which adds 
+    start and end log messages for the download process.
+
+    Examples
+    --------
+    >>> logger = Logger()
+    >>> download("https://example.com/datafile.zip", logger)
+    Data found in ./pyaging_data/datafile.zip
+    or
+    Downloading data to ./pyaging_data/datafile.zip
+
+    """
+    file_path = url.split("/")[-1]
+    dir = "./pyaging_data"
+    file_path = os.path.join(dir, file_path)
+
+    if os.path.exists(file_path):
+        logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
+    else:
+        if not os.path.exists(dir):
+            os.mkdir("pyaging_data")
+        logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
+        logger.indent_level = indent_level + 1
+        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
+
+
 def find_clock_by_doi(search_doi: str) -> None:
     """
-    Loads all clock metadata and searches for the doi.
+    Searches for aging clocks in the metadata by a specified DOI (Digital Object Identifier).
 
-    Parameters:
-    - search_doi (str): The DOI string to search for within the .pt files.
+    This function retrieves the metadata for all aging clocks and searches for clocks that match
+    the given DOI. It uses a Logger object for logging the progress and results of the search.
+    The function outputs the names of clocks with the matching DOI, or a warning message if no
+    matches are found.
 
-    Returns:
-    - list: Filenames of .pt files containing the specified DOI, or an empty list if not found.
+    Parameters
+    ----------
+    search_doi : str
+        The DOI to search for in the aging clocks' metadata.
+
+    Returns
+    -------
+    None
+        The function does not return a value but logs the search results.
+
+    Notes
+    -----
+    The function internally calls `load_clock_metadata` to load the metadata of all available
+    aging clocks. It then iterates over this metadata to find matches. The logging includes
+    starting and ending messages for the search process, and a summary of the findings.
+
+    The function assumes the existence of a LoggerManager for generating loggers and uses 
+    `main_tqdm` for progress tracking in the loop. It's important to ensure that the metadata 
+    contains the 'doi' field for each clock for the search to be effective.
+
+    Examples
+    --------
+    >>> find_clock_by_doi("10.1155/2020/123456")
+    Clocks with DOI 10.1155/2020/123456: Clock1, Clock2
+
+    or, if no match is found,
+
+    >>> find_clock_by_doi("10.1000/xyz123")
+    No files found with DOI 10.1000/xyz123
+
     """
     logger = LoggerManager.gen_logger("find_clock_by_doi")
     logger.first_info("Starting find_clock_by_doi function")
@@ -109,13 +241,49 @@ def find_clock_by_doi(search_doi: str) -> None:
 
 def cite_clock(clock_name: str) -> None:
     """
-    Retrieves the citation for a specific clock name.
+    Retrieves and logs the citation information for a specified aging clock.
 
-    Parameters:
-    - clock_name (str): The name of the clock for which the citation is requested.
+    This function searches the metadata for aging clocks to find and log the citation details 
+    of a specified clock. If the clock is found but no citation information is available, 
+    it logs a warning indicating the absence of citation data. If the clock is not found in 
+    the metadata, it logs a warning that the clock is unavailable.
 
-    Returns:
-    - str: Citation string for the specified clock, or an empty string if not found.
+    Parameters
+    ----------
+    clock_name : str
+        The name of the aging clock for which citation information is to be retrieved. 
+        The function is case-insensitive to the clock name.
+
+    Returns
+    -------
+    None
+        The function does not return a value but logs the citation details or warnings.
+
+    Notes
+    -----
+    The function calls `load_clock_metadata` to load the entire metadata of aging clocks and 
+    then searches for the specified clock. It logs the progress of the search and the results.
+    The `LoggerManager` is used for generating loggers for logging purposes.
+
+    The function assumes that the metadata for each clock may contain a 'citation' field. If 
+    this field is missing, the function will indicate that no citation information is available.
+
+    Examples
+    --------
+    >>> cite_clock("ClockX")
+    Citation for clockx:
+    Smith, A. B., et al. (2020). "A New Aging Clock Model." Aging Research, vol. 30, pp. 100-110.
+
+    or, if citation data is not available,
+
+    >>> cite_clock("ClockY")
+    Citation not found in clocky
+
+    or, if the clock is not in the metadata,
+
+    >>> cite_clock("UnknownClock")
+    UnknownClock is not currently available in pyaging
+
     """
     logger = LoggerManager.gen_logger("cite_clock")
     logger.first_info("Starting cite_clock function")
@@ -148,58 +316,40 @@ def cite_clock(clock_name: str) -> None:
 
 def show_all_clocks() -> None:
     """
-    Calculate the predicted biological age based on methylation data using a specified model.
+    Displays the names of all aging clocks available in the metadata.
 
-    This function applies a pre-trained machine learning model to a given dataset to estimate the
-    biological age of the samples. The input data should be preprocessed appropriately to match the
-    format expected by the model. The function returns a list of predicted ages corresponding to each sample.
+    This function retrieves the metadata for all aging clocks and logs each clock's name. 
+    It's useful for users to get a quick overview of all the clocks included in the pyaging 
+    package. The function utilizes a logger for structured output, providing clarity and 
+    readability in its logs.
 
     Parameters
     ----------
-    model : object
-        A pre-trained machine learning model. This model should implement the `predict` method,
-        such as models from scikit-learn or a custom model adhering to this interface.
-
-    data : array-like, shape (n_samples, n_features)
-        Methylation data for the samples. Each row corresponds to a sample, and each column
-        corresponds to a specific methylation site. The data should be preprocessed and normalized
-        as required by the `model`.
+    None
+        The function does not require any parameters.
 
     Returns
     -------
-    predicted_ages : ndarray, shape (n_samples,)
-        An array containing the predicted biological ages for each sample. The predictions are
-        generated by the `model` based on the input `data`.
-
-    Raises
-    ------
-    ValueError
-        If the input data is not properly formatted or if the model is not compatible.
-
-    Examples
-    --------
-    >>> from sklearn.ensemble import RandomForestRegressor
-    >>> model = RandomForestRegressor()
-    >>> data = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
-    >>> calculate_age_prediction(model, data)
-    array([30.5, 35.7])
+    None
+        The function does not return a value but logs the names of all available clocks.
 
     Notes
     -----
-    The model should be trained on a dataset with a similar distribution to the `data` provided
-    for prediction. The accuracy of the predictions highly depends on the model's training and
-    the quality of the input data.
+    The function calls `load_clock_metadata` to load the metadata containing the aging clocks. 
+    It then iterates over this metadata to log the name of each clock. The function uses the 
+    `LoggerManager` for logging, ensuring that all log messages are properly formatted and 
+    indented.
 
-    See Also
+    The logger's progress methods (`start_progress` and `finish_progress`) are used to indicate 
+    the start and end of the process, providing a clear indication of the function's operation.
+
+    Examples
     --------
-    sklearn.ensemble.RandomForestRegressor : A random forest regressor model from scikit-learn.
-    preprocess_data : Function for preprocessing data to the required format.
-
-    References
-    ----------
-    .. [1] Smith, A. B., et al. (2020). "Predicting Age with Methylation Data: A Machine Learning
-           Approach." Journal of Aging Research, vol. 2020, Article ID 123456, 12 pages.
-           https://doi.org/10.1155/2020/123456
+    >>> show_all_clocks()
+    Clock1
+    Clock2
+    Clock3
+    ...
 
     """
     logger = LoggerManager.gen_logger("show_all_clocks")
@@ -220,13 +370,43 @@ def show_all_clocks() -> None:
 
 def get_clock_metadata(clock_name: str) -> None:
     """
-    Loads all clock metadata and prints the metadata for .
+    Retrieves and logs the metadata of a specified aging clock.
 
-    Parameters:
-    - clock_name (str): The name of the clock for which the metadata is requested.
+    This function accesses the metadata for a given aging clock and logs detailed 
+    information about it, such as the data type, model, and citation. It is designed 
+    to help users quickly understand the characteristics and details of a specific clock 
+    in the pyaging package. The function uses a logger to ensure that the output is 
+    structured and easily readable.
 
-    Returns:
-    - str: Citation metadata for the specified clock, or an empty string if not found.
+    Parameters
+    ----------
+    clock_name : str
+        The name of the aging clock whose metadata is to be retrieved. The name is case-insensitive.
+
+    Returns
+    -------
+    None
+        The function does not return a value but logs the metadata of the specified clock.
+
+    Notes
+    -----
+    The function first calls `load_clock_metadata` to load all clock metadata. It then 
+    extracts the metadata for the specified clock and logs each piece of information. 
+    The logger's progress methods (`start_progress` and `finish_progress`) are used to 
+    indicate the start and end of the retrieval process, enhancing user understanding 
+    of the operation.
+
+    This function assumes that the specified clock name exists in the metadata. If the 
+    clock name is not found, an error may occur.
+
+    Examples
+    --------
+    >>> get_clock_metadata("clock1")
+    name: Clock1
+    data_type: methylation
+    species: Homo sapiens
+    ...
+
     """
     logger = LoggerManager.gen_logger("get_clock_metadata")
     logger.first_info("Starting get_clock_metadata function")
