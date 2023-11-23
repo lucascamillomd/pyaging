@@ -31,20 +31,21 @@ Given the increasing number of aging clocks, it is often cumbersome to compare t
 ## 📝 To-Do List
 
 - [X] Condense download_data into single function in utils fwef
-- [ ] Add and run tests for each module 
+- [X] Add and run tests for each module 
 - [X] Polish tutorials 
-- [ ] Write better readthedocs documentation
 - [X] Use black for PEP8 formatting
+- [ ] Write better readthedocs documentation
 - [ ] Check docstring for each function
 - [ ] Create Read The Docs website
-- [ ] Improve logo
 - [ ] Add argument to choose dir for file download (as opposed to always "pyaging_data")
+- [ ] Add mammalian array example data
+- [ ] Change data name to the paper
+- [ ] Raise error showing all available example datasets
 - [ ] Add scAge
 - [ ] Add scRNAseq clock from Matt Buckley
 - [ ] Add murine DNAm clocks
 - [ ] Add proteomic clocks
 - [ ] Add blood chemistry PhenoAge
-- [ ] Add more example data!
 
 ## 📰 News
 * 19/11/2023: First commit!
