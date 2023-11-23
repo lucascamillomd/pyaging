@@ -26,7 +26,7 @@ jobs:
       uses: anothrNick/github-tag-action@1.67.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        DEFAULT_BUMP: patch # or minor, major
+        DEFAULT_BUMP: patch # or minor, major 
 
     - name: Install dependencies
       run: |
