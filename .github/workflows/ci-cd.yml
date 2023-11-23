@@ -1,4 +1,4 @@
-name: Python package workflow
+name: Test, build, publish, and release
 
 on:
   push:
@@ -12,6 +12,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10]
 
     steps:
     - uses: actions/checkout@v2
@@ -19,7 +22,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: ${{ matrix.python-version }}
 
     - name: Automated Version Bumping
       id: autobump

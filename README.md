@@ -2,55 +2,49 @@
   <img height="150" src="logo.png" />
 </p>
 
-<!--![Logo](https://url-to-your-logo/logo.png)-->
-
 ##
 
 [![beta](https://img.shields.io/badge/status-beta-yellow)](https://github.com/rsinghlab/pyaging)
+[![build](https://github.com/rsinghlab/pyaging/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/ci-cd.yml)
 [![upload](https://img.shields.io/pypi/v/pyaging?logo=PyPI)](https://pypi.org/project/pyaging/) 
 [![download](https://static.pepy.tech/badge/pyaging)](https://pepy.tech/project/pyaging)
 [![star](https://img.shields.io/github/stars/rsinghlab/pyaging?logo=GitHub&color=red)](https://github.com/rsinghlab/pyaging/stargazers)
 
 <!--
-[![build](https://github.com/rsinghlab/pyaging/actions/workflows/python-package.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/python-package.yml)
 [![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
-[![upload_python_package](https://github.com/rsinghlab/pyaging/actions/workflows/python-publish.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/python-publish.yml)
-[![test](https://github.com/rsinghlab/pyaging/actions/workflows/python-plain-run-test.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/python-plain-run-test.yml)
 -->
 
-## 🐍 **pyaging**: a Python-based compendium of GPU-optimized biological aging clocks
+## 🐍 **pyaging**: A GPU-Optimized Python Compendium for Biological Aging Research
 
-pyaging is a Python-based package with the latest and greatest aging clocks available to the longevity research community.
+`pyaging` is a cutting-edge Python package designed for the longevity research community, offering a comprehensive suite of GPU-optimized biological aging clocks.
 
 <!--
-[Installation](https://dynamo-release.readthedocs.io/en/latest/ten_minutes_to_dynamo.html#how-to-install) - [Ten minutes to dynamo](https://dynamo-release.readthedocs.io/en/latest/ten_minutes_to_dynamo.html) - [Tutorials](https://dynamo-release.readthedocs.io/en/latest/notebooks/Differential_geometry.html) - [API](https://dynamo-release.readthedocs.io/en/latest/API.html) - [Citation](https://www.sciencedirect.com/science/article/pii/S0092867421015774?via%3Dihub) - [Theory](https://dynamo-release.readthedocs.io/en/latest/notebooks/Primer.html)
+[Installation](https://pyaging.readthedocs.io/en/latest/installation.html) - [Quick Start](https://pyaging.readthedocs.io/en/latest/quickstart.html) - [Tutorials](https://pyaging.readthedocs.io/en/latest/tutorials.html) - [API Reference](https://pyaging.readthedocs.io/en/latest/api.html) - [Citation](https://www.sciencedirect.com/science/article/pii/S0092867421015774?via%3Dihub) - [Theoretical Background](https://pyaging.readthedocs.io/en/latest/theory.html)
 -->
 
-Given the increasing number of aging clocks, it is often cumbersome to compare them side by side. Moreover, for large amounts of data, the time for inference starts to become considerable. For such, we have developed a single package that can take in different molecular layers (DNA methylation, histone ChIP-Seq, ATAC-seq, transcriptomics, etc.) and utilize several aging clocks in a GPU-backed manner for fast inference. Moreover, this allows easy analysis of paired data from more than one molecular layer. 
+With a growing number of aging clocks, comparing and analyzing them can be challenging. `pyaging` simplifies this process, allowing researchers to input various molecular layers (DNA methylation, histone ChIP-Seq, ATAC-seq, transcriptomics, etc.) and quickly analyze them using multiple aging clocks, thanks to its GPU-backed infrastructure. This makes it an ideal tool for large datasets and multi-layered analysis.
 
 ## 📝 To-Do List
 
-- [X] Condense download_data into single function in utils fwef
-- [X] Add and run tests for each module 
-- [X] Polish tutorials 
-- [X] Use black for PEP8 formatting
-- [ ] Write better readthedocs documentation
-- [ ] Check docstring for each function
-- [ ] Create Read The Docs website
-- [ ] Add argument to choose dir for file download (as opposed to always "pyaging_data")
-- [ ] Add mammalian array example data
-- [ ] Change data name to the paper
-- [ ] Raise error showing all available example datasets
-- [ ] Add scAge
-- [ ] Add scRNAseq clock from Matt Buckley
-- [ ] Add murine DNAm clocks
-- [ ] Add proteomic clocks
-- [ ] Add blood chemistry PhenoAge
+- [X] Condense `download_data` into a single function in `utils`
+- [X] Implement tests for each module 
+- [X] Enhance tutorials for better user experience
+- [X] Integrate `black` for PEP8 compliant code formatting
+- [ ] Improve and expand `readthedocs` documentation
+- [ ] Review and update docstrings for all functions
+- [ ] Launch a dedicated Read The Docs website
+- [ ] Add option to specify download directory for datasets
+- [ ] Include mammalian array example datasets
+- [ ] Rename datasets to reflect source publications
+- [ ] Implement error handling for dataset availability
+- [ ] Add feature to control logging verbosity
+- [ ] Integrate scAge and scRNAseq clocks
+- [ ] Incorporate murine DNA methylation and proteomic clocks
+- [ ] Add PhenoAge based on blood chemistry analysis
 
-## 📰 News
-* 19/11/2023: First commit!
+## ❓ Can't find an aging clock?
 
-## 💬 Discussion 
-Please use GitHub issue tracker to report coding-related [issues](https://github.com/rsinghlab/pyaging/issues) of pyaging.
+If you have recently developed an aging clock and would like it to be integrated into `pyaging`, please [email us](lucas_camillo@alumni.brown.edu). We aim to incorporate it within two weeks!
 
-
+## 💬 Community Discussion
+For coding-related queries, feedback, and discussions, please visit our [GitHub Issues](https://github.com/rsinghlab/pyaging/issues) page.
