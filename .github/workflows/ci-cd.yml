@@ -99,6 +99,7 @@ jobs:
         else
           echo "No version change detected, stopping the workflow."
           echo "VERSION_CHANGED=false" >> $GITHUB_ENV
+        fi
       shell: bash
 
     - if: env.VERSION_CHANGED == 'true'
