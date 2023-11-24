@@ -40,13 +40,13 @@ html_css_files = [
 ]
 
 # Change the URL for the "Edit on GitHub" button
-html_context = {
-    "display_github": True,
-    "github_user": "lcamillo",
-    "github_repo": "https://github.com/rsinghlab/pyaging",
-    "github_version": "main",  # Or specify a branch/tag if needed
-    "conf_py_path": "/docs/source/",  # The path to your documentation source
-}
+#html_context = {
+#    "display_github": True,
+#    "github_user": "lcamillo",
+#    "github_repo": "https://github.com/rsinghlab/pyaging",
+#    "github_version": "main",  # Or specify a branch/tag if needed
+#    "conf_py_path": "/docs/source/",  # The path to your documentation source
+#}
 
 # -- Options for nbshpinx ----------------------------------------------------
 # https://nbsphinx.readthedocs.io/en/0.8.0/configure.html
