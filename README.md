@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="150" src="https://pyaging.readthedocs.io/en/latest/_static/logo.png" />
+  <img height="150" src="logo.png" />
 </p>
 
 ##
