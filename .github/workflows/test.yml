@@ -23,8 +23,8 @@ jobs:
       id: version-check
       run: |
          git fetch --depth=1 origin main
-         NEW_VERSION=$(grep "version =" pyproject.toml | cut -d'"' -f2)
-         OLD_VERSION=$(git show origin/main:pyproject.toml | grep "version =" | cut -d'"' -f2)
+         NEW_VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['tool']['poetry']['version'])")
+         OLD_VERSION=$(git show origin/main:pyproject.toml | python -c "import toml; import sys; print(toml.load(sys.stdin)['tool']['poetry']['version'])")
          if [ "$NEW_VERSION" != "$OLD_VERSION" ]; then
            echo "Version change detected. New version: $NEW_VERSION"
            echo "VERSION_CHANGED=true" >> $GITHUB_ENV
@@ -38,7 +38,7 @@ jobs:
       name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: ${{ matrix.python-version }}
 
     - if: env.VERSION_CHANGED == 'true'
       name: Install dependencies
@@ -51,3 +51,15 @@ jobs:
       name: Run Notebooks
       run: |
         poetry run pytest --nbmake tutorials/
+        
+    - name: Create version change flag
+      if: env.VERSION_CHANGED == 'true'
+      run: |
+        echo "version_changed" > version_change_flag.txt
+
+    - name: Upload version change flag
+      if: env.VERSION_CHANGED == 'true'
+      uses: actions/upload-artifact@v2
+      with:
+        name: version-change-flag
+        path: version_change_flag.txt

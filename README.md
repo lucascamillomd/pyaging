@@ -16,7 +16,7 @@
 [![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
 -->
 
-## 🐍 **pyaging**: A GPU-Optimized Python Compendium for Biological Aging Research
+## 🐍 **pyaging**: A Python-based compendium of GPU-optimized biological aging clocks
 
 `pyaging` is a cutting-edge Python package designed for the longevity research community, offering a comprehensive suite of GPU-optimized biological aging clocks.
 
