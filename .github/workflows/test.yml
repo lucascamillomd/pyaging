@@ -1,0 +1,53 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'pyproject.toml'
+      - 'tutorials/**'
+      - 'pyaging/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9, 3.10]  # Specify the Python versions here
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Check for version change
+      id: version-check
+      run: |
+        git fetch --depth=1 origin ${{ github.ref }}
+        NEW_VERSION=$(grep "version =" pyproject.toml | cut -d'"' -f2)
+        OLD_VERSION=$(git show origin/${{ github.ref }}:pyproject.toml | grep "version =" | cut -d'"' -f2)
+        if [ "$NEW_VERSION" != "$OLD_VERSION" ]; then
+          echo "Version change detected. New version: $NEW_VERSION"
+          echo "VERSION_CHANGED=true" >> $GITHUB_ENV
+        else
+          echo "No version change detected."
+          echo "VERSION_CHANGED=false" >> $GITHUB_ENV
+        fi
+      shell: bash
+
+    - if: env.VERSION_CHANGED == 'true'
+      name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - if: env.VERSION_CHANGED == 'true'
+      name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+
+    - if: env.VERSION_CHANGED == 'true'
+      name: Run Notebooks
+      run: |
+        poetry run pytest --nbmake tutorials/
