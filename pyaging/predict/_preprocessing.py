@@ -4,17 +4,7 @@ import torch
 def scale(data_tensor, scaler):
     """
     Scales the input tensor using the provided scaler.
-
-    This function first converts the input tensor to a NumPy array, applies scaling, and then converts it back to a PyTorch tensor.
-
-    Args:
-    - data_tensor: A PyTorch tensor containing the data to be scaled.
-    - scaler: A pre-fitted scaler object (such as from scikit-learn) used for scaling.
-
-    Returns:
-    - A PyTorch tensor containing the scaled data.
     """
-
     # Store the device (CPU/GPU) of the input tensor to restore it later
     device = data_tensor.device
 
@@ -33,14 +23,7 @@ def scale(data_tensor, scaler):
 def binarize(data_tensor):
     """
     Binarizes a torch tensor based on the median of each row, excluding zeros.
-
-    Args:
-    - data_tensor: A torch tensor where rows represent samples and columns represent features.
-
-    Returns:
-    - A binarized tensor where each element is 1 if it is greater than the median (excluding zeros) of its row, and 0 otherwise.
     """
-
     # Store the device (CPU/GPU) of the input tensor to restore it later
     device = data_tensor.device
 
