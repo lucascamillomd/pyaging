@@ -26,11 +26,11 @@ jobs:
          NEW_VERSION=$(grep "version =" pyproject.toml | cut -d'"' -f2)
          OLD_VERSION=$(git show origin/main:pyproject.toml | grep "version =" | cut -d'"' -f2)
          if [ "$NEW_VERSION" != "$OLD_VERSION" ]; then
-          echo "Version change detected. New version: $NEW_VERSION"
+           echo "Version change detected. New version: $NEW_VERSION"
            echo "VERSION_CHANGED=true" >> $GITHUB_ENV
          else
-          echo "No version change detected."
-          echo "VERSION_CHANGED=false" >> $GITHUB_ENV
+           echo "No version change detected."
+           echo "VERSION_CHANGED=false" >> $GITHUB_ENV
          fi
       shell: bash
 
