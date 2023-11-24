@@ -32,10 +32,8 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Implement tests for each module 
 - [X] Enhance tutorials for better user experience
 - [X] Integrate `black` for PEP8 compliant code formatting
-- [ ] Improve and expand `readthedocs` documentation
+- [X] Improve and expand `readthedocs` documentation
 - [X] Review and update docstrings for all functions
-- [ ] Move helper functions to new .py files
-- [ ] Move preprocessing and postprocessing to models
 - [ ] Launch a dedicated Read The Docs website
 - [ ] Add option to specify download directory for datasets
 - [ ] Include mammalian array example datasets

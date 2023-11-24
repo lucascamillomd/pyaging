@@ -1,8 +1,6 @@
 Installation
 ============
 
-pyaging requires Python 3.9 or later.
-
 pyaging now has been released to PyPi and can easily be installed via:
 
 .. code-block:: bash
@@ -16,13 +14,13 @@ Alternatively, it can be installed by cloning our GitHub repository and using pi
     git clone https://github.com/rsinghlab/pyaging.git
     pip install pyaging/ --user
 
-Or by simply going to the cloned repository and running setup.py:
+Or by simply going to the cloned repository if you have poetry installed:
 
 .. code-block:: bash
 
     git clone https://github.com/rsinghlab/pyaging.git
     cd pyaging/
-    python setup.py install --user
+    poetry
 
 Lastly, it can be installed from source:
 

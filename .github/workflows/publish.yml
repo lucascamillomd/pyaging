@@ -15,7 +15,14 @@ jobs:
 
     - name: Get latest tag
       run: |
-        echo "LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
+        LATEST_TAG=$(git rev-list --tags --max-count=1)
+        if [ -z "$LATEST_TAG" ]; then
+         echo "No tags found in the repository."
+          exit 1 # or handle this situation as you see fit
+        else
+          LATEST_TAG_NAME=$(git describe --tags $LATEST_TAG)
+          echo "LATEST_TAG=$LATEST_TAG_NAME" >> $GITHUB_ENV
+        fi
 
     - name: Create Release
       uses: actions/create-release@v1.1.4
