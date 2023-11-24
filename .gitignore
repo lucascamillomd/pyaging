@@ -17,7 +17,6 @@ pyaging.egg-info/
 dist/
 build/
 docs/_build
-docs/_static
 docs/_templates
 *.RData
 >>>>>>> fd1440b (first commit)
