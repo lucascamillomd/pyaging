@@ -7,8 +7,28 @@ on:
       - completed
 
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Get latest tag
+      run: |
+        echo "LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
+
+    - name: Create Release
+      uses: actions/create-release@v1.1.4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.LATEST_TAG }}
+        release_name: Release ${{ env.LATEST_TAG }}
+        body: Release of version ${{ env.LATEST_TAG }}
+
   publish-to-pypi:
     runs-on: ubuntu-latest
+    needs: create-release
     steps:
     - uses: actions/checkout@v2
 
@@ -28,22 +48,3 @@ jobs:
       with:
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
         repository_url: https://test.pypi.org/legacy/
-
-  create-release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@master
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1.1.4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            New release
-          draft: false
-          prerelease: false
