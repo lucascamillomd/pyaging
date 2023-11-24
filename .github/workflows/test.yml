@@ -34,9 +34,14 @@ jobs:
       run: |
         poetry run pytest --nbmake tutorials/
         
-    - name: Upload success flag (only on success)
+    - name: Create success flag
+      if: success()
+      run: |
+        echo "Test successful" > success_flag.txt
+
+    - name: Upload success flag
       if: success()
       uses: actions/upload-artifact@v2
       with:
         name: test-success-flag
-        path: path-to-success-flag-file
+        path: success_flag.txt
