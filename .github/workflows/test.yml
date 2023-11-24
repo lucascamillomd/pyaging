@@ -33,15 +33,3 @@ jobs:
     - name: Run Notebooks
       run: |
         poetry run pytest --nbmake tutorials/
-        
-    - name: Create success flag
-      if: success()
-      run: |
-        echo "Test successful" > success_flag.txt
-
-    - name: Upload success flag
-      if: success()
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-success-flag
-        path: success_flag.txt
