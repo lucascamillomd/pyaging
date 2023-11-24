@@ -12,6 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Download success flag
+      uses: actions/download-artifact@v2
+      with:
+        name: test-success-flag
+
+    - name: Check if test was successful
+      run: |
+        if [ ! -f path-to-success-flag-file ]; then
+          echo "Test workflow failed. Exiting build process."
+          exit 1
+        fi
 
     - name: Set up Python
       uses: actions/setup-python@v2

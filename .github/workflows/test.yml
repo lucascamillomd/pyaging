@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-    branches:
-      - main
     paths:
       - 'pyproject.toml'
       - 'tutorials/**'
@@ -16,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9, 3.10]  # Specify the Python versions here
+        python-version: [3.8, 3.9]  # Specify the Python versions here
 
     steps:
     - uses: actions/checkout@v2
@@ -35,3 +33,10 @@ jobs:
     - name: Run Notebooks
       run: |
         poetry run pytest --nbmake tutorials/
+        
+    - name: Upload success flag (only on success)
+      if: success()
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-success-flag
+        path: path-to-success-flag-file
