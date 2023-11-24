@@ -2,6 +2,8 @@ name: test
 
 on:
   push:
+    tags:
+      - 'v*'
     branches:
       - main
     paths:
@@ -19,50 +21,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: Install TOML Library
-      run: python -m pip install toml
-
-    - name: Check for version change
-      id: version-check
-      run: |
-         git fetch --depth=1 origin main
-         NEW_VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['tool']['poetry']['version'])")
-         OLD_VERSION=$(git show origin/main:pyproject.toml | python -c "import toml; import sys; print(toml.load(sys.stdin)['tool']['poetry']['version'])")
-         if [ "$NEW_VERSION" != "$OLD_VERSION" ]; then
-           echo "Version change detected. New version: $NEW_VERSION"
-           echo "VERSION_CHANGED=true" >> $GITHUB_ENV
-         else
-           echo "No version change detected."
-           echo "VERSION_CHANGED=false" >> $GITHUB_ENV
-         fi
-      shell: bash
-
-    - if: env.VERSION_CHANGED == 'true'
-      name: Set up Python
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
-    - if: env.VERSION_CHANGED == 'true'
-      name: Install dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install poetry
         poetry install
 
-    - if: env.VERSION_CHANGED == 'true'
-      name: Run Notebooks
+    - name: Run Notebooks
       run: |
         poetry run pytest --nbmake tutorials/
-        
-    - name: Create version change flag
-      if: env.VERSION_CHANGED == 'true'
-      run: |
-        echo "version_changed" > version_change_flag.txt
-
-    - name: Upload version change flag
-      if: env.VERSION_CHANGED == 'true'
-      uses: actions/upload-artifact@v2
-      with:
-        name: version-change-flag
-        path: version_change_flag.txt

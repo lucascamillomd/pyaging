@@ -31,31 +31,21 @@ jobs:
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
         repository_url: https://test.pypi.org/legacy/
 
-  create-tag-and-release:
+  create-release:
+    name: Create Release
     runs-on: ubuntu-latest
-    needs: publish-to-pypi
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Extract Version from pyproject.toml
-      id: extract-version
-      run: |
-        VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['tool']['poetry']['version'])")
-        echo "Extracted version: $VERSION"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Create Tag
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git tag ${{ env.VERSION }}
-        git push origin ${{ env.VERSION }}
-
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: dist/*
-        tag_name: ${{ env.VERSION }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            New release
+          draft: false
+          prerelease: false

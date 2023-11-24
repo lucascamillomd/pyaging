@@ -13,31 +13,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Download version change flag
-      uses: actions/download-artifact@v2
-      with:
-        name: version-change-flag
-        path: artifact/
-
-    - name: Check for version change flag
-      id: check-flag
-      run: |
-        if [ -f artifact/version_change_flag.txt ]; then
-          echo "Version change flag found, proceeding with build."
-          echo "VERSION_CHANGE_DETECTED=true" >> $GITHUB_ENV
-        else
-          echo "Version change flag not found, skipping build."
-          exit 1
-        fi
-
-    - if: env.VERSION_CHANGE_DETECTED == 'true'
-      name: Set up Python
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.9'
 
-    - if: env.VERSION_CHANGE_DETECTED == 'true'
-      name: Build Package
+    - name: Build Package
       run: |
         python -m pip install poetry
         poetry build
