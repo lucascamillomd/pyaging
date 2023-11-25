@@ -34,12 +34,13 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Integrate `black` for PEP8 compliant code formatting
 - [X] Improve and expand `readthedocs` documentation
 - [X] Review and update docstrings for all functions
-- [ ] Launch a dedicated Read The Docs website
+- [X] Launch a dedicated Read The Docs website
 - [ ] Add option to specify download directory for datasets
 - [ ] Include mammalian array example datasets
 - [ ] Rename datasets to reflect source publications
 - [ ] Add feature to control logging verbosity
 - [ ] Integrate scAge and scRNAseq clocks
+- [ ] Publish to PyPi
 - [ ] Incorporate murine DNA methylation and proteomic clocks
 - [ ] Add PhenoAge based on blood chemistry analysis
 

@@ -20,7 +20,7 @@ Or by simply going to the cloned repository if you have poetry installed:
 
     git clone https://github.com/rsinghlab/pyaging.git
     cd pyaging/
-    poetry
+    poetry install
 
 Lastly, it can be installed from source:
 
