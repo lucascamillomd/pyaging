@@ -15,7 +15,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: '3.x'
+        python-version: '3.9'
 
     - name: Build Package
       run: |
@@ -23,7 +23,7 @@ jobs:
         poetry build
         
     - name: Upload dist to Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist/*
