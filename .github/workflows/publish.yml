@@ -12,16 +12,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download dist from Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: dist
-          path: dist
-
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.9'
+         python-version: '3.9'
+  
+      - name: Build Package
+        run: |
+          python -m pip install poetry
+          poetry build
 
       - name: Publish to Test PyPI
         uses: pypa/gh-action-pypi-publish@v1.8.10

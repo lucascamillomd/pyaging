@@ -7,6 +7,7 @@
 [![test](https://github.com/rsinghlab/pyaging/actions/workflows/test.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/test.yml)
 [![build](https://github.com/rsinghlab/pyaging/actions/workflows/build.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/build.yml)
 [![publish](https://github.com/rsinghlab/pyaging/actions/workflows/publish.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/publish.yml)
+[![release](https://github.com/rsinghlab/pyaging/actions/workflows/release.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/release.yml)
 [![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
 [![beta](https://img.shields.io/badge/status-beta-yellow)](https://github.com/rsinghlab/pyaging)
 [![upload](https://img.shields.io/pypi/v/pyaging?logo=PyPI)](https://pypi.org/project/pyaging/) 
@@ -30,7 +31,7 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Improve and expand `readthedocs` documentation
 - [X] Review and update docstrings for all functions
 - [X] Launch a dedicated Read The Docs website
-- [ ] Add nbviewer and collab for tutorials
+- [X] Add nbviewer and collab for tutorials
 - [ ] Add option to specify download directory for datasets
 - [ ] Include mammalian array example datasets
 - [ ] Rename datasets to reflect source publications

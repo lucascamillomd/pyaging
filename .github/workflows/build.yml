@@ -22,8 +22,8 @@ jobs:
         python -m pip install poetry
         poetry build
         
-    - name: Upload dist to Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: dist
-        path: dist/*
+    #- name: Upload dist to Artifacts
+    #  uses: actions/upload-artifact@v3
+    #  with:
+    #    name: dist
+    #    path: dist/*
