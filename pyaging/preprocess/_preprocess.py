@@ -9,7 +9,7 @@ from typing import Optional
 from pyBigWig import open as open_bw
 import anndata
 from functools import wraps
-from ..logger import LoggerManager, main_tqdm
+from ..logger import LoggerManager, main_tqdm, silence_logger
 from ..utils import progress
 from ..data import *
 
@@ -323,6 +323,7 @@ def df_to_adata(
     df: pd.DataFrame,
     metadata: Optional[pd.DataFrame] = None,
     imputer_strategy: str = "knn",
+    verbose: bool = True,
 ) -> anndata.AnnData:
     """
     Converts a pandas DataFrame to an AnnData object.
@@ -345,6 +346,9 @@ def df_to_adata(
     imputer_strategy : str, optional
         The strategy for imputing missing values in 'df'. Supported strategies include 'mean',
         'median', 'constant', and 'knn'. Defaults to 'knn'.
+
+    verbose: bool
+        Whether to log the output to console with the logger. Defaults to True.
 
     Returns
     -------
@@ -373,6 +377,8 @@ def df_to_adata(
 
     """
     logger = LoggerManager.gen_logger("df_to_adata")
+    if not verbose:
+        silence_logger("df_to_adata")
     logger.first_info("Starting df_to_adata function")
 
     if not isinstance(df, pd.DataFrame):
@@ -399,7 +405,7 @@ def df_to_adata(
 
 
 @progress("Load Ensembl genome metadata")
-def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
+def load_ensembl_metadata(dir: str, logger, indent_level: int = 1) -> pd.DataFrame:
     """
     Load and filter Ensembl genome metadata specific to Homo sapiens.
 
@@ -408,6 +414,9 @@ def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
 
     Parameters
     ----------
+    dir : str
+        The directory to deposit the downloaded file.
+
     logger : Logger
         A logging object for recording the progress and status of the download and filtering process.
 
@@ -429,12 +438,12 @@ def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
     Examples
     --------
     >>> logger = LoggerManager.gen_logger("ensembl_metadata")
-    >>> ensembl_genes = load_ensembl_metadata(logger)
+    >>> ensembl_genes = load_ensembl_metadata("pyaging_data", logger)
     # This returns a DataFrame with Ensembl gene metadata for Homo sapiens filtered by specified chromosomes.
 
     """
     url = "https://pyaging.s3.amazonaws.com/supporting_files/Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv"
-    download(url, logger, indent_level=1)
+    download(url, dir, logger, indent_level=1)
 
     # Define chromosomes of interest
     chromosomes = [
@@ -464,13 +473,16 @@ def load_ensembl_metadata(logger, indent_level: int = 1) -> pd.DataFrame:
     ]
 
     # Read and filter the gene data
-    genes = pd.read_csv("./pyaging_data/Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv")
+    genes_path = os.path.join(dir, "Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv")
+    genes = pd.read_csv(genes_path)
     genes = genes[genes["chr"].apply(lambda x: x in chromosomes)]
     genes.index = genes.gene_id
     return genes
 
 
-def bigwig_to_df(bw_files: Union[str, List[str]]) -> pd.DataFrame:
+def bigwig_to_df(
+    bw_files: Union[str, List[str]], dir: str = "pyaging_data", verbose: bool = True
+) -> pd.DataFrame:
     """
     Convert bigWig files to a DataFrame, extracting signal data for genomic regions.
 
@@ -483,6 +495,12 @@ def bigwig_to_df(bw_files: Union[str, List[str]]) -> pd.DataFrame:
     ----------
     bw_files: Union[str, List[str]]
         A list of bigWig file paths. If a single string is provided, it is converted to a list.
+
+    dir : str
+        The directory to deposit the downloaded file. Defaults to "pyaging_data".
+
+    verbose: bool
+        Whether to log the output to console with the logger. Defaults to True.
 
     Returns
     -------
@@ -504,6 +522,8 @@ def bigwig_to_df(bw_files: Union[str, List[str]]) -> pd.DataFrame:
 
     """
     logger = LoggerManager.gen_logger("bigwig_to_df")
+    if not verbose:
+        silence_logger("bigwig_to_df")
     logger.first_info("Starting bigwig_to_df function")
 
     # Ensure bws is a list
@@ -511,7 +531,7 @@ def bigwig_to_df(bw_files: Union[str, List[str]]) -> pd.DataFrame:
         bw_files = [bw_files]
 
     # Get genomic annotation data
-    genes = load_ensembl_metadata(logger, indent_level=1)
+    genes = load_ensembl_metadata(dir, logger, indent_level=1)
 
     all_samples = []  # List to store signal data for each sample
 
@@ -523,7 +543,7 @@ def bigwig_to_df(bw_files: Union[str, List[str]]) -> pd.DataFrame:
         # Open bigWig file
         with open_bw(bw_file) as bw:
             signal_sample = np.empty(shape=(0, 0), dtype=float)
-            for i in main_tqdm(range(genes.shape[0]), indent_level=2):
+            for i in main_tqdm(range(genes.shape[0]), indent_level=2, logger=logger):
                 try:
                     signal = bw.stats(
                         "chr" + genes["chr"].iloc[i],

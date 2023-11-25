@@ -8,13 +8,13 @@ import ntpath
 from urllib.request import urlretrieve
 from ..models import *
 from ..utils import *
-from ..logger import LoggerManager, main_tqdm
+from ..logger import LoggerManager, main_tqdm, silence_logger
 from ._preprocessing import *
 from ._postprocessing import *
 
 
 @progress("Load clock")
-def load_clock(clock_name: str, logger, indent_level: int = 2) -> Tuple:
+def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tuple:
     """
     Loads the specified aging clock from a remote source and returns its components.
 
@@ -28,6 +28,9 @@ def load_clock(clock_name: str, logger, indent_level: int = 2) -> Tuple:
     clock_name : str
         The name of the aging clock to be loaded. This name is used to construct the URL
         for downloading the clock's weights and configuration.
+
+    dir : str
+        The directory to deposit the downloaded file.
 
     logger : Logger
         A logger object used for logging information during the function execution.
@@ -58,16 +61,16 @@ def load_clock(clock_name: str, logger, indent_level: int = 2) -> Tuple:
 
     Examples
     --------
-    >>> features, weight_dict, preprocessing, postprocessing, clock_dict = load_clock("clock1", logger)
+    >>> features, weight_dict, preprocessing, postprocessing, clock_dict = load_clock("clock1", "pyaging_data", logger)
     >>> print(features)
     ['feature1', 'feature2', ...]
 
     """
     url = f"https://pyaging.s3.amazonaws.com/clocks/weights/{clock_name}.pt"
-    download(url, logger, indent_level=2)
+    download(url, dir, logger, indent_level=2)
 
     # Define the path to the clock weights file
-    weights_path = os.path.join("./pyaging_data", f"{clock_name}.pt")
+    weights_path = os.path.join(dir, f"{clock_name}.pt")
 
     # Load the clock dictionary from the file
     clock_dict = torch.load(weights_path)
@@ -775,7 +778,10 @@ def set_torch_device(logger, indent_level: int = 1) -> None:
 
 
 def predict_age(
-    adata: anndata.AnnData, clock_names: str = "horvath2013"
+    adata: anndata.AnnData,
+    clock_names: str = "horvath2013",
+    dir: str = "pyaging_data",
+    verbose: bool = True,
 ) -> anndata.AnnData:
     """
     Predicts biological age using specified aging clocks.
@@ -794,6 +800,12 @@ def predict_age(
     clock_names : str or list of str, optional
         Names of the aging clocks to be applied. It can be a single clock name as a string or a list
         of clock names, by default "horvath2013".
+
+    dir : str
+        The directory to deposit the downloaded file. Defaults to "pyaging_data".
+
+    verbose: bool
+        Whether to log the output to console with the logger. Defaults to True.
 
     Returns
     -------
@@ -821,6 +833,8 @@ def predict_age(
 
     """
     logger = LoggerManager.gen_logger("predict_age")
+    if not verbose:
+        silence_logger("predict_age")
     logger.first_info("Starting predict_age function")
 
     # Ensure clock_names is a list
@@ -836,7 +850,7 @@ def predict_age(
         # Load and prepare the clock
         clock_name = clock_name.lower()
         features, weight_dict, preprocessing, postprocessing, clock_dict = load_clock(
-            clock_name, logger, indent_level=2
+            clock_name, dir, logger, indent_level=2
         )
 
         # Check and update adata for missing features
@@ -884,7 +898,7 @@ def predict_age(
         add_pred_ages_adata(adata, predicted_ages, clock_name, logger, indent_level=2)
 
         # Load all clocks metadata
-        all_clock_metadata = load_clock_metadata(logger, indent_level=2)
+        all_clock_metadata = load_clock_metadata(dir, logger, indent_level=2)
 
         # Add clock metadata to adata object
         add_clock_metadata_adata(

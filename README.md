@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="150" src="docs/_static/logo.png" />
+  <img height="160" src="docs/_static/logo.png" />
 </p>
 
 ##
@@ -24,22 +24,16 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 
 ## 📝 To-Do List
 
-- [X] Condense `download_data` into a single function in `utils`
-- [X] Implement tests for each module 
-- [X] Enhance tutorials for better user experience
 - [X] Integrate `black` for PEP8 compliant code formatting
 - [X] Improve and expand `readthedocs` documentation
-- [X] Review and update docstrings for all functions
-- [X] Launch a dedicated Read The Docs website
-- [X] Add nbviewer and collab for tutorials
-- [ ] Add option to specify download directory for datasets
-- [ ] Include mammalian array example datasets
-- [ ] Rename datasets to reflect source publications
-- [ ] Add feature to control logging verbosity
-- [ ] Integrate scAge and scRNAseq clocks
+- [X] Add option to specify download directory for datasets
+- [X] Rename datasets to reflect source publications
+- [X] Include mammalian array example datasets
+- [X] Add feature to control logging verbosity
 - [ ] Publish to PyPi
-- [ ] Incorporate murine DNA methylation and proteomic clocks
-- [ ] Add PhenoAge based on blood chemistry analysis
+- [ ] Integrate scAge and scRNAseq clocks (and datasets)
+- [ ] Incorporate murine DNA methylation and proteomic clocks (and datasets)
+- [ ] Add PhenoAge based on blood chemistry analysis (and datasets)
 
 ## ❓ Can't find an aging clock?
 

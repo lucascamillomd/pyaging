@@ -5,10 +5,12 @@ import os
 from urllib.request import urlretrieve
 from functools import wraps
 from ..utils import progress, download
-from ..logger import LoggerManager, main_tqdm
+from ..logger import LoggerManager, main_tqdm, silence_logger
 
 
-def download_example_data(data_type: str) -> None:
+def download_example_data(
+    data_type: str, dir: str = "pyaging_data", verbose: bool = True
+) -> None:
     """
     Downloads example datasets for various types of biological data used in aging studies.
 
@@ -20,6 +22,12 @@ def download_example_data(data_type: str) -> None:
     ----------
     data_type : str
         The type of data to download. Valid options are 'methylation', 'histone_mark', 'rnaseq', and 'atac'.
+
+    dir : str
+        The directory to deposit the downloaded file. Defaults to "pyaging_data".
+
+    verbose: bool
+        Whether to log the output to console with the logger. Defaults to True.
 
     Raises
     ------
@@ -43,13 +51,16 @@ def download_example_data(data_type: str) -> None:
 
     """
     logger = LoggerManager.gen_logger("download_example_data")
+    if not verbose:
+        silence_logger("download_example_data")
     logger.first_info("Starting download_example_data function")
 
     data_type_to_url = {
-        "methylation": "https://pyaging.s3.amazonaws.com/example_data/GSE139307.pkl",
-        "histone_mark": "https://pyaging.s3.amazonaws.com/example_data/ENCFF386QWG.bigWig",
-        "rnaseq": "https://pyaging.s3.amazonaws.com/example_data/GSE65765_CPM.pkl",
-        "atac": "https://pyaging.s3.amazonaws.com/example_data/atac_example.pkl",
+        "GSE139307": "https://pyaging.s3.amazonaws.com/example_data/GSE139307.pkl",
+        "GSE223748": "https://pyaging.s3.amazonaws.com/example_data/GSE223748_subset.pkl",
+        "ENCFF386QWG": "https://pyaging.s3.amazonaws.com/example_data/ENCFF386QWG.bigWig",
+        "GSE65765": "https://pyaging.s3.amazonaws.com/example_data/GSE65765_CPM.pkl",
+        "atac_example": "https://pyaging.s3.amazonaws.com/example_data/atac_example.pkl",
     }
 
     if data_type not in list(data_type_to_url.keys()):
@@ -59,6 +70,6 @@ def download_example_data(data_type: str) -> None:
         )
 
     url = data_type_to_url[data_type]
-    download(url, logger, indent_level=1)
+    download(url, dir, logger, indent_level=1)
 
     logger.done()

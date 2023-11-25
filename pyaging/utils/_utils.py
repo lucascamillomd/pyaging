@@ -19,7 +19,7 @@ def progress(message: str) -> None:
     Parameters
     ----------
     message : str
-        The message to be logged before and after the function execution. This message is 
+        The message to be logged before and after the function execution. This message is
         formatted as '{message} started' at the beginning and '{message} finished' at the end.
 
     Returns
@@ -30,16 +30,16 @@ def progress(message: str) -> None:
     Raises
     ------
     AttributeError
-        If the logger object is not found as the last positional argument, an AttributeError 
+        If the logger object is not found as the last positional argument, an AttributeError
         might be raised when attempting to call `start_progress` or `finish_progress`.
 
     Notes
     -----
-    The decorator assumes that the logger object is passed as the last positional argument to the 
-    function being decorated. It manipulates `kwargs` to extract `indent_level` if provided, 
+    The decorator assumes that the logger object is passed as the last positional argument to the
+    function being decorated. It manipulates `kwargs` to extract `indent_level` if provided,
     otherwise defaults to 1. The `indent_level` controls the indentation of the log messages.
 
-    This will log 'Processing data started' before the `data_processing` function begins and 
+    This will log 'Processing data started' before the `data_processing` function begins and
     'Processing data finished' after it completes.
 
     Examples
@@ -50,6 +50,7 @@ def progress(message: str) -> None:
     ...     return processed_data
 
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -68,17 +69,19 @@ def progress(message: str) -> None:
 
 
 @progress("Load all clock metadata")
-def load_clock_metadata(logger, indent_level: int = 1) -> dict:
+def load_clock_metadata(dir: str, logger, indent_level: int = 1) -> dict:
     """
     Loads the clock metadata from a specified source.
 
     This function checks if the metadata file exists locally in the specified directory.
     If it doesn't, the function downloads the file from AWS S3 using the provided file name
-    and saves it in the 'pyaging_data' directory. After downloading or confirming the file's 
+    and saves it in the 'pyaging_data' directory. After downloading or confirming the file's
     existence, it reads and returns the metadata.
 
     Parameters
     ----------
+    dir : str
+        The directory to deposit the downloaded file.
     logger : object
         Logger object used for logging information, warnings, and errors.
     indent_level : int, optional
@@ -96,27 +99,27 @@ def load_clock_metadata(logger, indent_level: int = 1) -> dict:
 
     Notes
     -----
-    The function assumes the presence of a folder named 'pyaging_data' in the current directory 
-    or creates it if it doesn't exist. It uses a predefined AWS S3 url to download the 
-    metadata file. The function is decorated with `@progress`, which adds start and end log 
+    The function assumes the presence of a folder named 'pyaging_data' in the current directory
+    or creates it if it doesn't exist. It uses a predefined AWS S3 url to download the
+    metadata file. The function is decorated with `@progress`, which adds start and end log
     messages for this process.
 
     Examples
     --------
     >>> logger = pyaging.logger.LoggerManager.gen_logger("example")
-    >>> metadata = load_clock_metadata(logger)
+    >>> metadata = load_clock_metadata("pyaging_data", logger)
     >>> type(metadata)
     <class 'dict'>
 
     """
     url = f"https://pyaging.s3.amazonaws.com/clocks/metadata/all_clock_metadata.pt"
-    download(url, logger, indent_level=2)
-    all_clock_metadata = torch.load("./pyaging_data/all_clock_metadata.pt")
+    download(url, dir, logger, indent_level=2)
+    all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
     return all_clock_metadata
 
 
 @progress("Download data")
-def download(url: str, logger, indent_level: int = 1):
+def download(url: str, dir: str, logger, indent_level: int = 1):
     """
     Downloads a file from a specified URL to a local directory.
 
@@ -129,6 +132,8 @@ def download(url: str, logger, indent_level: int = 1):
     ----------
     url : str
         The URL of the file to be downloaded.
+    dir : str
+        The directory to deposit the downloaded file.
     logger : object
         Logger object for logging messages at various stages of the download process.
     indent_level : int, optional
@@ -142,34 +147,33 @@ def download(url: str, logger, indent_level: int = 1):
     Notes
     -----
     The function assumes the presence of a folder named 'pyaging_data' in the current directory,
-    creating it if it doesn't exist. It uses Python's `urlretrieve` function from the `urllib` 
-    module for downloading the file. The function is decorated with `@progress`, which adds 
+    creating it if it doesn't exist. It uses Python's `urlretrieve` function from the `urllib`
+    module for downloading the file. The function is decorated with `@progress`, which adds
     start and end log messages for the download process.
 
     Examples
     --------
     >>> logger = Logger()
-    >>> download("https://example.com/datafile.zip", logger)
-    Data found in ./pyaging_data/datafile.zip
+    >>> download("https://example.com/datafile.zip", "pyaging_data", logger)
+    Data found in pyaging_data/datafile.zip
     or
-    Downloading data to ./pyaging_data/datafile.zip
+    Downloading data to pyaging_data/datafile.zip
 
     """
     file_path = url.split("/")[-1]
-    dir = "./pyaging_data"
     file_path = os.path.join(dir, file_path)
 
     if os.path.exists(file_path):
         logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
     else:
         if not os.path.exists(dir):
-            os.mkdir("pyaging_data")
+            os.mkdir(dir)
         logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
         logger.indent_level = indent_level + 1
         urlretrieve(url, file_path, reporthook=logger.request_report_hook)
 
 
-def find_clock_by_doi(search_doi: str) -> None:
+def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
     """
     Searches for aging clocks in the metadata by a specified DOI (Digital Object Identifier).
 
@@ -182,6 +186,8 @@ def find_clock_by_doi(search_doi: str) -> None:
     ----------
     search_doi : str
         The DOI to search for in the aging clocks' metadata.
+    dir : str
+        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
 
     Returns
     -------
@@ -194,8 +200,8 @@ def find_clock_by_doi(search_doi: str) -> None:
     aging clocks. It then iterates over this metadata to find matches. The logging includes
     starting and ending messages for the search process, and a summary of the findings.
 
-    The function assumes the existence of a LoggerManager for generating loggers and uses 
-    `main_tqdm` for progress tracking in the loop. It's important to ensure that the metadata 
+    The function assumes the existence of a LoggerManager for generating loggers and uses
+    `main_tqdm` for progress tracking in the loop. It's important to ensure that the metadata
     contains the 'doi' field for each clock for the search to be effective.
 
     Examples
@@ -213,7 +219,7 @@ def find_clock_by_doi(search_doi: str) -> None:
     logger.first_info("Starting find_clock_by_doi function")
 
     # Load all metadata
-    all_clock_metadata = load_clock_metadata(logger)
+    all_clock_metadata = load_clock_metadata(dir, logger)
 
     # Message to indicate the start of the search process
     message = "Searching for clock based on DOI"
@@ -239,20 +245,22 @@ def find_clock_by_doi(search_doi: str) -> None:
     logger.done()
 
 
-def cite_clock(clock_name: str) -> None:
+def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
     """
     Retrieves and logs the citation information for a specified aging clock.
 
-    This function searches the metadata for aging clocks to find and log the citation details 
-    of a specified clock. If the clock is found but no citation information is available, 
-    it logs a warning indicating the absence of citation data. If the clock is not found in 
+    This function searches the metadata for aging clocks to find and log the citation details
+    of a specified clock. If the clock is found but no citation information is available,
+    it logs a warning indicating the absence of citation data. If the clock is not found in
     the metadata, it logs a warning that the clock is unavailable.
 
     Parameters
     ----------
     clock_name : str
-        The name of the aging clock for which citation information is to be retrieved. 
+        The name of the aging clock for which citation information is to be retrieved.
         The function is case-insensitive to the clock name.
+    dir : str
+        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
 
     Returns
     -------
@@ -261,11 +269,11 @@ def cite_clock(clock_name: str) -> None:
 
     Notes
     -----
-    The function calls `load_clock_metadata` to load the entire metadata of aging clocks and 
+    The function calls `load_clock_metadata` to load the entire metadata of aging clocks and
     then searches for the specified clock. It logs the progress of the search and the results.
     The `LoggerManager` is used for generating loggers for logging purposes.
 
-    The function assumes that the metadata for each clock may contain a 'citation' field. If 
+    The function assumes that the metadata for each clock may contain a 'citation' field. If
     this field is missing, the function will indicate that no citation information is available.
 
     Examples
@@ -291,7 +299,7 @@ def cite_clock(clock_name: str) -> None:
     clock_name = clock_name.lower()
 
     # Load all metadata
-    all_clock_metadata = load_clock_metadata(logger)
+    all_clock_metadata = load_clock_metadata(dir, logger)
 
     message = f"Searching for citation of clock {clock_name}"
     logger.start_progress(f"{message} started")
@@ -314,19 +322,19 @@ def cite_clock(clock_name: str) -> None:
     logger.done()
 
 
-def show_all_clocks() -> None:
+def show_all_clocks(dir: str = "pyaging_data") -> None:
     """
     Displays the names of all aging clocks available in the metadata.
 
-    This function retrieves the metadata for all aging clocks and logs each clock's name. 
-    It's useful for users to get a quick overview of all the clocks included in the pyaging 
-    package. The function utilizes a logger for structured output, providing clarity and 
+    This function retrieves the metadata for all aging clocks and logs each clock's name.
+    It's useful for users to get a quick overview of all the clocks included in the pyaging
+    package. The function utilizes a logger for structured output, providing clarity and
     readability in its logs.
 
     Parameters
     ----------
-    None
-        The function does not require any parameters.
+    dir : str
+        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
 
     Returns
     -------
@@ -335,12 +343,12 @@ def show_all_clocks() -> None:
 
     Notes
     -----
-    The function calls `load_clock_metadata` to load the metadata containing the aging clocks. 
-    It then iterates over this metadata to log the name of each clock. The function uses the 
-    `LoggerManager` for logging, ensuring that all log messages are properly formatted and 
+    The function calls `load_clock_metadata` to load the metadata containing the aging clocks.
+    It then iterates over this metadata to log the name of each clock. The function uses the
+    `LoggerManager` for logging, ensuring that all log messages are properly formatted and
     indented.
 
-    The logger's progress methods (`start_progress` and `finish_progress`) are used to indicate 
+    The logger's progress methods (`start_progress` and `finish_progress`) are used to indicate
     the start and end of the process, providing a clear indication of the function's operation.
 
     Examples
@@ -356,7 +364,7 @@ def show_all_clocks() -> None:
     logger.first_info("Starting show_all_clocks function")
 
     # Load all metadata
-    all_clock_metadata = load_clock_metadata(logger)
+    all_clock_metadata = load_clock_metadata(dir, logger)
 
     # Message to indicate the start of the search process
     message = "Showing all available clock names"
@@ -368,20 +376,22 @@ def show_all_clocks() -> None:
     logger.done()
 
 
-def get_clock_metadata(clock_name: str) -> None:
+def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
     """
     Retrieves and logs the metadata of a specified aging clock.
 
-    This function accesses the metadata for a given aging clock and logs detailed 
-    information about it, such as the data type, model, and citation. It is designed 
-    to help users quickly understand the characteristics and details of a specific clock 
-    in the pyaging package. The function uses a logger to ensure that the output is 
+    This function accesses the metadata for a given aging clock and logs detailed
+    information about it, such as the data type, model, and citation. It is designed
+    to help users quickly understand the characteristics and details of a specific clock
+    in the pyaging package. The function uses a logger to ensure that the output is
     structured and easily readable.
 
     Parameters
     ----------
     clock_name : str
         The name of the aging clock whose metadata is to be retrieved. The name is case-insensitive.
+    dir : str
+        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
 
     Returns
     -------
@@ -390,13 +400,13 @@ def get_clock_metadata(clock_name: str) -> None:
 
     Notes
     -----
-    The function first calls `load_clock_metadata` to load all clock metadata. It then 
-    extracts the metadata for the specified clock and logs each piece of information. 
-    The logger's progress methods (`start_progress` and `finish_progress`) are used to 
-    indicate the start and end of the retrieval process, enhancing user understanding 
+    The function first calls `load_clock_metadata` to load all clock metadata. It then
+    extracts the metadata for the specified clock and logs each piece of information.
+    The logger's progress methods (`start_progress` and `finish_progress`) are used to
+    indicate the start and end of the retrieval process, enhancing user understanding
     of the operation.
 
-    This function assumes that the specified clock name exists in the metadata. If the 
+    This function assumes that the specified clock name exists in the metadata. If the
     clock name is not found, an error may occur.
 
     Examples
@@ -412,7 +422,7 @@ def get_clock_metadata(clock_name: str) -> None:
     logger.first_info("Starting get_clock_metadata function")
 
     # Load all metadata
-    all_clock_metadata = load_clock_metadata(logger)
+    all_clock_metadata = load_clock_metadata(dir, logger)
 
     # Lowercase clock name
     clock_name = clock_name.lower()
