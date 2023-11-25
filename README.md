@@ -9,20 +9,15 @@
 [![build](https://github.com/rsinghlab/pyaging/actions/workflows/build.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/build.yml)
 [![publish](https://github.com/rsinghlab/pyaging/actions/workflows/publish.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/publish.yml)
 [![upload](https://img.shields.io/pypi/v/pyaging?logo=PyPI)](https://pypi.org/project/pyaging/) 
+[![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
 [![download](https://static.pepy.tech/badge/pyaging)](https://pepy.tech/project/pyaging)
 [![star](https://img.shields.io/github/stars/rsinghlab/pyaging?logo=GitHub&color=red)](https://github.com/rsinghlab/pyaging/stargazers)
-
-<!--
-[![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
--->
 
 ## 🐍 **pyaging**: A Python-based compendium of GPU-optimized biological aging clocks
 
 `pyaging` is a cutting-edge Python package designed for the longevity research community, offering a comprehensive suite of GPU-optimized biological aging clocks.
 
-<!--
-[Installation](https://pyaging.readthedocs.io/en/latest/installation.html) - [Quick Start](https://pyaging.readthedocs.io/en/latest/quickstart.html) - [Tutorials](https://pyaging.readthedocs.io/en/latest/tutorials.html) - [API Reference](https://pyaging.readthedocs.io/en/latest/api.html) - [Citation](https://www.sciencedirect.com/science/article/pii/S0092867421015774?via%3Dihub) - [Theoretical Background](https://pyaging.readthedocs.io/en/latest/theory.html)
--->
+[Installation](https://pyaging.readthedocs.io/en/latest/installation.html) - [Search, cite, and get metadata](https://pyaging.readthedocs.io/en/latest/tutorial_utils.html) - [Bulk DNA methylation](https://pyaging.readthedocs.io/en/latest/tutorial_dnam.html) - [Bulk histone mark ChIP-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_histonemarkchipseq.html) - [Bulk ATAC-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_atacseq.html) - [Bulk RNA-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_rnaseq.html) - [API Reference](https://pyaging.readthedocs.io/en/latest/pyaging.html)
 
 With a growing number of aging clocks, comparing and analyzing them can be challenging. `pyaging` simplifies this process, allowing researchers to input various molecular layers (DNA methylation, histone ChIP-Seq, ATAC-seq, transcriptomics, etc.) and quickly analyze them using multiple aging clocks, thanks to its GPU-backed infrastructure. This makes it an ideal tool for large datasets and multi-layered analysis.
 

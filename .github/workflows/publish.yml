@@ -9,7 +9,6 @@ on:
 jobs:
   publish-to-pypi:
     runs-on: ubuntu-latest
-    needs: create-release
     steps:
     - uses: actions/checkout@v2
 
