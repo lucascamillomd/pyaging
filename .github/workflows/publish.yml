@@ -15,7 +15,6 @@ jobs:
           fetch-depth: 0
 
       - name: Get latest tag
-        id: get-latest-tag
         run: echo "RELEASE_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
 
       - name: Create Release
@@ -31,22 +30,21 @@ jobs:
 
   publish-to-pypi:
     runs-on: ubuntu-latest
-    needs: [build]
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Download dist from Artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: dist
+      - name: Download dist from Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
 
-    - name: Publish to Test PyPI
-      uses: pypa/gh-action-pypi-publish@v1.8.10
-      with:
-        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        repository-url: https://test.pypi.org/legacy/
+      - name: Publish to Test PyPI
+        uses: pypa/gh-action-pypi-publish@v1.8.10
+        with:
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
