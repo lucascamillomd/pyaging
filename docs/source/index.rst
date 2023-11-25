@@ -18,6 +18,10 @@
    :target: https://pypi.python.org/pypi/pyaging
    :alt: PyPI supported Python versions
 
+.. image:: https://img.shields.io/github/license/rsinghlab/pyaging.svg
+   :target: https://github.com/rsinghlab/pyaging/blob/main/LICENSE
+   :alt: License
+
 .. raw:: html
 
    </center>
@@ -25,7 +29,7 @@
 Welcome to the Documentation for pyaging
 ========================================
 
-Welcome to the documentation for `pyaging`, a Python package designed to bring together biological aging clocks for fast inference through a GPU-optimized PyTorch backend. `pyaging` aims to be a comprehensive toolkit for researchers and scientists in the field of aging and lifespan studies.
+`pyaging` is a Python package designed for biological aging clocks analysis, leveraging a GPU-optimized PyTorch backend. `pyaging` aims to be a comprehensive toolkit for researchers and scientists in the field of aging and lifespan studies.
 
 Explore Our GitHub Repository
 -----------------------------
@@ -51,7 +55,7 @@ Contents
    tutorial_rnaseq
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
    :caption: API Reference
 
    pyaging
@@ -65,7 +69,12 @@ Contents
 
 Indices and Tables
 ------------------
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. raw:: html
+
+   <footer>
+   <p>Last Updated: November 19, 2023. <a href="https://github.com/rsinghlab/pyaging">pyaging on GitHub</a>.</p>
+   </footer>
