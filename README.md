@@ -31,6 +31,8 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Include mammalian array example datasets
 - [X] Add feature to control logging verbosity
 - [ ] Publish to PyPi
+- [ ] Add table in readthedocs with all clock metadata
+- [ ] Add and populate "Notes" tab in metadata
 - [ ] Integrate scAge and scRNAseq clocks (and datasets)
 - [ ] Incorporate murine DNA methylation and proteomic clocks (and datasets)
 - [ ] Add PhenoAge based on blood chemistry analysis (and datasets)
