@@ -14,10 +14,6 @@
    :target: https://pypi.python.org/pypi/pyaging
    :alt: PyPI version
 
-.. image:: https://img.shields.io/pypi/pyversions/pyaging.svg
-   :target: https://pypi.python.org/pypi/pyaging
-   :alt: PyPI supported Python versions
-
 .. image:: https://img.shields.io/github/license/rsinghlab/pyaging.svg
    :target: https://github.com/rsinghlab/pyaging/blob/main/LICENSE
    :alt: License

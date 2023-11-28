@@ -30,7 +30,7 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Rename datasets to reflect source publications
 - [X] Include mammalian array example datasets
 - [X] Add feature to control logging verbosity
-- [ ] Publish to PyPi
+- [X] Publish to PyPi
 - [ ] Add percentage of missing features in anndata after age prediction for each clock
 - [ ] Add table in readthedocs with all clock metadata
 - [ ] Add and populate "Notes" tab in metadata
