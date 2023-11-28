@@ -22,8 +22,7 @@ jobs:
           python -m pip install poetry
           poetry build
 
-      - name: Publish to Test PyPI
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@v1.8.10
         with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_API_TOKEN }}

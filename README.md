@@ -14,7 +14,7 @@
 [![download](https://static.pepy.tech/badge/pyaging)](https://pepy.tech/project/pyaging)
 [![star](https://img.shields.io/github/stars/rsinghlab/pyaging?logo=GitHub&color=red)](https://github.com/rsinghlab/pyaging/stargazers)
 
-## 🐍 **pyaging**: A Python-based compendium of GPU-optimized biological aging clocks
+## 🐍 **pyaging**: a Python-based compendium of GPU-optimized aging clocks
 
 `pyaging` is a cutting-edge Python package designed for the longevity research community, offering a comprehensive suite of GPU-optimized biological aging clocks.
 
@@ -31,6 +31,7 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Include mammalian array example datasets
 - [X] Add feature to control logging verbosity
 - [ ] Publish to PyPi
+- [ ] Add percentage of missing features in anndata after age prediction for each clock
 - [ ] Add table in readthedocs with all clock metadata
 - [ ] Add and populate "Notes" tab in metadata
 - [ ] Integrate scAge and scRNAseq clocks (and datasets)

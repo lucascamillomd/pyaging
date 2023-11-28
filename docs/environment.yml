@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
+  - python>=3.9
   - pip>=22.3
   - pip:
       - sphinx>=7.2.6
