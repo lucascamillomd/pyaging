@@ -35,3 +35,15 @@ def anti_log_log(x):
     """
     # Double transformation: logarithmic followed by anti-logarithmic
     return math.exp(-math.exp(-x))
+
+
+def mortality_to_phenoage(x):
+    """
+    Applies a convertion from a CDF of the mortality score from a Gompertz
+    distribution to phenotypic age.
+    """
+    # lambda
+    l = 0.0192
+    mortality_score = 1 - math.exp(-math.exp(x) * (math.exp(120 * l) - 1) / l)
+    age = 141.50225 + math.log(-0.00553 * math.log(1 - mortality_score)) / 0.090165
+    return age

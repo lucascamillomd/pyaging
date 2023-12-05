@@ -11,6 +11,14 @@ pyaging.predict._pred
    :undoc-members:
    :show-inheritance:
 
+pyaging.predict._pred_utils
+---------------------------
+
+.. automodule:: pyaging.predict._pred_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pyaging.predict._preprocessing
 ------------------------------
 

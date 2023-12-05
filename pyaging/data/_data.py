@@ -4,6 +4,7 @@ import ntpath
 import os
 from urllib.request import urlretrieve
 from functools import wraps
+
 from ..utils import progress, download
 from ..logger import LoggerManager, main_tqdm, silence_logger
 
@@ -21,7 +22,9 @@ def download_example_data(
     Parameters
     ----------
     data_type : str
-        The type of data to download. Valid options are 'methylation', 'histone_mark', 'rnaseq', and 'atac'.
+        The type of data to download. Valid options are 'GSE139307' (human methylation),
+        'GSE223748' (mammalian methylation), 'ENCFF386QWG' (histone mark),
+        'GSE65765' (C. elegans RNA-seq), 'atac_example' (ATAC-Seq), 'blood_chemistry_example' (blood chemistry).
 
     dir : str
         The directory to deposit the downloaded file. Defaults to "pyaging_data".
@@ -61,6 +64,7 @@ def download_example_data(
         "ENCFF386QWG": "https://pyaging.s3.amazonaws.com/example_data/ENCFF386QWG.bigWig",
         "GSE65765": "https://pyaging.s3.amazonaws.com/example_data/GSE65765_CPM.pkl",
         "atac_example": "https://pyaging.s3.amazonaws.com/example_data/atac_example.pkl",
+        "blood_chemistry_example": "https://pyaging.s3.amazonaws.com/example_data/blood_chemistry_example.pkl",
     }
 
     if data_type not in list(data_type_to_url.keys()):

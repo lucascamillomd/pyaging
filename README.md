@@ -31,9 +31,9 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Include mammalian array example datasets
 - [X] Add feature to control logging verbosity
 - [X] Publish to PyPi
-- [ ] Add percentage of missing features in anndata after age prediction for each clock
+- [X] Add percentage of missing features in anndata after age prediction for each clock
+- [X] Add and populate "Notes" tab in metadata
 - [ ] Add table in readthedocs with all clock metadata
-- [ ] Add and populate "Notes" tab in metadata
 - [ ] Integrate scAge and scRNAseq clocks (and datasets)
 - [ ] Incorporate murine DNA methylation and proteomic clocks (and datasets)
 - [ ] Add PhenoAge based on blood chemistry analysis (and datasets)

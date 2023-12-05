@@ -49,6 +49,7 @@ Contents
    tutorial_histonemarkchipseq
    tutorial_atacseq
    tutorial_rnaseq
+   tutorial_bloodchemistry
 
 .. toctree::
    :maxdepth: 1
