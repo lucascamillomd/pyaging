@@ -33,10 +33,10 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Publish to PyPi
 - [X] Add percentage of missing features in anndata after age prediction for each clock
 - [X] Add and populate "Notes" tab in metadata
+- [X] Add PhenoAge based on blood chemistry analysis (and datasets)
 - [ ] Add table in readthedocs with all clock metadata
 - [ ] Integrate scAge and scRNAseq clocks (and datasets)
 - [ ] Incorporate murine DNA methylation and proteomic clocks (and datasets)
-- [ ] Add PhenoAge based on blood chemistry analysis (and datasets)
 
 ## ❓ Can't find an aging clock?
 
