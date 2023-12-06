@@ -25,7 +25,7 @@
 Welcome to the Documentation for pyaging
 ========================================
 
-`pyaging` is a Python package designed for biological aging clocks analysis, leveraging a GPU-optimized PyTorch backend. `pyaging` aims to be a comprehensive toolkit for researchers and scientists in the field of aging and lifespan studies.
+`pyaging` is a Python package designed for biological aging clocks analysis, leveraging a GPU-optimized PyTorch backend. `pyaging` aims to be a comprehensive toolkit for researchers and scientists in the field of aging.
 
 Explore Our GitHub Repository
 -----------------------------
@@ -35,10 +35,11 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Getting Started
 
    installation
+   clock_glossary
 
 .. toctree::
    :maxdepth: 1
@@ -58,7 +59,7 @@ Contents
    pyaging
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Additional Resources
 
    faq
@@ -69,9 +70,3 @@ Indices and Tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-.. raw:: html
-
-   <footer>
-   <p>Last Updated: November 19, 2023. <a href="https://github.com/rsinghlab/pyaging">pyaging on GitHub</a>.</p>
-   </footer>
