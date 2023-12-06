@@ -34,9 +34,33 @@ With a growing number of aging clocks, comparing and analyzing them can be chall
 - [X] Add percentage of missing features in anndata after age prediction for each clock
 - [X] Add and populate "Notes" tab in metadata
 - [X] Add PhenoAge based on blood chemistry analysis (and datasets)
-- [ ] Add table in readthedocs with all clock metadata
+- [X] Add table in readthedocs with all clock metadata 
 - [ ] Integrate scAge and scRNAseq clocks (and datasets)
 - [ ] Incorporate murine DNA methylation and proteomic clocks (and datasets)
+
+## ⚙️ Current update pipeline
+
+For version update:
+
+- [ ] Update package version in pyproject.toml
+- [ ] Update package version in docs/source/conf.py
+- [ ] `poetry update`
+- [ ] `poetry build`
+- [ ] `poetry run pytest --nbmake tutorials/`
+- [ ] `make html` in docs folder
+- [ ] `git add .`
+- [ ] `git commit -m "commit message"`
+- [ ] `git push`
+- [ ] `git tag -a vX.X.X -m "release message"`
+- [ ] `git push origin vX.X.X`
+
+For adding a new clock:
+
+- [ ] Add clock notebook
+- [ ] Run `join_metadata.ipynb`
+- [ ] Upload new weights to AWS
+- [ ] Upload new `all_clock_metadata.pt` to AWS
+
 
 ## ❓ Can't find an aging clock?
 
