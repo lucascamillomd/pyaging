@@ -45,7 +45,9 @@ def quantile_normalize_with_gold_standard(x, gold_standard_means):
         sorted_data = x_normalized[i, sorted_indices]
 
         # Map the sorted data to their quantile values in the gold standard
-        quantile_indices = np.round(np.linspace(0, len(sorted_gold_standard) - 1, len(sorted_data))).astype(int)
+        quantile_indices = np.round(
+            np.linspace(0, len(sorted_gold_standard) - 1, len(sorted_data))
+        ).astype(int)
         normalized_data = sorted_gold_standard[quantile_indices]
 
         # Re-order the normalized data to the original order

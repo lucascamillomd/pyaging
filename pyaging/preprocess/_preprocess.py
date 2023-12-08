@@ -127,7 +127,7 @@ def df_to_adata(
         The DataFrame containing biological data. Rows represent samples, and columns represent features.
 
     metadata_cols : List[str]
-        A list with the name of the columns in 'df' which are part of the metadata. They will be added 
+        A list with the name of the columns in 'df' which are part of the metadata. They will be added
         to adata.obs rather than adata.X.
 
     imputer_strategy : str, optional
