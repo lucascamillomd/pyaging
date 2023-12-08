@@ -273,7 +273,8 @@ class Logger:
         self.logger_stream_handler.terminator = saved_terminator
 
     def start_progress(self, message, indent_level=1, *args, **kwargs):
-        self.log_time()
+        now = time.time()
+        self.previous_timestamp = now
         message = format_logging_message(
             "⚙️ " + message, logging.INFO, indent_level=indent_level
         )
@@ -281,8 +282,8 @@ class Logger:
         self.logger_stream_handler.flush()
 
     def finish_progress(self, progress_name="", time_unit="s", indent_level=1):
-        # self.log_time()
-        # self.report_progress(percent=100, progress_name=progress_name)#
+        now = time.time()
+        self.time_passed = now - self.previous_timestamp
 
         saved_terminator = self.logger_stream_handler.terminator
         self.logger_stream_handler.terminator = ""

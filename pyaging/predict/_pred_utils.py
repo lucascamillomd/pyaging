@@ -8,7 +8,7 @@ import ntpath
 from urllib.request import urlretrieve
 
 from ..models import *
-from ..utils import *
+from ..utils import progress, load_clock_metadata, download
 from ..logger import LoggerManager, main_tqdm, silence_logger
 from ._preprocessing import *
 from ._postprocessing import *
@@ -68,7 +68,7 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     """
     url = f"https://pyaging.s3.amazonaws.com/clocks/weights/{clock_name}.pt"
-    download(url, dir, logger, indent_level=2)
+    download(url, dir, logger, indent_level=indent_level)
 
     # Define the path to the clock weights file
     weights_path = os.path.join(dir, f"{clock_name}.pt")
@@ -176,7 +176,7 @@ def check_features_in_adata(
             f"{num_missing_features} out of {total_features} features "
             f"({percent_missing:.2f}%) are missing and will be "
             f"added with default value 0: {missing_features[:np.min([3, num_missing_features])]}, etc.",
-            indent_level=3,
+            indent_level=indent_level+1,
         )
 
         # Create an empty AnnData object for missing features
@@ -190,10 +190,10 @@ def check_features_in_adata(
         adata = anndata.concat([adata, adata_empty], axis=1)
         logger.info(
             f"Expanded adata with {num_missing_features} missing features.",
-            indent_level=3,
+            indent_level=indent_level+1,
         )
     else:
-        logger.info("All features are present in adata.var_names.", indent_level=2)
+        logger.info("All features are present in adata.var_names.", indent_level=indent_level+1)
 
     return adata
 
@@ -329,11 +329,11 @@ def initialize_model(
 @progress("Preprocess data")
 def preprocess_data(
     preprocessing: str,
-    data: torch.Tensor,
+    adata: anndata.AnnData,
     clock_dict: dict,
     logger,
     indent_level: int = 2,
-) -> torch.Tensor:
+) -> anndata.AnnData:
     """
     Preprocess the input data based on the specified method and the clock dictionary.
 
@@ -349,9 +349,8 @@ def preprocess_data(
         The name of the preprocessing method to apply. Supported methods include 'scale', 'log1p',
         'binarize', etc.
 
-    data : torch.Tensor or similar
-        The input data to be preprocessed. It should be in a format compatible with the specified
-        preprocessing method.
+    adata : anndata.AnnData
+        The input data to be preprocessed in AnnData format.
 
     clock_dict : dict
         A dictionary containing clock-specific information, which may include helper functions or
@@ -366,7 +365,7 @@ def preprocess_data(
 
     Returns
     -------
-    processed_data : torch.Tensor or similar
+    adata : anndata.AnnData
         The preprocessed data, ready to be input into the aging clock models.
 
     Notes
@@ -380,20 +379,32 @@ def preprocess_data(
 
     Examples
     --------
-    >>> processed_data = preprocess_data("scale", data, clock_dict, logger)
-    >>> print(processed_data.shape)
-    torch.Size([...])
+    >>> processed_adata = preprocess_data("scale", adata, clock_dict, logger)
+    >>> print(processed_adata.shape)
+    np.array([...])
 
     """
     logger.info(f"Preprocessing data with function {preprocessing}", indent_level=3)
     # Apply specified preprocessing method
     if preprocessing == "scale":
-        data = scale(data, clock_dict["preprocessing_helper"])
+        X = adata[:, clock_dict["features"]].X
+        X = scale(X, clock_dict["preprocessing_helper"])
+        adata[:, clock_dict["features"]].X = X
     elif preprocessing == "log1p":
-        data = np.log1p(data)
+        X = adata.X
+        X = np.log1p(X)
+        adata.X = X
     elif preprocessing == "binarize":
-        data = binarize(data)
-    return data
+        X = adata.X
+        X = binarize(X)
+        adata.X = X
+    elif preprocessing == "quantile_normalization_with_gold_standard":
+        gold_standard_df = pd.DataFrame(dict(zip(clock_dict["preprocessing_helper"]['gold_standard_probes'], clock_dict["preprocessing_helper"]['gold_standard_means'])), index=['means']).T
+        common_features = np.intersect1d(adata.var_names, gold_standard_df.index.tolist())
+        X = adata[:,common_features].X
+        X = quantile_normalize_with_gold_standard(X, gold_standard_df.loc[common_features, 'means'].tolist())
+        adata[:, common_features].X = X
+    return adata
 
 
 @progress("Postprocess data")
@@ -623,7 +634,7 @@ def filter_features_and_extract_data(
     adata: anndata.AnnData, features: List[str], logger, indent_level: int = 2
 ) -> np.ndarray:
     """
-    Filter features from an AnnData object and returns the .X data matrix as a Numpy array.
+    Filter features from an AnnData object
 
     This function processes an AnnData object, which is commonly used in bioinformatics for storing large
     gene expression datasets. It extracts the data matrix corresponding to a specified set of features (genes or

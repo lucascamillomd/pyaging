@@ -19,15 +19,15 @@ def predict_age(
 
     Parameters
     ----------
-    adata : AnnData
+    adata: AnnData
         An AnnData object. The object should have .X attribute for the
         data matrix and .var_names for feature names.
 
-    clock_names : str or list of str, optional
+    clock_names: str or list of str, optional
         Names of the aging clocks to be applied. It can be a single clock name as a string or a list
         of clock names, by default "horvath2013".
 
-    dir : str
+    dir: str
         The directory to deposit the downloaded file. Defaults to "pyaging_data".
 
     verbose: bool
@@ -79,21 +79,21 @@ def predict_age(
             clock_name, dir, logger, indent_level=2
         )
 
+        # Apply preprocessing 
+        if preprocessing:
+            adata_preprocessed = preprocess_data(
+                preprocessing, adata.copy(), clock_dict, logger, indent_level=2
+            )
+
         # Check and update adata for missing features
         adata_expanded = check_features_in_adata(
-            adata, clock_name, features, logger, indent_level=2
+            adata_preprocessed if adata_preprocessed else adata, clock_name, features, logger, indent_level=2
         )
 
         # Filter features and then extract data matrix
         x_numpy = filter_features_and_extract_data(
             adata_expanded, features, logger, indent_level=2
         )
-
-        # Apply preprocessing if specified
-        if preprocessing:
-            x_numpy = preprocess_data(
-                preprocessing, x_numpy, clock_dict, logger, indent_level=2
-            )
 
         # Convert numpy array to tensor
         x_tensor = convert_numpy_array_to_tensor(
