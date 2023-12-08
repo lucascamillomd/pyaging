@@ -18,29 +18,18 @@
 
 `pyaging` is a cutting-edge Python package designed for the longevity research community, offering a comprehensive suite of GPU-optimized biological aging clocks.
 
-[Installation](https://pyaging.readthedocs.io/en/latest/installation.html) - [Search, cite, and get metadata](https://pyaging.readthedocs.io/en/latest/tutorial_utils.html) - [Bulk DNA methylation](https://pyaging.readthedocs.io/en/latest/tutorial_dnam.html) - [Bulk histone mark ChIP-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_histonemarkchipseq.html) - [Bulk ATAC-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_atacseq.html) - [Bulk RNA-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_rnaseq.html) - [API Reference](https://pyaging.readthedocs.io/en/latest/pyaging.html)
+[Installation](https://pyaging.readthedocs.io/en/latest/installation.html) - [Search, cite, and get metadata](https://pyaging.readthedocs.io/en/latest/tutorial_utils.html) - [Bulk DNA methylation](https://pyaging.readthedocs.io/en/latest/tutorial_dnam.html) - [Bulk histone mark ChIP-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_histonemarkchipseq.html) - [Bulk ATAC-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_atacseq.html) - [Bulk RNA-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_rnaseq.html) - [Blood chemistry](https://pyaging.readthedocs.io/en/latest/tutorial_bloodchemistry.html) - [API Reference](https://pyaging.readthedocs.io/en/latest/pyaging.html)
 
 With a growing number of aging clocks, comparing and analyzing them can be challenging. `pyaging` simplifies this process, allowing researchers to input various molecular layers (DNA methylation, histone ChIP-Seq, ATAC-seq, transcriptomics, etc.) and quickly analyze them using multiple aging clocks, thanks to its GPU-backed infrastructure. This makes it an ideal tool for large datasets and multi-layered analysis.
 
 ## 📝 To-Do List
 
-- [X] Integrate `black` for PEP8 compliant code formatting
-- [X] Improve and expand `readthedocs` documentation
-- [X] Add option to specify download directory for datasets
-- [X] Rename datasets to reflect source publications
-- [X] Include mammalian array example datasets
-- [X] Add feature to control logging verbosity
-- [X] Publish to PyPi
-- [X] Add percentage of missing features in anndata after age prediction for each clock
-- [X] Add and populate "Notes" tab in metadata
-- [X] Add PhenoAge based on blood chemistry analysis (and datasets)
-- [X] Add table in readthedocs with all clock metadata 
 - [ ] Integrate scAge and scRNAseq clocks (and datasets)
 - [ ] Incorporate murine DNA methylation and proteomic clocks (and datasets)
 
 ## ❓ Can't find an aging clock?
 
-If you have recently developed an aging clock and would like it to be integrated into `pyaging`, please [email us](lucas_camillo@alumni.brown.edu). We aim to incorporate it within two weeks!
+If you have recently developed an aging clock and would like it to be integrated into `pyaging`, please [email us](lucas_camillo@alumni.brown.edu). We aim to incorporate it within two weeks! We are also happy to adapt to any licensing terms for commercial entities.
 
 ## 💬 Community Discussion
 For coding-related queries, feedback, and discussions, please visit our [GitHub Issues](https://github.com/rsinghlab/pyaging/issues) page.

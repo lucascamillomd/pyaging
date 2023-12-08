@@ -85,14 +85,7 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
     preprocessing_helper = clock_dict.get("preprocessing_helper", None)
     postprocessing_helper = clock_dict.get("postprocessing_helper", None)
 
-    return (
-        features,
-        weight_dict,
-        preprocessing,
-        postprocessing,
-        preprocessing_helper,
-        postprocessing_helper,
-    )
+    return features, weight_dict, preprocessing, postprocessing, preprocessing_helper, postprocessing_helper
 
 
 @progress("Check features in adata")
@@ -186,7 +179,7 @@ def check_features_in_adata(
             f"{num_missing_features} out of {total_features} features "
             f"({percent_missing:.2f}%) are missing and will be "
             f"added with default value 0: {missing_features[:np.min([3, num_missing_features])]}, etc.",
-            indent_level=indent_level + 1,
+            indent_level=indent_level+1,
         )
 
         # Create an empty AnnData object for missing features
@@ -200,13 +193,10 @@ def check_features_in_adata(
         adata = anndata.concat([adata, adata_empty], axis=1)
         logger.info(
             f"Expanded adata with {num_missing_features} missing features.",
-            indent_level=indent_level + 1,
+            indent_level=indent_level+1,
         )
     else:
-        logger.info(
-            "All features are present in adata.var_names.",
-            indent_level=indent_level + 1,
-        )
+        logger.info("All features are present in adata.var_names.", indent_level=indent_level+1)
 
     return adata
 
@@ -411,22 +401,10 @@ def preprocess_data(
         X = binarize(X)
         adata.X = X
     elif preprocessing == "quantile_normalization_with_gold_standard":
-        gold_standard_df = pd.DataFrame(
-            dict(
-                zip(
-                    preprocessing_helper["gold_standard_probes"],
-                    preprocessing_helper["gold_standard_means"],
-                )
-            ),
-            index=["means"],
-        ).T
-        common_features = np.intersect1d(
-            adata.var_names, gold_standard_df.index.tolist()
-        )
-        X = adata[:, common_features].X
-        X = quantile_normalize_with_gold_standard(
-            X, gold_standard_df.loc[common_features, "means"].tolist()
-        )
+        gold_standard_df = pd.DataFrame(dict(zip(preprocessing_helper['gold_standard_probes'], preprocessing_helper['gold_standard_means'])), index=['means']).T
+        common_features = np.intersect1d(adata.var_names, gold_standard_df.index.tolist())
+        X = adata[:,common_features].X
+        X = quantile_normalize_with_gold_standard(X, gold_standard_df.loc[common_features, 'means'].tolist())
         adata[:, common_features].X = X
     return adata
 

@@ -119,7 +119,7 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     return all_clock_metadata
 
 
-# @progress("Download data")
+#@progress("Download data")
 def download(url: str, dir: str, logger, indent_level: int = 1):
     """
     Downloads a file from a specified URL to a local directory.
@@ -165,11 +165,11 @@ def download(url: str, dir: str, logger, indent_level: int = 1):
     file_path = os.path.join(dir, file_path)
 
     if os.path.exists(file_path):
-        logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
+        logger.info(f"Data found in {file_path}", indent_level=indent_level+1)
     else:
         if not os.path.exists(dir):
             os.mkdir(dir)
-        logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
+        logger.info(f"Downloading data to {file_path}", indent_level=indent_level+1)
         logger.indent_level = indent_level + 1
         urlretrieve(url, file_path, reporthook=logger.request_report_hook)
 
