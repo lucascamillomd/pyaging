@@ -75,15 +75,17 @@ def predict_age(
 
         # Load and prepare the clock
         clock_name = clock_name.lower()
-        features, weight_dict, preprocessing, postprocessing, clock_dict = load_clock(
+        features, weight_dict, preprocessing, postprocessing, preprocessing_helper, postprocessing_helper = load_clock(
             clock_name, dir, logger, indent_level=2
         )
 
         # Apply preprocessing 
         if preprocessing:
             adata_preprocessed = preprocess_data(
-                preprocessing, adata.copy(), clock_dict, logger, indent_level=2
+                adata.copy(), preprocessing, preprocessing_helper, features, logger, indent_level=2
             )
+        else:
+            adata_preprocessed = adata.copy()
 
         # Check and update adata for missing features
         adata_expanded = check_features_in_adata(
@@ -118,7 +120,7 @@ def predict_age(
         # Apply postprocessing if specified
         if postprocessing:
             predicted_ages = postprocess_data(
-                postprocessing, predicted_ages, clock_dict, logger, indent_level=2
+                predicted_ages, postprocessing, postprocessing_helper, logger, indent_level=2
             )
 
         # Add predicted ages to adata

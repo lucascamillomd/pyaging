@@ -48,7 +48,8 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
         - weight_dict: A dictionary of weights used in the clock's model.
         - preprocessing: Any preprocessing steps required for the clock's input data.
         - postprocessing: Any postprocessing steps applied to the clock's output.
-        - clock_dict: The complete clock dictionary as loaded from the file.
+        - preprocessing_helper: Any preprocessing helper file.
+        - postprocessing_helper: Any postprocessing helper file.
 
     Notes
     -----
@@ -62,7 +63,7 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     Examples
     --------
-    >>> features, weight_dict, preprocessing, postprocessing, clock_dict = load_clock("clock1", "pyaging_data", logger)
+    >>> features, weight_dict, _, _, _, _ = load_clock("clock1", "pyaging_data", logger)
     >>> print(features)
     ['feature1', 'feature2', ...]
 
@@ -81,8 +82,10 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
     weight_dict = clock_dict["weight_dict"]
     preprocessing = clock_dict.get("preprocessing", None)
     postprocessing = clock_dict.get("postprocessing", None)
+    preprocessing_helper = clock_dict.get("preprocessing_helper", None)
+    postprocessing_helper = clock_dict.get("postprocessing_helper", None)
 
-    return features, weight_dict, preprocessing, postprocessing, clock_dict
+    return features, weight_dict, preprocessing, postprocessing, preprocessing_helper, postprocessing_helper
 
 
 @progress("Check features in adata")
@@ -328,9 +331,10 @@ def initialize_model(
 
 @progress("Preprocess data")
 def preprocess_data(
-    preprocessing: str,
     adata: anndata.AnnData,
-    clock_dict: dict,
+    preprocessing: str,
+    preprocessing_helper,
+    features: List[str],
     logger,
     indent_level: int = 2,
 ) -> anndata.AnnData:
@@ -340,21 +344,22 @@ def preprocess_data(
     This function applies a specified preprocessing method to the input data, which is necessary
     for aligning the data format with the requirements of the aging clock models. The function
     supports multiple preprocessing methods, including scaling, log transformation, binarization, etc.
-    The specific preprocessing method to be used is indicated by the `preprocessing` parameter, and
-    any additional parameters required for preprocessing are obtained from `clock_dict`.
+    The specific preprocessing method to be used is indicated by the `preprocessing` parameter.
 
     Parameters
     ----------
-    preprocessing : str
-        The name of the preprocessing method to apply. Supported methods include 'scale', 'log1p',
-        'binarize', etc.
-
     adata : anndata.AnnData
         The input data to be preprocessed in AnnData format.
 
-    clock_dict : dict
-        A dictionary containing clock-specific information, which may include helper functions or
-        parameters needed for preprocessing.
+    preprocessing : str
+        The name of the preprocessing method to apply. Supported methods include 'scale', 'log1p',
+        'binarize', and 'quantile_normalization_with_gold_standard'.
+
+    preprocessing_helper:
+        Any preprocessing helper file, from an scikit-learn scaler object to a list of standard values.
+
+    features : List[str]
+        The features used by the clock.
 
     logger : Logger
         A logger object for logging the progress and any information or warnings during preprocessing.
@@ -374,12 +379,9 @@ def preprocess_data(
     For instance, 'scale' may expect a numeric tensor, while 'log1p' requires non-negative values.
     Users must ensure that the input data is appropriate for the selected preprocessing method.
 
-    The `clock_dict` may include specific parameters or helper functions like `preprocessing_helper`
-    for the 'scale' method, which should be defined elsewhere in the codebase.
-
     Examples
     --------
-    >>> processed_adata = preprocess_data("scale", adata, clock_dict, logger)
+    >>> processed_adata = preprocess_data(adata, "scale", preprocessing_helper, features, logger)
     >>> print(processed_adata.shape)
     np.array([...])
 
@@ -387,9 +389,9 @@ def preprocess_data(
     logger.info(f"Preprocessing data with function {preprocessing}", indent_level=3)
     # Apply specified preprocessing method
     if preprocessing == "scale":
-        X = adata[:, clock_dict["features"]].X
-        X = scale(X, clock_dict["preprocessing_helper"])
-        adata[:, clock_dict["features"]].X = X
+        X = adata[:, features].X
+        X = scale(X, preprocessing_helper)
+        adata[:, features].X = X
     elif preprocessing == "log1p":
         X = adata.X
         X = np.log1p(X)
@@ -399,7 +401,7 @@ def preprocess_data(
         X = binarize(X)
         adata.X = X
     elif preprocessing == "quantile_normalization_with_gold_standard":
-        gold_standard_df = pd.DataFrame(dict(zip(clock_dict["preprocessing_helper"]['gold_standard_probes'], clock_dict["preprocessing_helper"]['gold_standard_means'])), index=['means']).T
+        gold_standard_df = pd.DataFrame(dict(zip(preprocessing_helper['gold_standard_probes'], preprocessing_helper['gold_standard_means'])), index=['means']).T
         common_features = np.intersect1d(adata.var_names, gold_standard_df.index.tolist())
         X = adata[:,common_features].X
         X = quantile_normalize_with_gold_standard(X, gold_standard_df.loc[common_features, 'means'].tolist())
@@ -409,8 +411,8 @@ def preprocess_data(
 
 @progress("Postprocess data")
 def postprocess_data(
-    postprocessing: str,
     data: np.ndarray,
+    postprocessing: str,
     clock_dict: dict,
     logger,
     indent_level: int = 2,
@@ -425,16 +427,16 @@ def postprocess_data(
 
     Parameters
     ----------
-    postprocessing : str
-        The name of the postprocessing method to be applied. Supported methods include
-        'anti_log_linear', 'anti_logp2', 'anti_log', etc.
 
     data : array-like
         The data to be postprocessed. It should be compatible with the specified postprocessing method.
 
-    clock_dict : dict
-        A dictionary containing any additional information or parameters required for postprocessing.
-        For example, parameters for scaling factors or offsets used in anti-log transformations.
+    postprocessing : str
+        The name of the postprocessing method to be applied. Supported methods include
+        'anti_log_linear', 'anti_logp2', 'anti_log', etc.
+
+    postprocessing_helper:
+        Any postprocessing helper file, from an scikit-learn scaler object to a list of standard values.
 
     logger : Logger
         A logger object for logging the progress, information, or warnings during postprocessing.
@@ -457,7 +459,7 @@ def postprocess_data(
 
     Examples
     --------
-    >>> postprocessed_data = postprocess_data("anti_log_linear", data, clock_dict, logger)
+    >>> postprocessed_data = postprocess_data(data, "anti_log_linear", postprocessing_helper, logger)
     >>> print(postprocessed_data.shape)
     (num_samples, num_features)
 
