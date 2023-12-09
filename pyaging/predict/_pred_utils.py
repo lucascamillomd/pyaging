@@ -183,15 +183,17 @@ def check_features_in_adata(
         )
 
         # Create an empty AnnData object for missing features
+        empty_data = np.zeros((adata.n_obs, num_missing_features))
         adata_empty = anndata.AnnData(
-            X=np.zeros((adata.n_obs, num_missing_features)),
+            X=empty_data,
             obs=adata.obs,
             var=pd.DataFrame(index=missing_features),
-            layers=dict(zip(adata.layers.keys(), [np.zeros((adata.n_obs, num_missing_features))] * len(adata.layers)))
+            layers=dict(zip(adata.layers.keys(), [empty_data] * len(adata.layers)))
         )
 
         # Concatenate original adata with the empty adata
-        adata = anndata.concat([adata, adata_empty], axis=1)
+        adata = anndata.concat([adata, adata_empty], axis=1, merge='same')
+                    
         logger.info(
             f"Expanded adata with {num_missing_features} missing features.",
             indent_level=indent_level+1,
@@ -706,8 +708,13 @@ def filter_features_and_extract_data(
         layer_name = "X_imputed"
     else:
         layer_name = "X_original"
-    x_numpy = np.array(adata[:, features].layers[layer_name])
-    return x_numpy
+    #x_numpy = np.array(adata[:, features].layers[layer_name])
+    layer_data = adata[:, features].layers[layer_name]
+
+    if not isinstance(layer_data, np.ndarray):
+        layer_data = layer_data.toarray() if hasattr(layer_data, 'toarray') else np.array(layer_data, dtype=np.float32)
+
+    return layer_data
 
 
 @progress("Add predicted ages to adata")

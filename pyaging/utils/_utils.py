@@ -56,7 +56,7 @@ def progress(message: str) -> None:
         @wraps(func)
         def wrapper(*args, **kwargs):
             # Extract indent_level from kwargs, default to 1 if not provided
-            indent_level = kwargs.pop("indent_level", 1)
+            indent_level = kwargs["indent_level"] if "indent_level" in  kwargs.keys() else 1
 
             logger = args[-1]  # Assumes logger is the last positional argument
             logger.start_progress(f"{message} started", indent_level=indent_level)
@@ -119,7 +119,6 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     return all_clock_metadata
 
 
-#@progress("Download data")
 def download(url: str, dir: str, logger, indent_level: int = 1):
     """
     Downloads a file from a specified URL to a local directory.
@@ -220,7 +219,7 @@ def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
     logger.first_info("Starting find_clock_by_doi function")
 
     # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger)
+    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
 
     # Message to indicate the start of the search process
     message = "Searching for clock based on DOI"
@@ -300,7 +299,7 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
     clock_name = clock_name.lower()
 
     # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger)
+    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
 
     message = f"Searching for citation of clock {clock_name}"
     logger.start_progress(f"{message} started")
@@ -365,7 +364,7 @@ def show_all_clocks(dir: str = "pyaging_data") -> None:
     logger.first_info("Starting show_all_clocks function")
 
     # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger)
+    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
 
     # Message to indicate the start of the search process
     message = "Showing all available clock names"
@@ -423,7 +422,7 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
     logger.first_info("Starting get_clock_metadata function")
 
     # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger)
+    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
 
     # Lowercase clock name
     clock_name = clock_name.lower()

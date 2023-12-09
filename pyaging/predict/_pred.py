@@ -89,7 +89,7 @@ def predict_age(
             adata = preprocess_data(
                 adata, preprocessing, preprocessing_helper, features, logger, indent_level=2
             )
-
+            
         # Filter features and then extract data matrix
         x_numpy = filter_features_and_extract_data(
             adata, preprocessing, features, logger, indent_level=2
@@ -126,11 +126,12 @@ def predict_age(
 
         # Load all clocks metadata
         all_clock_metadata = load_clock_metadata(dir, logger, indent_level=2)
-
+        
         # Add clock metadata to adata object
         add_clock_metadata_adata(
             adata, clock_name, all_clock_metadata, logger, indent_level=2
         )
+        
 
     logger.done()
     return adata
