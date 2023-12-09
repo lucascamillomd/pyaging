@@ -45,8 +45,8 @@ def predict_age(
     The predicted ages are appended to the .obs attribute of the AnnData object with the clock name as
     the key. The metadata of each clock used in the prediction is stored in the .uns attribute.
 
-    It is important that the input AnnData object's .X attribute contains data
-    suitable for age prediction.
+    It is important that the input AnnData object's .X attribute contains data suitable for age 
+    prediction.
 
     The function automatically handles the transfer of data and models to the appropriate compute
     device (CPU or GPU) based on system configuration.
@@ -71,7 +71,7 @@ def predict_age(
     device = set_torch_device(logger)
 
     for clock_name in clock_names:
-        logger.info(f"Processing clock: {clock_name}", indent_level=1)
+        logger.info(f"🕒 Processing clock: {clock_name}", indent_level=1)
 
         # Load and prepare the clock
         clock_name = clock_name.lower()
@@ -79,22 +79,20 @@ def predict_age(
             clock_name, dir, logger, indent_level=2
         )
 
+        # Check and update adata for missing features
+        adata = check_features_in_adata(
+            adata, clock_name, features, logger, indent_level=2
+        )
+
         # Apply preprocessing 
         if preprocessing:
-            adata_preprocessed = preprocess_data(
-                adata.copy(), preprocessing, preprocessing_helper, features, logger, indent_level=2
+            adata = preprocess_data(
+                adata, preprocessing, preprocessing_helper, features, logger, indent_level=2
             )
-        else:
-            adata_preprocessed = adata.copy()
-
-        # Check and update adata for missing features
-        adata_expanded = check_features_in_adata(
-            adata_preprocessed if adata_preprocessed else adata, clock_name, features, logger, indent_level=2
-        )
 
         # Filter features and then extract data matrix
         x_numpy = filter_features_and_extract_data(
-            adata_expanded, features, logger, indent_level=2
+            adata, preprocessing, features, logger, indent_level=2
         )
 
         # Convert numpy array to tensor

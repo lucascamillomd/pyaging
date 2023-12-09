@@ -96,6 +96,7 @@ def impute_missing_values(
     logger.info(f"Imputing missing values using {strategy} strategy", indent_level=2)
     X = imputer.fit_transform(X)
     adata.X = X
+    adata.layers["X_imputed"] = adata.X
     return adata
 
 
@@ -208,6 +209,7 @@ def create_anndata_object(
         X=X,
         obs=obs,
         var=var,
+        layers={'X_original': X}
     )
 
     return adata
@@ -314,7 +316,7 @@ def add_unstructured_data(
     -------
     >>> from anndata import AnnData
     >>> adata = AnnData(np.random.rand(5, 3))
-    >>> add_unstructured_data(adata, 'mean', logger)
+    >>> adata = add_unstructured_data(adata, 'mean', logger)
     # This will add the imputer strategy 'mean' and the data type 'dna_methylation' to the AnnData object.
 
     """

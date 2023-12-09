@@ -184,9 +184,10 @@ def check_features_in_adata(
 
         # Create an empty AnnData object for missing features
         adata_empty = anndata.AnnData(
-            np.zeros((adata.n_obs, num_missing_features)),
+            X=np.zeros((adata.n_obs, num_missing_features)),
             obs=adata.obs,
             var=pd.DataFrame(index=missing_features),
+            layers=dict(zip(adata.layers.keys(), [np.zeros((adata.n_obs, num_missing_features))] * len(adata.layers)))
         )
 
         # Concatenate original adata with the empty adata
@@ -288,6 +289,10 @@ def initialize_model(
         "ocampoatac1",
         "ocampoatac2",
         "bitage",
+        "zhang",
+        "leecpc",
+        "leerpc",
+        "leerefinedrpc",
     ]:
         model = LinearModel(len(features))
     elif clock_name in [
@@ -344,7 +349,8 @@ def preprocess_data(
     This function applies a specified preprocessing method to the input data, which is necessary
     for aligning the data format with the requirements of the aging clock models. The function
     supports multiple preprocessing methods, including scaling, log transformation, binarization, etc.
-    The specific preprocessing method to be used is indicated by the `preprocessing` parameter.
+    The specific preprocessing method to be used is indicated by the `preprocessing` parameter. A new 
+    layers with the format X_{preprocessing} is added to the adata object.
 
     Parameters
     ----------
@@ -386,6 +392,14 @@ def preprocess_data(
     np.array([...])
 
     """
+    # Skip if it has already found the preprocessing layer
+    if f"X_{preprocessing}" in adata.layers:
+        logger.info(f"Layer with {preprocessing} preprocessing is already in adata", indent_level=3)
+        return adata
+
+    # Move to adata.X for preprocessing
+    adata.X = adata.layers["X_imputed"].copy() if "X_imputed" in adata.layers else adata.layers["X_original"].copy()
+
     logger.info(f"Preprocessing data with function {preprocessing}", indent_level=3)
     # Apply specified preprocessing method
     if preprocessing == "scale":
@@ -403,9 +417,11 @@ def preprocess_data(
     elif preprocessing == "quantile_normalization_with_gold_standard":
         gold_standard_df = pd.DataFrame(dict(zip(preprocessing_helper['gold_standard_probes'], preprocessing_helper['gold_standard_means'])), index=['means']).T
         common_features = np.intersect1d(adata.var_names, gold_standard_df.index.tolist())
-        X = adata[:,common_features].X
+        X = adata[:, common_features].X
         X = quantile_normalize_with_gold_standard(X, gold_standard_df.loc[common_features, 'means'].tolist())
         adata[:, common_features].X = X
+    adata.layers[f"X_{preprocessing}"] = adata.X
+        
     return adata
 
 
@@ -633,7 +649,7 @@ def convert_numpy_array_to_tensor(
 
 @progress("Filter features and extract data matrix")
 def filter_features_and_extract_data(
-    adata: anndata.AnnData, features: List[str], logger, indent_level: int = 2
+    adata: anndata.AnnData, preprocessing: str, features: List[str], logger, indent_level: int = 2
 ) -> np.ndarray:
     """
     Filter features from an AnnData object
@@ -647,6 +663,9 @@ def filter_features_and_extract_data(
     adata : anndata.AnnData
         The AnnData object containing the dataset. Its `.X` attribute is expected to be a matrix where rows
         correspond to samples and columns correspond to features.
+
+    preprocessing : str
+        The name of the preprocessing method used (if any). Used to search adata.layers for data matrix.
 
     features : list of str
         A list of feature names to be included in the output array. Only these features from the AnnData object will
@@ -676,12 +695,19 @@ def filter_features_and_extract_data(
     --------
     >>> adata = anndata.AnnData(np.random.rand(5, 10))
     >>> features = ['gene1', 'gene2', 'gene3']
-    >>> numpy_array = filter_features_and_extract_data(adata, features, logger)
+    >>> numpy_array = filter_features_and_extract_data(adata, None, features, logger)
     >>> numpy_array.shape
     array([5, 3])
 
     """
-    return np.array(adata[:, features].X, dtype=np.float32)
+    if preprocessing is not None:
+        layer_name = f"X_{preprocessing}"
+    elif "X_imputed" in adata.layers:
+        layer_name = "X_imputed"
+    else:
+        layer_name = "X_original"
+    x_numpy = np.array(adata[:, features].layers[layer_name])
+    return x_numpy
 
 
 @progress("Add predicted ages to adata")
