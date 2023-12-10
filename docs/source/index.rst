@@ -18,6 +18,10 @@
    :target: https://github.com/rsinghlab/pyaging/blob/main/LICENSE
    :alt: License
 
+.. image:: https://img.shields.io/badge/bioRxiv-DOI-purple.svg
+   :target: https://doi.org/10.1101/2023.11.28.569069
+   :alt: bioRxiv
+
 .. raw:: html
 
    </center>
@@ -27,7 +31,7 @@ Welcome to the Documentation for pyaging
 
 `pyaging` is a Python package designed for biological aging clocks analysis, leveraging a GPU-optimized PyTorch backend. `pyaging` aims to be a comprehensive toolkit for researchers and scientists in the field of aging.
 
-.. image:: _static/pyaging_graphical_abstract.pdf
+.. image:: ../_static/pyaging_graphical_abstract.pdf
    :align: center
    :alt: Pyaging Graphical Abstract
 
