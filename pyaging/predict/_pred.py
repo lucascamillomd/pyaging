@@ -1,4 +1,5 @@
 import anndata
+import gc
 
 from ._pred_utils import *
 
@@ -131,7 +132,9 @@ def predict_age(
         add_clock_metadata_adata(
             adata, clock_name, all_clock_metadata, logger, indent_level=2
         )
-        
+
+        # Flush memory
+        gc.collect()  
 
     logger.done()
     return adata
