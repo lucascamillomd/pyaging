@@ -10,6 +10,7 @@
 [![release](https://github.com/rsinghlab/pyaging/actions/workflows/release.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/release.yml)
 [![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
 [![beta](https://img.shields.io/badge/status-beta-yellow)](https://github.com/rsinghlab/pyaging)
+[![bioRxiv](https://img.shields.io/badge/bioRxiv-DOI-purple.svg)](https://doi.org/10.1101/2023.11.28.569069)
 [![upload](https://img.shields.io/pypi/v/pyaging?logo=PyPI)](https://pypi.org/project/pyaging/) 
 [![download](https://static.pepy.tech/badge/pyaging)](https://pepy.tech/project/pyaging)
 [![star](https://img.shields.io/github/stars/rsinghlab/pyaging?logo=GitHub&color=red)](https://github.com/rsinghlab/pyaging/stargazers)
