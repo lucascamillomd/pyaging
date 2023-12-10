@@ -412,6 +412,10 @@ def preprocess_data(
         X = adata.X
         X = np.log1p(X)
         adata.X = X
+    elif preprocessing == "tpm_norm_log1p":
+        X = adata.X
+        X = tpm_norm_log1p(X, preprocessing_helper)
+        adata.X = X
     elif preprocessing == "binarize":
         X = adata.X
         X = binarize(X)

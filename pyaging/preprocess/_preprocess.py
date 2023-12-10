@@ -7,6 +7,7 @@ import anndata
 
 from ..logger import LoggerManager, main_tqdm, silence_logger
 from ._preprocess_utils import *
+from ..utils import download
 
 
 def bigwig_to_df(

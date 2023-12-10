@@ -15,7 +15,7 @@ def dataframe_to_rst_grid(df):
         return ' ' + s + ' ' * (length - len(s) - 1)
 
     # Find the maximum length of the string representation for each column
-    col_widths = [max(len(escape_pipe(str(s))) for s in df[col]) + 10 for col in df.columns]
+    col_widths = [max(len(escape_pipe(str(s))) for s in df[col]) + 2 for col in df.columns]
 
     # Create the header row
     header = '+' + '+'.join('-' * w for w in col_widths) + '+\n'
@@ -45,6 +45,8 @@ df = df.reset_index()
 df.columns = ["clock_name",] + list(df.columns[1:])
 df = df.sort_values("clock_name")
 df = df.drop("citation", axis=1)
+df = df.drop("implementation_approved_by_author(s)", axis=1)
+df = df.loc[:,["clock_name", "data_type", "species", "year", "preprocessing", "postprocessing", "doi", "notes"]]
 
 # Convert to rst format
 rst_txt = dataframe_to_rst_grid(df)

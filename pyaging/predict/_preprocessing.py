@@ -28,6 +28,22 @@ def binarize(x):
     return x
 
 
+def tpm_norm_log1p(x, lengths):
+    """
+    Normalize an array of counts to TPM (Transcripts Per Million) then 
+    transforms with log1p.
+    """
+    # Normalize by length
+    tpm = 1000 * (x / lengths)
+
+    # Scale to TPM (Transcripts Per Million)
+    tpm = 1e6 * (tpm / tpm.sum(axis=1, keepdims=True))
+
+    tpm_log1p = np.log1p(tpm)
+
+    return tpm_log1p
+
+
 def quantile_normalize_with_gold_standard(x, gold_standard_means):
     """
     Apply quantile normalization on x using gold standard means.

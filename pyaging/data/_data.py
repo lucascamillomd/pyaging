@@ -24,7 +24,7 @@ def download_example_data(
     data_type : str
         The type of data to download. Valid options are 'GSE139307' (human methylation),
         'GSE223748' (mammalian methylation), 'ENCFF386QWG' (histone mark),
-        'GSE65765' (C. elegans RNA-seq), 'atac_example' (ATAC-Seq), 'blood_chemistry_example' (blood chemistry).
+        'GSE65765' (C. elegans RNA-seq), 'GSE193140' (ATAC-Seq), 'blood_chemistry_example' (blood chemistry).
 
     dir : str
         The directory to deposit the downloaded file. Defaults to "pyaging_data".
@@ -59,11 +59,11 @@ def download_example_data(
     logger.first_info("Starting download_example_data function")
 
     data_type_to_url = {
+        "GSE193140": "https://pyaging.s3.amazonaws.com/example_data/GSE193140.pkl",
         "GSE139307": "https://pyaging.s3.amazonaws.com/example_data/GSE139307.pkl",
         "GSE223748": "https://pyaging.s3.amazonaws.com/example_data/GSE223748_subset.pkl",
         "ENCFF386QWG": "https://pyaging.s3.amazonaws.com/example_data/ENCFF386QWG.bigWig",
         "GSE65765": "https://pyaging.s3.amazonaws.com/example_data/GSE65765_CPM.pkl",
-        "atac_example": "https://pyaging.s3.amazonaws.com/example_data/atac_example.pkl",
         "blood_chemistry_example": "https://pyaging.s3.amazonaws.com/example_data/blood_chemistry_example.pkl",
     }
 
