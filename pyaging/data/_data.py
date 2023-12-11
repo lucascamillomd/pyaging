@@ -22,8 +22,8 @@ def download_example_data(
     Parameters
     ----------
     data_type : str
-        The type of data to download. Valid options are 'GSE139307' (human methylation),
-        'GSE223748' (mammalian methylation), 'ENCFF386QWG' (histone mark),
+        The type of data to download. Valid options are 'GSE139307' (human methylation), 'GSE130735' (mouse
+        methylation), 'GSE223748' (mammalian methylation), 'ENCFF386QWG' (histone mark),
         'GSE65765' (C. elegans RNA-seq), 'GSE193140' (ATAC-Seq), 'blood_chemistry_example' (blood chemistry).
 
     dir : str
@@ -59,6 +59,7 @@ def download_example_data(
     logger.first_info("Starting download_example_data function")
 
     data_type_to_url = {
+        "GSE130735": "https://pyaging.s3.amazonaws.com/example_data/GSE130735_subset.pkl",
         "GSE193140": "https://pyaging.s3.amazonaws.com/example_data/GSE193140.pkl",
         "GSE139307": "https://pyaging.s3.amazonaws.com/example_data/GSE139307.pkl",
         "GSE223748": "https://pyaging.s3.amazonaws.com/example_data/GSE223748_subset.pkl",

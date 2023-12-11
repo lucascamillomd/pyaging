@@ -25,8 +25,9 @@ With a growing number of aging clocks and biomarkers of aging, comparing and ana
 
 ## 📝 To-Do List
 
+- [ ] Incorporate more murine DNA methylation clocks
 - [ ] Integrate scAge and scRNAseq clocks (and datasets)
-- [ ] Incorporate murine DNA methylation and proteomic clocks (and datasets)
+- [ ] Incorporate proteomic clocks (and datasets)
 
 ## ❓ Can't find an aging clock?
 

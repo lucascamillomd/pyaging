@@ -133,7 +133,7 @@ def df_to_adata(
 
     imputer_strategy : str, optional
         The strategy for imputing missing values in 'df'. Supported strategies include 'mean',
-        'median', 'constant', and 'knn'. Defaults to 'knn'.
+        'median', 'constant' (0 values), and 'knn'. Defaults to 'knn'.
 
     verbose: bool
         Whether to log the output to console with the logger. Defaults to True.

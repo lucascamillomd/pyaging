@@ -295,6 +295,8 @@ def initialize_model(
         "leecpc",
         "leerpc",
         "leerefinedrpc",
+        "meermultitissue",
+        "thompsonmultitissue",
     ]:
         model = LinearModel(len(features))
     elif clock_name in [
@@ -411,6 +413,10 @@ def preprocess_data(
     elif preprocessing == "log1p":
         X = adata.X
         X = np.log1p(X)
+        adata.X = X
+    elif preprocessing == "times100":
+        X = adata.X
+        X = X * 100
         adata.X = X
     elif preprocessing == "tpm_norm_log1p":
         X = adata.X
