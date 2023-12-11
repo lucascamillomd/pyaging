@@ -187,12 +187,13 @@ def check_features_in_adata(
         adata_empty = anndata.AnnData(
             X=empty_data,
             obs=adata.obs,
-            var=pd.DataFrame(index=missing_features),
+            uns=adata.uns,
+            var=pd.DataFrame(np.ones((num_missing_features, 1)), index=missing_features, columns=['percent_na']),
             layers=dict(zip(adata.layers.keys(), [empty_data] * len(adata.layers)))
         )
 
         # Concatenate original adata with the empty adata
-        adata = anndata.concat([adata, adata_empty], axis=1, merge='same')
+        adata = anndata.concat([adata, adata_empty], axis=1, merge='same', uns_merge='unique')
                     
         logger.info(
             f"Expanded adata with {num_missing_features} missing features.",

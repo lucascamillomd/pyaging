@@ -124,7 +124,7 @@ def predict_age(
 
         # Add predicted ages to adata
         add_pred_ages_adata(adata, predicted_ages, clock_name, logger, indent_level=2)
-
+        
         # Load all clocks metadata
         all_clock_metadata = load_clock_metadata(dir, logger, indent_level=2)
         
