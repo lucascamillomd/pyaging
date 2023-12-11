@@ -45,7 +45,7 @@ df = df.reset_index()
 df.columns = ["clock_name",] + list(df.columns[1:])
 df = df.sort_values("clock_name")
 df = df.drop("citation", axis=1)
-df = df.drop("implementation_approved_by_author(s)", axis=1)
+#df = df.drop("implementation_approved_by_author(s)", axis=1)
 df = df.loc[:,["clock_name", "data_type", "species", "year", "preprocessing", "postprocessing", "doi", "notes"]]
 
 # Convert to rst format
