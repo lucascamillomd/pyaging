@@ -149,7 +149,7 @@ def predict_age(
         )
 
         # Reduce feature size to original features
-        adata = adata[:, original_var_names].copy()
+        adata._inplace_subset_var(original_var_names)
 
         # Flush memory
         gc.collect()

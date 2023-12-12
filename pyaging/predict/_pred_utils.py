@@ -435,9 +435,7 @@ def preprocess_data(
 
     logger.info(f"Preprocessing data with function {preprocessing}", indent_level=3)
     # Apply specified preprocessing method
-    if preprocessing == "log1p":
-        adata.X = np.log1p(adata.X)
-    elif preprocessing == "tpm_norm_log1p":
+    if preprocessing == "tpm_norm_log1p":
         adata.X = tpm_norm_log1p(adata.X, preprocessing_helper)
     elif preprocessing == "binarize":
         adata.X = binarize(adata.X)
