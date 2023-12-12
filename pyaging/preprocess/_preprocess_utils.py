@@ -205,12 +205,7 @@ def create_anndata_object(
     obs = pd.DataFrame(index=obs_names)
     var = pd.DataFrame(index=var_names)
 
-    adata = anndata.AnnData(
-        X=X,
-        obs=obs,
-        var=var,
-        layers={'X_original': X}
-    )
+    adata = anndata.AnnData(X=X, obs=obs, var=var, layers={"X_original": X})
 
     return adata
 

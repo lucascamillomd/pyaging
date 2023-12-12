@@ -25,10 +25,12 @@ With a growing number of aging clocks and biomarkers of aging, comparing and ana
 
 ## 📝 To-Do List
 
-- [ ] Incorporate more murine DNA methylation clocks
-- [ ] Add torch data loader for age prediction of large datasets
-- [ ] Integrate scAge and scRNAseq clocks (and datasets)
+- [X] Incorporate more murine DNA methylation clocks
+- [X] Add torch data loader for age prediction of large datasets
+- [ ] Add other blood chemistry biological age clocks (KD age)
 - [ ] Incorporate proteomic clocks (and datasets)
+- [ ] Integrate scAge clocks (this is proving to be difficult)
+- [ ] Integrate scRNAseq clocks (and datasets)
 
 ## ❓ Can't find an aging clock?
 

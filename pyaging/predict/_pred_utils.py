@@ -1,11 +1,13 @@
 from typing import Tuple, List
 import os
 import torch
+from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 import pandas as pd
 import anndata
 import ntpath
 from urllib.request import urlretrieve
+
 
 from ..models import *
 from ..utils import progress, load_clock_metadata, download
@@ -85,7 +87,14 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
     preprocessing_helper = clock_dict.get("preprocessing_helper", None)
     postprocessing_helper = clock_dict.get("postprocessing_helper", None)
 
-    return features, weight_dict, preprocessing, postprocessing, preprocessing_helper, postprocessing_helper
+    return (
+        features,
+        weight_dict,
+        preprocessing,
+        postprocessing,
+        preprocessing_helper,
+        postprocessing_helper,
+    )
 
 
 @progress("Check features in adata")
@@ -161,6 +170,7 @@ def check_features_in_adata(
         (num_missing_features / total_features) * 100 if total_features > 0 else 0
     )
 
+    # Add percent missing values to the clock
     adata.uns[f"{clock_name}_percent_na"] = percent_missing
 
     # Raises error if there are no features in the data
@@ -179,7 +189,7 @@ def check_features_in_adata(
             f"{num_missing_features} out of {total_features} features "
             f"({percent_missing:.2f}%) are missing and will be "
             f"added with default value 0: {missing_features[:np.min([3, num_missing_features])]}, etc.",
-            indent_level=indent_level+1,
+            indent_level=indent_level + 1,
         )
 
         # Create an empty AnnData object for missing features
@@ -187,20 +197,29 @@ def check_features_in_adata(
         adata_empty = anndata.AnnData(
             X=empty_data,
             obs=adata.obs,
+            var=pd.DataFrame(
+                np.ones((num_missing_features, 1)),
+                index=missing_features,
+                columns=["percent_na"],
+            ),
+            layers=dict(zip(adata.layers.keys(), [empty_data] * len(adata.layers))),
             uns=adata.uns,
-            var=pd.DataFrame(np.ones((num_missing_features, 1)), index=missing_features, columns=['percent_na']),
-            layers=dict(zip(adata.layers.keys(), [empty_data] * len(adata.layers)))
         )
 
         # Concatenate original adata with the empty adata
-        adata = anndata.concat([adata, adata_empty], axis=1, merge='same', uns_merge='unique')
-                    
+        adata = anndata.concat(
+            [adata, adata_empty], axis=1, merge="same", uns_merge="unique"
+        )
+
         logger.info(
             f"Expanded adata with {num_missing_features} missing features.",
-            indent_level=indent_level+1,
+            indent_level=indent_level + 1,
         )
     else:
-        logger.info("All features are present in adata.var_names.", indent_level=indent_level+1)
+        logger.info(
+            "All features are present in adata.var_names.",
+            indent_level=indent_level + 1,
+        )
 
     return adata
 
@@ -298,6 +317,8 @@ def initialize_model(
         "leerefinedrpc",
         "meermultitissue",
         "thompsonmultitissue",
+        "petkovichblood",
+        "stubbsmultitissue",
     ]:
         model = LinearModel(len(features))
     elif clock_name in [
@@ -354,7 +375,7 @@ def preprocess_data(
     This function applies a specified preprocessing method to the input data, which is necessary
     for aligning the data format with the requirements of the aging clock models. The function
     supports multiple preprocessing methods, including scaling, log transformation, binarization, etc.
-    The specific preprocessing method to be used is indicated by the `preprocessing` parameter. A new 
+    The specific preprocessing method to be used is indicated by the `preprocessing` parameter. A new
     layers with the format X_{preprocessing} is added to the adata object.
 
     Parameters
@@ -399,42 +420,54 @@ def preprocess_data(
     """
     # Skip if it has already found the preprocessing layer
     if f"X_{preprocessing}" in adata.layers:
-        logger.info(f"Layer with {preprocessing} preprocessing is already in adata", indent_level=3)
+        logger.info(
+            f"Layer with {preprocessing} preprocessing is already in adata",
+            indent_level=3,
+        )
         return adata
 
     # Move to adata.X for preprocessing
-    adata.X = adata.layers["X_imputed"].copy() if "X_imputed" in adata.layers else adata.layers["X_original"].copy()
+    adata.X = (
+        adata.layers["X_imputed"].copy()
+        if "X_imputed" in adata.layers
+        else adata.layers["X_original"].copy()
+    )
 
     logger.info(f"Preprocessing data with function {preprocessing}", indent_level=3)
     # Apply specified preprocessing method
-    if preprocessing == "scale":
+    if preprocessing == "log1p":
+        adata.X = np.log1p(adata.X)
+    elif preprocessing == "tpm_norm_log1p":
+        adata.X = tpm_norm_log1p(adata.X, preprocessing_helper)
+    elif preprocessing == "binarize":
+        adata.X = binarize(adata.X)
+    elif preprocessing == "scale":
         X = adata[:, features].X
         X = scale(X, preprocessing_helper)
         adata[:, features].X = X
-    elif preprocessing == "log1p":
-        X = adata.X
-        X = np.log1p(X)
-        adata.X = X
-    elif preprocessing == "times100":
-        X = adata.X
-        X = X * 100
-        adata.X = X
-    elif preprocessing == "tpm_norm_log1p":
-        X = adata.X
-        X = tpm_norm_log1p(X, preprocessing_helper)
-        adata.X = X
-    elif preprocessing == "binarize":
-        X = adata.X
-        X = binarize(X)
-        adata.X = X
     elif preprocessing == "quantile_normalization_with_gold_standard":
-        gold_standard_df = pd.DataFrame(dict(zip(preprocessing_helper['gold_standard_probes'], preprocessing_helper['gold_standard_means'])), index=['means']).T
-        common_features = np.intersect1d(adata.var_names, gold_standard_df.index.tolist())
+        gold_standard_df = pd.DataFrame(
+            dict(
+                zip(
+                    preprocessing_helper["gold_standard_probes"],
+                    preprocessing_helper["gold_standard_means"],
+                )
+            ),
+            index=["means"],
+        ).T
+        common_features = np.intersect1d(
+            adata.var_names, gold_standard_df.index.tolist()
+        )
         X = adata[:, common_features].X
-        X = quantile_normalize_with_gold_standard(X, gold_standard_df.loc[common_features, 'means'].tolist())
+        X = quantile_normalize_with_gold_standard(
+            X, gold_standard_df.loc[common_features, "means"].tolist()
+        )
         adata[:, common_features].X = X
-    adata.layers[f"X_{preprocessing}"] = adata.X
-        
+    else:
+        logger.error(f"Preprocessing function {preprocessing} not found.")
+        raise ValueError()
+    adata.layers[f"X_{preprocessing}"] = adata.X.copy()
+
     return adata
 
 
@@ -510,6 +543,15 @@ def postprocess_data(
     elif postprocessing == "mortality_to_phenoage":
         vectorized_function = np.vectorize(mortality_to_phenoage)
         data = vectorized_function(data)
+    elif postprocessing == "petkovichblood":
+        vectorized_function = np.vectorize(petkovichblood)
+        data = vectorized_function(data)
+    elif postprocessing == "stubbsmultitissue":
+        vectorized_function = np.vectorize(stubbsmultitissue)
+        data = vectorized_function(data)
+    else:
+        logger.error(f"Postprocessing function {postprocessing} not found.")
+        raise ValueError()
     return data
 
 
@@ -523,6 +565,7 @@ def predict_ages_with_model(
     This function takes a machine learning model and input data, and returns predictions made by the model.
     It's primarily used for estimating biological ages based on various biological markers. The function
     assumes that the model is already trained and the data is preprocessed according to the model's requirements.
+    If the size of the data is large (> 1000 samples), a dataloader is used because of possible memory constraints.
 
     Parameters
     ----------
@@ -560,7 +603,35 @@ def predict_ages_with_model(
     [34.5, 29.3, 47.8, 50.1, 42.6]
 
     """
-    return model(data)
+    # Check if the size of data is greater than 1000
+    if data.size(0) > 1000:
+        logger.info(
+            f"Number of samples ({data.size(0)}) is bigger than 1000. Predicting age with DataLoader",
+            indent_level=indent_level + 1,
+        )
+
+        # Create a TensorDataset
+        dataset = TensorDataset(data)
+
+        # Create a DataLoader
+        batch_size = 64
+        dataloader = DataLoader(dataset, batch_size=batch_size)
+
+        # Use the DataLoader for batched prediction
+        predictions = []
+        with torch.no_grad():
+            for batch in dataloader:
+                batch_data = batch[0]
+                batch_pred = model(batch_data)
+                predictions.append(batch_pred)
+
+        # Concatenate all batch predictions
+        predictions = torch.cat(predictions)
+    else:
+        # If data size is not greater than 1000, predict directly
+        with torch.no_grad():
+            predictions = model(data)
+    return predictions
 
 
 @progress("Convert tensor to numpy array")
@@ -662,7 +733,11 @@ def convert_numpy_array_to_tensor(
 
 @progress("Filter features and extract data matrix")
 def filter_features_and_extract_data(
-    adata: anndata.AnnData, preprocessing: str, features: List[str], logger, indent_level: int = 2
+    adata: anndata.AnnData,
+    preprocessing: str,
+    features: List[str],
+    logger,
+    indent_level: int = 2,
 ) -> np.ndarray:
     """
     Filter features from an AnnData object
@@ -719,11 +794,15 @@ def filter_features_and_extract_data(
         layer_name = "X_imputed"
     else:
         layer_name = "X_original"
-    #x_numpy = np.array(adata[:, features].layers[layer_name])
+    # x_numpy = np.array(adata[:, features].layers[layer_name])
     layer_data = adata[:, features].layers[layer_name]
 
     if not isinstance(layer_data, np.ndarray):
-        layer_data = layer_data.toarray() if hasattr(layer_data, 'toarray') else np.array(layer_data, dtype=np.float32)
+        layer_data = (
+            layer_data.toarray()
+            if hasattr(layer_data, "toarray")
+            else np.array(layer_data, dtype=np.float32)
+        )
 
     return layer_data
 

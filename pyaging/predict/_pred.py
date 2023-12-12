@@ -46,7 +46,7 @@ def predict_age(
     The predicted ages are appended to the .obs attribute of the AnnData object with the clock name as
     the key. The metadata of each clock used in the prediction is stored in the .uns attribute.
 
-    It is important that the input AnnData object's .X attribute contains data suitable for age 
+    It is important that the input AnnData object's .X attribute contains data suitable for age
     prediction.
 
     The function automatically handles the transfer of data and models to the appropriate compute
@@ -76,21 +76,32 @@ def predict_age(
 
         # Load and prepare the clock
         clock_name = clock_name.lower()
-        features, weight_dict, preprocessing, postprocessing, preprocessing_helper, postprocessing_helper = load_clock(
-            clock_name, dir, logger, indent_level=2
-        )
+        (
+            features,
+            weight_dict,
+            preprocessing,
+            postprocessing,
+            preprocessing_helper,
+            postprocessing_helper,
+        ) = load_clock(clock_name, dir, logger, indent_level=2)
 
         # Check and update adata for missing features
+        original_var_names = list(adata.var_names)
         adata = check_features_in_adata(
             adata, clock_name, features, logger, indent_level=2
         )
 
-        # Apply preprocessing 
+        # Apply preprocessing
         if preprocessing:
             adata = preprocess_data(
-                adata, preprocessing, preprocessing_helper, features, logger, indent_level=2
+                adata,
+                preprocessing,
+                preprocessing_helper,
+                features,
+                logger,
+                indent_level=2,
             )
-            
+
         # Filter features and then extract data matrix
         x_numpy = filter_features_and_extract_data(
             adata, preprocessing, features, logger, indent_level=2
@@ -119,22 +130,29 @@ def predict_age(
         # Apply postprocessing if specified
         if postprocessing:
             predicted_ages = postprocess_data(
-                predicted_ages, postprocessing, postprocessing_helper, logger, indent_level=2
+                predicted_ages,
+                postprocessing,
+                postprocessing_helper,
+                logger,
+                indent_level=2,
             )
 
         # Add predicted ages to adata
         add_pred_ages_adata(adata, predicted_ages, clock_name, logger, indent_level=2)
-        
+
         # Load all clocks metadata
         all_clock_metadata = load_clock_metadata(dir, logger, indent_level=2)
-        
+
         # Add clock metadata to adata object
         add_clock_metadata_adata(
             adata, clock_name, all_clock_metadata, logger, indent_level=2
         )
 
+        # Reduce feature size to original features
+        adata = adata[:, original_var_names].copy()
+
         # Flush memory
-        gc.collect()  
+        gc.collect()
 
     logger.done()
     return adata

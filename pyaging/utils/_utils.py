@@ -56,7 +56,9 @@ def progress(message: str) -> None:
         @wraps(func)
         def wrapper(*args, **kwargs):
             # Extract indent_level from kwargs, default to 1 if not provided
-            indent_level = kwargs["indent_level"] if "indent_level" in  kwargs.keys() else 1
+            indent_level = (
+                kwargs["indent_level"] if "indent_level" in kwargs.keys() else 1
+            )
 
             logger = args[-1]  # Assumes logger is the last positional argument
             logger.start_progress(f"{message} started", indent_level=indent_level)
@@ -164,11 +166,11 @@ def download(url: str, dir: str, logger, indent_level: int = 1):
     file_path = os.path.join(dir, file_path)
 
     if os.path.exists(file_path):
-        logger.info(f"Data found in {file_path}", indent_level=indent_level+1)
+        logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
     else:
         if not os.path.exists(dir):
             os.mkdir(dir)
-        logger.info(f"Downloading data to {file_path}", indent_level=indent_level+1)
+        logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
         logger.indent_level = indent_level + 1
         urlretrieve(url, file_path, reporthook=logger.request_report_hook)
 

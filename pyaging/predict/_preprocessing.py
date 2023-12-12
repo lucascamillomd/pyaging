@@ -30,7 +30,7 @@ def binarize(x):
 
 def tpm_norm_log1p(x, lengths):
     """
-    Normalize an array of counts to TPM (Transcripts Per Million) then 
+    Normalize an array of counts to TPM (Transcripts Per Million) then
     transforms with log1p.
     """
     # Normalize by length

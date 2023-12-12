@@ -47,3 +47,24 @@ def mortality_to_phenoage(x):
     mortality_score = 1 - math.exp(-math.exp(x) * (math.exp(120 * l) - 1) / l)
     age = 141.50225 + math.log(-0.00553 * math.log(1 - mortality_score)) / 0.090165
     return age
+
+
+def petkovichblood(x):
+    """
+    Applies a convertion from the output of an ElasticNet to mouse age in months.
+    """
+    a = 0.1666
+    b = 0.4185
+    c = -1.712
+    age = ((x - c) / a) ** (1 / b)
+    age = age / 30.5  # days to months
+    return age
+
+
+def stubbsmultitissue(x):
+    """
+    Applies a convertion from the output of an ElasticNet to mouse age in months.
+    """
+    age = math.exp(0.1207 * (x**2) + 1.2424 * x + 2.5440) - 3
+    age = age * (7 / 30.5)  # weeks to months
+    return age
