@@ -47,6 +47,7 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
     tuple
         A tuple containing the following components of the clock:
         - features: The features used by the clock.
+        - reference_feature_values: Reference values for features in case features are missing.
         - weight_dict: A dictionary of weights used in the clock's model.
         - preprocessing: Any preprocessing steps required for the clock's input data.
         - postprocessing: Any postprocessing steps applied to the clock's output.
@@ -81,6 +82,7 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     # Extract relevant information from the clock dictionary
     features = clock_dict["features"]
+    reference_feature_values = clock_dict.get("reference_feature_values", None)
     weight_dict = clock_dict["weight_dict"]
     preprocessing = clock_dict.get("preprocessing", None)
     postprocessing = clock_dict.get("postprocessing", None)
@@ -89,6 +91,7 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     return (
         features,
+        reference_feature_values,
         weight_dict,
         preprocessing,
         postprocessing,
@@ -102,6 +105,7 @@ def check_features_in_adata(
     adata: anndata.AnnData,
     clock_name: str,
     features: List[str],
+    reference_feature_values: List[float],
     logger,
     indent_level: int = 2,
 ) -> anndata.AnnData:
@@ -110,8 +114,9 @@ def check_features_in_adata(
 
     This function checks an AnnData object (commonly used in single-cell analysis) to ensure
     that it contains all the necessary features specified in the 'features' list. If any features
-    are missing, they are added to the AnnData object with a default value of 0. This is crucial
-    for downstream analyses where the presence of all specified features is assumed.
+    are missing, they are added to the AnnData object with a default value of 0 or with a reference 
+    value if given. This is crucial for downstream analyses where the presence of all specified 
+    features is assumed.
 
     Parameters
     ----------
@@ -127,6 +132,10 @@ def check_features_in_adata(
         A list of features (e.g., gene names or other identifiers) that are expected to be
         present in the 'adata'.
 
+    reference_feature_values : list
+        A list of the reference values for each feature. The order must match the order of features.
+        If no
+
     logger : Logger
         A logger object used for logging information about the process, such as the number
         of missing features.
@@ -139,17 +148,17 @@ def check_features_in_adata(
     -------
     anndata.AnnData
         The updated AnnData object, which includes any missing features added with a default
-        value of 0.
+        value of 0 (or reference value if provided).
 
     Notes
     -----
     This function is particularly useful in preprocessing steps where the consistency of
     data structure across different datasets is crucial. The function modifies the AnnData
-    object in place if there are missing features and logs detailed information about
-    these modifications.
+    object if there are missing features and logs detailed information about these modifications.
 
     The added features are initialized with zeros. This approach, while providing completeness,
-    may introduce biases if not accounted for in downstream analyses.
+    may introduce biases if not accounted for in downstream analyses. If reference values are 
+    provided, then they are used instead of zeros.
 
     Examples
     --------
@@ -187,38 +196,56 @@ def check_features_in_adata(
     if missing_features:
         logger.warning(
             f"{num_missing_features} out of {total_features} features "
-            f"({percent_missing:.2f}%) are missing and will be "
-            f"added with default value 0: {missing_features[:np.min([3, num_missing_features])]}, etc.",
-            indent_level=indent_level + 1,
+            f"({percent_missing:.2f}%) are missing: {missing_features[:np.min([3, num_missing_features])]}, etc.",
+            indent_level=indent_level+1,
         )
 
-        # Create an empty AnnData object for missing features
-        empty_data = np.zeros((adata.n_obs, num_missing_features))
+        # If there are reference values provided
+        if reference_feature_values:
+            logger.info(
+                f"Using reference feature values for {clock_name}",
+                indent_level=indent_level+1,
+            )
+        
+            # Map features to reference values
+            feature_value_map = dict(zip(features, reference_feature_values))
+
+            # Pre-allocate with reference values, if missing, use a default value (e.g., 0)
+            missing_data = np.array([feature_value_map.get(f, 0) for f in missing_features] * adata.n_obs).reshape(adata.n_obs, num_missing_features)
+        else:
+            logger.info(
+                f"Filling missing features entirely with 0",
+                indent_level=indent_level+1,
+            )
+
+            # Create an empty array
+            missing_data = np.zeros((adata.n_obs, num_missing_features))
+        
         adata_empty = anndata.AnnData(
-            X=empty_data,
+            X=missing_data,
             obs=adata.obs,
             var=pd.DataFrame(
                 np.ones((num_missing_features, 1)),
                 index=missing_features,
                 columns=["percent_na"],
             ),
-            layers=dict(zip(adata.layers.keys(), [empty_data] * len(adata.layers))),
+            layers=dict(zip(adata.layers.keys(), [missing_data] * len(adata.layers))),
             uns=adata.uns,
         )
 
-        # Concatenate original adata with the empty adata
+        # Concatenate original adata with the missing adata
         adata = anndata.concat(
             [adata, adata_empty], axis=1, merge="same", uns_merge="unique"
         )
 
         logger.info(
-            f"Expanded adata with {num_missing_features} missing features.",
-            indent_level=indent_level + 1,
+            f"Expanded adata with {num_missing_features} missing features",
+            indent_level=indent_level+1,
         )
     else:
         logger.info(
             "All features are present in adata.var_names.",
-            indent_level=indent_level + 1,
+            indent_level=indent_level+1,
         )
 
     return adata
@@ -311,7 +338,8 @@ def initialize_model(
         "ocampoatac1",
         "ocampoatac2",
         "bitage",
-        "zhang",
+        "zhangmortality",
+        "zhangen",
         "leecpc",
         "leerpc",
         "leerefinedrpc",
@@ -618,7 +646,7 @@ def predict_ages_with_model(
         # Use the DataLoader for batched prediction
         predictions = []
         with torch.no_grad():
-            for batch in dataloader:
+            for batch in main_tqdm(dataloader, indent_level=indent_level+1, logger=logger):
                 batch_data = batch[0]
                 batch_pred = model(batch_data)
                 predictions.append(batch_pred)
