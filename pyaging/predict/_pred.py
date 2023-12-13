@@ -88,7 +88,12 @@ def predict_age(
 
         # Check and update adata for missing features
         adata = check_features_in_adata(
-            adata, clock_name, features, reference_feature_values, logger, indent_level=2
+            adata,
+            clock_name,
+            features,
+            reference_feature_values,
+            logger,
+            indent_level=2,
         )
 
         # Apply preprocessing
@@ -149,7 +154,7 @@ def predict_age(
         )
 
         # Reduce feature size to original features
-        adata = adata[:, adata.var['percent_na'] < 1].copy()
+        adata = adata[:, adata.var["percent_na"] < 1].copy()
 
         # Flush memory
         gc.collect()
