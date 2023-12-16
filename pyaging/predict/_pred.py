@@ -1,5 +1,7 @@
 import anndata
 import gc
+import warnings
+from anndata import ImplicitModificationWarning
 
 from ._pred_utils import *
 
@@ -88,24 +90,18 @@ def predict_age(
 
         # Check and update adata for missing features
         adata = check_features_in_adata(
-            adata,
-            clock_name,
-            features,
-            reference_feature_values,
-            logger,
-            indent_level=2,
+            adata, clock_name, features, reference_feature_values, logger, indent_level=2
         )
 
         # Apply preprocessing
-        if preprocessing:
-            adata = preprocess_data(
-                adata,
-                preprocessing,
-                preprocessing_helper,
-                features,
-                logger,
-                indent_level=2,
-            )
+        adata = preprocess_data(
+            adata,
+            preprocessing,
+            preprocessing_helper,
+            features,
+            logger,
+            indent_level=2,
+        )
 
         # Filter features and then extract data matrix
         x_numpy = filter_features_and_extract_data(
@@ -132,15 +128,14 @@ def predict_age(
             predicted_ages_tensor, logger, indent_level=2
         )
 
-        # Apply postprocessing if specified
-        if postprocessing:
-            predicted_ages = postprocess_data(
-                predicted_ages,
-                postprocessing,
-                postprocessing_helper,
-                logger,
-                indent_level=2,
-            )
+        # Apply postprocessing
+        predicted_ages = postprocess_data(
+            predicted_ages,
+            postprocessing,
+            postprocessing_helper,
+            logger,
+            indent_level=2,
+        )
 
         # Add predicted ages to adata
         add_pred_ages_adata(adata, predicted_ages, clock_name, logger, indent_level=2)
@@ -154,7 +149,7 @@ def predict_age(
         )
 
         # Reduce feature size to original features
-        adata = adata[:, adata.var["percent_na"] < 1].copy()
+        adata = filter_missing_features(adata, logger, indent_level=2)
 
         # Flush memory
         gc.collect()

@@ -313,6 +313,8 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
             citation = clock_dict["citation"]
             logger.info(f"Citation for {clock_name}:", indent_level=2)
             logger.info(citation, indent_level=2)
+            logger.info("Please also consider citing pyaging :)", indent_level=2)
+            logger.info("de Lima Camillo, Lucas Paulo. \"pyaging: a Python-based compendium of GPU-optimized aging clocks.\" bioRxiv (2023): 2023-11.", indent_level=2)
         else:
             logger.warning(f"Citation not found in {clock_name}", indent_level=2)
     else:
@@ -438,3 +440,79 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
     logger.finish_progress(f"{message} finished")
 
     logger.done()
+
+
+
+def get_clock_weights(clock_name: str, dir: str = "pyaging_data") -> dict:
+    """
+    Loads the specified aging clock from a remote source and returns a dictionary with its
+    components.
+
+    This function downloads the weights and configuration of a specified aging clock from a
+    remote server. It then loads and returns a dictionary with various components of the clock
+    such as its features, preprocessing or postprocessing steps, etc. 
+
+    Parameters
+    ----------
+    clock_name : str
+        The name of the aging clock whose metadata is to be retrieved. The name is case-insensitive.
+    dir : str
+        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the following components of the clock:
+        - features: The features used by the clock.
+        - reference_feature_values: Reference values for features in case features are missing.
+        - weight_dict: A dictionary of weights used in the clock's model.
+        - preprocessing: Any preprocessing steps required for the clock's input data.
+        - postprocessing: Any postprocessing steps applied to the clock's output.
+        - preprocessing_helper: Any preprocessing helper file.
+        - postprocessing_helper: Any postprocessing helper file.
+
+    Notes
+    -----
+    The clock's weights and configuration are assumed to be stored in a .pt (PyTorch) file
+    on a remote server. The URL for the clock is constructed based on the clock's name.
+    If the clock or its components are not found, the function may fail or return incomplete 
+    information.
+
+    The logger is used extensively for progress tracking and information logging, enhancing
+    transparency and user experience.
+
+    Examples
+    --------
+    >>> clock_dict = get_clock_weights("clock1", "pyaging_data")
+
+    """
+
+    logger = LoggerManager.gen_logger("get_clock_weights")
+    logger.first_info("Starting get_clock_weights function")
+
+    # Load all metadata
+    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
+  
+    # Lowercase clock name
+    clock_name = clock_name.lower()
+    clock_dict = all_clock_metadata[clock_name]
+
+    # Check if clock name is available
+    if clock_name not in all_clock_metadata.keys():
+        logger.error(f"Clock {clock_name} is not yet available on pyaging")
+        raise ValueError
+
+    # Download weights
+    url = f"https://pyaging.s3.amazonaws.com/clocks/weights/{clock_name}.pt"
+    download(url, dir, logger, indent_level=1)
+
+    # Define the path to the clock weights file
+    weights_path = os.path.join(dir, f"{clock_name}.pt")
+
+    # Load the clock dictionary from the file
+    clock_dict = torch.load(weights_path)
+
+    logger.done()
+
+    return clock_dict
+

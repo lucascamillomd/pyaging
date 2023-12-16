@@ -38,3 +38,21 @@ If you have recently developed an aging clock and would like it to be integrated
 
 ## 💬 Community Discussion
 For coding-related queries, feedback, and discussions, please visit our [GitHub Issues](https://github.com/rsinghlab/pyaging/issues) page.
+
+## 📖 Citation
+
+To cite our `pyaging`, please use the following:
+
+```
+@article {de_Lima_Camillo_pyaging,
+	author = {Lucas Paulo de Lima Camillo},
+	title = {pyaging: a Python-based compendium of GPU-optimized aging clocks},
+	elocation-id = {2023.11.28.569069},
+	year = {2023},
+	doi = {10.1101/2023.11.28.569069},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2023/11/29/2023.11.28.569069},
+	journal = {bioRxiv}
+}
+
+```
