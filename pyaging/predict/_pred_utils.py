@@ -114,8 +114,8 @@ def check_features_in_adata(
 
     This function checks an AnnData object (commonly used in single-cell analysis) to ensure
     that it contains all the necessary features specified in the 'features' list. If any features
-    are missing, they are added to the AnnData object with a default value of 0 or with a reference 
-    value if given. This is crucial for downstream analyses where the presence of all specified 
+    are missing, they are added to the AnnData object with a default value of 0 or with a reference
+    value if given. This is crucial for downstream analyses where the presence of all specified
     features is assumed.
 
     Parameters
@@ -157,7 +157,7 @@ def check_features_in_adata(
     object if there are missing features and logs detailed information about these modifications.
 
     The added features are initialized with zeros. This approach, while providing completeness,
-    may introduce biases if not accounted for in downstream analyses. If reference values are 
+    may introduce biases if not accounted for in downstream analyses. If reference values are
     provided, then they are used instead of zeros.
 
     Examples
@@ -197,30 +197,32 @@ def check_features_in_adata(
         logger.warning(
             f"{num_missing_features} out of {total_features} features "
             f"({percent_missing:.2f}%) are missing: {missing_features[:np.min([3, num_missing_features])]}, etc.",
-            indent_level=indent_level+1,
+            indent_level=indent_level + 1,
         )
 
         # If there are reference values provided
         if reference_feature_values:
             logger.info(
                 f"Using reference feature values for {clock_name}",
-                indent_level=indent_level+1,
+                indent_level=indent_level + 1,
             )
-        
+
             # Map features to reference values
             feature_value_map = dict(zip(features, reference_feature_values))
 
             # Pre-allocate with reference values, if missing, use a default value (e.g., 0)
-            missing_data = np.array([feature_value_map.get(f, 0) for f in missing_features] * adata.n_obs).reshape(adata.n_obs, num_missing_features)
+            missing_data = np.array(
+                [feature_value_map.get(f, 0) for f in missing_features] * adata.n_obs
+            ).reshape(adata.n_obs, num_missing_features)
         else:
             logger.info(
                 f"Filling missing features entirely with 0",
-                indent_level=indent_level+1,
+                indent_level=indent_level + 1,
             )
 
             # Create an empty array
             missing_data = np.zeros((adata.n_obs, num_missing_features))
-        
+
         adata_empty = anndata.AnnData(
             X=missing_data,
             obs=adata.obs,
@@ -240,12 +242,12 @@ def check_features_in_adata(
 
         logger.info(
             f"Expanded adata with {num_missing_features} missing features",
-            indent_level=indent_level+1,
+            indent_level=indent_level + 1,
         )
     else:
         logger.info(
             "All features are present in adata.var_names.",
-            indent_level=indent_level+1,
+            indent_level=indent_level + 1,
         )
 
     return adata
@@ -453,7 +455,7 @@ def preprocess_data(
             indent_level=3,
         )
         return adata
-        
+
     # Skip if it has already found the preprocessing layer
     if f"X_{preprocessing}" in adata.layers:
         logger.info(
@@ -662,7 +664,9 @@ def predict_ages_with_model(
         # Use the DataLoader for batched prediction
         predictions = []
         with torch.no_grad():
-            for batch in main_tqdm(dataloader, indent_level=indent_level+1, logger=logger):
+            for batch in main_tqdm(
+                dataloader, indent_level=indent_level + 1, logger=logger
+            ):
                 batch_data = batch[0]
                 batch_pred = model(batch_data)
                 predictions.append(batch_pred)
@@ -915,6 +919,7 @@ def add_pred_ages_adata(
     """
     adata.obs[clock_name] = predicted_ages
 
+
 @progress("Return adata to original size")
 def filter_missing_features(
     adata: anndata.AnnData,
@@ -925,12 +930,12 @@ def filter_missing_features(
     Returns adata with original features.
 
     This function checks for variables that have 100% of samples with missing features, and removes them
-    from the adata object. It is useful for returning the adata in the original state. 
+    from the adata object. It is useful for returning the adata in the original state.
 
     Parameters
     ----------
     adata : anndata.AnnData
-        The AnnData object that will be filtered. 
+        The AnnData object that will be filtered.
 
     logger : Logger
         A logger object for logging the progress or relevant information during the operation.
@@ -954,7 +959,7 @@ def filter_missing_features(
     >>> adata = filter_missing_features(adata, logger)
 
     """
-    adata = adata[:, adata.var['percent_na'] < 1].copy()
+    adata = adata[:, adata.var["percent_na"] < 1].copy()
     return adata
 
 

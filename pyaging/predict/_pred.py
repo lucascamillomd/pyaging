@@ -90,7 +90,12 @@ def predict_age(
 
         # Check and update adata for missing features
         adata = check_features_in_adata(
-            adata, clock_name, features, reference_feature_values, logger, indent_level=2
+            adata,
+            clock_name,
+            features,
+            reference_feature_values,
+            logger,
+            indent_level=2,
         )
 
         # Apply preprocessing

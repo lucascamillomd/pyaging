@@ -314,7 +314,10 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
             logger.info(f"Citation for {clock_name}:", indent_level=2)
             logger.info(citation, indent_level=2)
             logger.info("Please also consider citing pyaging :)", indent_level=2)
-            logger.info("de Lima Camillo, Lucas Paulo. \"pyaging: a Python-based compendium of GPU-optimized aging clocks.\" bioRxiv (2023): 2023-11.", indent_level=2)
+            logger.info(
+                'de Lima Camillo, Lucas Paulo. "pyaging: a Python-based compendium of GPU-optimized aging clocks." bioRxiv (2023): 2023-11.',
+                indent_level=2,
+            )
         else:
             logger.warning(f"Citation not found in {clock_name}", indent_level=2)
     else:
@@ -442,7 +445,6 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
     logger.done()
 
 
-
 def get_clock_weights(clock_name: str, dir: str = "pyaging_data") -> dict:
     """
     Loads the specified aging clock from a remote source and returns a dictionary with its
@@ -450,7 +452,7 @@ def get_clock_weights(clock_name: str, dir: str = "pyaging_data") -> dict:
 
     This function downloads the weights and configuration of a specified aging clock from a
     remote server. It then loads and returns a dictionary with various components of the clock
-    such as its features, preprocessing or postprocessing steps, etc. 
+    such as its features, preprocessing or postprocessing steps, etc.
 
     Parameters
     ----------
@@ -475,7 +477,7 @@ def get_clock_weights(clock_name: str, dir: str = "pyaging_data") -> dict:
     -----
     The clock's weights and configuration are assumed to be stored in a .pt (PyTorch) file
     on a remote server. The URL for the clock is constructed based on the clock's name.
-    If the clock or its components are not found, the function may fail or return incomplete 
+    If the clock or its components are not found, the function may fail or return incomplete
     information.
 
     The logger is used extensively for progress tracking and information logging, enhancing
@@ -492,7 +494,7 @@ def get_clock_weights(clock_name: str, dir: str = "pyaging_data") -> dict:
 
     # Load all metadata
     all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
-  
+
     # Lowercase clock name
     clock_name = clock_name.lower()
     clock_dict = all_clock_metadata[clock_name]
@@ -515,4 +517,3 @@ def get_clock_weights(clock_name: str, dir: str = "pyaging_data") -> dict:
     logger.done()
 
     return clock_dict
-
