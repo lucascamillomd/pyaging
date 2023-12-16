@@ -54,5 +54,4 @@ To cite our `pyaging`, please use the following:
 	URL = {https://www.biorxiv.org/content/early/2023/11/29/2023.11.28.569069},
 	journal = {bioRxiv}
 }
-
 ```
