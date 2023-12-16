@@ -41,7 +41,7 @@ For coding-related queries, feedback, and discussions, please visit our [GitHub 
 
 ## 📖 Citation
 
-To cite our `pyaging`, please use the following:
+To cite `pyaging`, please use the following:
 
 ```
 @article {de_Lima_Camillo_pyaging,
