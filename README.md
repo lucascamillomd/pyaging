@@ -23,15 +23,6 @@
 
 With a growing number of aging clocks and biomarkers of aging, comparing and analyzing them can be challenging. `pyaging` simplifies this process, allowing researchers to input various molecular layers (DNA methylation, histone ChIP-Seq, ATAC-seq, transcriptomics, etc.) and quickly analyze them using multiple aging clocks, thanks to its GPU-backed infrastructure. This makes it an ideal tool for large datasets and multi-layered analysis.
 
-## 📝 To-Do List
-
-- [X] Incorporate more murine DNA methylation clocks
-- [X] Add torch data loader for age prediction of large datasets
-- [ ] Add other blood chemistry biological age clocks (KD age)
-- [ ] Incorporate proteomic clocks (and datasets)
-- [ ] Integrate scAge clocks (this is proving to be difficult)
-- [ ] Integrate scRNAseq clocks (and datasets)
-
 ## ❓ Can't find an aging clock?
 
 If you have recently developed an aging clock and would like it to be integrated into `pyaging`, please [email us](lucas_camillo@alumni.brown.edu). We aim to incorporate it within two weeks! We are also happy to adapt to any licensing terms for commercial entities.
@@ -55,3 +46,13 @@ To cite `pyaging`, please use the following:
 	journal = {bioRxiv}
 }
 ```
+
+## 📝 To-Do List
+
+- [X] Incorporate more murine DNA methylation clocks
+- [X] Add torch data loader for age prediction of large datasets
+- [ ] Add other blood chemistry biological age clocks (KD age)
+- [ ] Incorporate proteomic clocks (and datasets)
+- [ ] Integrate scAge clocks (this is proving to be difficult)
+- [ ] Integrate scRNAseq clocks (and datasets)
+
