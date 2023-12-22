@@ -342,6 +342,7 @@ def initialize_model(
         "bitage",
         "zhangmortality",
         "zhangen",
+        "zhangblup",
         "leecpc",
         "leerpc",
         "leerefinedrpc",
@@ -349,6 +350,7 @@ def initialize_model(
         "thompsonmultitissue",
         "petkovichblood",
         "stubbsmultitissue",
+        "linblood",
     ]:
         model = LinearModel(len(features))
     elif clock_name in [
