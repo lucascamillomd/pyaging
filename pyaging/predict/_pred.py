@@ -66,9 +66,10 @@ def predict_age(
         silence_logger("predict_age")
     logger.first_info("Starting predict_age function")
 
-    # Ensure clock_names is a list
+    # Ensure clock_names is a list with lowercase names
     if isinstance(clock_names, str):
         clock_names = [clock_names]
+    clock_names = [clock_name.lower() for clock_name in clock_names]
 
     # Set device for PyTorch operations
     device = set_torch_device(logger)
@@ -77,7 +78,6 @@ def predict_age(
         logger.info(f"🕒 Processing clock: {clock_name}", indent_level=1)
 
         # Load and prepare the clock
-        clock_name = clock_name.lower()
         (
             features,
             reference_feature_values,
@@ -108,16 +108,6 @@ def predict_age(
             indent_level=2,
         )
 
-        # Filter features and then extract data matrix
-        x_numpy = filter_features_and_extract_data(
-            adata, preprocessing, features, logger, indent_level=2
-        )
-
-        # Convert numpy array to tensor
-        x_tensor = convert_numpy_array_to_tensor(
-            x_numpy, device, logger, indent_level=2
-        )
-
         # Initialize and configure the model
         clock_model = initialize_model(
             clock_name, features, weight_dict, device, logger, indent_level=2
@@ -125,10 +115,10 @@ def predict_age(
 
         # Perform age prediction using the model
         predicted_ages_tensor = predict_ages_with_model(
-            clock_model, x_tensor, logger, indent_level=2
+            clock_model, adata, features, device, logger, indent_level=2
         )
 
-        # Convert adata tensor to numpy array
+        # Convert torch tensor to numpy array
         predicted_ages = convert_tensor_to_numpy_array(
             predicted_ages_tensor, logger, indent_level=2
         )
@@ -145,15 +135,10 @@ def predict_age(
         # Add predicted ages to adata
         add_pred_ages_adata(adata, predicted_ages, clock_name, logger, indent_level=2)
 
-        # Load all clocks metadata
-        all_clock_metadata = load_clock_metadata(dir, logger, indent_level=2)
-
         # Add clock metadata to adata object
-        add_clock_metadata_adata(
-            adata, clock_name, all_clock_metadata, logger, indent_level=2
-        )
+        add_clock_metadata_adata(adata, clock_name, dir, logger, indent_level=2)
 
-        # Reduce feature size to original features
+        # Return adata to original size and number of features
         adata = filter_missing_features(adata, logger, indent_level=2)
 
         # Flush memory

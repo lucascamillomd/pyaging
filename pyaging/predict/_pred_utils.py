@@ -5,6 +5,7 @@ from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 import pandas as pd
 import anndata
+from anndata.experimental.pytorch import AnnLoader
 import ntpath
 from urllib.request import urlretrieve
 
@@ -458,14 +459,6 @@ def preprocess_data(
         )
         return adata
 
-    # Skip if it has already found the preprocessing layer
-    if f"X_{preprocessing}" in adata.layers:
-        logger.info(
-            f"Layer with {preprocessing} preprocessing is already in adata",
-            indent_level=3,
-        )
-        return adata
-
     # Move to adata.X for preprocessing
     adata.X = (
         adata.layers["X_imputed"].copy()
@@ -504,7 +497,6 @@ def preprocess_data(
     else:
         logger.error(f"Preprocessing function {preprocessing} not found.")
         raise ValueError()
-    adata.layers[f"X_{preprocessing}"] = adata.X.copy()
 
     return adata
 
@@ -603,7 +595,12 @@ def postprocess_data(
 
 @progress("Predict ages with model")
 def predict_ages_with_model(
-    model: torch.nn.Module, data: torch.Tensor, logger, indent_level: int = 2
+    model: torch.nn.Module,
+    adata: torch.Tensor,
+    features: List[str],
+    device: str,
+    logger,
+    indent_level: int = 2,
 ) -> torch.Tensor:
     """
     Predict biological ages using a trained model and input data.
@@ -611,16 +608,23 @@ def predict_ages_with_model(
     This function takes a machine learning model and input data, and returns predictions made by the model.
     It's primarily used for estimating biological ages based on various biological markers. The function
     assumes that the model is already trained and the data is preprocessed according to the model's requirements.
-    If the size of the data is large (> 1000 samples), a dataloader is used because of possible memory constraints.
+    A dataloader is used because of possible memory constraints.
 
     Parameters
     ----------
     model : torch.nn.Module
         A pre-trained machine learning model that can make predictions.
 
-    data : array-like
-        The input data on which age predictions need to be made. This should be in the format expected
-        by the `model` (e.g., a numpy array, pandas DataFrame, or PyTorch tensor).
+    adata : anndata.AnnData
+        The AnnData object containing the dataset. Its `.X` attribute is expected to be a matrix where rows
+        correspond to samples and columns correspond to features.
+
+    features : list of str
+        A list of feature names to be included in the output array. Only these features from the AnnData object will
+        be extracted for age prediction.
+
+    device : str
+        Device to move AnnData to during inference. Eithe 'cpu' or 'cuda'.
 
     logger : Logger
         A logger object for logging the progress or any relevant information during the prediction process.
@@ -644,41 +648,28 @@ def predict_ages_with_model(
     Examples
     --------
     >>> model = load_pretrained_model()
-    >>> predictions = predict_ages_with_model(model, data, logger)
+    >>> predictions = predict_ages_with_model(model, adata, features, 'cpu', logger)
     >>> print(predictions[:5])
     [34.5, 29.3, 47.8, 50.1, 42.6]
 
     """
-    # Check if the size of data is greater than 1000
-    if data.size(0) > 1024:
-        logger.info(
-            f"Number of samples ({data.size(0)}) is bigger than 1024. Predicting age with DataLoader",
-            indent_level=indent_level + 1,
-        )
+    # Create an AnnLoader
+    use_cuda = device == "cuda"
+    dataloader = AnnLoader(adata, batch_size=1024, use_cuda=use_cuda)
 
-        # Create a TensorDataset
-        dataset = TensorDataset(data)
+    # Use the AnnLoader for batched prediction
+    predictions = []
+    with torch.no_grad():
+        for batch in main_tqdm(
+            dataloader, indent_level=indent_level + 1, logger=logger
+        ):
+            batch_pred = model(
+                batch[:, features].X.float()
+            )  # needs .float() as models are float32 rather than 64
+            predictions.append(batch_pred)
 
-        # Create a DataLoader
-        batch_size = 1024
-        dataloader = DataLoader(dataset, batch_size=batch_size)
-
-        # Use the DataLoader for batched prediction
-        predictions = []
-        with torch.no_grad():
-            for batch in main_tqdm(
-                dataloader, indent_level=indent_level + 1, logger=logger
-            ):
-                batch_data = batch[0]
-                batch_pred = model(batch_data)
-                predictions.append(batch_pred)
-
-        # Concatenate all batch predictions
-        predictions = torch.cat(predictions)
-    else:
-        # If data size is not greater than 1000, predict directly
-        with torch.no_grad():
-            predictions = model(data)
+    # Concatenate all batch predictions
+    predictions = torch.cat(predictions)
     return predictions
 
 
@@ -726,133 +717,6 @@ def convert_tensor_to_numpy_array(
 
     """
     return tensor.cpu().detach().numpy().flatten()
-
-
-@progress("Convert numpy array to tensor")
-def convert_numpy_array_to_tensor(
-    array: np.ndarray, device: str, logger, indent_level: int = 2
-) -> torch.Tensor:
-    """
-    Convert a NumPy array to a tensor.
-
-    This utility function takes a NumPy array and converts it into PyTorch tensor. It is useful in scenarios
-    where NumPy arrays need to be processed or analyzed using PyTorch-based tools or functions. The function also
-    moves the tensor to the device being used.
-
-    Parameters
-    ----------
-    tensor : torch.Tensor
-        The PyTorch tensor to be converted. This can be a tensor of any shape.
-
-    device : str
-        Device to move tensor to after. Eithe 'cpu' or 'cuda'.
-
-    logger : Logger
-        A logger object for logging the progress or any relevant information during the conversion process.
-
-    indent_level : int, optional
-        The indentation level for logging messages, by default 2.
-
-    Returns
-    -------
-    numpy_array : ndarray
-        A 1D NumPy array equivalent to the input tensor.
-
-    Notes
-    -----
-    This function detaches the tensor from the computation graph, so it should be used with caution if the tensor
-    is part of a PyTorch computational graph, such as when dealing with gradients in training neural networks.
-
-    The flattening to a 1D array may lose the original shape information of the tensor, which should be considered
-    if the shape is important for further processing.
-
-    Examples
-    --------
-    >>> numpy_array = np.array([[1, 2], [3, 4]])
-    >>> tensor = convert_numpy_array_to_tensor(numpy_array, logger)
-    >>> tensor
-    torch.tensor([1, 2, 3, 4])
-
-    """
-    tensor = torch.tensor(array, dtype=torch.float32)
-    tensor = tensor.to(device)
-    return tensor
-
-
-@progress("Filter features and extract data matrix")
-def filter_features_and_extract_data(
-    adata: anndata.AnnData,
-    preprocessing: str,
-    features: List[str],
-    logger,
-    indent_level: int = 2,
-) -> np.ndarray:
-    """
-    Filter features from an AnnData object
-
-    This function processes an AnnData object, which is commonly used in bioinformatics for storing large
-    gene expression datasets. It extracts the data matrix corresponding to a specified set of features (genes or
-    other genomic elements) and converts this subset into a numpy array.
-
-    Parameters
-    ----------
-    adata : anndata.AnnData
-        The AnnData object containing the dataset. Its `.X` attribute is expected to be a matrix where rows
-        correspond to samples and columns correspond to features.
-
-    preprocessing : str
-        The name of the preprocessing method used (if any). Used to search adata.layers for data matrix.
-
-    features : list of str
-        A list of feature names to be included in the output array. Only these features from the AnnData object will
-        be extracted and converted.
-
-    logger : Logger
-        A logger object for logging progress or relevant information during the conversion process.
-
-    indent_level : int, optional
-        The indentation level for logging messages, by default 2.
-
-    Returns
-    -------
-    numpy_array : ndarray
-        A Numpy array containing the filtered data from the AnnData object, with dtype set to float32.
-
-    Notes
-    -----
-    The AnnData object is a central data structure in many bioinformatics pipelines. It efficiently handles
-    large datasets typical in genomics and transcriptomics. This function facilitates the integration of
-    AnnData-based workflows with PyTorch models and functions.
-
-    The dtype of the returned tensor is set to float32, which is a common choice for numerical operations in
-    PyTorch, especially in the context of machine learning models.
-
-    Examples
-    --------
-    >>> adata = anndata.AnnData(np.random.rand(5, 10))
-    >>> features = ['gene1', 'gene2', 'gene3']
-    >>> numpy_array = filter_features_and_extract_data(adata, None, features, logger)
-    >>> numpy_array.shape
-    array([5, 3])
-
-    """
-    if preprocessing is not None:
-        layer_name = f"X_{preprocessing}"
-    elif "X_imputed" in adata.layers:
-        layer_name = "X_imputed"
-    else:
-        layer_name = "X_original"
-    # x_numpy = np.array(adata[:, features].layers[layer_name])
-    layer_data = adata[:, features].layers[layer_name]
-
-    if not isinstance(layer_data, np.ndarray):
-        layer_data = (
-            layer_data.toarray()
-            if hasattr(layer_data, "toarray")
-            else np.array(layer_data, dtype=np.float32)
-        )
-
-    return layer_data
 
 
 @progress("Add predicted ages to adata")
@@ -961,7 +825,19 @@ def filter_missing_features(
     >>> adata = filter_missing_features(adata, logger)
 
     """
-    adata = adata[:, adata.var["percent_na"] < 1].copy()
+    n_missing_features = sum(adata.var["percent_na"] == 1)
+    if n_missing_features > 0:
+        logger.info(
+            f"Removing {n_missing_features} missing features added",
+            indent_level=indent_level + 1,
+        )
+        adata = adata[:, adata.var["percent_na"] < 1].copy()
+    else:
+        logger.info(
+            "There were no missing features, so adata size did not change",
+            indent_level=indent_level + 1,
+        )
+
     return adata
 
 
@@ -969,7 +845,7 @@ def filter_missing_features(
 def add_clock_metadata_adata(
     adata: anndata.AnnData,
     clock_name: str,
-    all_clock_metadata: dict,
+    dir: str,
     logger,
     indent_level: int = 2,
 ) -> None:
@@ -992,9 +868,8 @@ def add_clock_metadata_adata(
         The name of the aging clock. The metadata associated with this clock will be added to
         the AnnData object.
 
-    all_clock_metadata : dict
-        A dictionary containing metadata for all available clocks. The function will extract metadata for
-        the specified clock from this dictionary.
+    dir: str
+        The directory to deposit the downloaded file. Defaults to "pyaging_data".
 
     logger : Logger
         A logger object for logging the progress or relevant information during the operation.
@@ -1013,18 +888,21 @@ def add_clock_metadata_adata(
     here ensures that all relevant information about the aging clocks used in the analysis is
     preserved alongside the dataset.
 
-    It is important to ensure that the `clock_name` exists within the `all_clock_metadata` dictionary to
-    avoid key errors.
-
     Examples
     --------
     >>> adata = anndata.AnnData(np.random.rand(5, 10))
-    >>> all_clock_metadata = {'horvath2013': {'description': 'Horvath’s 2013 epigenetic clock', 'reference': 'Horvath, S. (2013)'}}
-    >>> add_clock_metadata_adata(adata, 'horvath2013', all_clock_metadata, logger)
+    >>> add_clock_metadata_adata(adata, 'horvath2013', 'pyaging_data', logger)
     >>> adata.uns['horvath2013_metadata']
     {'description': 'Horvath’s 2013 epigenetic clock', 'reference': 'Horvath, S. (2013)'}
 
     """
+
+    # Load all clocks metadata
+    url = f"https://pyaging.s3.amazonaws.com/clocks/metadata/all_clock_metadata.pt"
+    download(url, dir, logger, indent_level=indent_level)
+    all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
+
+    # Add clock metadata to adata.uns
     adata.uns[f"{clock_name}_metadata"] = all_clock_metadata[clock_name]
 
 
