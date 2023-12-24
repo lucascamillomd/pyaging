@@ -388,6 +388,7 @@ def initialize_model(
         raise ValueError(f"Clock '{clock_name}' is not supported.")
 
     model.load_state_dict(weight_dict)
+    model.to(torch.float64)
     model = model.to(device)
     model.eval()
     return model
@@ -595,12 +596,7 @@ def postprocess_data(
 
 @progress("Predict ages with model")
 def predict_ages_with_model(
-    model: torch.nn.Module,
-    adata: torch.Tensor,
-    features: List[str],
-    device: str,
-    logger,
-    indent_level: int = 2,
+    model: torch.nn.Module, adata: torch.Tensor, features: List[str], device: str, logger, indent_level: int = 2
 ) -> torch.Tensor:
     """
     Predict biological ages using a trained model and input data.
@@ -654,7 +650,7 @@ def predict_ages_with_model(
 
     """
     # Create an AnnLoader
-    use_cuda = device == "cuda"
+    use_cuda = device == 'cuda'
     dataloader = AnnLoader(adata, batch_size=1024, use_cuda=use_cuda)
 
     # Use the AnnLoader for batched prediction
@@ -663,9 +659,7 @@ def predict_ages_with_model(
         for batch in main_tqdm(
             dataloader, indent_level=indent_level + 1, logger=logger
         ):
-            batch_pred = model(
-                batch[:, features].X.float()
-            )  # needs .float() as models are float32 rather than 64
+            batch_pred = model(batch[:, features].X)
             predictions.append(batch_pred)
 
     # Concatenate all batch predictions
@@ -827,17 +821,11 @@ def filter_missing_features(
     """
     n_missing_features = sum(adata.var["percent_na"] == 1)
     if n_missing_features > 0:
-        logger.info(
-            f"Removing {n_missing_features} missing features added",
-            indent_level=indent_level + 1,
-        )
+        logger.info(f"Removing {n_missing_features} missing features added", indent_level=indent_level+1)
         adata = adata[:, adata.var["percent_na"] < 1].copy()
     else:
-        logger.info(
-            "There were no missing features, so adata size did not change",
-            indent_level=indent_level + 1,
-        )
-
+        logger.info("No missing features, so adata size did not change", indent_level=indent_level+1)
+        
     return adata
 
 
