@@ -309,9 +309,8 @@ def add_unstructured_data(
     Notes
     -----
     This function updates the 'uns' attribute of the AnnData object with the 'imputer_strategy'
-    and 'data_type' keys. The 'data_type' is currently hard-coded as 'dna_methylation', which
-    may need modification based on different dataset types in future applications.
-
+    key. 
+    
     Example
     -------
     >>> from anndata import AnnData
@@ -322,7 +321,6 @@ def add_unstructured_data(
     """
     # Add imputer strategy and data type to the AnnData object
     adata.uns["imputer_strategy"] = imputer_strategy
-    adata.uns["data_type"] = "dna_methylation"
 
 
 @progress("Load Ensembl genome metadata")
