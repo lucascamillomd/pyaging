@@ -452,13 +452,6 @@ def preprocess_data(
     np.array([...])
 
     """
-    # Skip if it there is no preprocessing to be done
-    if preprocessing is None:
-        logger.info(
-            "There is no preprocessing to be done",
-            indent_level=3,
-        )
-        return adata
 
     # Move to adata.X for preprocessing
     adata.X = (
@@ -466,6 +459,14 @@ def preprocess_data(
         if "X_imputed" in adata.layers
         else adata.layers["X_original"].copy()
     )
+
+    # Skip if it there is no preprocessing to be done
+    if preprocessing is None:
+        logger.info(
+            "There is no preprocessing to be done",
+            indent_level=3,
+        )
+        return adata
 
     logger.info(f"Preprocessing data with function {preprocessing}", indent_level=3)
     # Apply specified preprocessing method
@@ -596,12 +597,7 @@ def postprocess_data(
 
 @progress("Predict ages with model")
 def predict_ages_with_model(
-    model: torch.nn.Module,
-    adata: torch.Tensor,
-    features: List[str],
-    device: str,
-    logger,
-    indent_level: int = 2,
+    model: torch.nn.Module, adata: torch.Tensor, features: List[str], device: str, logger, indent_level: int = 2
 ) -> torch.Tensor:
     """
     Predict biological ages using a trained model and input data.
@@ -655,7 +651,7 @@ def predict_ages_with_model(
 
     """
     # Create an AnnLoader
-    use_cuda = device == "cuda"
+    use_cuda = device == 'cuda'
     dataloader = AnnLoader(adata, batch_size=1024, use_cuda=use_cuda)
 
     # Use the AnnLoader for batched prediction
@@ -826,17 +822,11 @@ def filter_missing_features(
     """
     n_missing_features = sum(adata.var["percent_na"] == 1)
     if n_missing_features > 0:
-        logger.info(
-            f"Removing {n_missing_features} added features",
-            indent_level=indent_level + 1,
-        )
+        logger.info(f"Removing {n_missing_features} added features", indent_level=indent_level+1)
         adata = adata[:, adata.var["percent_na"] < 1].copy()
     else:
-        logger.info(
-            "No missing features, so adata size did not change",
-            indent_level=indent_level + 1,
-        )
-
+        logger.info("No missing features, so adata size did not change", indent_level=indent_level+1)
+        
     return adata
 
 
