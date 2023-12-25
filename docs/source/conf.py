@@ -16,7 +16,8 @@ sys.path.insert(0, os.path.abspath('../../'))  # Adjust the path as needed
 project = 'pyaging'
 copyright = '2023, Lucas Paulo de Lima Camillo'
 author = 'Lucas Paulo de Lima Camillo'
-release = '0.0.9'
+from pyaging import __version__
+release = version = __version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
