@@ -1,4 +1,7 @@
-.wy-side-nav-search > a > img.logo {
-    height: 160px;  /* Adjust the height as needed */
-    width: auto;
+/* Custom CSS for Sphinx documentation */
+
+/* More specific selector to target the logo */
+div.wy-side-nav-search > a img.logo {
+    max-width: 160px;  /* Adjust the width as needed */
+    max-height: auto;  /* Keeps the aspect ratio */
 }
