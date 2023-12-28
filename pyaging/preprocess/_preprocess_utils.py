@@ -278,7 +278,7 @@ def add_metadata_to_anndata(
     return adata
 
 
-@progress("Add unstructured data to anndata")
+@progress("Add imputer strategy to adata.uns")
 def add_unstructured_data(
     adata: anndata.AnnData, imputer_strategy: str, logger, indent_level: int = 1
 ) -> None:
@@ -309,8 +309,8 @@ def add_unstructured_data(
     Notes
     -----
     This function updates the 'uns' attribute of the AnnData object with the 'imputer_strategy'
-    key. 
-    
+    key.
+
     Example
     -------
     >>> from anndata import AnnData

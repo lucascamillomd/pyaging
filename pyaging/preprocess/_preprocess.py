@@ -190,7 +190,8 @@ def df_to_adata(
     adata = impute_missing_values(adata, imputer_strategy, logger)
 
     # Add unstructured data
-    add_unstructured_data(adata, imputer_strategy, logger)
+    if "X_imputed" in adata.layers:
+        add_unstructured_data(adata, imputer_strategy, logger)
 
     logger.done()
 

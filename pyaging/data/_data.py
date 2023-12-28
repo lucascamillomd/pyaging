@@ -23,13 +23,13 @@ def download_example_data(
     ----------
     data_type : str
         The type of data to download. Valid options are 'GSE139307' (human methylation), 'GSE130735' (mouse
-        methylation), 'GSE223748' (mammalian methylation), 'ENCFF386QWG' (histone mark),
-        'GSE65765' (C. elegans RNA-seq), 'GSE193140' (ATAC-Seq), 'blood_chemistry_example' (blood chemistry).
-
+        methylation), 'GSE223748' (mammalian methylation), 'ENCFF386QWG' (histone mark), 'GSE65765' (C. elegans
+        RNA-seq), 'GSE193140' (ATAC-Seq), 'blood_chemistry_example' (blood chemistry).
+    
     dir : str
         The directory to deposit the downloaded file. Defaults to "pyaging_data".
 
-    verbose: bool
+    verbose : bool
         Whether to log the output to console with the logger. Defaults to True.
 
     Raises
@@ -51,7 +51,6 @@ def download_example_data(
     --------
     >>> download_example_data("methylation")
     # This will download the example methylation dataset to the local system.
-
     """
     logger = LoggerManager.gen_logger("download_example_data")
     if not verbose:

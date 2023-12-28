@@ -344,14 +344,16 @@ def initialize_model(
         "zhangmortality",
         "zhangen",
         "zhangblup",
-        "leecpc",
-        "leerpc",
-        "leerefinedrpc",
+        "leecontrol",
+        "leerobust",
+        "leerefinedrobust",
         "meermultitissue",
         "thompsonmultitissue",
         "petkovichblood",
         "stubbsmultitissue",
-        "linblood",
+        "lin",
+        "knight",
+        "hrsinchphenoage",
     ]:
         model = LinearModel(len(features))
     elif clock_name in [
@@ -389,7 +391,7 @@ def initialize_model(
 
     model.load_state_dict(weight_dict)
     model.to(torch.float64)
-    model = model.to(device)
+    model.to(device)
     model.eval()
     return model
 
