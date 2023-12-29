@@ -11,6 +11,20 @@ def scale(x, scaler):
     return x_scaled
 
 
+def scale_row(x, x_overlap):
+    """
+    Scales the input data per row with mean 0 and std 1.
+    """
+    row_means = np.mean(x_overlap, axis=1, keepdims=True)
+    row_stds = np.std(x_overlap, axis=1, keepdims=True)
+
+    # Avoid division by zero in case of a row with constant value
+    row_stds[row_stds == 0] = 1
+
+    x_scaled = (x - row_means) / row_stds
+    return x_scaled
+
+
 def binarize(x):
     """
     Binarizes an array based on the median of each row, excluding zeros.

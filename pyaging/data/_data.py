@@ -25,7 +25,7 @@ def download_example_data(
         The type of data to download. Valid options are 'GSE139307' (human methylation), 'GSE130735' (mouse
         methylation), 'GSE223748' (mammalian methylation), 'ENCFF386QWG' (histone mark), 'GSE65765' (C. elegans
         RNA-seq), 'GSE193140' (ATAC-Seq), 'blood_chemistry_example' (blood chemistry).
-    
+
     dir : str
         The directory to deposit the downloaded file. Defaults to "pyaging_data".
 
