@@ -6,7 +6,9 @@ from ..utils import download
 from ..logger import LoggerManager, main_tqdm, silence_logger
 
 
-def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
+def download_example_data(
+    data_type: str, dir: str = "pyaging_data", verbose: bool = True
+) -> None:
     """
     Downloads example datasets for various types of biological data used in aging studies.
 
@@ -17,7 +19,7 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     Parameters
     ----------
     data_type : str
-        The type of data to download. Valid options are 'GSE139307', 'GSE130735', 'GSE223748', 
+        The type of data to download. Valid options are 'GSE139307', 'GSE130735', 'GSE223748',
         'ENCFF386QWG', 'GSE65765', 'GSE193140', and 'blood_chemistry_example'.
     dir : str
         The directory to deposit the downloaded file. Defaults to "pyaging_data".
@@ -57,7 +59,10 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     }
 
     if data_type not in data_type_to_url:
-        logger.error(f"Example data {data_type} has not yet been implemented in pyaging.", indent_level=2)
+        logger.error(
+            f"Example data {data_type} has not yet been implemented in pyaging.",
+            indent_level=2,
+        )
         return
 
     url = data_type_to_url[data_type]

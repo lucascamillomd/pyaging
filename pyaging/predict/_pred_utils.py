@@ -67,7 +67,7 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     Examples
     --------
-    >>> features, reference_feature_values, _, _, _, _, _ = load_clock("clock1", "pyaging_data", logger)
+    >>> features, reference_feature_values, _, _, _, _, _, _ = load_clock("clock1", "pyaging_data", logger)
     >>> print(features)
     ['feature1', 'feature2', ...]
 
@@ -89,6 +89,7 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
     postprocessing = clock_dict.get("postprocessing", None)
     preprocessing_helper = clock_dict.get("preprocessing_helper", None)
     postprocessing_helper = clock_dict.get("postprocessing_helper", None)
+    model_class = clock_dict["model_class"]
 
     return (
         features,
@@ -98,6 +99,7 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
         postprocessing,
         preprocessing_helper,
         postprocessing_helper,
+        model_class,
     )
 
 
@@ -256,7 +258,7 @@ def check_features_in_adata(
 
 @progress("Initialize model")
 def initialize_model(
-    clock_name: str,
+    model_class: str,
     features: List[str],
     weight_dict: dict,
     device: str,
@@ -264,18 +266,18 @@ def initialize_model(
     indent_level: int = 2,
 ) -> torch.nn.Module:
     """
-    Initialize and configure a predictive model based on the specified aging clock.
+    Initialize and configure a predictive model based on the specified clock model class.
 
-    This function selects and initializes a machine learning model tailored to a particular aging clock,
-    indicated by `clock_name`. It loads the model weights from `weight_dict` and prepares the model
+    This function selects and initializes a machine learning model tailored to a particular model class,
+    indicated by `model_class`. It loads the model weights from `weight_dict` and prepares the model
     for inference (evaluation mode). Different types of clocks require different models, and this function
     handles the instantiation and configuration of these models based on the clock type.
 
     Parameters
     ----------
-    clock_name : str
-        The name of the aging clock for which the model is to be initialized. This name determines
-        the type of model to be used.
+    model_class : str
+        The class of the aging clock model to be initialized. This name determines the type of model
+        to be used.
 
     features : list
         A list of feature names that the model will use for making predictions. The length of this
@@ -304,67 +306,31 @@ def initialize_model(
     Raises
     ------
     ValueError
-        If the provided `clock_name` is not supported or recognized.
+        If the provided `model_class` is not supported or recognized.
 
     Notes
     -----
     The function currently supports a range of models including linear models, principal component
     (PC) based models, and specific models for complex clocks like `AltumAge` and `PCGrimAge`.
     It is crucial that the `weight_dict` matches the structure expected by the model corresponding
-    to the `clock_name`.
+    to the `model_class`.
 
     The function assumes the availability of a pre-defined set of model classes like `LinearModel`,
     `PCLinearModel`, `PCGrimAge`, `AltumAge`, etc., which should be defined elsewhere in the codebase.
 
     Examples
     --------
-    >>> model = initialize_model('horvath2013', features, weight_dict, logger)
+    >>> model = initialize_model('LinearModel', features, weight_dict, logger)
     >>> print(type(model))
     <class 'torch.nn.modules.linear.LinearModel'>
 
     """
     # Model selection based on clock name
-    if clock_name in [
-        "horvath2013",
-        "skinandblood",
-        "hannum",
-        "phenoage",
-        "dnamphenoage",
-        "dnamtl",
-        "dunedinpace",
-        "replitali",
-        "pedbe",
-        "mammalian1",
-        "mammalian2",
-        "mammalian3",
-        "mammalianlifespan",
-        "ocampoatac1",
-        "ocampoatac2",
-        "bitage",
-        "zhangmortality",
-        "zhangen",
-        "zhangblup",
-        "leecontrol",
-        "leerobust",
-        "leerefinedrobust",
-        "meermultitissue",
-        "thompsonmultitissue",
-        "petkovichblood",
-        "stubbsmultitissue",
-        "lin",
-        "knight",
-        "hrsinchphenoage",
-    ]:
+    if model_class == "LinearModel":
         model = LinearModel(len(features))
-    elif clock_name in [
-        "pchorvath2013",
-        "pcskinandblood",
-        "pchannum",
-        "pcphenoage",
-        "pcdnamtl",
-    ]:
+    elif model_class == "PCLinearModel":
         model = PCLinearModel(len(features), pc_dim=weight_dict["rotation"].shape[1])
-    elif clock_name == "pcgrimage":
+    elif model_class == "PCGrimAge":
         model = PCGrimAge(
             sum(["cg" in feature for feature in features]),
             pc_dim=weight_dict["rotation"].shape[1],
@@ -373,21 +339,12 @@ def initialize_model(
                 for i in range(weight_dict["step2.weight"].shape[1] - 2)
             ],
         )
-    elif clock_name == "altumage":
+    elif model_class == "AltumAge":
         model = AltumAge()
-    elif clock_name in [
-        "h3k4me3",
-        "h3k4me1",
-        "h3k9me3",
-        "h3k9ac",
-        "h3k27me3",
-        "h3k27ac",
-        "h3k36me3",
-        "panhistone",
-    ]:
+    elif model_class == "PCARDModel":
         model = PCARDModel(len(features), pc_dim=weight_dict["rotation"].shape[1])
     else:
-        raise ValueError(f"Clock '{clock_name}' is not supported.")
+        raise ValueError(f"Model class '{model_class}' is not supported.")
 
     model.load_state_dict(weight_dict)
     model.to(torch.float64)

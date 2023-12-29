@@ -86,6 +86,7 @@ def predict_age(
             postprocessing,
             preprocessing_helper,
             postprocessing_helper,
+            model_class,
         ) = load_clock(clock_name, dir, logger, indent_level=2)
 
         # Check and update adata for missing features
@@ -110,7 +111,7 @@ def predict_age(
 
         # Initialize and configure the model
         clock_model = initialize_model(
-            clock_name, features, weight_dict, device, logger, indent_level=2
+            model_class, features, weight_dict, device, logger, indent_level=2
         )
 
         # Perform age prediction using the model
