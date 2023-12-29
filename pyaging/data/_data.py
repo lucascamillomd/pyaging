@@ -1,17 +1,12 @@
 import os
-import torch
-import ntpath
-import os
 from urllib.request import urlretrieve
 from functools import wraps
 
-from ..utils import progress, download
+from ..utils import download
 from ..logger import LoggerManager, main_tqdm, silence_logger
 
 
-def download_example_data(
-    data_type: str, dir: str = "pyaging_data", verbose: bool = True
-) -> None:
+def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Downloads example datasets for various types of biological data used in aging studies.
 
@@ -22,13 +17,10 @@ def download_example_data(
     Parameters
     ----------
     data_type : str
-        The type of data to download. Valid options are 'GSE139307' (human methylation), 'GSE130735' (mouse
-        methylation), 'GSE223748' (mammalian methylation), 'ENCFF386QWG' (histone mark), 'GSE65765' (C. elegans
-        RNA-seq), 'GSE193140' (ATAC-Seq), 'blood_chemistry_example' (blood chemistry).
-
+        The type of data to download. Valid options are 'GSE139307', 'GSE130735', 'GSE223748', 
+        'ENCFF386QWG', 'GSE65765', 'GSE193140', and 'blood_chemistry_example'.
     dir : str
         The directory to deposit the downloaded file. Defaults to "pyaging_data".
-
     verbose : bool
         Whether to log the output to console with the logger. Defaults to True.
 
@@ -41,11 +33,8 @@ def download_example_data(
     Notes
     -----
     The function maps the specified data_type to its corresponding URL and then calls the `download`
-    function to retrieve the dataset. The datasets are sourced from AWS S3
-    and are chosen to represent typical data formats and structures used in aging research.
-
-    The downloaded data can be used for various analyses, including testing the pyaging package's
-    functionalities, learning data processing techniques, or as a benchmark for custom analyses.
+    function to retrieve the dataset. The datasets are sourced from AWS S3 and are chosen to represent
+    typical data formats and structures used in aging research.
 
     Examples
     --------
@@ -67,13 +56,10 @@ def download_example_data(
         "blood_chemistry_example": "https://pyaging.s3.amazonaws.com/example_data/blood_chemistry_example.pkl",
     }
 
-    if data_type not in list(data_type_to_url.keys()):
-        logger.error(
-            f"Example data {data_type} has not yet been implemented in pyaging.",
-            indent_level=2,
-        )
+    if data_type not in data_type_to_url:
+        logger.error(f"Example data {data_type} has not yet been implemented in pyaging.", indent_level=2)
+        return
 
     url = data_type_to_url[data_type]
     download(url, dir, logger, indent_level=1)
-
     logger.done()

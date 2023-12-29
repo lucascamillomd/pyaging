@@ -1,0 +1,45 @@
+Clock name,Data type,Species,Year,Preprocessing,Postprocessing,Implementation approved by author(s),DOI,Miscellaneous notes
+altumage,methylation,Homo sapiens,2022,scale,,✅,https://doi.org/10.1038/s41514-022-00085-y,
+bitage,transcriptomics,C elegans,2021,binarize,,✅,https://doi.org/10.1111/acel.13320,
+dnamphenoage,methylation,Homo sapiens,2018,,,⌛,https://doi.org/10.18632%2Faging.101414,
+dnamtl,methylation,Homo sapiens,2019,,,⌛,https://doi.org/10.18632/aging.102173,
+dunedinpace,methylation,Homo sapiens,2022,quantile_normalization_with_gold_standard,,⌛,https://doi.org/10.7554/eLife.73420,The automatic failure if fewer than 80% of the CpG probes are available is not implemented and left to the user's discretion.
+h3k27ac,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
+h3k27me3,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
+h3k36me3,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
+h3k4me1,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
+h3k4me3,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
+h3k9ac,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
+h3k9me3,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
+hannum,methylation,Homo sapiens,2013,,,⌛,https://doi.org/10.1016/j.molcel.2012.10.016,
+horvath2013,methylation,Homo sapiens,2013,,anti_log_linear,⌛,https://doi.org/10.1186/gb-2013-14-10-r115,
+hrsinchphenoage,methylation,Homo sapiens,2022,,,⌛,https://doi.org/10.1038/s43587-022-00248-2,
+knight,methylation,Homo sapiens,2016,,,⌛,https://doi.org/10.1186/s13059-016-1068-z,
+leecontrol,methylation,Homo sapiens,2019,,,⌛,https://doi.org/10.18632/aging.102049,
+leerefinedrobust,methylation,Homo sapiens,2019,,,⌛,https://doi.org/10.18632/aging.102049,
+leerobust,methylation,Homo sapiens,2019,,,⌛,https://doi.org/10.18632/aging.102049,
+lin,methylation,Homo sapiens,2016,,,⌛,https://doi.org/10.18632/aging.100908,
+mammalian1,methylation,multi,2023,,anti_logp2,⌛,https://doi.org/10.1038/s43587-023-00462-6,This is the DNAm age predictor from the paper in which there is no adjustment for species
+mammalian2,methylation,multi,2023,,anti_log_log,⌛,https://doi.org/10.1038/s43587-023-00462-6,"This is the relative DNAm age predictor from the paper, with min=0 and max=1"
+mammalian3,methylation,multi,2023,,,⌛,https://doi.org/10.1038/s43587-023-00462-6,"This is the log-linear age predictor from the paper. To convert the units of DNAm age, then the age of puberty for the reverse transformation must be known for each species"
+mammalianlifespan,methylation,multi,2023,,anti_log,⌛,https://doi.org/10.1101/2023.11.02.565286,"This is still a preprint, so the model might change"
+meermultitissue,methylation,Mus musculus,2018,,,⌛,https://doi.org/10.7554/eLife.40675,
+ocampoatac1,atac,Homo sapiens,2023,tpm_norm_log1p,,⌛,https://doi.org/10.1007/s11357-023-00986-0,This is the model trained on the ATAC data produced by the Ocampo lab plus a public dataset
+ocampoatac2,atac,Homo sapiens,2023,tpm_norm_log1p,,⌛,https://doi.org/10.1007/s11357-023-00986-0,This is the model trained on the ATAC data produced by the Ocampo lab plus a public dataset
+panhistone,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
+pcdnamtl,methylation,Homo sapiens,2022,,,⌛,https://doi.org/10.1038/s43587-022-00248-2,
+pcgrimage,methylation,Homo sapiens,2022,,,⌛,https://doi.org/10.1038/s43587-022-00248-2,
+pchannum,methylation,Homo sapiens,2022,,,⌛,https://doi.org/10.1038/s43587-022-00248-2,
+pchorvath2013,methylation,Homo sapiens,2022,,anti_log_linear,⌛,https://doi.org/10.1038/s43587-022-00248-2,
+pcphenoage,methylation,Homo sapiens,2022,,,⌛,https://doi.org/10.1038/s43587-022-00248-2,
+pcskinandblood,methylation,Homo sapiens,2022,,anti_log_linear,⌛,https://doi.org/10.1038/s43587-022-00248-2,
+pedbe,methylation,Homo sapiens,2019,,anti_log_linear,⌛,https://doi.org/10.1073/pnas.1820843116,
+petkovichblood,methylation,Mus musculus,2017,,petkovichblood,⌛,https://doi.org/10.1016/j.cmet.2017.03.016,
+phenoage,blood chemistry,Homo sapiens,2018,,mortality_to_phenoage,⌛,https://doi.org/10.18632%2Faging.101414,"To check the units for each of the features, please go to the paper in Table 1."
+replitali,methylation,Homo sapiens,2022,,,⌛,https://doi.org/10.1038/s41467-022-34268-8,
+skinandblood,methylation,Homo sapiens,2018,,anti_log_linear,⌛,https://doi.org/10.18632/aging.101508,
+stubbsmultitissue,methylation,Mus musculus,2017,,stubbsmultitissue,⌛,https://doi.org/10.1186/s13059-017-1203-5,
+thompsonmultitissue,methylation,Mus musculus,2018,,,⌛,https://doi.org/10.18632/aging.101590,
+zhangblup,methylation,Homo sapiens,2017,scale_row,,⌛,https://doi.org/10.1186/s13073-019-0667-1,
+zhangen,methylation,Homo sapiens,2017,scale_row,,⌛,https://doi.org/10.1186/s13073-019-0667-1,
+zhangmortality,methylation,Homo sapiens,2019,,,⌛,https://doi.org/10.1038/ncomms14617,
