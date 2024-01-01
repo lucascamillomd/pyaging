@@ -105,7 +105,7 @@ class PCLinearModel(nn.Module):
 class PCGrimAge(nn.Module):
     def __init__(self, input_dim, pc_dim, comp_dims=[]):
         """
-        Initialize a PC Grim Age model.
+        Initialize a PCGrimAge model.
         """
         super(PCGrimAge, self).__init__()
 
@@ -149,6 +149,7 @@ class PCGrimAge(nn.Module):
 
         # Add gender and age again for final linear layer
         x = torch.cat((x, age.unsqueeze(1), female.unsqueeze(1)), dim=1)
+
         x = self.step2(x)
 
         return x
