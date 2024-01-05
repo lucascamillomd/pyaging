@@ -4,6 +4,8 @@ bitage,transcriptomics,C elegans,2021,binarize,,✅,https://doi.org/10.1111/acel
 dnamphenoage,methylation,Homo sapiens,2018,,,⌛,https://doi.org/10.18632%2Faging.101414,
 dnamtl,methylation,Homo sapiens,2019,,,⌛,https://doi.org/10.18632/aging.102173,
 dunedinpace,methylation,Homo sapiens,2022,quantile_normalization_with_gold_standard,,⌛,https://doi.org/10.7554/eLife.73420,The automatic failure if fewer than 80% of the CpG probes are available is not implemented and left to the user's discretion.
+encen100,methylation,Homo sapiens,2023,,,⌛,https://doi.org/10.1007/s11357-023-00731-7,
+encen40,methylation,Homo sapiens,2023,,,⌛,https://doi.org/10.1007/s11357-023-00731-7,
 h3k27ac,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
 h3k27me3,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
 h3k36me3,histone_mark,Homo sapiens,2023,,,✅,https://doi.org/10.1101/2023.08.21.554165,"This is still a preprint, so the model might change"
