@@ -7,6 +7,7 @@ testing.ipynb
 pyaging/clocks/
 clocks/weights/
 *.pt
+*.json
 pyaging_data/
 example_data/
 testing.ipynb

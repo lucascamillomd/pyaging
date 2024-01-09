@@ -1,6 +1,8 @@
 Installation
 ============
 
+*Please note that pyaging is only supported by python versions 3.9, 3.10, and 3.11.**
+
 pyaging now has been released to PyPi and can easily be installed via:
 
 .. code-block:: bash
