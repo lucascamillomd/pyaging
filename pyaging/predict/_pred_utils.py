@@ -680,21 +680,22 @@ def convert_tensor_to_numpy_array(
     return tensor.cpu().detach().numpy().flatten()
 
 
-@progress("Add predicted ages to adata")
-def add_pred_ages_adata(
+@progress("Add predicted ages and clock metadata to adata")
+def add_pred_ages_and_clock_metadata_adata(
     adata: anndata.AnnData,
     predicted_ages: np.ndarray,
     clock_name: str,
+    dir: str,
     logger,
     indent_level: int = 2,
 ) -> None:
     """
-    Add predicted ages to an AnnData object as a new column in the observation (obs) attribute.
+    Add predicted ages to an AnnData object as a new column in the observation (obs) attribute. Also adds
+    the specific clock metadata to the `uns` attribute of an AnnData object.
 
     This function appends the predicted ages, obtained from a biological aging clock or similar model, to
     the AnnData object's `obs` attribute. The predicted ages are added as a new column, named after the
-    clock used to generate these predictions. This allows for easy integration and comparison of age
-    predictions within the bioinformatics data analysis workflows.
+    clock used to generate these predictions. 
 
     Parameters
     ----------
@@ -709,6 +710,9 @@ def add_pred_ages_adata(
     clock_name : str
         The name of the aging clock used to generate the predicted ages. This name will be used
         as the column name in `adata.obs`.
+
+    dir: str
+        The directory to deposit the downloaded file.
 
     logger : Logger
         A logger object for logging the progress or relevant information during the operation.
@@ -734,7 +738,7 @@ def add_pred_ages_adata(
     --------
     >>> adata = anndata.AnnData(np.random.rand(5, 10))
     >>> predicted_ages = [25, 30, 35, 40, 45]
-    >>> add_pred_ages_adata(adata, predicted_ages, 'horvath2013', logger)
+    >>> add_pred_ages_adata(adata, predicted_ages, 'horvath2013', 'pyaging_data', logger)
     >>> adata.obs['horvath2013']
     0    25
     1    30
@@ -742,9 +746,20 @@ def add_pred_ages_adata(
     3    40
     4    45
     Name: horvath2013, dtype: int64
+    >>> adata.uns['horvath2013_metadata']
+    {'species': 'Homo sapiens', 'data_type': 'methylation', 'citation': 'Horvath, S. (2013)'}
 
     """
+    # Add predicted ages to adata.obs
     adata.obs[clock_name] = predicted_ages
+
+    # Load all clocks metadata
+    url = f"https://pyaging.s3.amazonaws.com/clocks/metadata/all_clock_metadata.pt"
+    download(url, dir, logger, indent_level=indent_level)
+    all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
+
+    # Add clock metadata to adata.uns
+    adata.uns[f"{clock_name}_metadata"] = all_clock_metadata[clock_name]
 
 
 @progress("Return adata to original size")
@@ -800,72 +815,6 @@ def filter_missing_features(
         )
 
     return adata
-
-
-@progress("Add clock metadata to adata.uns")
-def add_clock_metadata_adata(
-    adata: anndata.AnnData,
-    clock_name: str,
-    dir: str,
-    logger,
-    indent_level: int = 2,
-) -> None:
-    """
-    Add specific clock metadata to the `uns` attribute of an AnnData object.
-
-    This function enriches an AnnData object with metadata related to a specific aging clock.
-    The metadata is stored under a key named after the clock in the AnnData's `uns` attribute, which is
-    a dictionary-like structure used for storing unstructured data. This addition aids in keeping track
-    of the clock-specific information, such as model parameters or references, which can be crucial for
-    subsequent analyses and reproducibility.
-
-    Parameters
-    ----------
-    adata : anndata.AnnData
-        The AnnData object to which the clock metadata will be added. AnnData is widely used in
-        bioinformatics for storing large-scale biological data like gene expression matrices.
-
-    clock_name : str
-        The name of the aging clock. The metadata associated with this clock will be added to
-        the AnnData object.
-
-    dir: str
-        The directory to deposit the downloaded file. Defaults to "pyaging_data".
-
-    logger : Logger
-        A logger object for logging the progress or relevant information during the operation.
-
-    indent_level : int, optional
-        The indentation level for logging messages, by default 2.
-
-    Returns
-    -------
-    None
-        This function modifies the AnnData object in-place and does not return any value.
-
-    Notes
-    -----
-    The `uns` attribute in AnnData is a flexible slot for storing miscellaneous data. Adding clock metadata
-    here ensures that all relevant information about the aging clocks used in the analysis is
-    preserved alongside the dataset.
-
-    Examples
-    --------
-    >>> adata = anndata.AnnData(np.random.rand(5, 10))
-    >>> add_clock_metadata_adata(adata, 'horvath2013', 'pyaging_data', logger)
-    >>> adata.uns['horvath2013_metadata']
-    {'description': 'Horvath’s 2013 epigenetic clock', 'reference': 'Horvath, S. (2013)'}
-
-    """
-
-    # Load all clocks metadata
-    url = f"https://pyaging.s3.amazonaws.com/clocks/metadata/all_clock_metadata.pt"
-    download(url, dir, logger, indent_level=indent_level)
-    all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
-
-    # Add clock metadata to adata.uns
-    adata.uns[f"{clock_name}_metadata"] = all_clock_metadata[clock_name]
-
 
 @progress("Set PyTorch device")
 def set_torch_device(logger, indent_level: int = 1) -> None:

@@ -197,6 +197,17 @@ def create_anndata_object(
 
     """
 
+    # Identify columns with only NAs
+    columns_with_nas = df.columns[df.isna().all()]
+
+    # Log the number and names of columns being dropped
+    num_columns_dropped = len(columns_with_nas)
+    if num_columns_dropped > 0:
+        logger.warning(f"Dropping {num_columns_dropped} columns with only NAs: {list(columns_with_nas)[:np.min([3, num_columns_dropped])]}, etc.", indent_level=indent_level+1)
+    
+    # Drop columns with only NAs
+    df = df.drop(columns=columns_with_nas, axis=1)
+
     # Extract information from df
     X = df.values
     obs_names = df.index
