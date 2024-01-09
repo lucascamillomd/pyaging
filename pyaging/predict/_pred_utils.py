@@ -626,7 +626,7 @@ def predict_ages_with_model(
         for batch in main_tqdm(
             dataloader, indent_level=indent_level + 1, logger=logger
         ):
-            batch_pred = model(batch[:, features].X)
+            batch_pred = model(batch[:, features].X.to(device))
             predictions.append(batch_pred)
 
     # Concatenate all batch predictions
