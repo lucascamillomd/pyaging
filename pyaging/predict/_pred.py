@@ -134,7 +134,9 @@ def predict_age(
         )
 
         # Add predicted ages and clock metadata to adata
-        add_pred_ages_and_clock_metadata_adata(adata, predicted_ages, clock_name, dir, logger, indent_level=2)
+        add_pred_ages_and_clock_metadata_adata(
+            adata, predicted_ages, clock_name, dir, logger, indent_level=2
+        )
 
         # Return adata to original size and number of features
         adata = filter_missing_features(adata, logger, indent_level=2)

@@ -695,7 +695,7 @@ def add_pred_ages_and_clock_metadata_adata(
 
     This function appends the predicted ages, obtained from a biological aging clock or similar model, to
     the AnnData object's `obs` attribute. The predicted ages are added as a new column, named after the
-    clock used to generate these predictions. 
+    clock used to generate these predictions.
 
     Parameters
     ----------
@@ -815,6 +815,7 @@ def filter_missing_features(
         )
 
     return adata
+
 
 @progress("Set PyTorch device")
 def set_torch_device(logger, indent_level: int = 1) -> None:
