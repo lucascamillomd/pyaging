@@ -13,9 +13,9 @@ metadata_dict = torch.load("_static/all_clock_metadata.pt")
 # Convert to DataFrame and do some processing
 df = pd.DataFrame(metadata_dict).T
 df.index.name = "clock_name"
-df = df.sort_values("clock_name")
-df = df.loc[:,["data_type", "species", "year", "preprocessing", "postprocessing", "implementation_approved_by_author(s)", "doi", "notes"]]
-df.columns = ["Data type", "Species", "Year", "Preprocessing", "Postprocessing", "Implementation approved by author(s)", "DOI", "Miscellaneous notes"]
+df = df.sort_values(["implementation_approved_by_author(s)", "year", "clock_name"], ascending=[False, False, True])
+df = df.loc[:,["data_type", "species", "year", "implementation_approved_by_author(s)", "doi", "notes", "preprocessing", "postprocessing",]]
+df.columns = ["Data type", "Species", "Year", "Approved by author(s)", "DOI", "Miscellaneous notes", "Preprocessing", "Postprocessing",]
 df.index.name = "Clock name"
 
 # Save csv
