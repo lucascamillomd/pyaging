@@ -73,7 +73,16 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     """
     url = f"https://pyaging.s3.amazonaws.com/clocks/weights/{clock_name}.pt"
-    download(url, dir, logger, indent_level=indent_level)
+    try:
+        download(url, dir, logger, indent_level=indent_level)
+    except:
+        logger.error(
+            f"Clock {clock_name} is not available on pyaging. "
+            f"Please refer to the clock names in the clock glossary table "
+            f"in the package documentation page: pyaging.readthedocs.io",
+            indent_level=indent_level+1,
+        )
+        raise NameError
 
     # Define the path to the clock weights file
     weights_path = os.path.join(dir, f"{clock_name}.pt")
