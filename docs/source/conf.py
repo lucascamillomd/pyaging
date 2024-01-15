@@ -41,6 +41,8 @@ extensions = [
     "scanpydoc",  # needs to be before linkcode
     "sphinx.ext.linkcode",
     "IPython.sphinxext.ipython_console_highlighting",
+    "sphinx.ext.imgmath",
+    "sphinx.ext.extlinks",
 ]
 
 templates_path = ['../_templates']

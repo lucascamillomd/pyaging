@@ -1,7 +1,9 @@
 import os
 import torch
 import ntpath
-import os
+import io
+from contextlib import redirect_stdout
+from IPython.display import display, HTML
 from urllib.request import urlretrieve
 from functools import wraps
 
@@ -115,7 +117,7 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     <class 'dict'>
 
     """
-    url = f"https://pyaging.s3.amazonaws.com/clocks/metadata/all_clock_metadata.pt"
+    url = f"https://pyaging.s3.amazonaws.com/clocks/metadata0.1.0/all_clock_metadata.pt"
     download(url, dir, logger, indent_level=indent_level)
     all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
     return all_clock_metadata
@@ -505,7 +507,7 @@ def get_clock_weights(clock_name: str, dir: str = "pyaging_data") -> dict:
         raise ValueError
 
     # Download weights
-    url = f"https://pyaging.s3.amazonaws.com/clocks/weights/{clock_name}.pt"
+    url = f"https://pyaging.s3.amazonaws.com/clocks/weights0.1.0/{clock_name}.pt"
     download(url, dir, logger, indent_level=1)
 
     # Define the path to the clock weights file
@@ -517,3 +519,45 @@ def get_clock_weights(clock_name: str, dir: str = "pyaging_data") -> dict:
     logger.done()
 
     return clock_dict
+
+
+def print_to_scrollable_output(function_to_run):
+    """
+    Executes the provided function and captures its print output. The captured
+    output is then displayed in a scrollable HTML box within a Jupyter Notebook.
+
+    This function is useful when the output is too long and needs to be presented
+    in a constrained, scrollable area within the notebook.
+
+    Parameters
+    --------
+    function_to_run : function
+        A function that contains print statements. The output of these print 
+        statements will be captured and displayed.
+
+    Examples
+    --------
+    >>> def example_function():
+    ...     for i in range(100):
+    ...         print(f"Line {i}")
+    ...
+    >>> print_to_scrollable_output(example_function)
+    """
+
+    # Create a StringIO object to capture print output
+    f = io.StringIO()
+
+    # Redirect the standard output to the StringIO object
+    with redirect_stdout(f):
+        function_to_run()  # Execute the provided function
+
+    # Retrieve the captured output from the StringIO object
+    printed_text = f.getvalue()
+
+    # Format the output as scrollable HTML and display it in the notebook
+    scrollable_output_html = f"""
+    <div style="overflow-x: scroll; overflow-y: scroll; border: 1px solid black; background-color: white; !important; color: black; !important;">
+        <pre>{printed_text}</pre>
+    </div>
+    """
+    display(HTML(scrollable_output_html))

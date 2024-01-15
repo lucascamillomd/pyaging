@@ -10,6 +10,18 @@ def scale(x, scaler):
 
     return x_scaled
 
+def scale_with_gold_standard(x, column_means, column_stds):
+    """
+    Scales the input data per column given means and standard deviations.
+    """
+    # Ensure column_stds is a numpy array
+    column_stds = np.array(column_stds)
+
+    # Avoid division by zero in case of a column with constant value
+    column_stds[np.abs(column_stds) < 10e-10] = 1
+
+    x_scaled = (x - column_means) / column_stds
+    return x_scaled
 
 def scale_row(x, x_overlap):
     """
@@ -23,7 +35,6 @@ def scale_row(x, x_overlap):
 
     x_scaled = (x - row_means) / row_stds
     return x_scaled
-
 
 def binarize(x):
     """

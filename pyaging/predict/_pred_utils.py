@@ -1,8 +1,11 @@
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 import os
+import marshal
+import types
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
+import math
 import pandas as pd
 import anndata
 from anndata.experimental.pytorch import AnnLoader
@@ -52,8 +55,6 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
         - weight_dict: A dictionary of weights used in the clock's model.
         - preprocessing: Any preprocessing steps required for the clock's input data.
         - postprocessing: Any postprocessing steps applied to the clock's output.
-        - preprocessing_helper: Any preprocessing helper file.
-        - postprocessing_helper: Any postprocessing helper file.
 
     Notes
     -----
@@ -67,12 +68,12 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     Examples
     --------
-    >>> features, reference_feature_values, _, _, _, _, _, _ = load_clock("clock1", "pyaging_data", logger)
+    >>> features, preprocessing_features, _, _, _ = load_clock("clock1", "pyaging_data", logger)
     >>> print(features)
     ['feature1', 'feature2', ...]
 
     """
-    url = f"https://pyaging.s3.amazonaws.com/clocks/weights/{clock_name}.pt"
+    url = f"https://pyaging.s3.amazonaws.com/clocks/weights0.1.0/{clock_name}.pt"
     try:
         download(url, dir, logger, indent_level=indent_level)
     except:
@@ -92,23 +93,19 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     # Extract relevant information from the clock dictionary
     features = clock_dict["features"]
-    reference_feature_values = clock_dict.get("reference_feature_values", None)
+    model_class = clock_dict["model_class"]
     weight_dict = clock_dict["weight_dict"]
+    reference_feature_values = clock_dict.get("reference_feature_values", None)
     preprocessing = clock_dict.get("preprocessing", None)
     postprocessing = clock_dict.get("postprocessing", None)
-    preprocessing_helper = clock_dict.get("preprocessing_helper", None)
-    postprocessing_helper = clock_dict.get("postprocessing_helper", None)
-    model_class = clock_dict["model_class"]
 
     return (
         features,
-        reference_feature_values,
-        weight_dict,
-        preprocessing,
-        postprocessing,
-        preprocessing_helper,
-        postprocessing_helper,
         model_class,
+        weight_dict,
+        reference_feature_values,
+        preprocessing,
+        postprocessing
     )
 
 
@@ -117,7 +114,7 @@ def check_features_in_adata(
     adata: anndata.AnnData,
     clock_name: str,
     features: List[str],
-    reference_feature_values: List[float],
+    reference_feature_values: Dict,
     logger,
     indent_level: int = 2,
 ) -> anndata.AnnData:
@@ -144,9 +141,8 @@ def check_features_in_adata(
         A list of features (e.g., gene names or other identifiers) that are expected to be
         present in the 'adata'.
 
-    reference_feature_values : list
-        A list of the reference values for each feature. The order must match the order of features.
-        If no
+    reference_feature_values : dictionary
+        A dictionary of the reference features matching the reference values. 
 
     logger : Logger
         A logger object used for logging information about the process, such as the number
@@ -179,6 +175,18 @@ def check_features_in_adata(
     Index(['gene1', 'gene2', ...], dtype='object')
 
     """
+
+    # Move data to adata.X
+    adata.X = (
+        adata.layers["X_imputed"].copy()
+        if "X_imputed" in adata.layers
+        else adata.layers["X_original"].copy()
+    )
+
+    # If reference_feature_values is given, then the features will come from the dictionary
+    if reference_feature_values:
+        features = list(reference_feature_values.keys())
+    
     # Identify missing features
     missing_features = [
         feature for feature in features if feature not in adata.var_names
@@ -209,27 +217,24 @@ def check_features_in_adata(
         logger.warning(
             f"{num_missing_features} out of {total_features} features "
             f"({percent_missing:.2f}%) are missing: {missing_features[:np.min([3, num_missing_features])]}, etc.",
-            indent_level=indent_level + 1,
+            indent_level=indent_level+1,
         )
 
         # If there are reference values provided
         if reference_feature_values:
             logger.info(
                 f"Using reference feature values for {clock_name}",
-                indent_level=indent_level + 1,
+                indent_level=indent_level+1,
             )
-
-            # Map features to reference values
-            feature_value_map = dict(zip(features, reference_feature_values))
 
             # Pre-allocate with reference values, if missing, use a default value (e.g., 0)
             missing_data = np.array(
-                [feature_value_map.get(f, 0) for f in missing_features] * adata.n_obs
+                [reference_feature_values.get(f, 0) for f in missing_features] * adata.n_obs
             ).reshape(adata.n_obs, num_missing_features)
         else:
             logger.info(
                 f"Filling missing features entirely with 0",
-                indent_level=indent_level + 1,
+                indent_level=indent_level+1,
             )
 
             # Create an empty array
@@ -254,12 +259,12 @@ def check_features_in_adata(
 
         logger.info(
             f"Expanded adata with {num_missing_features} missing features",
-            indent_level=indent_level + 1,
+            indent_level=indent_level+1,
         )
     else:
         logger.info(
             "All features are present in adata.var_names.",
-            indent_level=indent_level + 1,
+            indent_level=indent_level+1,
         )
 
     return adata
@@ -350,8 +355,6 @@ def initialize_model(
         )
     elif model_class == "AltumAge":
         model = AltumAge()
-    elif model_class == "PCARDModel":
-        model = PCARDModel(len(features), pc_dim=weight_dict["rotation"].shape[1])
     else:
         raise ValueError(f"Model class '{model_class}' is not supported.")
 
@@ -360,216 +363,16 @@ def initialize_model(
     model.to(device)
     model.eval()
     return model
-
-
-@progress("Preprocess data")
-def preprocess_data(
-    adata: anndata.AnnData,
-    preprocessing: str,
-    preprocessing_helper,
-    features: List[str],
-    logger,
-    indent_level: int = 2,
-) -> anndata.AnnData:
-    """
-    Preprocess the input data based on the specified method and the clock dictionary.
-
-    This function applies a specified preprocessing method to the input data, which is necessary
-    for aligning the data format with the requirements of the aging clock models. The function
-    supports multiple preprocessing methods, including scaling, log transformation, binarization, etc.
-    The specific preprocessing method to be used is indicated by the `preprocessing` parameter. A new
-    layers with the format X_{preprocessing} is added to the adata object.
-
-    Parameters
-    ----------
-    adata : anndata.AnnData
-        The input data to be preprocessed in AnnData format.
-
-    preprocessing : str
-        The name of the preprocessing method to apply. Supported methods include 'scale', 'log1p',
-        'binarize', and 'quantile_normalization_with_gold_standard'.
-
-    preprocessing_helper:
-        Any preprocessing helper file, from an scikit-learn scaler object to a list of standard values.
-
-    features : List[str]
-        The features used by the clock.
-
-    logger : Logger
-        A logger object for logging the progress and any information or warnings during preprocessing.
-
-    indent_level : int, optional
-        The indentation level for the logger, by default 2. It controls the formatting of the log
-        messages.
-
-    Returns
-    -------
-    adata : anndata.AnnData
-        The preprocessed data, ready to be input into the aging clock models.
-
-    Notes
-    -----
-    The function assumes that the input `data` is in a format compatible with the preprocessing methods.
-    For instance, 'scale' may expect a numeric tensor, while 'log1p' requires non-negative values.
-    Users must ensure that the input data is appropriate for the selected preprocessing method.
-
-    Examples
-    --------
-    >>> processed_adata = preprocess_data(adata, "scale", preprocessing_helper, features, logger)
-    >>> print(processed_adata.shape)
-    np.array([...])
-
-    """
-
-    # Move to adata.X for preprocessing
-    adata.X = (
-        adata.layers["X_imputed"].copy()
-        if "X_imputed" in adata.layers
-        else adata.layers["X_original"].copy()
-    )
-
-    # Skip if it there is no preprocessing to be done
-    if preprocessing is None:
-        logger.info(
-            "There is no preprocessing to be done",
-            indent_level=3,
-        )
-        return adata
-
-    logger.info(f"Preprocessing data with function {preprocessing}", indent_level=3)
-    # Apply specified preprocessing method
-    if preprocessing == "tpm_norm_log1p":
-        adata.X = tpm_norm_log1p(adata.X, preprocessing_helper)
-    elif preprocessing == "binarize":
-        adata.X = binarize(adata.X)
-    elif preprocessing == "scale_row":
-        adata.X = scale_row(adata.X, adata[:, features].X)
-    elif preprocessing == "scale":
-        X = adata[:, features].X
-        X = scale(X, preprocessing_helper)
-        adata[:, features].X = X
-    elif preprocessing == "quantile_normalization_with_gold_standard":
-        gold_standard_df = pd.DataFrame(
-            dict(
-                zip(
-                    preprocessing_helper["gold_standard_probes"],
-                    preprocessing_helper["gold_standard_means"],
-                )
-            ),
-            index=["means"],
-        ).T
-        common_features = np.intersect1d(
-            adata.var_names, gold_standard_df.index.tolist()
-        )
-        X = adata[:, common_features].X
-        X = quantile_normalize_with_gold_standard(
-            X, gold_standard_df.loc[common_features, "means"].tolist()
-        )
-        adata[:, common_features].X = X
-    else:
-        logger.error(f"Preprocessing function {preprocessing} not found.")
-        raise ValueError()
-
-    return adata
-
-
-@progress("Postprocess data")
-def postprocess_data(
-    data: np.ndarray,
-    postprocessing: str,
-    clock_dict: dict,
-    logger,
-    indent_level: int = 2,
-) -> np.ndarray:
-    """
-    Apply postprocessing to the data based on the specified method.
-
-    This function is designed to apply a specific postprocessing method to data, typically after
-    it has been processed by a machine learning model. The type of postprocessing is determined
-    by the `postprocessing` parameter. The function supports several methods, including various
-    forms of anti-log transformations, which are applied using a vectorized approach for efficiency.
-
-    Parameters
-    ----------
-
-    data : array-like
-        The data to be postprocessed. It should be compatible with the specified postprocessing method.
-
-    postprocessing : str
-        The name of the postprocessing method to be applied. Supported methods include
-        'anti_log_linear', 'anti_logp2', 'anti_log', etc.
-
-    postprocessing_helper:
-        Any postprocessing helper file, from an scikit-learn scaler object to a list of standard values.
-
-    logger : Logger
-        A logger object for logging the progress, information, or warnings during postprocessing.
-
-    indent_level : int, optional
-        The indentation level for logging messages, by default 2.
-
-    Returns
-    -------
-    postprocessed_data : array-like
-        The data after applying the specified postprocessing method.
-
-    Notes
-    -----
-    The function relies on numpy's vectorization capabilities for efficient computation. The
-    postprocessing functions, like `anti_log_linear`, need to be defined elsewhere in the codebase.
-
-    The choice of postprocessing method should be consistent with the preprocessing method and the
-    nature of the data and model predictions.
-
-    Examples
-    --------
-    >>> postprocessed_data = postprocess_data(data, "anti_log_linear", postprocessing_helper, logger)
-    >>> print(postprocessed_data.shape)
-    (num_samples, num_features)
-
-    """
-    # Skip if it there is no postprocessing to be done
-    if postprocessing is None:
-        logger.info(
-            "There is no postprocessing to be done",
-            indent_level=3,
-        )
-        return data
-
-    logger.info(f"Postprocessing data with function {postprocessing}", indent_level=3)
-    # Apply specified postprocessing method using vectorization
-    if postprocessing == "anti_log_linear":
-        vectorized_function = np.vectorize(anti_log_linear)
-        data = vectorized_function(data)
-    elif postprocessing == "anti_logp2":
-        vectorized_function = np.vectorize(anti_logp2)
-        data = vectorized_function(data)
-    elif postprocessing == "anti_log":
-        vectorized_function = np.vectorize(anti_log)
-        data = vectorized_function(data)
-    elif postprocessing == "anti_log_log":
-        vectorized_function = np.vectorize(anti_log_log)
-        data = vectorized_function(data)
-    elif postprocessing == "mortality_to_phenoage":
-        vectorized_function = np.vectorize(mortality_to_phenoage)
-        data = vectorized_function(data)
-    elif postprocessing == "petkovichblood":
-        vectorized_function = np.vectorize(petkovichblood)
-        data = vectorized_function(data)
-    elif postprocessing == "stubbsmultitissue":
-        vectorized_function = np.vectorize(stubbsmultitissue)
-        data = vectorized_function(data)
-    else:
-        logger.error(f"Postprocessing function {postprocessing} not found.")
-        raise ValueError()
-    return data
-
+   
 
 @progress("Predict ages with model")
 def predict_ages_with_model(
     model: torch.nn.Module,
     adata: torch.Tensor,
     features: List[str],
+    reference_feature_values: Dict,
+    preprocessing: Dict,
+    postprocessing: Dict,
     device: str,
     logger,
     indent_level: int = 2,
@@ -594,6 +397,17 @@ def predict_ages_with_model(
     features : list of str
         A list of feature names to be included in the output array. Only these features from the AnnData object will
         be extracted for age prediction.
+
+    reference_feature_values : dictionary
+        A dictionary of the reference features matching the reference values. 
+
+    preprocessing : dictionary
+        A dictionary of the name, function (in string format), and helper objects for preprocessing. The keys
+        must be 'name', 'preprocessing_function', and 'preprocessing_helper_objects'.
+
+    postprocessing : dictionary
+        A dictionary of the name, function (in string format), and helper objects for postprocessing. The keys
+        must be 'name', 'postprocessing_function', and 'postprocessing_helper_objects'.
 
     device : str
         Device to move AnnData to during inference. Eithe 'cpu' or 'cuda'.
@@ -625,74 +439,64 @@ def predict_ages_with_model(
     [34.5, 29.3, 47.8, 50.1, 42.6]
 
     """
+
+    # If the preprocessing object is not None
+    if preprocessing:
+        logger.info(f"The preprocessing method {preprocessing['name']}", indent_level=indent_level+1)
+        
+        code = marshal.loads(preprocessing['preprocessing_function'])
+        preprocessing_function = types.FunctionType(code, globals())
+        converter = {'X': preprocessing_function}
+        global preprocessing_helper_objects
+        preprocessing_helper_objects = preprocessing['preprocessing_helper_objects']
+    else:
+        logger.info("There is no preprocessing necessary", indent_level=indent_level+1)
+        converter = None
+
+    # If the postprocessing object is not None
+    if postprocessing:
+        logger.info(f"The postprocessing method is {postprocessing['name']}", indent_level=indent_level+1)
+        
+        code = marshal.loads(postprocessing['postprocessing_function'])
+        postprocessing_function = types.FunctionType(code, globals())
+        global postprocessing_helper_objects
+        postprocessing_helper_objects = postprocessing['postprocessing_helper_objects']
+    else:
+        logger.info("There is no postprocessing necessary", indent_level=indent_level+1)
+
+    if reference_feature_values:
+        adata = adata[:, list(reference_feature_values.keys())].copy()
+
+    if reference_feature_values and len(features) == len(reference_feature_values):
+        indices = np.arange(0, len(features))
+    else:
+        var_names = adata.var_names.tolist()
+        var_names_set = set(var_names)
+        indices = [var_names.index(var) for var in features if var in var_names_set]
+
     # Create an AnnLoader
-    use_cuda = device == "cuda"
-    dataloader = AnnLoader(adata, batch_size=1024, use_cuda=use_cuda)
+    use_cuda = torch.cuda.is_available()
+    dataloader = AnnLoader(adata, batch_size=1024, convert=converter, use_cuda=use_cuda)
 
     # Use the AnnLoader for batched prediction
     predictions = []
     with torch.no_grad():
         for batch in main_tqdm(
-            dataloader, indent_level=indent_level + 1, logger=logger
+            dataloader, indent_level=indent_level+1, logger=logger
         ):
-            batch_pred = model(batch[:, features].X.to(device))
+            batch_pred = model(batch.X[:, indices])
+            if postprocessing:
+                batch_pred.apply_(postprocessing_function)
             predictions.append(batch_pred)
-
     # Concatenate all batch predictions
     predictions = torch.cat(predictions)
     return predictions
-
-
-@progress("Convert tensor to numpy array")
-def convert_tensor_to_numpy_array(
-    tensor: torch.Tensor, logger, indent_level: int = 2
-) -> np.ndarray:
-    """
-    Convert a PyTorch tensor to a flattened NumPy array.
-
-    This utility function takes a PyTorch tensor and converts it into a 1D NumPy array. It is useful in scenarios
-    where PyTorch tensors need to be processed or analyzed using NumPy-based tools or functions. The function ensures
-    that the tensor is detached from the current computation graph (if applicable) and then flattens it to a 1D array.
-
-    Parameters
-    ----------
-    tensor : torch.Tensor
-        The PyTorch tensor to be converted. This can be a tensor of any shape.
-
-    logger : Logger
-        A logger object for logging the progress or any relevant information during the conversion process.
-
-    indent_level : int, optional
-        The indentation level for logging messages, by default 2.
-
-    Returns
-    -------
-    numpy_array : ndarray
-        A 1D NumPy array equivalent to the input tensor.
-
-    Notes
-    -----
-    This function detaches the tensor from the computation graph, so it should be used with caution if the tensor
-    is part of a PyTorch computational graph, such as when dealing with gradients in training neural networks.
-
-    The flattening to a 1D array may lose the original shape information of the tensor, which should be considered
-    if the shape is important for further processing.
-
-    Examples
-    --------
-    >>> tensor = torch.tensor([[1, 2], [3, 4]])
-    >>> numpy_array = convert_tensor_to_numpy_array(tensor, logger)
-    >>> numpy_array
-    array([1, 2, 3, 4])
-
-    """
-    return tensor.cpu().detach().numpy().flatten()
-
+    
 
 @progress("Add predicted ages and clock metadata to adata")
 def add_pred_ages_and_clock_metadata_adata(
     adata: anndata.AnnData,
-    predicted_ages: np.ndarray,
+    predicted_ages: torch.tensor,
     clock_name: str,
     dir: str,
     logger,
@@ -712,8 +516,8 @@ def add_pred_ages_and_clock_metadata_adata(
         The AnnData object to which the predicted ages will be added. It's a data structure for handling
         large-scale biological data, like gene expression matrices, commonly used in bioinformatics.
 
-    predicted_ages : numpy.ndarray or list
-        An array or list of predicted ages corresponding to the samples in the AnnData object. The length
+    predicted_ages : torch.tensor
+        A torch tensor of predicted ages corresponding to the samples in the AnnData object. The length
         of this array should match the number of samples in `adata`.
 
     clock_name : str
@@ -747,7 +551,7 @@ def add_pred_ages_and_clock_metadata_adata(
     --------
     >>> adata = anndata.AnnData(np.random.rand(5, 10))
     >>> predicted_ages = [25, 30, 35, 40, 45]
-    >>> add_pred_ages_adata(adata, predicted_ages, 'horvath2013', 'pyaging_data', logger)
+    >>> add_pred_ages_adata(adata, predicted_ages_tensor, 'horvath2013', 'pyaging_data', logger)
     >>> adata.obs['horvath2013']
     0    25
     1    30
@@ -759,16 +563,32 @@ def add_pred_ages_and_clock_metadata_adata(
     {'species': 'Homo sapiens', 'data_type': 'methylation', 'citation': 'Horvath, S. (2013)'}
 
     """
+    # Convert from a torch tensor to a flat numpy array
+    predicted_ages = predicted_ages.cpu().detach().numpy().flatten()
+    
     # Add predicted ages to adata.obs
     adata.obs[clock_name] = predicted_ages
 
-    # Load all clocks metadata
-    url = f"https://pyaging.s3.amazonaws.com/clocks/metadata/all_clock_metadata.pt"
-    download(url, dir, logger, indent_level=indent_level)
-    all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
+    # Load the clock dictionary from the file
+    dictionary_path = os.path.join(dir, f"{clock_name}.pt")
+    clock_dict = torch.load(dictionary_path)
+
+    # Define list of metadata keys and subset dictionary
+    metadata_keys = [
+        'clock_name',
+        'data_type',
+        'model_class',
+        'species',
+        'year',
+        'approved_by_author',
+        'citation',
+        'doi',
+        "notes",
+    ]
+    metadata_dict = {k: clock_dict[k] for k in metadata_keys if k in clock_dict}
 
     # Add clock metadata to adata.uns
-    adata.uns[f"{clock_name}_metadata"] = all_clock_metadata[clock_name]
+    adata.uns[f"{clock_name}_metadata"] = metadata_dict
 
 
 @progress("Return adata to original size")
@@ -814,13 +634,13 @@ def filter_missing_features(
     if n_missing_features > 0:
         logger.info(
             f"Removing {n_missing_features} added features",
-            indent_level=indent_level + 1,
+            indent_level=indent_level+1,
         )
-        adata = adata[:, adata.var["percent_na"] < 1].copy()
+        adata = adata[:, np.array(adata.var["percent_na"] < 1)].copy()
     else:
         logger.info(
             "No missing features, so adata size did not change",
-            indent_level=indent_level + 1,
+            indent_level=indent_level+1,
         )
 
     return adata

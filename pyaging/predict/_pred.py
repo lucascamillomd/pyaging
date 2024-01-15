@@ -80,13 +80,11 @@ def predict_age(
         # Load and prepare the clock
         (
             features,
-            reference_feature_values,
-            weight_dict,
-            preprocessing,
-            postprocessing,
-            preprocessing_helper,
-            postprocessing_helper,
             model_class,
+            weight_dict,
+            reference_feature_values,
+            preprocessing,
+            postprocessing
         ) = load_clock(clock_name, dir, logger, indent_level=2)
 
         # Check and update adata for missing features
@@ -99,43 +97,19 @@ def predict_age(
             indent_level=2,
         )
 
-        # Apply preprocessing
-        adata = preprocess_data(
-            adata,
-            preprocessing,
-            preprocessing_helper,
-            features,
-            logger,
-            indent_level=2,
-        )
-
         # Initialize and configure the model
         clock_model = initialize_model(
             model_class, features, weight_dict, device, logger, indent_level=2
         )
 
-        # Perform age prediction using the model
+        # Perform age prediction using the model applying preprocessing and postprocessing steps
         predicted_ages_tensor = predict_ages_with_model(
-            clock_model, adata, features, device, logger, indent_level=2
-        )
-
-        # Convert torch tensor to numpy array
-        predicted_ages = convert_tensor_to_numpy_array(
-            predicted_ages_tensor, logger, indent_level=2
-        )
-
-        # Apply postprocessing
-        predicted_ages = postprocess_data(
-            predicted_ages,
-            postprocessing,
-            postprocessing_helper,
-            logger,
-            indent_level=2,
+            clock_model, adata, features, reference_feature_values, preprocessing, postprocessing, device, logger, indent_level=2
         )
 
         # Add predicted ages and clock metadata to adata
         add_pred_ages_and_clock_metadata_adata(
-            adata, predicted_ages, clock_name, dir, logger, indent_level=2
+            adata, predicted_ages_tensor, clock_name, dir, logger, indent_level=2
         )
 
         # Return adata to original size and number of features

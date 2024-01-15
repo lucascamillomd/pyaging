@@ -57,18 +57,19 @@ Contents
    :maxdepth: 1
    :caption: Tutorials
 
-   tutorial_utils
-   tutorial_dnam
-   tutorial_histonemarkchipseq
-   tutorial_atacseq
-   tutorial_rnaseq
-   tutorial_bloodchemistry
+   tutorials/tutorial_utils
+   tutorials/tutorial_dnam
+   tutorials/tutorial_histonemarkchipseq
+   tutorials/tutorial_atacseq
+   tutorials/tutorial_rnaseq
+   tutorials/tutorial_bloodchemistry
 
 .. toctree::
    :maxdepth: 1
    :caption: API Reference
 
    pyaging
+   clock_implementation
 
 .. toctree::
    :maxdepth: 1

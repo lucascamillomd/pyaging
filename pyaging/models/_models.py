@@ -66,23 +66,6 @@ class AltumAge(nn.Module):
         return x
 
 
-class PCARDModel(nn.Module):
-    def __init__(self, input_dim, pc_dim):
-        """
-        Initialize a PCA ARD (PCARD) model.
-        """
-        super(PCARDModel, self).__init__()
-        self.rotation = nn.Parameter(
-            torch.empty((input_dim, pc_dim)), requires_grad=False
-        )
-        self.linear = nn.Linear(pc_dim, 1)
-
-    def forward(self, x):
-        x = torch.mm(x, self.rotation)  # Apply PCA rotation
-        x = self.linear(x)
-        return x
-
-
 class PCLinearModel(nn.Module):
     def __init__(self, input_dim, pc_dim):
         """
