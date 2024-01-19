@@ -6,6 +6,7 @@ from contextlib import redirect_stdout
 from IPython.display import display, HTML
 from urllib.request import urlretrieve
 from functools import wraps
+from pprint import pformat
 
 from ..logger import LoggerManager, main_tqdm
 
@@ -118,12 +119,12 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
 
     """
     url = f"https://pyaging.s3.amazonaws.com/clocks/metadata0.1.0/all_clock_metadata.pt"
-    download(url, dir, logger, indent_level=indent_level)
+    download(url, dir, False, logger, indent_level=indent_level)
     all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
     return all_clock_metadata
 
 
-def download(url: str, dir: str, logger, indent_level: int = 1):
+def download(url: str, dir: str, force: bool, logger, indent_level: int = 1):
     """
     Downloads a file from a specified URL to a local directory.
 
@@ -138,6 +139,8 @@ def download(url: str, dir: str, logger, indent_level: int = 1):
         The URL of the file to be downloaded.
     dir : str
         The directory to deposit the downloaded file.
+    force : bool
+        Whether to redownload a new file even if already exists.
     logger : object
         Logger object for logging messages at various stages of the download process.
     indent_level : int, optional
@@ -158,7 +161,7 @@ def download(url: str, dir: str, logger, indent_level: int = 1):
     Examples
     --------
     >>> logger = Logger()
-    >>> download("https://example.com/datafile.zip", "pyaging_data", logger)
+    >>> download("https://example.com/datafile.zip", "pyaging_data", False, logger)
     Data found in pyaging_data/datafile.zip
     or
     Downloading data to pyaging_data/datafile.zip
@@ -167,7 +170,7 @@ def download(url: str, dir: str, logger, indent_level: int = 1):
     file_path = url.split("/")[-1]
     file_path = os.path.join(dir, file_path)
 
-    if os.path.exists(file_path):
+    if os.path.exists(file_path) and not force:
         logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
     else:
         if not os.path.exists(dir):
@@ -447,117 +450,55 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
     logger.done()
 
 
-def get_clock_weights(clock_name: str, dir: str = "pyaging_data") -> dict:
+def print_model_details(model, max_list_length=10, max_tensor_elements=50):
     """
-    Loads the specified aging clock from a remote source and returns a dictionary with its
-    components.
-
-    This function downloads the weights and configuration of a specified aging clock from a
-    remote server. It then loads and returns a dictionary with various components of the clock
-    such as its features, preprocessing or postprocessing steps, etc.
+    Prints detailed information about a PyTorch model, including its attributes, structure, and parameters.
 
     Parameters
     ----------
-    clock_name : str
-        The name of the aging clock whose metadata is to be retrieved. The name is case-insensitive.
-    dir : str
-        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
-
-    Returns
-    -------
-    dict
-        A dictionary containing the following components of the clock:
-        - features: The features used by the clock.
-        - reference_feature_values: Reference values for features in case features are missing.
-        - weight_dict: A dictionary of weights used in the clock's model.
-        - preprocessing: Any preprocessing steps required for the clock's input data.
-        - postprocessing: Any postprocessing steps applied to the clock's output.
-        - preprocessing_helper: Any preprocessing helper file.
-        - postprocessing_helper: Any postprocessing helper file.
+    model : torch.nn.Module
+        The PyTorch model to be inspected.
+        
+    max_list_length : int
+        The maximum length of lists to print in full. Lists longer than this will be summarized.
+        
+    max_tensor_elements : int
+        The maximum number of elements in a tensor to print in full. Tensors with more elements will be summarized.
 
     Notes
     -----
-    The clock's weights and configuration are assumed to be stored in a .pt (PyTorch) file
-    on a remote server. The URL for the clock is constructed based on the clock's name.
-    If the clock or its components are not found, the function may fail or return incomplete
-    information.
-
-    The logger is used extensively for progress tracking and information logging, enhancing
-    transparency and user experience.
-
-    Examples
-    --------
-    >>> clock_dict = get_clock_weights("clock1", "pyaging_data")
-
+    The function outputs:
+    - Model Attributes: Non-module, non-parameter attributes of the model, excluding private attributes (those starting with '_').
+    - Model Structure: The structure of the model, showing layers and submodules.
+    - Model Parameters and Weights: Parameters of the model, including weights and biases, with size and value information.
     """
 
-    logger = LoggerManager.gen_logger("get_clock_weights")
-    logger.first_info("Starting get_clock_weights function")
+    divider = "\n%========================================== Model Details ==========================================%\n"
 
-    # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
+    def formatted_print(name, value):
+        """
+        Prints the name and value of an attribute or parameter, formatting lists and tensors for readability.
 
-    # Lowercase clock name
-    clock_name = clock_name.lower()
-    clock_dict = all_clock_metadata[clock_name]
+        For lists longer than max_list_length and tensors with more elements than max_tensor_elements, a summary is printed instead of the full value.
+        """
+        if isinstance(value, list) and len(value) > max_list_length:
+            print(f"{name}: [List with {len(value)} elements]")
+        elif isinstance(value, torch.Tensor) and value.nelement() > max_tensor_elements:
+            print(f"{name}: [Tensor of shape {value.size()}]")
+        else:
+            print(f"{name}: {pformat(value)}")
 
-    # Check if clock name is available
-    if clock_name not in all_clock_metadata.keys():
-        logger.error(f"Clock {clock_name} is not yet available on pyaging")
-        raise ValueError
+    print(divider + "Model Attributes:\n")
+    for name, value in model.__dict__.items():
+        if not isinstance(value, torch.nn.Module) and not isinstance(value, torch.nn.Parameter) and not name.startswith('_'):
+            formatted_print(name, value)
 
-    # Download weights
-    url = f"https://pyaging.s3.amazonaws.com/clocks/weights0.1.0/{clock_name}.pt"
-    download(url, dir, logger, indent_level=1)
+    print(divider + "Model Structure:\n")
+    for name, module in model.named_children():
+        print(f"{name}: {module}")
 
-    # Define the path to the clock weights file
-    weights_path = os.path.join(dir, f"{clock_name}.pt")
+    print(divider + "Model Parameters and Weights:\n")
+    for name, param in model.named_parameters():
+        formatted_print(name, param.data)
 
-    # Load the clock dictionary from the file
-    clock_dict = torch.load(weights_path)
-
-    logger.done()
-
-    return clock_dict
-
-
-def print_to_scrollable_output(function_to_run):
-    """
-    Executes the provided function and captures its print output. The captured
-    output is then displayed in a scrollable HTML box within a Jupyter Notebook.
-
-    This function is useful when the output is too long and needs to be presented
-    in a constrained, scrollable area within the notebook.
-
-    Parameters
-    --------
-    function_to_run : function
-        A function that contains print statements. The output of these print 
-        statements will be captured and displayed.
-
-    Examples
-    --------
-    >>> def example_function():
-    ...     for i in range(100):
-    ...         print(f"Line {i}")
-    ...
-    >>> print_to_scrollable_output(example_function)
-    """
-
-    # Create a StringIO object to capture print output
-    f = io.StringIO()
-
-    # Redirect the standard output to the StringIO object
-    with redirect_stdout(f):
-        function_to_run()  # Execute the provided function
-
-    # Retrieve the captured output from the StringIO object
-    printed_text = f.getvalue()
-
-    # Format the output as scrollable HTML and display it in the notebook
-    scrollable_output_html = f"""
-    <div style="overflow-x: scroll; overflow-y: scroll; border: 1px solid black; background-color: white; !important; color: black; !important;">
-        <pre>{printed_text}</pre>
-    </div>
-    """
-    display(HTML(scrollable_output_html))
+    print(divider)

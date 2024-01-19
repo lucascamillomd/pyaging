@@ -21,20 +21,21 @@ from ._postprocessing import *
 
 
 @progress("Load clock")
-def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tuple:
+def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int = 2) -> Tuple:
     """
     Loads the specified aging clock from a remote source and returns its components.
 
     This function downloads the weights and configuration of a specified aging clock from a
-    remote server. It then loads and returns various components of the clock such as its
-    features, weight dictionary, and any preprocessing or postprocessing steps. This allows
-    users to instantiate and use the clock in their analyses.
+    remote server. This allows users to instantiate and use the clock in their analyses.
 
     Parameters
     ----------
     clock_name : str
         The name of the aging clock to be loaded. This name is used to construct the URL
         for downloading the clock's weights and configuration.
+        
+    device : str
+        Device to move clock to. Eithe 'cpu' or 'cuda'.
 
     dir : str
         The directory to deposit the downloaded file.
@@ -48,13 +49,8 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     Returns
     -------
-    tuple
-        A tuple containing the following components of the clock:
-        - features: The features used by the clock.
-        - reference_feature_values: Reference values for features in case features are missing.
-        - weight_dict: A dictionary of weights used in the clock's model.
-        - preprocessing: Any preprocessing steps required for the clock's input data.
-        - postprocessing: Any postprocessing steps applied to the clock's output.
+    pyagingModel
+        A clock model
 
     Notes
     -----
@@ -68,14 +64,12 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
 
     Examples
     --------
-    >>> features, preprocessing_features, _, _, _ = load_clock("clock1", "pyaging_data", logger)
-    >>> print(features)
-    ['feature1', 'feature2', ...]
+    >>> clock = load_clock("clock1", "pyaging_data", logger)
 
     """
     url = f"https://pyaging.s3.amazonaws.com/clocks/weights0.1.0/{clock_name}.pt"
     try:
-        download(url, dir, logger, indent_level=indent_level)
+        download(url, dir, False, logger, indent_level=indent_level)
     except:
         logger.error(
             f"Clock {clock_name} is not available on pyaging. "
@@ -88,33 +82,21 @@ def load_clock(clock_name: str, dir: str, logger, indent_level: int = 2) -> Tupl
     # Define the path to the clock weights file
     weights_path = os.path.join(dir, f"{clock_name}.pt")
 
-    # Load the clock dictionary from the file
-    clock_dict = torch.load(weights_path)
+    # Load the clock from the file
+    clock = torch.load(weights_path)
 
-    # Extract relevant information from the clock dictionary
-    features = clock_dict["features"]
-    model_class = clock_dict["model_class"]
-    weight_dict = clock_dict["weight_dict"]
-    reference_feature_values = clock_dict.get("reference_feature_values", None)
-    preprocessing = clock_dict.get("preprocessing", None)
-    postprocessing = clock_dict.get("postprocessing", None)
+    # Prepare clock for inference
+    clock.to(torch.float64)
+    clock.to(device)
+    clock.eval()
 
-    return (
-        features,
-        model_class,
-        weight_dict,
-        reference_feature_values,
-        preprocessing,
-        postprocessing
-    )
+    return clock
 
 
 @progress("Check features in adata")
 def check_features_in_adata(
     adata: anndata.AnnData,
-    clock_name: str,
-    features: List[str],
-    reference_feature_values: Dict,
+    model: pyagingModel,
     logger,
     indent_level: int = 2,
 ) -> anndata.AnnData:
@@ -122,10 +104,10 @@ def check_features_in_adata(
     Verifies if all required features are present in an AnnData object and adds missing features.
 
     This function checks an AnnData object (commonly used in single-cell analysis) to ensure
-    that it contains all the necessary features specified in the 'features' list. If any features
-    are missing, they are added to the AnnData object with a default value of 0 or with a reference
-    value if given. This is crucial for downstream analyses where the presence of all specified
-    features is assumed.
+    that it contains all the necessary features specified in the 'features' list inside the model. 
+    If any features are missing, they are added to the AnnData object with a default value of 0 or 
+    with a reference value if given. This is crucial for downstream analyses where the presence of 
+    all specified features is assumed.
 
     Parameters
     ----------
@@ -133,16 +115,8 @@ def check_features_in_adata(
         The AnnData object to be checked. It is a commonly used data structure in single-cell
         genomics containing high-dimensional data.
 
-    clock_name : str
-        The name of the aging clock. The percent of missing features will be added to adata.uns
-        for this specific clock.
-
-    features : list
-        A list of features (e.g., gene names or other identifiers) that are expected to be
-        present in the 'adata'.
-
-    reference_feature_values : dictionary
-        A dictionary of the reference features matching the reference values. 
+    model : pyagingModel
+        The pyagingModel of the aging clock of interest. Must contain defined features.
 
     logger : Logger
         A logger object used for logging information about the process, such as the number
@@ -170,37 +144,23 @@ def check_features_in_adata(
 
     Examples
     --------
-    >>> updated_adata = check_features_in_adata(adata, ['gene1', 'gene2'], logger)
+    >>> updated_adata = check_features_in_adata(adata, bitage, ['gene1', 'gene2'], logger)
     >>> updated_adata.var_names
     Index(['gene1', 'gene2', ...], dtype='object')
 
     """
-
-    # Move data to adata.X
-    adata.X = (
-        adata.layers["X_imputed"].copy()
-        if "X_imputed" in adata.layers
-        else adata.layers["X_original"].copy()
-    )
-
-    # If reference_feature_values is given, then the features will come from the dictionary
-    if reference_feature_values:
-        features = list(reference_feature_values.keys())
     
-    # Identify missing features
-    missing_features = [
-        feature for feature in features if feature not in adata.var_names
-    ]
+    missing_features = list(set(model.features) - set(adata.var_names))
 
     # Calculate the percentage of missing features
-    total_features = len(features)
+    total_features = len(model.features)
     num_missing_features = len(missing_features)
     percent_missing = (
         (num_missing_features / total_features) * 100 if total_features > 0 else 0
     )
 
     # Add percent missing values to the clock
-    adata.uns[f"{clock_name}_percent_na"] = percent_missing
+    adata.uns[f"{model.metadata['clock_name']}_percent_na"] = percent_missing
 
     # Raises error if there are no features in the data
     if percent_missing == 100:
@@ -221,16 +181,16 @@ def check_features_in_adata(
         )
 
         # If there are reference values provided
-        if reference_feature_values:
+        if model.reference_values is not None:
             logger.info(
-                f"Using reference feature values for {clock_name}",
+                f"Using reference feature values for {model.metadata['clock_name']}",
                 indent_level=indent_level+1,
             )
 
+            reference_dict = dict(zip(model.features, model.reference_values))
+
             # Pre-allocate with reference values, if missing, use a default value (e.g., 0)
-            missing_data = np.array(
-                [reference_feature_values.get(f, 0) for f in missing_features] * adata.n_obs
-            ).reshape(adata.n_obs, num_missing_features)
+            missing_data = np.tile([reference_dict.get(f, 0) for f in missing_features], (adata.n_obs, 1))
         else:
             logger.info(
                 f"Filling missing features entirely with 0",
@@ -240,139 +200,35 @@ def check_features_in_adata(
             # Create an empty array
             missing_data = np.zeros((adata.n_obs, num_missing_features))
 
-        adata_empty = anndata.AnnData(
-            X=missing_data,
-            obs=adata.obs,
-            var=pd.DataFrame(
-                np.ones((num_missing_features, 1)),
-                index=missing_features,
-                columns=["percent_na"],
-            ),
-            layers=dict(zip(adata.layers.keys(), [missing_data] * len(adata.layers))),
-            uns=adata.uns,
-        )
-
-        # Concatenate original adata with the missing adata
-        adata = anndata.concat(
-            [adata, adata_empty], axis=1, merge="same", uns_merge="unique"
-        )
+        # Efficiently concatenate and reorder columns
+        full_data = np.concatenate((adata.X, missing_data), axis=1)
+        feature_indices = {feature: idx for idx, feature in enumerate(adata.var_names.tolist() + missing_features)}
+        ordered_indices = [feature_indices[feature] for feature in model.features]
+        final_data_matrix = full_data[:, ordered_indices]
+        adata.obsm[f"X_{model.metadata['clock_name']}"] = final_data_matrix
 
         logger.info(
             f"Expanded adata with {num_missing_features} missing features",
             indent_level=indent_level+1,
         )
     else:
+        adata.obsm[f"X_{model.metadata['clock_name']}"] = np.array(adata[:, model.features].X.copy())
+
         logger.info(
             "All features are present in adata.var_names.",
             indent_level=indent_level+1,
-        )
+        )    
+        
+    logger.info(
+        f"Added prepared input matrix to adata.obsm[X_{model.metadata['clock_name']}]",
+        indent_level=indent_level+1,
+    )    
 
-    return adata
-
-
-@progress("Initialize model")
-def initialize_model(
-    model_class: str,
-    features: List[str],
-    weight_dict: dict,
-    device: str,
-    logger,
-    indent_level: int = 2,
-) -> torch.nn.Module:
-    """
-    Initialize and configure a predictive model based on the specified clock model class.
-
-    This function selects and initializes a machine learning model tailored to a particular model class,
-    indicated by `model_class`. It loads the model weights from `weight_dict` and prepares the model
-    for inference (evaluation mode). Different types of clocks require different models, and this function
-    handles the instantiation and configuration of these models based on the clock type.
-
-    Parameters
-    ----------
-    model_class : str
-        The class of the aging clock model to be initialized. This name determines the type of model
-        to be used.
-
-    features : list
-        A list of feature names that the model will use for making predictions. The length of this
-        list is used to configure the input dimension of the model.
-
-    weight_dict : dict
-        A dictionary containing the pre-trained weights of the model. These weights are loaded into
-        the model for making predictions.
-
-    device : str
-        Device to move model to after initialization. Eithe 'cpu' or 'cuda'.
-
-    logger : Logger
-        A logger object for logging the progress and any information or warnings during the
-        initialization process.
-
-    indent_level : int, optional
-        The indentation level for the logger, by default 2. It controls the formatting of the log
-        messages.
-
-    Returns
-    -------
-    model : torch.nn.Module
-        The initialized and configured PyTorch model ready for making predictions.
-
-    Raises
-    ------
-    ValueError
-        If the provided `model_class` is not supported or recognized.
-
-    Notes
-    -----
-    The function currently supports a range of models including linear models, principal component
-    (PC) based models, and specific models for complex clocks like `AltumAge` and `PCGrimAge`.
-    It is crucial that the `weight_dict` matches the structure expected by the model corresponding
-    to the `model_class`.
-
-    The function assumes the availability of a pre-defined set of model classes like `LinearModel`,
-    `PCLinearModel`, `PCGrimAge`, `AltumAge`, etc., which should be defined elsewhere in the codebase.
-
-    Examples
-    --------
-    >>> model = initialize_model('LinearModel', features, weight_dict, logger)
-    >>> print(type(model))
-    <class 'torch.nn.modules.linear.LinearModel'>
-
-    """
-    # Model selection based on clock name
-    if model_class == "LinearModel":
-        model = LinearModel(len(features))
-    elif model_class == "PCLinearModel":
-        model = PCLinearModel(len(features), pc_dim=weight_dict["rotation"].shape[1])
-    elif model_class == "PCGrimAge":
-        model = PCGrimAge(
-            sum(["cg" in feature for feature in features]),
-            pc_dim=weight_dict["rotation"].shape[1],
-            comp_dims=[
-                weight_dict[f"step1_layers.{i}.weight"].shape[1]
-                for i in range(weight_dict["step2.weight"].shape[1] - 2)
-            ],
-        )
-    elif model_class == "AltumAge":
-        model = AltumAge()
-    else:
-        raise ValueError(f"Model class '{model_class}' is not supported.")
-
-    model.load_state_dict(weight_dict)
-    model.to(torch.float64)
-    model.to(device)
-    model.eval()
-    return model
-   
 
 @progress("Predict ages with model")
 def predict_ages_with_model(
-    model: torch.nn.Module,
-    adata: torch.Tensor,
-    features: List[str],
-    reference_feature_values: Dict,
-    preprocessing: Dict,
-    postprocessing: Dict,
+    adata: anndata.AnnData,
+    model: pyagingModel,
     device: str,
     logger,
     indent_level: int = 2,
@@ -382,32 +238,17 @@ def predict_ages_with_model(
 
     This function takes a machine learning model and input data, and returns predictions made by the model.
     It's primarily used for estimating biological ages based on various biological markers. The function
-    assumes that the model is already trained and the data is preprocessed according to the model's requirements.
-    A dataloader is used because of possible memory constraints.
+    assumes that the model is already trained. A dataloader is used because of possible memory constraints
+    for large datasets.
 
     Parameters
     ----------
-    model : torch.nn.Module
-        A pre-trained machine learning model that can make predictions.
-
     adata : anndata.AnnData
         The AnnData object containing the dataset. Its `.X` attribute is expected to be a matrix where rows
         correspond to samples and columns correspond to features.
 
-    features : list of str
-        A list of feature names to be included in the output array. Only these features from the AnnData object will
-        be extracted for age prediction.
-
-    reference_feature_values : dictionary
-        A dictionary of the reference features matching the reference values. 
-
-    preprocessing : dictionary
-        A dictionary of the name, function (in string format), and helper objects for preprocessing. The keys
-        must be 'name', 'preprocessing_function', and 'preprocessing_helper_objects'.
-
-    postprocessing : dictionary
-        A dictionary of the name, function (in string format), and helper objects for postprocessing. The keys
-        must be 'name', 'postprocessing_function', and 'postprocessing_helper_objects'.
+    model : pyagingModel
+        The pyagingModel of the aging clock of interest.
 
     device : str
         Device to move AnnData to during inference. Eithe 'cpu' or 'cuda'.
@@ -434,49 +275,15 @@ def predict_ages_with_model(
     Examples
     --------
     >>> model = load_pretrained_model()
-    >>> predictions = predict_ages_with_model(model, adata, features, 'cpu', logger)
+    >>> predictions = predict_ages_with_model(model, 'cpu', logger)
     >>> print(predictions[:5])
     [34.5, 29.3, 47.8, 50.1, 42.6]
 
     """
 
-    # If the preprocessing object is not None
-    if preprocessing:
-        logger.info(f"The preprocessing method {preprocessing['name']}", indent_level=indent_level+1)
-        
-        code = marshal.loads(preprocessing['preprocessing_function'])
-        preprocessing_function = types.FunctionType(code, globals())
-        converter = {'X': preprocessing_function}
-        global preprocessing_helper_objects
-        preprocessing_helper_objects = preprocessing['preprocessing_helper_objects']
-    else:
-        logger.info("There is no preprocessing necessary", indent_level=indent_level+1)
-        converter = None
-
-    # If the postprocessing object is not None
-    if postprocessing:
-        logger.info(f"The postprocessing method is {postprocessing['name']}", indent_level=indent_level+1)
-        
-        code = marshal.loads(postprocessing['postprocessing_function'])
-        postprocessing_function = types.FunctionType(code, globals())
-        global postprocessing_helper_objects
-        postprocessing_helper_objects = postprocessing['postprocessing_helper_objects']
-    else:
-        logger.info("There is no postprocessing necessary", indent_level=indent_level+1)
-
-    if reference_feature_values:
-        adata = adata[:, list(reference_feature_values.keys())].copy()
-
-    if reference_feature_values and len(features) == len(reference_feature_values):
-        indices = np.arange(0, len(features))
-    else:
-        var_names = adata.var_names.tolist()
-        var_names_set = set(var_names)
-        indices = [var_names.index(var) for var in features if var in var_names_set]
-
     # Create an AnnLoader
-    use_cuda = torch.cuda.is_available()
-    dataloader = AnnLoader(adata, batch_size=1024, convert=converter, use_cuda=use_cuda)
+    use_cuda = device == "cuda"
+    dataloader = AnnLoader(adata, batch_size=1024, use_cuda=use_cuda)
 
     # Use the AnnLoader for batched prediction
     predictions = []
@@ -484,9 +291,7 @@ def predict_ages_with_model(
         for batch in main_tqdm(
             dataloader, indent_level=indent_level+1, logger=logger
         ):
-            batch_pred = model(batch.X[:, indices])
-            if postprocessing:
-                batch_pred.apply_(postprocessing_function)
+            batch_pred = model(batch.obsm[f"X_{model.metadata['clock_name']}"])
             predictions.append(batch_pred)
     # Concatenate all batch predictions
     predictions = torch.cat(predictions)
@@ -496,8 +301,8 @@ def predict_ages_with_model(
 @progress("Add predicted ages and clock metadata to adata")
 def add_pred_ages_and_clock_metadata_adata(
     adata: anndata.AnnData,
+    model: pyagingModel,
     predicted_ages: torch.tensor,
-    clock_name: str,
     dir: str,
     logger,
     indent_level: int = 2,
@@ -516,13 +321,12 @@ def add_pred_ages_and_clock_metadata_adata(
         The AnnData object to which the predicted ages will be added. It's a data structure for handling
         large-scale biological data, like gene expression matrices, commonly used in bioinformatics.
 
+    model : pyagingModel
+        The aging clock from which to get the metadata.
+
     predicted_ages : torch.tensor
         A torch tensor of predicted ages corresponding to the samples in the AnnData object. The length
         of this array should match the number of samples in `adata`.
-
-    clock_name : str
-        The name of the aging clock used to generate the predicted ages. This name will be used
-        as the column name in `adata.obs`.
 
     dir: str
         The directory to deposit the downloaded file.
@@ -551,7 +355,7 @@ def add_pred_ages_and_clock_metadata_adata(
     --------
     >>> adata = anndata.AnnData(np.random.rand(5, 10))
     >>> predicted_ages = [25, 30, 35, 40, 45]
-    >>> add_pred_ages_adata(adata, predicted_ages_tensor, 'horvath2013', 'pyaging_data', logger)
+    >>> add_pred_ages_adata(adata, predicted_ages_tensor, clock, 'pyaging_data', logger)
     >>> adata.obs['horvath2013']
     0    25
     1    30
@@ -567,83 +371,10 @@ def add_pred_ages_and_clock_metadata_adata(
     predicted_ages = predicted_ages.cpu().detach().numpy().flatten()
     
     # Add predicted ages to adata.obs
-    adata.obs[clock_name] = predicted_ages
-
-    # Load the clock dictionary from the file
-    dictionary_path = os.path.join(dir, f"{clock_name}.pt")
-    clock_dict = torch.load(dictionary_path)
-
-    # Define list of metadata keys and subset dictionary
-    metadata_keys = [
-        'clock_name',
-        'data_type',
-        'model_class',
-        'species',
-        'year',
-        'approved_by_author',
-        'citation',
-        'doi',
-        "notes",
-    ]
-    metadata_dict = {k: clock_dict[k] for k in metadata_keys if k in clock_dict}
+    adata.obs[model.metadata["clock_name"]] = predicted_ages
 
     # Add clock metadata to adata.uns
-    adata.uns[f"{clock_name}_metadata"] = metadata_dict
-
-
-@progress("Return adata to original size")
-def filter_missing_features(
-    adata: anndata.AnnData,
-    logger,
-    indent_level: int = 2,
-) -> anndata.AnnData:
-    """
-    Returns adata with original features.
-
-    This function checks for variables that have 100% of samples with missing features, and removes them
-    from the adata object. It is useful for returning the adata in the original state.
-
-    Parameters
-    ----------
-    adata : anndata.AnnData
-        The AnnData object that will be filtered.
-
-    logger : Logger
-        A logger object for logging the progress or relevant information during the operation.
-
-    indent_level : int, optional
-        The indentation level for logging messages, by default 2.
-
-    Returns
-    -------
-    anndata.AnnData
-        The filtered adata in which all features appear in at least one sample.
-
-    Notes
-    -----
-    During filtering, the adata object is filtered based on a column called "percent_na" which should be less
-    than 1. If the column is not present, an error will appear.
-
-    Examples
-    --------
-    >>> adata = anndata.AnnData(np.random.rand(5, 10))
-    >>> adata = filter_missing_features(adata, logger)
-
-    """
-    n_missing_features = sum(adata.var["percent_na"] == 1)
-    if n_missing_features > 0:
-        logger.info(
-            f"Removing {n_missing_features} added features",
-            indent_level=indent_level+1,
-        )
-        adata = adata[:, np.array(adata.var["percent_na"] < 1)].copy()
-    else:
-        logger.info(
-            "No missing features, so adata size did not change",
-            indent_level=indent_level+1,
-        )
-
-    return adata
+    adata.uns[f"{model.metadata['clock_name']}_metadata"] = model.metadata
 
 
 @progress("Set PyTorch device")

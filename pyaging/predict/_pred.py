@@ -78,45 +78,29 @@ def predict_age(
         logger.info(f"🕒 Processing clock: {clock_name}", indent_level=1)
 
         # Load and prepare the clock
-        (
-            features,
-            model_class,
-            weight_dict,
-            reference_feature_values,
-            preprocessing,
-            postprocessing
-        ) = load_clock(clock_name, dir, logger, indent_level=2)
+        model = load_clock(clock_name, device, dir, logger, indent_level=2)
 
         # Check and update adata for missing features
-        adata = check_features_in_adata(
+        check_features_in_adata(
             adata,
-            clock_name,
-            features,
-            reference_feature_values,
+            model,
             logger,
             indent_level=2,
         )
 
-        # Initialize and configure the model
-        clock_model = initialize_model(
-            model_class, features, weight_dict, device, logger, indent_level=2
-        )
-
         # Perform age prediction using the model applying preprocessing and postprocessing steps
         predicted_ages_tensor = predict_ages_with_model(
-            clock_model, adata, features, reference_feature_values, preprocessing, postprocessing, device, logger, indent_level=2
+            adata, model, device, logger, indent_level=2
         )
 
         # Add predicted ages and clock metadata to adata
         add_pred_ages_and_clock_metadata_adata(
-            adata, predicted_ages_tensor, clock_name, dir, logger, indent_level=2
+            adata, model, predicted_ages_tensor, dir, logger, indent_level=2
         )
 
-        # Return adata to original size and number of features
-        adata = filter_missing_features(adata, logger, indent_level=2)
+        del adata.obsm[f'X_{clock_name}']
 
         # Flush memory
         gc.collect()
 
     logger.done()
-    return adata

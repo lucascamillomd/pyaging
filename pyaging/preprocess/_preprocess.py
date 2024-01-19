@@ -181,13 +181,13 @@ def df_to_adata(
     adata = create_anndata_object(df, logger)
 
     # Add metadata
-    adata = add_metadata_to_anndata(adata, metadata, logger)
+    add_metadata_to_anndata(adata, metadata, logger)
 
     # Log statistics
     log_data_statistics(adata.X, logger)
 
     # Impute missing values
-    adata = impute_missing_values(adata, imputer_strategy, logger)
+    impute_missing_values(adata, imputer_strategy, logger)
 
     # Add unstructured data
     if "X_imputed" in adata.layers:

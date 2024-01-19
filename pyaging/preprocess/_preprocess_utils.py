@@ -17,7 +17,7 @@ from ..utils import progress, download
 @progress("Impute missing values")
 def impute_missing_values(
     adata: anndata.AnnData, strategy: str, logger, indent_level: int = 1
-) -> anndata.AnnData:
+) -> None:
     """
     Imputes missing values in a given adata object using a specified strategy.
 
@@ -41,11 +41,6 @@ def impute_missing_values(
     indent_level : int, optional
         The level of indentation for the logger, with 1 being the default.
 
-    Returns
-    -------
-    anndata.AnnData
-        The adata with an imputed .X
-
     Raises
     ------
     ValueError
@@ -68,14 +63,11 @@ def impute_missing_values(
 
     """
 
-    # Extract data from adata object
-    X = adata.X
-
     # Add percent of NAs to adata object
-    adata.var["percent_na"] = np.isnan(X).sum(axis=0) / X.shape[0]
+    adata.var["percent_na"] = np.isnan(adata.X).sum(axis=0) / adata.X.shape[0]
 
     # Check for missing values
-    if not np.isnan(X).any():
+    if adata.var["percent_na"].sum() == 0:
         logger.info("No missing values found. No imputation necessary", indent_level=2)
         return adata
 
@@ -94,10 +86,8 @@ def impute_missing_values(
     if not imputer:
         raise ValueError(f"Invalid imputer strategy: {strategy}")
     logger.info(f"Imputing missing values using {strategy} strategy", indent_level=2)
-    X = imputer.fit_transform(X)
-    adata.X = X
+    adata.X = imputer.fit_transform(adata.X)
     adata.layers["X_imputed"] = adata.X
-    return adata
 
 
 @progress("Log data statistics")
@@ -197,24 +187,31 @@ def create_anndata_object(
 
     """
 
-    # Identify columns with only NAs
-    columns_with_nas = df.columns[df.isna().all()]
-
-    # Log the number and names of columns being dropped
-    num_columns_dropped = len(columns_with_nas)
+    # Identify columns with only NAs and store the boolean series
+    na_column_mask = df.isna().all()
+    
+    # Calculate the number of columns with only NAs directly
+    num_columns_dropped = na_column_mask.sum()
+    
     if num_columns_dropped > 0:
+        # Extract column names with only NAs
+        columns_with_nas = df.columns[na_column_mask]
+    
+        # Prepare a snippet of column names for logging (max 3)
+        sample_columns = columns_with_nas[:min(3, len(columns_with_nas))].tolist()
+    
         logger.warning(
-            f"Dropping {num_columns_dropped} columns with only NAs: {list(columns_with_nas)[:np.min([3, num_columns_dropped])]}, etc.",
+            f"Dropping {num_columns_dropped} columns with only NAs: {sample_columns}, etc.",
             indent_level=indent_level + 1,
         )
-
-    # Drop columns with only NAs
-    df = df.drop(columns=columns_with_nas, axis=1)
+    
+        # Drop columns with only NAs
+        df = df.drop(columns=columns_with_nas)
 
     # Extract information from df
     X = df.values
-    obs_names = df.index
-    var_names = df.columns
+    obs_names = df.index.astype(str)
+    var_names = df.columns.astype(str)
 
     # Check for duplicate features
     if len(np.unique(var_names)) != len(var_names):
@@ -235,7 +232,7 @@ def add_metadata_to_anndata(
     metadata: Optional[pd.DataFrame],
     logger,
     indent_level: int = 1,
-) -> anndata.AnnData:
+) -> None:
     """
     Adds metadata to an AnnData object's observation (obs) attribute.
 
@@ -259,11 +256,6 @@ def add_metadata_to_anndata(
 
     indent_level : int, optional
         The level of indentation for the logger, with 1 being the default.
-
-    Returns
-    -------
-    anndata.AnnData
-        An AnnData object populated with the data, observation names, and variable names.
 
     Notes
     -----
@@ -289,7 +281,6 @@ def add_metadata_to_anndata(
     logger.info("Adding provided metadata to adata.obs", indent_level=2)
     metadata = metadata.reindex(adata.obs_names)
     adata.obs = metadata
-    return adata
 
 
 @progress("Add imputer strategy to adata.uns")
