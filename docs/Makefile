@@ -18,8 +18,6 @@ html:
 # Clean the build directory and the file transfers to the source directory
 clean:
 	rm -rf $(BUILDDIR)/*
-	rm -rf $(SOURCEDIR)/tutorials
-	rm -rf $(SOURCEDIR)/clock_notebooks
 
 # Put it first so that "make" without argument is like "make help".
 help:
