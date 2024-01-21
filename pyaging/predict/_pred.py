@@ -98,7 +98,7 @@ def predict_age(
             adata, model, predicted_ages_tensor, dir, logger, indent_level=2
         )
 
-        del adata.obsm[f'X_{clock_name}']
+        del adata.obsm[f"X_{clock_name}"]
 
         # Flush memory
         gc.collect()

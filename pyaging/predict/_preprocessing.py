@@ -10,6 +10,7 @@ def scale(x, scaler):
 
     return x_scaled
 
+
 def scale_with_gold_standard(x, column_means, column_stds):
     """
     Scales the input data per column given means and standard deviations.
@@ -23,6 +24,7 @@ def scale_with_gold_standard(x, column_means, column_stds):
     x_scaled = (x - column_means) / column_stds
     return x_scaled
 
+
 def scale_row(x, x_overlap):
     """
     Scales the input data per row with mean 0 and std 1.
@@ -35,6 +37,7 @@ def scale_row(x, x_overlap):
 
     x_scaled = (x - row_means) / row_stds
     return x_scaled
+
 
 def binarize(x):
     """

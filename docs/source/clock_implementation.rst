@@ -19,8 +19,10 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/dnamphenoage
    clock_notebooks/dnamtl
    clock_notebooks/dunedinpace
-   clock_notebooks/encen100+
-   clock_notebooks/encen40+
+   clock_notebooks/encen100
+   clock_notebooks/encen40
+   clock_notebooks/grimage
+   clock_notebooks/grimage2
    clock_notebooks/han
    clock_notebooks/hannum
    clock_notebooks/horvath2013
@@ -32,9 +34,13 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/lin
    clock_notebooks/mammalian1
    clock_notebooks/mammalian2
+   clock_notebooks/mammalianblood2
+   clock_notebooks/mammalianskin2
    clock_notebooks/mammalian3
+   clock_notebooks/mammalianblood3
+   clock_notebooks/mammalianskin3
    clock_notebooks/mammalianlifespan
-   clock_notebooks/mammaliansex
+   clock_notebooks/mammalianfemale
    clock_notebooks/meer
    clock_notebooks/ocampoatac1
    clock_notebooks/ocampoatac2

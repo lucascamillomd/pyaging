@@ -16,6 +16,7 @@ testing.ipynb
 .DS_Store
 pyaging.egg-info/
 update_pipeline_steps.txt
+update_package.sh
 dist/
 build/
 docs/_build

@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from abc import ABC, abstractmethod
 
+
 class pyagingModel(nn.Module, ABC):
     def __init__(self):
         super(pyagingModel, self).__init__()
@@ -16,20 +17,20 @@ class pyagingModel(nn.Module, ABC):
             "citation": None,
             "doi": None,
             "notes": None,
-            "version": None
+            "version": None,
         }
 
         self.reference_values = None
 
         self.preprocess_name = None
         self.preprocess_dependencies = None
-        
+
         self.postprocess_name = None
         self.postprocess_dependencies = None
 
         self.features = None
         self.base_model_features = self.features
-        
+
         self.base_model = None
 
     def forward(self, x):
@@ -51,7 +52,7 @@ class pyagingModel(nn.Module, ABC):
         Postprocess the model output. This method should be implemented by all subclasses.
         """
         pass
-        
+
 
 class LinearModel(nn.Module):
     def __init__(self, input_dim):
@@ -64,7 +65,7 @@ class LinearModel(nn.Module):
     def forward(self, x):
         x = self.linear(x)
         return x
-        
+
 
 class PCLinearModel(nn.Module):
     def __init__(self, input_dim, pc_dim):
@@ -133,4 +134,3 @@ class AltumAgeNeuralNetwork(nn.Module):
         x = self.linear6(x)
 
         return x
-

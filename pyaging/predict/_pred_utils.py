@@ -21,7 +21,9 @@ from ._postprocessing import *
 
 
 @progress("Load clock")
-def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int = 2) -> Tuple:
+def load_clock(
+    clock_name: str, device: str, dir: str, logger, indent_level: int = 2
+) -> Tuple:
     """
     Loads the specified aging clock from a remote source and returns its components.
 
@@ -33,7 +35,7 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
     clock_name : str
         The name of the aging clock to be loaded. This name is used to construct the URL
         for downloading the clock's weights and configuration.
-        
+
     device : str
         Device to move clock to. Eithe 'cpu' or 'cuda'.
 
@@ -67,15 +69,16 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
     >>> clock = load_clock("clock1", "pyaging_data", logger)
 
     """
+    clock_name = clock_name.lower()
     url = f"https://pyaging.s3.amazonaws.com/clocks/weights0.1.0/{clock_name}.pt"
     try:
-        download(url, dir, False, logger, indent_level=indent_level)
+        download(url, dir, logger, indent_level=indent_level)
     except:
         logger.error(
             f"Clock {clock_name} is not available on pyaging. "
             f"Please refer to the clock names in the clock glossary table "
             f"in the package documentation page: pyaging.readthedocs.io",
-            indent_level=indent_level+1,
+            indent_level=indent_level + 1,
         )
         raise NameError
 
@@ -104,9 +107,9 @@ def check_features_in_adata(
     Verifies if all required features are present in an AnnData object and adds missing features.
 
     This function checks an AnnData object (commonly used in single-cell analysis) to ensure
-    that it contains all the necessary features specified in the 'features' list inside the model. 
-    If any features are missing, they are added to the AnnData object with a default value of 0 or 
-    with a reference value if given. This is crucial for downstream analyses where the presence of 
+    that it contains all the necessary features specified in the 'features' list inside the model.
+    If any features are missing, they are added to the AnnData object with a default value of 0 or
+    with a reference value if given. This is crucial for downstream analyses where the presence of
     all specified features is assumed.
 
     Parameters
@@ -149,23 +152,31 @@ def check_features_in_adata(
     Index(['gene1', 'gene2', ...], dtype='object')
 
     """
-    
-    missing_features = list(set(model.features) - set(adata.var_names))
 
-    # Calculate the percentage of missing features
-    total_features = len(model.features)
+    # Create list for missing features and empty data matrix
+    missing_features = []
+    X_model = np.zeros((adata.n_obs, len(model.features)))
+
+    # Add values to data matrix
+    for i, feature in enumerate(model.features):
+        if feature in adata.var_names:
+            X_model[:, i] = adata[:, feature].X.flatten()
+        else:
+            missing_features += [feature]
+            X_model[:, i] = (
+                model.reference_values[i] if model.reference_values is not None else 0
+            )
     num_missing_features = len(missing_features)
-    percent_missing = (
-        (num_missing_features / total_features) * 100 if total_features > 0 else 0
-    )
+    percent_missing = 100 * num_missing_features / len(model.features)
 
-    # Add percent missing values to the clock
+    # Add missing features and percent missing values to the clock
     adata.uns[f"{model.metadata['clock_name']}_percent_na"] = percent_missing
+    adata.uns[f"{model.metadata['clock_name']}_missing_features"] = missing_features
 
     # Raises error if there are no features in the data
     if percent_missing == 100:
         logger.error(
-            f"Every single feature out of {total_features} features "
+            f"Every single feature out of {len(model.features)} features "
             f"is missing. Please double check the features in the adata object"
             f" actually contain the clock features such as {missing_features[:np.min([3, num_missing_features])]}, etc.",
             indent_level=3,
@@ -173,56 +184,36 @@ def check_features_in_adata(
         raise NameError
 
     # Log and add missing features if any
-    if missing_features:
+    if len(missing_features) > 0:
         logger.warning(
-            f"{num_missing_features} out of {total_features} features "
+            f"{num_missing_features} out of {len(model.features)} features "
             f"({percent_missing:.2f}%) are missing: {missing_features[:np.min([3, num_missing_features])]}, etc.",
-            indent_level=indent_level+1,
+            indent_level=indent_level + 1,
         )
-
         # If there are reference values provided
         if model.reference_values is not None:
             logger.info(
                 f"Using reference feature values for {model.metadata['clock_name']}",
-                indent_level=indent_level+1,
+                indent_level=indent_level + 1,
             )
-
-            reference_dict = dict(zip(model.features, model.reference_values))
-
-            # Pre-allocate with reference values, if missing, use a default value (e.g., 0)
-            missing_data = np.tile([reference_dict.get(f, 0) for f in missing_features], (adata.n_obs, 1))
         else:
             logger.info(
                 f"Filling missing features entirely with 0",
-                indent_level=indent_level+1,
+                indent_level=indent_level + 1,
             )
-
-            # Create an empty array
-            missing_data = np.zeros((adata.n_obs, num_missing_features))
-
-        # Efficiently concatenate and reorder columns
-        full_data = np.concatenate((adata.X, missing_data), axis=1)
-        feature_indices = {feature: idx for idx, feature in enumerate(adata.var_names.tolist() + missing_features)}
-        ordered_indices = [feature_indices[feature] for feature in model.features]
-        final_data_matrix = full_data[:, ordered_indices]
-        adata.obsm[f"X_{model.metadata['clock_name']}"] = final_data_matrix
-
-        logger.info(
-            f"Expanded adata with {num_missing_features} missing features",
-            indent_level=indent_level+1,
-        )
     else:
-        adata.obsm[f"X_{model.metadata['clock_name']}"] = np.array(adata[:, model.features].X.copy())
-
         logger.info(
             "All features are present in adata.var_names.",
-            indent_level=indent_level+1,
-        )    
-        
+            indent_level=indent_level + 1,
+        )
+
+    # Add matrix to obsm
+    adata.obsm[f"X_{model.metadata['clock_name']}"] = X_model
+
     logger.info(
         f"Added prepared input matrix to adata.obsm[X_{model.metadata['clock_name']}]",
-        indent_level=indent_level+1,
-    )    
+        indent_level=indent_level + 1,
+    )
 
 
 @progress("Predict ages with model")
@@ -281,6 +272,28 @@ def predict_ages_with_model(
 
     """
 
+    # If there is a preprocessing step
+    if model.preprocess_name is not None:
+        logger.info(
+            f"The preprocessing method is {model.preprocess_name}",
+            indent_level=indent_level + 1,
+        )
+    else:
+        logger.info(
+            "There is no preprocessing necessary", indent_level=indent_level + 1
+        )
+
+    # If there is a postprocessing step
+    if model.postprocess_name is not None:
+        logger.info(
+            f"The postprocessing method is {model.postprocess_name}",
+            indent_level=indent_level + 1,
+        )
+    else:
+        logger.info(
+            "There is no postprocessing necessary", indent_level=indent_level + 1
+        )
+
     # Create an AnnLoader
     use_cuda = device == "cuda"
     dataloader = AnnLoader(adata, batch_size=1024, use_cuda=use_cuda)
@@ -289,14 +302,14 @@ def predict_ages_with_model(
     predictions = []
     with torch.no_grad():
         for batch in main_tqdm(
-            dataloader, indent_level=indent_level+1, logger=logger
+            dataloader, indent_level=indent_level + 1, logger=logger
         ):
             batch_pred = model(batch.obsm[f"X_{model.metadata['clock_name']}"])
             predictions.append(batch_pred)
     # Concatenate all batch predictions
     predictions = torch.cat(predictions)
     return predictions
-    
+
 
 @progress("Add predicted ages and clock metadata to adata")
 def add_pred_ages_and_clock_metadata_adata(
@@ -369,7 +382,7 @@ def add_pred_ages_and_clock_metadata_adata(
     """
     # Convert from a torch tensor to a flat numpy array
     predicted_ages = predicted_ages.cpu().detach().numpy().flatten()
-    
+
     # Add predicted ages to adata.obs
     adata.obs[model.metadata["clock_name"]] = predicted_ages
 

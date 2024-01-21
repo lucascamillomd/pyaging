@@ -189,22 +189,22 @@ def create_anndata_object(
 
     # Identify columns with only NAs and store the boolean series
     na_column_mask = df.isna().all()
-    
+
     # Calculate the number of columns with only NAs directly
     num_columns_dropped = na_column_mask.sum()
-    
+
     if num_columns_dropped > 0:
         # Extract column names with only NAs
         columns_with_nas = df.columns[na_column_mask]
-    
+
         # Prepare a snippet of column names for logging (max 3)
-        sample_columns = columns_with_nas[:min(3, len(columns_with_nas))].tolist()
-    
+        sample_columns = columns_with_nas[: min(3, len(columns_with_nas))].tolist()
+
         logger.warning(
             f"Dropping {num_columns_dropped} columns with only NAs: {sample_columns}, etc.",
             indent_level=indent_level + 1,
         )
-    
+
         # Drop columns with only NAs
         df = df.drop(columns=columns_with_nas)
 

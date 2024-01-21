@@ -7,6 +7,10 @@ from IPython.display import display, HTML
 from urllib.request import urlretrieve
 from functools import wraps
 from pprint import pformat
+from typing import List
+from datetime import datetime
+import pytz
+import requests
 
 from ..logger import LoggerManager, main_tqdm
 
@@ -119,19 +123,19 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
 
     """
     url = f"https://pyaging.s3.amazonaws.com/clocks/metadata0.1.0/all_clock_metadata.pt"
-    download(url, dir, False, logger, indent_level=indent_level)
+    download(url, dir, logger, indent_level=indent_level)
     all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
     return all_clock_metadata
 
 
-def download(url: str, dir: str, force: bool, logger, indent_level: int = 1):
+def download(url: str, dir: str, logger, indent_level: int = 1):
     """
     Downloads a file from a specified URL to a local directory.
 
     This function checks if the file specified by the URL already exists in the local
-    'pyaging_data' directory. If the file is not present, it downloads the file from the URL
-    and saves it in this directory. The function logs the progress of the download, including
-    whether the file is found locally or needs to be downloaded.
+    'pyaging_data' directory. If the file is not present or it is not the latest, it downloads
+    the file from the URL and saves it in this directory. The function logs the progress of the 
+    download, including whether the file is found locally or needs to be downloaded.
 
     Parameters
     ----------
@@ -139,8 +143,6 @@ def download(url: str, dir: str, force: bool, logger, indent_level: int = 1):
         The URL of the file to be downloaded.
     dir : str
         The directory to deposit the downloaded file.
-    force : bool
-        Whether to redownload a new file even if already exists.
     logger : object
         Logger object for logging messages at various stages of the download process.
     indent_level : int, optional
@@ -161,7 +163,7 @@ def download(url: str, dir: str, force: bool, logger, indent_level: int = 1):
     Examples
     --------
     >>> logger = Logger()
-    >>> download("https://example.com/datafile.zip", "pyaging_data", False, logger)
+    >>> download("https://example.com/datafile.zip", "pyaging_data", logger)
     Data found in pyaging_data/datafile.zip
     or
     Downloading data to pyaging_data/datafile.zip
@@ -170,8 +172,15 @@ def download(url: str, dir: str, force: bool, logger, indent_level: int = 1):
     file_path = url.split("/")[-1]
     file_path = os.path.join(dir, file_path)
 
-    if os.path.exists(file_path) and not force:
+    aws_newer = is_newer_than_target(url, '2024-01-22')
+
+    if os.path.exists(file_path) and not aws_newer:
         logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
+    elif os.path.exists(file_path) and aws_newer:
+        logger.info(f"Data found in {file_path} is not the latest", indent_level=indent_level + 1)
+        logger.info(f"Redownloading data to {file_path}", indent_level=indent_level + 1)
+        logger.indent_level = indent_level + 1
+        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
     else:
         if not os.path.exists(dir):
             os.mkdir(dir)
@@ -351,7 +360,7 @@ def show_all_clocks(dir: str = "pyaging_data") -> None:
     Returns
     -------
     None
-        The function does not return a value but logs the names of all available clocks.
+        The function only prints the results.
 
     Notes
     -----
@@ -365,7 +374,7 @@ def show_all_clocks(dir: str = "pyaging_data") -> None:
 
     Examples
     --------
-    >>> show_all_clocks()
+    >>> all_clocks = show_all_clocks()
     Clock1
     Clock2
     Clock3
@@ -381,7 +390,8 @@ def show_all_clocks(dir: str = "pyaging_data") -> None:
     # Message to indicate the start of the search process
     message = "Showing all available clock names"
     logger.start_progress(f"{message} started")
-    for clock_name in list(all_clock_metadata.keys()):
+    all_clocks = sorted(all_clock_metadata.keys())
+    for clock_name in all_clocks:
         logger.info(clock_name, indent_level=2)
     logger.finish_progress(f"{message} finished")
 
@@ -450,7 +460,7 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
     logger.done()
 
 
-def print_model_details(model, max_list_length=10, max_tensor_elements=50):
+def print_model_details(model, max_list_length=30, max_tensor_elements=30):
     """
     Prints detailed information about a PyTorch model, including its attributes, structure, and parameters.
 
@@ -458,10 +468,10 @@ def print_model_details(model, max_list_length=10, max_tensor_elements=50):
     ----------
     model : torch.nn.Module
         The PyTorch model to be inspected.
-        
+
     max_list_length : int
         The maximum length of lists to print in full. Lists longer than this will be summarized.
-        
+
     max_tensor_elements : int
         The maximum number of elements in a tensor to print in full. Tensors with more elements will be summarized.
 
@@ -473,7 +483,7 @@ def print_model_details(model, max_list_length=10, max_tensor_elements=50):
     - Model Parameters and Weights: Parameters of the model, including weights and biases, with size and value information.
     """
 
-    divider = "\n%========================================== Model Details ==========================================%\n"
+    divider = "\n%==================================== Model Details ====================================%\n"
 
     def formatted_print(name, value):
         """
@@ -482,15 +492,24 @@ def print_model_details(model, max_list_length=10, max_tensor_elements=50):
         For lists longer than max_list_length and tensors with more elements than max_tensor_elements, a summary is printed instead of the full value.
         """
         if isinstance(value, list) and len(value) > max_list_length:
-            print(f"{name}: [List with {len(value)} elements]")
+            print(
+                f"{name}: {value[:max_list_length]}... [Total elements: {len(value)}]"
+            )
         elif isinstance(value, torch.Tensor) and value.nelement() > max_tensor_elements:
-            print(f"{name}: [Tensor of shape {value.size()}]")
+            flattened_tensor = value.flatten()
+            print(
+                f"{name}: {flattened_tensor[:max_tensor_elements].tolist()}... [Tensor of shape {value.size()}]"
+            )
         else:
             print(f"{name}: {pformat(value)}")
 
     print(divider + "Model Attributes:\n")
     for name, value in model.__dict__.items():
-        if not isinstance(value, torch.nn.Module) and not isinstance(value, torch.nn.Parameter) and not name.startswith('_'):
+        if (
+            not isinstance(value, torch.nn.Module)
+            and not isinstance(value, torch.nn.Parameter)
+            and not name.startswith("_")
+        ):
             formatted_print(name, value)
 
     print(divider + "Model Structure:\n")
@@ -502,3 +521,50 @@ def print_model_details(model, max_list_length=10, max_tensor_elements=50):
         formatted_print(name, param.data)
 
     print(divider)
+
+
+def is_newer_than_target(url, target_date_str):
+    """
+    Check if the 'Last-Modified' date of the metadata of a url is newer than a 
+    specific target date.
+
+    Parameters
+    ----------
+    url : str
+        The url of interest from S3. The header must include the 'Last-Modified'
+        key with its value in the format: 'Day, DD Mon YYYY HH:MM:SS GMT'.
+    target_date_str : str
+        The target date as a string in the format 'YYYY-MM-DD'.
+
+    Returns
+    -------
+    bool
+        True if the 'Last-Modified' date is newer than the target date, False otherwise.
+
+    Notes
+    -----
+    The function parses the 'Last-Modified' date from the provided metadata and compares
+    it against a predefined target date (January 21st, 2024). The comparison accounts for
+    the UTC timezone.
+
+    Example
+    -------
+    metadata = {'Last-Modified': 'Sun, 21 Jan 2024 09:54:49 GMT'}
+    result = is_newer_than_target(metadata)
+    # result will be True if 'Last-Modified' is after Jan 21st, 2024, False otherwise.
+    """
+
+    response = requests.head(url)
+    metadata = response.headers
+
+    # Parse the Last-Modified timestamp
+    last_modified_str = metadata['Last-Modified']
+    timestamp_format = '%a, %d %b %Y %H:%M:%S GMT'
+    last_modified = datetime.strptime(last_modified_str, timestamp_format)
+    last_modified = last_modified.replace(tzinfo=pytz.UTC)
+    
+    # Parse the target date
+    target_date = datetime.strptime(target_date_str, '%Y-%m-%d')
+    target_date = target_date.replace(tzinfo=pytz.UTC)
+
+    return last_modified > target_date

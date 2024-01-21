@@ -58,7 +58,9 @@ Contents
    :caption: Tutorials
 
    tutorials/tutorial_utils
-   tutorials/tutorial_dnam
+   tutorials/tutorial_dnam_illumina_human_array
+   tutorials/tutorial_dnam_illumina_mammalian_array
+   tutorials/tutorial_dnam_rrbs
    tutorials/tutorial_histonemarkchipseq
    tutorials/tutorial_atacseq
    tutorials/tutorial_rnaseq

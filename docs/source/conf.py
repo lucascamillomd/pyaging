@@ -11,12 +11,14 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from importlib import metadata
-sys.path.insert(0, os.path.abspath('../../'))  # Adjust the path as needed
 
-project = 'pyaging'
-copyright = '2023, Lucas Paulo de Lima Camillo'
-author = 'Lucas Paulo de Lima Camillo'
+sys.path.insert(0, os.path.abspath("../../"))  # Adjust the path as needed
+
+project = "pyaging"
+copyright = "2023, Lucas Paulo de Lima Camillo"
+author = "Lucas Paulo de Lima Camillo"
 from pyaging import __version__
+
 release = version = __version__
 
 # -- General configuration ---------------------------------------------------
@@ -45,23 +47,29 @@ extensions = [
     "sphinx.ext.extlinks",
 ]
 
-templates_path = ['../_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "**.ipynb_checkpoints", "tutorials/notebooks/*.rst"]
-html_static_path = ['../_static']
+templates_path = ["../_templates"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "**.ipynb_checkpoints",
+    "tutorials/notebooks/*.rst",
+]
+html_static_path = ["../_static"]
 source_suffix = [".rst", ".md"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_book_theme'
+html_theme = "sphinx_book_theme"
 html_theme_options = dict(
     use_repository_button=True,
     repository_url="https://github.com/rsinghlab/pyaging",
     repository_branch="main",
     navigation_with_keys=False,  # https://github.com/pydata/pydata-sphinx-theme/issues/1492
 )
-html_logo = '../_static/logo.png'
-html_css_files = ['custom.css']
+html_logo = "../_static/logo.png"
+html_css_files = ["custom.css"]
 
 # -- Options for nbshpinx ----------------------------------------------------
 # https://nbsphinx.readthedocs.io/en/0.8.0/configure.html
