@@ -1035,8 +1035,7 @@ class Stubbs(pyagingModel):
         ).long()
 
         # Prepare a tensor to hold normalized data
-        normalized_data = torch.empty_like(x)
-        normalized_data.to(device=x.device, dtype=x.dtype)
+        normalized_data = torch.empty_like(x, device=x.device, dtype=x.dtype)
 
         for i in range(x.size(0)):
             sorted_indices = torch.argsort(x[i, :])
