@@ -295,7 +295,7 @@ def predict_ages_with_model(
         )
 
     # Create an AnnLoader
-    use_cuda = device == "cuda"
+    use_cuda = torch.cuda.is_available()
     dataloader = AnnLoader(adata, batch_size=1024, use_cuda=use_cuda)
 
     # Use the AnnLoader for batched prediction

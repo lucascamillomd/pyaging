@@ -12,7 +12,9 @@ class AltumAge(pyagingModel):
         """
         Scales an array based on the median and standard deviation.
         """
-        x = (x - self.preprocess_dependencies[0]) / self.preprocess_dependencies[1]
+        median = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
+        std = torch.tensor(self.preprocess_dependencies[1], device=x.device, dtype=x.dtype)
+        x = (x - median) / std
         return x
 
     def postprocess(self, x):
@@ -175,8 +177,7 @@ class DunedinPACE(pyagingModel):
         ).long()
 
         # Prepare a tensor to hold normalized data
-        normalized_data = torch.empty_like(x)
-        normalized_data.to(device=x.device, dtype=x.dtype)
+        normalized_data = torch.empty_like(x, device=x.device, dtype=x.dtype)
 
         for i in range(x.size(0)):
             sorted_indices = torch.argsort(x[i, :])
@@ -689,10 +690,7 @@ class OcampoATAC1(pyagingModel):
         transforms with log1p.
         """
 
-        lengths = torch.tensor(self.preprocess_dependencies[0])
-
-        # Ensure lengths is a tensor and has the same device and dtype as x
-        lengths.to(device=x.device, dtype=x.dtype)
+        lengths = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
 
         # Normalize by length
         tpm = 1000 * (x / lengths.unsqueeze(0))
@@ -718,10 +716,7 @@ class OcampoATAC2(pyagingModel):
         Normalize a PyTorch tensor of counts to TPM (Transcripts Per Million) then
         transforms with log1p.
         """
-        lengths = torch.tensor(self.preprocess_dependencies[0])
-
-        # Ensure lengths is a tensor and has the same device and dtype as x
-        lengths.to(device=x.device, dtype=x.dtype)
+        lengths = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
 
         # Normalize by length
         tpm = 1000 * (x / lengths.unsqueeze(0))
