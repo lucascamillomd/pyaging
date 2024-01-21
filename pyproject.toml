@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyaging"
-version = "v0.1.0"
+version = "v0.0.12"
 description = "A Python-based compendium of GPU-optimized aging clocks."
 authors = ["Lucas Paulo de Lima Camillo <lucas_camillo@alumni.brown.edu>"]
 license = "BSD"
