@@ -172,7 +172,8 @@ def download(url: str, dir: str, logger, indent_level: int = 1):
     file_path = url.split("/")[-1]
     file_path = os.path.join(dir, file_path)
 
-    aws_newer = is_newer_than_target(url, '2024-01-22')
+    #aws_newer = is_newer_than_target(url, '2024-01-22')
+    aws_newer = False # REVISIT THIS
 
     if os.path.exists(file_path) and not aws_newer:
         logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
