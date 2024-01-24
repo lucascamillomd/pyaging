@@ -13,7 +13,7 @@ metadata_dict = torch.load("_static/all_clock_metadata.pt")
 # Convert to DataFrame and do some processing
 df = pd.DataFrame(metadata_dict).T
 df = df.sort_values(
-    ["approved_by_author", "year", "clock_name"], ascending=[False, False, True]
+    ["approved_by_author", "clock_name"], ascending=[False, False, True]
 )
 df = df.loc[
     :,
