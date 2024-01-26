@@ -1277,3 +1277,33 @@ class GrimAge2(pyagingModel):
         x = (x * age_std) + age_mean
 
         return x
+
+class YingCausAge(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+class YingDamAge(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+class YingAdaptAge(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x

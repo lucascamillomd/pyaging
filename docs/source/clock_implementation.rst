@@ -57,6 +57,9 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/skinandblood
    clock_notebooks/stubbs
    clock_notebooks/thompson
+   clock_notebooks/yingadaptage
+   clock_notebooks/yingcausage
+   clock_notebooks/yingdamage
    clock_notebooks/zhangblup
    clock_notebooks/zhangen
    clock_notebooks/zhangmortality
