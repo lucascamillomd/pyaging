@@ -71,7 +71,6 @@ Contents
    :caption: API Reference
 
    pyaging
-   clock_implementation
 
 .. toctree::
    :maxdepth: 1

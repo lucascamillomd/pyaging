@@ -50,6 +50,9 @@ phenoage,blood chemistry,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.
 replitali,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s41467-022-34268-8,,,,
 skinandblood,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632/aging.101508,,,anti_log_linear,
 stubbs,methylation,Mus musculus,2017,⌛,https://doi.org/10.1186/s13059-017-1203-5,,quantile_normalization_and_scale_with_gold_standard,stubbs,True
+yingadaptage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
+yingcausage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
+yingdamage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
 zhangblup,methylation,Homo sapiens,2023,⌛,doi,,scale_row,,True
 zhangen,methylation,Homo sapiens,2023,⌛,doi,,scale_row,,True
 zhangmortality,methylation,Homo sapiens,2019,⌛,https://doi.org/10.1038/ncomms14617,,,,
