@@ -51,7 +51,7 @@ To cite `pyaging`, please use the following:
 
 - [X] Incorporate more murine DNA methylation clocks
 - [X] Add torch data loader for age prediction of large datasets
-- [ ] Move preprocessing/postprocessing step to the AnnLoader 
+- [X] Move preprocessing/postprocessing step to the AnnLoader 
 - [ ] Add other blood chemistry biological age clocks (KD age)
 - [ ] Incorporate proteomic clocks (and datasets)
 - [ ] Integrate scAge clocks (this is proving to be difficult)

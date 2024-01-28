@@ -14,6 +14,7 @@ leecontrol,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.1020
 leerefinedrobust,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
 leerobust,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
 thompson,methylation,Mus musculus,2018,✅,https://doi.org/10.18632/aging.101590,,,,
+dnamfitage,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,,,,True
 dnamphenoage,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,,
 dnamtl,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.102173,,,,
 dunedinpace,methylation,Homo sapiens,2022,⌛,https://doi.org/10.7554/eLife.73420,The automatic failure if fewer than 80% of the CpG probes are available is not implemented and left to the user's discretion.,quantile_normalization_with_gold_standard,,True
@@ -53,6 +54,6 @@ stubbs,methylation,Mus musculus,2017,⌛,https://doi.org/10.1186/s13059-017-1203
 yingadaptage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
 yingcausage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
 yingdamage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
-zhangblup,methylation,Homo sapiens,2023,⌛,doi,,scale_row,,True
-zhangen,methylation,Homo sapiens,2023,⌛,doi,,scale_row,,True
+zhangblup,methylation,Homo sapiens,2019,⌛,https://doi.org/10.1186/s13073-019-0667-1,,scale_row,,True
+zhangen,methylation,Homo sapiens,2019,⌛,https://doi.org/10.1186/s13073-019-0667-1,,scale_row,,True
 zhangmortality,methylation,Homo sapiens,2019,⌛,https://doi.org/10.1038/ncomms14617,,,,
