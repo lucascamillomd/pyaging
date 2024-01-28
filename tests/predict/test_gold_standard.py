@@ -57,9 +57,12 @@ gold_standard_dict = {
     'thompson': 164.57995856164365,
     'zhangblup': 78.76779185124363,
     'zhangen': 37.404900683228966,
-    'zhangmortality': 2.8135717975793475
+    'zhangmortality': 2.8135717975793475,
+    'dnamfitage': 91.03008383895092,
+    'yingcausage': 195.3013578758023,
+    'yingadaptage': 173.48314231920278,
+    'yingdamage': -53.509282005508,
 }
-
 
 def test_all_clocks():
     all_clocks = list(gold_standard_dict.keys())
