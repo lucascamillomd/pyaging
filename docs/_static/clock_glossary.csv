@@ -9,12 +9,13 @@ camilloh3k4me3,histone mark,Homo sapiens,2023,✅,https://doi.org/10.1101/2023.0
 camilloh3k9ac,histone mark,Homo sapiens,2023,✅,https://doi.org/10.1101/2023.08.21.554165,,,,
 camilloh3k9me3,histone mark,Homo sapiens,2023,✅,https://doi.org/10.1101/2023.08.21.554165,,,,
 camillopanhistone,histone mark,Homo sapiens,2023,✅,https://doi.org/10.1101/2023.08.21.554165,,,,
+han,methylation,Homo sapiens,2020,✅,https://doi.org/10.1186/s12915-020-00807-2,,,anti_log_linear,
 knight,methylation,Homo sapiens,2016,✅,https://doi.org/10.1186/s13059-016-1068-z,,,,True
 leecontrol,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
 leerefinedrobust,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
 leerobust,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
 thompson,methylation,Mus musculus,2018,✅,https://doi.org/10.18632/aging.101590,,,,
-dnamfitage,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,,,,True
+dnamfitage,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
 dnamphenoage,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,,
 dnamtl,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.102173,,,,
 dunedinpace,methylation,Homo sapiens,2022,⌛,https://doi.org/10.7554/eLife.73420,The automatic failure if fewer than 80% of the CpG probes are available is not implemented and left to the user's discretion.,quantile_normalization_with_gold_standard,,True
@@ -22,7 +23,6 @@ encen100,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00
 encen40,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00731-7,,,,
 grimage,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.101684,,,cox_to_years,True
 grimage2,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
-han,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12915-020-00807-2,,,anti_log_linear,
 hannum,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1016/j.molcel.2012.10.016,,,,
 horvath2013,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1186/gb-2013-14-10-r115,,,anti_log_linear,True
 hrsinchphenoage,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,

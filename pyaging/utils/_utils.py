@@ -134,7 +134,7 @@ def download(url: str, dir: str, logger, indent_level: int = 1):
 
     This function checks if the file specified by the URL already exists in the local
     'pyaging_data' directory. If the file is not present or it is not the latest, it downloads
-    the file from the URL and saves it in this directory. The function logs the progress of the 
+    the file from the URL and saves it in this directory. The function logs the progress of the
     download, including whether the file is found locally or needs to be downloaded.
 
     Parameters
@@ -172,13 +172,16 @@ def download(url: str, dir: str, logger, indent_level: int = 1):
     file_path = url.split("/")[-1]
     file_path = os.path.join(dir, file_path)
 
-    #aws_newer = is_newer_than_target(url, '2024-01-22')
-    aws_newer = False # REVISIT THIS
+    # aws_newer = is_newer_than_target(url, '2024-01-22')
+    aws_newer = False  # REVISIT THIS
 
     if os.path.exists(file_path) and not aws_newer:
         logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
     elif os.path.exists(file_path) and aws_newer:
-        logger.info(f"Data found in {file_path} is not the latest", indent_level=indent_level + 1)
+        logger.info(
+            f"Data found in {file_path} is not the latest",
+            indent_level=indent_level + 1,
+        )
         logger.info(f"Redownloading data to {file_path}", indent_level=indent_level + 1)
         logger.indent_level = indent_level + 1
         urlretrieve(url, file_path, reporthook=logger.request_report_hook)
@@ -526,7 +529,7 @@ def print_model_details(model, max_list_length=30, max_tensor_elements=30):
 
 def is_newer_than_target(url, target_date_str):
     """
-    Check if the 'Last-Modified' date of the metadata of a url is newer than a 
+    Check if the 'Last-Modified' date of the metadata of a url is newer than a
     specific target date.
 
     Parameters
@@ -559,13 +562,13 @@ def is_newer_than_target(url, target_date_str):
     metadata = response.headers
 
     # Parse the Last-Modified timestamp
-    last_modified_str = metadata['Last-Modified']
-    timestamp_format = '%a, %d %b %Y %H:%M:%S GMT'
+    last_modified_str = metadata["Last-Modified"]
+    timestamp_format = "%a, %d %b %Y %H:%M:%S GMT"
     last_modified = datetime.strptime(last_modified_str, timestamp_format)
     last_modified = last_modified.replace(tzinfo=pytz.UTC)
-    
+
     # Parse the target date
-    target_date = datetime.strptime(target_date_str, '%Y-%m-%d')
+    target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
     target_date = target_date.replace(tzinfo=pytz.UTC)
 
     return last_modified > target_date

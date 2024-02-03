@@ -12,8 +12,12 @@ class AltumAge(pyagingModel):
         """
         Scales an array based on the median and standard deviation.
         """
-        median = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
-        std = torch.tensor(self.preprocess_dependencies[1], device=x.device, dtype=x.dtype)
+        median = torch.tensor(
+            self.preprocess_dependencies[0], device=x.device, dtype=x.dtype
+        )
+        std = torch.tensor(
+            self.preprocess_dependencies[1], device=x.device, dtype=x.dtype
+        )
         x = (x - median) / std
         return x
 
@@ -690,7 +694,9 @@ class OcampoATAC1(pyagingModel):
         transforms with log1p.
         """
 
-        lengths = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
+        lengths = torch.tensor(
+            self.preprocess_dependencies[0], device=x.device, dtype=x.dtype
+        )
 
         # Normalize by length
         tpm = 1000 * (x / lengths.unsqueeze(0))
@@ -716,7 +722,9 @@ class OcampoATAC2(pyagingModel):
         Normalize a PyTorch tensor of counts to TPM (Transcripts Per Million) then
         transforms with log1p.
         """
-        lengths = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
+        lengths = torch.tensor(
+            self.preprocess_dependencies[0], device=x.device, dtype=x.dtype
+        )
 
         # Normalize by length
         tpm = 1000 * (x / lengths.unsqueeze(0))
@@ -1278,6 +1286,7 @@ class GrimAge2(pyagingModel):
 
         return x
 
+
 class YingCausAge(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1288,6 +1297,7 @@ class YingCausAge(pyagingModel):
     def postprocess(self, x):
         return x
 
+
 class YingDamAge(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1297,6 +1307,7 @@ class YingDamAge(pyagingModel):
 
     def postprocess(self, x):
         return x
+
 
 class YingAdaptAge(pyagingModel):
     def __init__(self):
@@ -1326,10 +1337,9 @@ class DNAmFitAge(pyagingModel):
         self.features_VO2Max = None
 
     def forward(self, x):
-        
-        Female = x[:, -3]#.unsqueeze(1)
-        Age = x[:, -2]#.unsqueeze(1)
-        GrimAge  = x[:, -1].unsqueeze(1)
+        Female = x[:, -3]  # .unsqueeze(1)
+        Age = x[:, -2]  # .unsqueeze(1)
+        GrimAge = x[:, -1].unsqueeze(1)
 
         is_female = Female == 1
         is_male = Female == 0
@@ -1349,10 +1359,10 @@ class DNAmFitAge(pyagingModel):
 
         x_f = torch.concat(
             [
-                (VO2MaxF - 46.825091)/(-0.13620215),
+                (VO2MaxF - 46.825091) / (-0.13620215),
                 (GripF - 39.857718) / (-0.22074456),
                 (GaitF - 2.508547) / (-0.01245682),
-                (GrimAgeF - 7.978487) / (0.80928530)
+                (GrimAgeF - 7.978487) / (0.80928530),
             ],
             dim=1,
         )
@@ -1362,7 +1372,7 @@ class DNAmFitAge(pyagingModel):
                 (VO2MaxM - 49.836389) / (-0.141862925),
                 (GripM - 57.514016) / (-0.253179827),
                 (GaitM - 2.349080) / (-0.009380061),
-                (GrimAgeM - 9.549733) / (0.835120557) 
+                (GrimAgeM - 9.549733) / (0.835120557),
             ],
             dim=1,
         )
@@ -1375,7 +1385,7 @@ class DNAmFitAge(pyagingModel):
         y[is_male] = y_m
 
         return y
-        
+
     def preprocess(self, x):
         return x
 
