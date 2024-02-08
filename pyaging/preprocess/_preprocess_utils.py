@@ -69,25 +69,24 @@ def impute_missing_values(
     # Check for missing values
     if adata.var["percent_na"].sum() == 0:
         logger.info("No missing values found. No imputation necessary", indent_level=2)
-        return adata
-
-    # Dictionary mapping strategies to imputer objects
-    imputers = {
-        "mean": SimpleImputer(strategy="mean", keep_empty_features=True),
-        "median": SimpleImputer(strategy="median", keep_empty_features=True),
-        "constant": SimpleImputer(
-            strategy="constant", fill_value=0, keep_empty_features=True
-        ),
-        "knn": KNNImputer(),
-    }
-
-    # Select the appropriate imputer
-    imputer = imputers.get(strategy)
-    if not imputer:
-        raise ValueError(f"Invalid imputer strategy: {strategy}")
-    logger.info(f"Imputing missing values using {strategy} strategy", indent_level=2)
-    adata.X = imputer.fit_transform(adata.X)
-    adata.layers["X_imputed"] = adata.X
+    else:
+        # Dictionary mapping strategies to imputer objects
+        imputers = {
+            "mean": SimpleImputer(strategy="mean", keep_empty_features=True),
+            "median": SimpleImputer(strategy="median", keep_empty_features=True),
+            "constant": SimpleImputer(
+                strategy="constant", fill_value=0, keep_empty_features=True
+            ),
+            "knn": KNNImputer(),
+        }
+    
+        # Select the appropriate imputer
+        imputer = imputers.get(strategy)
+        if not imputer:
+            raise ValueError(f"Invalid imputer strategy: {strategy}")
+        logger.info(f"Imputing missing values using {strategy} strategy", indent_level=2)
+        adata.X = imputer.fit_transform(adata.X)
+        adata.layers["X_imputed"] = adata.X
 
 
 @progress("Log data statistics")
