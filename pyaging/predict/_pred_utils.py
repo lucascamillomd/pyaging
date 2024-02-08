@@ -153,19 +153,29 @@ def check_features_in_adata(
 
     """
 
-    # Create list for missing features and empty data matrix
-    missing_features = []
-    X_model = np.zeros((adata.n_obs, len(model.features)))
+    # Preallocate the data matrix
+    X_model = np.empty((adata.n_obs, len(model.features)), order='F')
 
-    # Add values to data matrix
-    for i, feature in enumerate(model.features):
-        if feature in adata.var_names:
-            X_model[:, i] = adata[:, feature].X.flatten()
-        else:
-            missing_features += [feature]
-            X_model[:, i] = (
-                model.reference_values[i] if model.reference_values is not None else 0
-            )
+    # Find indices of matching features in adata.var_names
+    feature_indices = {feature: i for i, feature in enumerate(adata.var_names)}
+    model_feature_indices = np.array([feature_indices.get(feature, -1) for feature in model.features])
+
+    # Identify missing features
+    missing_features_mask = model_feature_indices == -1
+    missing_features = np.array(model.features)[missing_features_mask].tolist()
+
+    # Assign values for existing features
+    existing_features_mask = ~missing_features_mask
+    existing_features_indices = model_feature_indices[existing_features_mask]
+    X_model[:, existing_features_mask] = np.asfortranarray(adata.X)[:, existing_features_indices]
+
+    # Handle missing features
+    if model.reference_values is not None:
+        X_model[:, missing_features_mask] = np.array(model.reference_values)[missing_features_mask]
+    else:
+        X_model[:, missing_features_mask] = 0
+
+    # Calculate missing features statistics
     num_missing_features = len(missing_features)
     percent_missing = 100 * num_missing_features / len(model.features)
 
