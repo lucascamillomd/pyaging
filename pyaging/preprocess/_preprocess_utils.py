@@ -79,12 +79,14 @@ def impute_missing_values(
             ),
             "knn": KNNImputer(),
         }
-    
+
         # Select the appropriate imputer
         imputer = imputers.get(strategy)
         if not imputer:
             raise ValueError(f"Invalid imputer strategy: {strategy}")
-        logger.info(f"Imputing missing values using {strategy} strategy", indent_level=2)
+        logger.info(
+            f"Imputing missing values using {strategy} strategy", indent_level=2
+        )
         adata.X = imputer.fit_transform(adata.X)
         adata.layers["X_imputed"] = adata.X
 
