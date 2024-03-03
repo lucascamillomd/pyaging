@@ -18,6 +18,7 @@ pyaging.egg-info/
 update_pipeline_steps.txt
 update_package.sh
 dist/
+pyaging_manuscript.ipynb
 build/
 docs/_build
 docs/_templates
