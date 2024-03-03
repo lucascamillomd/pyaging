@@ -225,18 +225,14 @@ def check_features_in_adata(
 
     # Add matrix to obsm
     adata.obsm[f"X_{model.metadata['clock_name']}"] = X_model
-
-    logger.info(
-        f"Added prepared input matrix to adata.obsm[X_{model.metadata['clock_name']}]",
-        indent_level=indent_level + 1,
-    )
-
+    
 
 @progress("Predict ages with model")
 def predict_ages_with_model(
     adata: anndata.AnnData,
     model: pyagingModel,
     device: str,
+    batch_size: int, 
     logger,
     indent_level: int = 2,
 ) -> torch.Tensor:
@@ -259,6 +255,9 @@ def predict_ages_with_model(
 
     device : str
         Device to move AnnData to during inference. Eithe 'cpu' or 'cuda'.
+
+    batch_size : int
+        Batch size for the AnnLoader object to predict age.
 
     logger : Logger
         A logger object for logging the progress or any relevant information during the prediction process.
@@ -312,7 +311,7 @@ def predict_ages_with_model(
 
     # Create an AnnLoader
     use_cuda = torch.cuda.is_available()
-    dataloader = AnnLoader(adata, batch_size=1024, use_cuda=use_cuda)
+    dataloader = AnnLoader(adata, batch_size=batch_size, use_cuda=use_cuda)
 
     # Use the AnnLoader for batched prediction
     predictions = []

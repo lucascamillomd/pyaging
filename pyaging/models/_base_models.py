@@ -17,6 +17,7 @@ class pyagingModel(nn.Module, ABC):
             "citation": None,
             "doi": None,
             "notes": None,
+            "research_only": None,
             "version": None,
         }
 

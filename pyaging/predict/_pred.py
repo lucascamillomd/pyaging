@@ -10,6 +10,8 @@ def predict_age(
     adata: anndata.AnnData,
     clock_names: str = "horvath2013",
     dir: str = "pyaging_data",
+    batch_size: int = 1024,
+    clean: bool = True,
     verbose: bool = True,
 ) -> anndata.AnnData:
     """
@@ -33,6 +35,12 @@ def predict_age(
     dir: str
         The directory to deposit the downloaded file. Defaults to "pyaging_data".
 
+    batch_size: int
+        The batch size for age inferece. Defaults to 1024.
+
+    clean: bool
+        Whether to delete the matrix data create for each clock in adata.obsm[X_clock]. Defaults to True.
+
     verbose: bool
         Whether to log the output to console with the logger. Defaults to True.
 
@@ -46,7 +54,8 @@ def predict_age(
     -----
     The function is designed to be flexible and can handle both single and multiple clock predictions.
     The predicted ages are appended to the .obs attribute of the AnnData object with the clock name as
-    the key. The metadata of each clock used in the prediction is stored in the .uns attribute.
+    the key. The metadata of each clock used in the prediction is stored in the .uns attribute. Change
+    batch size depending on memory constraints.
 
     It is important that the input AnnData object's .X attribute contains data suitable for age
     prediction.
@@ -80,6 +89,11 @@ def predict_age(
         # Load and prepare the clock
         model = load_clock(clock_name, device, dir, logger, indent_level=2)
 
+        # Disclaimer for commercial clocks
+        if "research_only" in list(model.metadata.keys()):
+            if model.metadata["research_only"]:
+                logger.info(f"⚠️ Clock {clock_name} is for research purposes only. Please check clock Notes", indent_level=2)
+
         # Check and update adata for missing features
         check_features_in_adata(
             adata,
@@ -90,7 +104,7 @@ def predict_age(
 
         # Perform age prediction using the model applying preprocessing and postprocessing steps
         predicted_ages_tensor = predict_ages_with_model(
-            adata, model, device, logger, indent_level=2
+            adata, model, device, batch_size, logger, indent_level=2
         )
 
         # Add predicted ages and clock metadata to adata
@@ -98,7 +112,9 @@ def predict_age(
             adata, model, predicted_ages_tensor, dir, logger, indent_level=2
         )
 
-        del adata.obsm[f"X_{clock_name}"]
+        # Delete the clock matrix object
+        if clean:
+            del adata.obsm[f"X_{clock_name}"]
 
         # Flush memory
         gc.collect()
