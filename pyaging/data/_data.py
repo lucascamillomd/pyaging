@@ -1,14 +1,8 @@
-import os
-from urllib.request import urlretrieve
-from functools import wraps
-
+from ..logger import LoggerManager, silence_logger
 from ..utils import download
-from ..logger import LoggerManager, main_tqdm, silence_logger
 
 
-def download_example_data(
-    data_type: str, dir: str = "pyaging_data", verbose: bool = True
-) -> None:
+def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Downloads example datasets for various types of biological data used in aging studies.
 

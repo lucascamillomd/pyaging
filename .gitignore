@@ -11,7 +11,7 @@ clocks/weights/
 pyaging_data/
 example_data/
 testing.ipynb
-testing2.ipynb
+pyaging_manuscript.ipynb
 .ipynb_checkpoints/
 *.pyc
 .DS_Store

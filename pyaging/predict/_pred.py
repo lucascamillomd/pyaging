@@ -1,7 +1,6 @@
-import anndata
 import gc
-import warnings
-from anndata import ImplicitModificationWarning
+
+import anndata
 
 from ._pred_utils import *
 
@@ -90,9 +89,11 @@ def predict_age(
         model = load_clock(clock_name, device, dir, logger, indent_level=2)
 
         # Disclaimer for commercial clocks
-        if "research_only" in list(model.metadata.keys()):
-            if model.metadata["research_only"]:
-                logger.info(f"⚠️ Clock {clock_name} is for research purposes only. Please check clock Notes", indent_level=2)
+        if model.metadata.get("research_only", False):  # Defaults to False if 'research_only' key doesn't exist
+            logger.warning(
+                f"⚠️ Clock '{clock_name}' is for research purposes only. Please check the clock's documentation or notes for more information.",
+                indent_level=2,
+            )
 
         # Check and update adata for missing features
         check_features_in_adata(
@@ -103,14 +104,10 @@ def predict_age(
         )
 
         # Perform age prediction using the model applying preprocessing and postprocessing steps
-        predicted_ages_tensor = predict_ages_with_model(
-            adata, model, device, batch_size, logger, indent_level=2
-        )
+        predicted_ages_tensor = predict_ages_with_model(adata, model, device, batch_size, logger, indent_level=2)
 
         # Add predicted ages and clock metadata to adata
-        add_pred_ages_and_clock_metadata_adata(
-            adata, model, predicted_ages_tensor, dir, logger, indent_level=2
-        )
+        add_pred_ages_and_clock_metadata_adata(adata, model, predicted_ages_tensor, dir, logger, indent_level=2)
 
         # Delete the clock matrix object
         if clean:

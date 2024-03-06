@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyaging"
-version = "v0.1.5"
+version = "v0.1.6"
 description = "A Python-based compendium of GPU-optimized aging clocks."
 authors = ["Lucas Paulo de Lima Camillo <lucas_camillo@alumni.brown.edu>"]
 license = "BSD"
@@ -40,6 +40,28 @@ pyaging = "pyaging:main"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "ipykernel", "nbsphinx", "pygments"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    #"F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

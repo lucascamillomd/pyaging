@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+
 from ._base_models import *
 
 
@@ -12,12 +12,8 @@ class AltumAge(pyagingModel):
         """
         Scales an array based on the median and standard deviation.
         """
-        median = torch.tensor(
-            self.preprocess_dependencies[0], device=x.device, dtype=x.dtype
-        )
-        std = torch.tensor(
-            self.preprocess_dependencies[1], device=x.device, dtype=x.dtype
-        )
+        median = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
+        std = torch.tensor(self.preprocess_dependencies[1], device=x.device, dtype=x.dtype)
         x = (x - median) / std
         return x
 
@@ -171,14 +167,10 @@ class DunedinPACE(pyagingModel):
         Apply quantile normalization on x using gold standard means.
         """
         # Ensure gold_standard_means is a 1D tensor and sorted
-        sorted_gold_standard = torch.sort(
-            torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
-        )[0]
+        sorted_gold_standard = torch.sort(torch.tensor(self.reference_values, device=x.device, dtype=x.dtype))[0]
 
         # Pre-compute the quantile indices
-        quantile_indices = torch.linspace(
-            0, len(sorted_gold_standard) - 1, steps=x.size(1)
-        ).long()
+        quantile_indices = torch.linspace(0, len(sorted_gold_standard) - 1, steps=x.size(1)).long()
 
         # Prepare a tensor to hold normalized data
         normalized_data = torch.empty_like(x, device=x.device, dtype=x.dtype)
@@ -240,9 +232,7 @@ class Han(pyagingModel):
         age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
 
         # Linear transformation for non-negative values
-        age_tensor[mask_non_negative] = (1 + adult_age) * x[
-            mask_non_negative
-        ] + adult_age
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
 
         return age_tensor
 
@@ -282,9 +272,7 @@ class Horvath2013(pyagingModel):
         age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
 
         # Linear transformation for non-negative values
-        age_tensor[mask_non_negative] = (1 + adult_age) * x[
-            mask_non_negative
-        ] + adult_age
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
 
         return age_tensor
 
@@ -445,16 +433,12 @@ class Mammalian3(pyagingModel):
 
         # Exponential transformation for negative values
         age_tensor[mask_non_negative] = (
-            m_hat_pos * (average_maturity_age_pos + gestation_time_pos) * (x_pos + 1)
-            - gestation_time_pos
+            m_hat_pos * (average_maturity_age_pos + gestation_time_pos) * (x_pos + 1) - gestation_time_pos
         )
 
         # Linear transformation for non-negative values
         age_tensor[mask_negative] = (
-            m_hat_neg
-            * (average_maturity_age_neg + gestation_time_neg)
-            * torch.exp(x_neg)
-            - gestation_time_neg
+            m_hat_neg * (average_maturity_age_neg + gestation_time_neg) * torch.exp(x_neg) - gestation_time_neg
         )
 
         return age_tensor
@@ -536,16 +520,12 @@ class MammalianBlood3(pyagingModel):
 
         # Exponential transformation for negative values
         age_tensor[mask_non_negative] = (
-            m_hat_pos * (average_maturity_age_pos + gestation_time_pos) * (x_pos + 1)
-            - gestation_time_pos
+            m_hat_pos * (average_maturity_age_pos + gestation_time_pos) * (x_pos + 1) - gestation_time_pos
         )
 
         # Linear transformation for non-negative values
         age_tensor[mask_negative] = (
-            m_hat_neg
-            * (average_maturity_age_neg + gestation_time_neg)
-            * torch.exp(x_neg)
-            - gestation_time_neg
+            m_hat_neg * (average_maturity_age_neg + gestation_time_neg) * torch.exp(x_neg) - gestation_time_neg
         )
 
         return age_tensor
@@ -627,16 +607,12 @@ class MammalianSkin3(pyagingModel):
 
         # Exponential transformation for negative values
         age_tensor[mask_non_negative] = (
-            m_hat_pos * (average_maturity_age_pos + gestation_time_pos) * (x_pos + 1)
-            - gestation_time_pos
+            m_hat_pos * (average_maturity_age_pos + gestation_time_pos) * (x_pos + 1) - gestation_time_pos
         )
 
         # Linear transformation for non-negative values
         age_tensor[mask_negative] = (
-            m_hat_neg
-            * (average_maturity_age_neg + gestation_time_neg)
-            * torch.exp(x_neg)
-            - gestation_time_neg
+            m_hat_neg * (average_maturity_age_neg + gestation_time_neg) * torch.exp(x_neg) - gestation_time_neg
         )
 
         return age_tensor
@@ -694,9 +670,7 @@ class OcampoATAC1(pyagingModel):
         transforms with log1p.
         """
 
-        lengths = torch.tensor(
-            self.preprocess_dependencies[0], device=x.device, dtype=x.dtype
-        )
+        lengths = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
 
         # Normalize by length
         tpm = 1000 * (x / lengths.unsqueeze(0))
@@ -722,9 +696,7 @@ class OcampoATAC2(pyagingModel):
         Normalize a PyTorch tensor of counts to TPM (Transcripts Per Million) then
         transforms with log1p.
         """
-        lengths = torch.tensor(
-            self.preprocess_dependencies[0], device=x.device, dtype=x.dtype
-        )
+        lengths = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
 
         # Normalize by length
         tpm = 1000 * (x / lengths.unsqueeze(0))
@@ -858,9 +830,7 @@ class PCHorvath2013(pyagingModel):
         age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
 
         # Linear transformation for non-negative values
-        age_tensor[mask_non_negative] = (1 + adult_age) * x[
-            mask_non_negative
-        ] + adult_age
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
 
         return age_tensor
 
@@ -900,9 +870,7 @@ class PCSkinAndBlood(pyagingModel):
         age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
 
         # Linear transformation for non-negative values
-        age_tensor[mask_non_negative] = (1 + adult_age) * x[
-            mask_non_negative
-        ] + adult_age
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
 
         return age_tensor
 
@@ -931,9 +899,7 @@ class PedBE(pyagingModel):
         age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
 
         # Linear transformation for non-negative values
-        age_tensor[mask_non_negative] = (1 + adult_age) * x[
-            mask_non_negative
-        ] + adult_age
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
 
         return age_tensor
 
@@ -972,9 +938,7 @@ class PhenoAge(pyagingModel):
         # lambda
         l = torch.tensor(0.0192, device=x.device, dtype=x.dtype)
         mortality_score = 1 - torch.exp(-torch.exp(x) * (torch.exp(120 * l) - 1) / l)
-        age = (
-            141.50225 + torch.log(-0.00553 * torch.log(1 - mortality_score)) / 0.090165
-        )
+        age = 141.50225 + torch.log(-0.00553 * torch.log(1 - mortality_score)) / 0.090165
         return age
 
 
@@ -1013,9 +977,7 @@ class SkinAndBlood(pyagingModel):
         age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
 
         # Linear transformation for non-negative values
-        age_tensor[mask_non_negative] = (1 + adult_age) * x[
-            mask_non_negative
-        ] + adult_age
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
 
         return age_tensor
 
@@ -1030,17 +992,13 @@ class Stubbs(pyagingModel):
         and then scale with the means and standard deviation.
         """
 
-        gold_standard_means = torch.tensor(
-            self.reference_values, device=x.device, dtype=x.dtype
-        )
+        gold_standard_means = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
 
         # Ensure gold_standard_means is a 1D tensor and sorted
         sorted_gold_standard = torch.sort(gold_standard_means)[0]
 
         # Pre-compute the quantile indices
-        quantile_indices = torch.linspace(
-            0, len(sorted_gold_standard) - 1, steps=x.size(1)
-        ).long()
+        quantile_indices = torch.linspace(0, len(sorted_gold_standard) - 1, steps=x.size(1)).long()
 
         # Prepare a tensor to hold normalized data
         normalized_data = torch.empty_like(x, device=x.device, dtype=x.dtype)
@@ -1049,9 +1007,7 @@ class Stubbs(pyagingModel):
             sorted_indices = torch.argsort(x[i, :])
             normalized_data[i, sorted_indices] = sorted_gold_standard[quantile_indices]
 
-        gold_standard_stds = torch.tensor(
-            self.preprocess_dependencies[0], device=x.device, dtype=x.dtype
-        )
+        gold_standard_stds = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
 
         # Avoid division by zero in case of a column with constant value
         gold_standard_stds[torch.abs(gold_standard_stds) < 10e-10] = 1.0

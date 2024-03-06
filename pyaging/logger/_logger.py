@@ -78,7 +78,7 @@ class Logger:
         silence_logger("pysam")
         silence_logger("pystan")
 
-        if not (level is None):
+        if level is not None:
             self.logger.setLevel(level)
         else:
             self.logger.setLevel(logging.INFO)
@@ -132,62 +132,46 @@ class Logger:
         return self.logger.setLevel(*args, **kwargs)
 
     def debug(self, message, indent_level=1, *args, **kwargs):
-        message = format_logging_message(
-            message, logging.DEBUG, indent_level=indent_level
-        )
+        message = format_logging_message(message, logging.DEBUG, indent_level=indent_level)
         return self.logger.debug(message, *args, **kwargs)
 
     def info(self, message, indent_level=1, *args, **kwargs):
-        message = format_logging_message(
-            message, logging.INFO, indent_level=indent_level
-        )
+        message = format_logging_message(message, logging.INFO, indent_level=indent_level)
         return self.logger.info(message, *args, **kwargs)
 
     def first_info(self, message, indent_level=1, *args, **kwargs):
         self.start_time = time.time()  # Store the start time
-        message = format_logging_message(
-            "🏗️ " + message, logging.INFO, indent_level=indent_level
-        )
+        message = format_logging_message("🏗️ " + message, logging.INFO, indent_level=indent_level)
         return self.logger.info(message, *args, **kwargs)
 
     def done(self, indent_level=1, *args, **kwargs):
         if hasattr(self, "start_time"):
             elapsed_time = time.time() - self.start_time
             message = format_logging_message(
-                f"🎉 Done! [%.4fs]" % (elapsed_time),
+                "🎉 Done! [%.4fs]" % (elapsed_time),
                 logging.INFO,
                 indent_level=indent_level,
             )
         else:
-            message = format_logging_message(
-                "🎉 Done!", logging.INFO, indent_level=indent_level
-            )
+            message = format_logging_message("🎉 Done!", logging.INFO, indent_level=indent_level)
 
         return self.logger.info(message, *args, **kwargs)
 
     def warning(self, message, indent_level=1, *args, **kwargs):
         self.warning_logged = True
-        message = format_logging_message(
-            message, logging.WARNING, indent_level=indent_level
-        )
+        message = format_logging_message(message, logging.WARNING, indent_level=indent_level)
         return self.logger.warning(message, *args, **kwargs)
 
     def exception(self, message, indent_level=1, *args, **kwargs):
-        message = format_logging_message(
-            message, logging.ERROR, indent_level=indent_level
-        )
+        message = format_logging_message(message, logging.ERROR, indent_level=indent_level)
         return self.logger.exception(message, *args, **kwargs)
 
     def critical(self, message, indent_level=1, *args, **kwargs):
-        message = format_logging_message(
-            message, logging.CRITICAL, indent_level=indent_level
-        )
+        message = format_logging_message(message, logging.CRITICAL, indent_level=indent_level)
         return self.logger.critical(message, *args, **kwargs)
 
     def error(self, message, indent_level=1, *args, **kwargs):
-        message = format_logging_message(
-            "🛑 " + message, logging.ERROR, indent_level=indent_level
-        )
+        message = format_logging_message("🛑 " + message, logging.ERROR, indent_level=indent_level)
         return self.logger.error(message, *args, **kwargs)
 
     def info_insert_adata(
@@ -252,11 +236,9 @@ class Logger:
         self.previous_timestamp = now
         return self.time_passed
 
-    def report_progress(
-        self, percent=None, count=None, total=None, progress_name="", indent_level=1
-    ):
+    def report_progress(self, percent=None, count=None, total=None, progress_name="", indent_level=1):
         if percent is None:
-            assert (not count is None) and (not total is None)
+            assert (count is not None) and (total is not None)
             percent = count / total * 100
         saved_terminator = self.logger_stream_handler.terminator
         if percent != 100:
@@ -275,9 +257,7 @@ class Logger:
     def start_progress(self, message, indent_level=1, *args, **kwargs):
         now = time.time()
         self.previous_timestamp = now
-        message = format_logging_message(
-            "⚙️ " + message, logging.INFO, indent_level=indent_level
-        )
+        message = format_logging_message("⚙️ " + message, logging.INFO, indent_level=indent_level)
         self.logger.info(message, *args, **kwargs)
         self.logger_stream_handler.flush()
 
@@ -290,10 +270,7 @@ class Logger:
         self.logger_stream_handler.flush()
         self.logger_stream_handler.terminator = saved_terminator  #
 
-        if self.warning_logged:
-            token = "⚠️"
-        else:
-            token = "✅"  #
+        token = "⚠️" if self.warning_logged else "✅"
 
         if time_unit == "s":
             self.info(
@@ -334,15 +311,11 @@ class Logger:
         cur_percent = rs * bn / ts
 
         if cur_percent - self.report_hook_percent_state > 0.01:
-            self.report_progress(
-                count=rs * bn, total=ts, indent_level=self.indent_level
-            )
+            self.report_progress(count=rs * bn, total=ts, indent_level=self.indent_level)
             self.report_hook_percent_state = cur_percent
         if rs * bn >= ts:
             self.report_hook_percent_state = None
-            self.report_progress(
-                count=100, total=100, indent_level=self.indent_level
-            )  # 100%
+            self.report_progress(count=100, total=100, indent_level=self.indent_level)  # 100%
             # self.finish_progress(progress_name="download")
 
 
@@ -379,10 +352,7 @@ class LoggerManager:
             i += 1
             new_progress_percent = i / len(generator) * 100
             # report every `interval` percent
-            if (
-                new_progress_percent - prev_progress_percent > 1
-                or new_progress_percent >= 100
-            ):
+            if new_progress_percent - prev_progress_percent > 1 or new_progress_percent >= 100:
                 logger.report_progress(
                     count=i,
                     total=len(generator),
@@ -427,9 +397,7 @@ def main_tqdm(generator, desc="", indent_level=1, logger=LoggerManager().main_lo
     desc : str, optional
         description of your progress
     """
-    return LoggerManager.progress_logger(
-        generator, logger=logger, progress_name=desc, indent_level=indent_level
-    )
+    return LoggerManager.progress_logger(generator, logger=logger, progress_name=desc, indent_level=indent_level)
 
 
 def main_log_time():
@@ -445,9 +413,7 @@ def main_finish_progress(progress_name=""):
 
 
 def main_info_insert_adata(key, adata_attr="obsm", indent_level=1, *args, **kwargs):
-    LoggerManager.main_logger.info_insert_adata(
-        key, adata_attr=adata_attr, indent_level=indent_level, *args, **kwargs
-    )
+    LoggerManager.main_logger.info_insert_adata(key, adata_attr=adata_attr, indent_level=indent_level, *args, **kwargs)
 
 
 def main_info_insert_adata_var(key, indent_level=1, *args, **kwargs):

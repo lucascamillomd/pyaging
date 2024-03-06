@@ -1,18 +1,15 @@
-from typing import Union, List
-import pandas as pd
-import numpy as np
-from typing import Optional
-from pyBigWig import open as open_bw
+from typing import List, Union
+
 import anndata
+import numpy as np
+import pandas as pd
+from pyBigWig import open as open_bw
 
 from ..logger import LoggerManager, main_tqdm, silence_logger
 from ._preprocess_utils import *
-from ..utils import download
 
 
-def bigwig_to_df(
-    bw_files: Union[str, List[str]], dir: str = "pyaging_data", verbose: bool = True
-) -> pd.DataFrame:
+def bigwig_to_df(bw_files: Union[str, List[str]], dir: str = "pyaging_data", verbose: bool = True) -> pd.DataFrame:
     """
     Convert bigWig files to a DataFrame, extracting signal data for genomic regions.
 
@@ -85,17 +82,12 @@ def bigwig_to_df(
                 except:
                     signal = None
 
-                if signal is not None:
-                    signal_transformed = np.arcsinh(signal)
-                else:
-                    signal_transformed = 0
+                signal_transformed = np.arcsinh(signal) if signal is not None else 0
 
                 signal_sample = np.append(signal_sample, signal_transformed)
 
         # Append DataFrame for the current sample
-        all_samples.append(
-            pd.DataFrame(signal_sample[None, :], columns=genes.gene_id.tolist())
-        )
+        all_samples.append(pd.DataFrame(signal_sample[None, :], columns=genes.gene_id.tolist()))
     logger.finish_progress(f"{message} finished")
 
     # Concatenate all sample dataframes
@@ -157,7 +149,7 @@ def df_to_adata(
     Examples
     --------
     >>> import pandas as pd
-    >>> df = pd.DataFrame(np.random.rand(5, 3), columns=['gene1', 'gene2', 'gene3'])
+    >>> df = pd.DataFrame(np.random.rand(5, 3), columns=["gene1", "gene2", "gene3"])
     >>> adata = df_to_adata(df)
     # This returns an AnnData object with the imputed data from 'df'.
 
@@ -246,9 +238,7 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
             aggregated_data[cpg_site] = [df[column]]
     # In case there are no duplicated probes, just return current array
     if n_duplicated_probes == 0:
-        logger.info(
-            "There are no duplicated probes. Returning original data", indent_level=2
-        )
+        logger.info("There are no duplicated probes. Returning original data", indent_level=2)
         logger.done()
         return df
     else:
@@ -262,9 +252,7 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
     message = "Averaging duplicated probes"
     logger.start_progress(f"{message} started")
     aggregated_columns = []
-    for cpg_site, columns in main_tqdm(
-        aggregated_data.items(), indent_level=2, logger=logger
-    ):
+    for cpg_site, columns in main_tqdm(aggregated_data.items(), indent_level=2, logger=logger):
         if len(columns) > 1:
             mean_series = pd.concat(columns, axis=1).mean(axis=1)
             mean_series.name = cpg_site

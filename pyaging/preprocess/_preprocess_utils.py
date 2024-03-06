@@ -1,23 +1,16 @@
-from typing import Union, List
-import ntpath
 import os
-from urllib.request import urlretrieve
-import pandas as pd
-import numpy as np
-from sklearn.impute import SimpleImputer, KNNImputer
 from typing import Optional
-from pyBigWig import open as open_bw
-import anndata
-from functools import wraps
 
-from ..logger import LoggerManager, main_tqdm, silence_logger
-from ..utils import progress, download
+import anndata
+import numpy as np
+import pandas as pd
+from sklearn.impute import KNNImputer, SimpleImputer
+
+from ..utils import download, progress
 
 
 @progress("Impute missing values")
-def impute_missing_values(
-    adata: anndata.AnnData, strategy: str, logger, indent_level: int = 1
-) -> None:
+def impute_missing_values(adata: anndata.AnnData, strategy: str, logger, indent_level: int = 1) -> None:
     """
     Imputes missing values in a given adata object using a specified strategy.
 
@@ -74,9 +67,7 @@ def impute_missing_values(
         imputers = {
             "mean": SimpleImputer(strategy="mean", keep_empty_features=True),
             "median": SimpleImputer(strategy="median", keep_empty_features=True),
-            "constant": SimpleImputer(
-                strategy="constant", fill_value=0, keep_empty_features=True
-            ),
+            "constant": SimpleImputer(strategy="constant", fill_value=0, keep_empty_features=True),
             "knn": KNNImputer(),
         }
 
@@ -84,9 +75,7 @@ def impute_missing_values(
         imputer = imputers.get(strategy)
         if not imputer:
             raise ValueError(f"Invalid imputer strategy: {strategy}")
-        logger.info(
-            f"Imputing missing values using {strategy} strategy", indent_level=2
-        )
+        logger.info(f"Imputing missing values using {strategy} strategy", indent_level=2)
         adata.X = imputer.fit_transform(adata.X)
         adata.layers["X_imputed"] = adata.X
 
@@ -269,7 +258,10 @@ def add_metadata_to_anndata(
     >>> import pandas as pd
     >>> from anndata import AnnData
     >>> adata = AnnData(np.random.rand(5, 3))
-    >>> metadata = pd.DataFrame({'Condition': ['A', 'B', 'A', 'B', 'A']}, index=[f'Sample_{i}' for i in range(5)])
+    >>> metadata = pd.DataFrame(
+    ...     {"Condition": ["A", "B", "A", "B", "A"]},
+    ...     index=[f"Sample_{i}" for i in range(5)],
+    ... )
     >>> add_metadata_to_anndata(adata, metadata, logger)
     # Adds the 'Condition' metadata to the AnnData object.
 
@@ -285,9 +277,7 @@ def add_metadata_to_anndata(
 
 
 @progress("Add imputer strategy to adata.uns")
-def add_unstructured_data(
-    adata: anndata.AnnData, imputer_strategy: str, logger, indent_level: int = 1
-) -> None:
+def add_unstructured_data(adata: anndata.AnnData, imputer_strategy: str, logger, indent_level: int = 1) -> None:
     """
     Adds unstructured data, such as imputer strategy and data type, to an AnnData object.
 
@@ -321,7 +311,7 @@ def add_unstructured_data(
     -------
     >>> from anndata import AnnData
     >>> adata = AnnData(np.random.rand(5, 3))
-    >>> adata = add_unstructured_data(adata, 'mean', logger)
+    >>> adata = add_unstructured_data(adata, "mean", logger)
     # This will add the imputer strategy 'mean' and the data type 'dna_methylation' to the AnnData object.
 
     """

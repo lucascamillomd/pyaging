@@ -1,12 +1,13 @@
+from abc import ABC, abstractmethod
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from abc import ABC, abstractmethod
 
 
 class pyagingModel(nn.Module, ABC):
     def __init__(self):
-        super(pyagingModel, self).__init__()
+        super().__init__()
 
         self.metadata = {
             "clock_name": None,
@@ -60,7 +61,7 @@ class LinearModel(nn.Module):
         """
         Initialize a simple linear model.
         """
-        super(LinearModel, self).__init__()
+        super().__init__()
         self.linear = nn.Linear(input_dim, 1)  # Define a linear layer
 
     def forward(self, x):
@@ -73,11 +74,9 @@ class PCLinearModel(nn.Module):
         """
         Initialize a Principal Component Linear Model.
         """
-        super(PCLinearModel, self).__init__()
+        super().__init__()
         self.center = nn.Parameter(torch.empty(input_dim), requires_grad=False)
-        self.rotation = nn.Parameter(
-            torch.empty((input_dim, pc_dim)), requires_grad=False
-        )
+        self.rotation = nn.Parameter(torch.empty((input_dim, pc_dim)), requires_grad=False)
         self.linear = nn.Linear(pc_dim, 1)
 
     def forward(self, x):
@@ -92,7 +91,7 @@ class AltumAgeNeuralNetwork(nn.Module):
         """
         Initialize the AltumAge model with multiple linear layers and batch normalization.
         """
-        super(AltumAgeNeuralNetwork, self).__init__()
+        super().__init__()
 
         # Define the linear layers
         self.linear1 = nn.Linear(20318, 32)

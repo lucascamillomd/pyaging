@@ -48,7 +48,6 @@ def binarize(x):
     non_zero_mask = x != 0
 
     # Apply mask, calculate median for each row, and change data
-    medians = np.zeros(x.shape[0])
     for i, row in enumerate(x):
         non_zero_elements = row[non_zero_mask[i]]
         x[i] = x[i] > np.median(non_zero_elements)
@@ -89,9 +88,7 @@ def quantile_normalize_with_gold_standard(x, gold_standard_means):
         sorted_data = x_normalized[i, sorted_indices]
 
         # Map the sorted data to their quantile values in the gold standard
-        quantile_indices = np.round(
-            np.linspace(0, len(sorted_gold_standard) - 1, len(sorted_data))
-        ).astype(int)
+        quantile_indices = np.round(np.linspace(0, len(sorted_gold_standard) - 1, len(sorted_data))).astype(int)
         normalized_data = sorted_gold_standard[quantile_indices]
 
         # Re-order the normalized data to the original order

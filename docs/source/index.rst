@@ -74,6 +74,12 @@ Contents
 
 .. toctree::
    :maxdepth: 1
+   :caption: Clock implementation
+
+   clock_implementation
+
+.. toctree::
+   :maxdepth: 1
    :caption: Additional Resources
 
    faq

@@ -29,7 +29,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "nbsphinx",
-    #"nbsphinx_link",
+    # "nbsphinx_link",
     "myst_parser",
     "sphinx_copybutton",
     "sphinx.ext.intersphinx",

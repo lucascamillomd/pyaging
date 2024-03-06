@@ -1,29 +1,27 @@
-from typing import Tuple, List, Dict
-import os
 import marshal
-import types
-import torch
-from torch.utils.data import TensorDataset, DataLoader
-import numpy as np
 import math
-import pandas as pd
-import anndata
-from anndata.experimental.pytorch import AnnLoader
 import ntpath
+import os
+import types
+from typing import Dict, List, Tuple
 from urllib.request import urlretrieve
 
+import anndata
+import numpy as np
+import pandas as pd
+import torch
+from anndata.experimental.pytorch import AnnLoader
+from torch.utils.data import DataLoader, TensorDataset
 
-from ..models import *
-from ..utils import progress, load_clock_metadata, download
 from ..logger import LoggerManager, main_tqdm, silence_logger
-from ._preprocessing import *
+from ..models import *
+from ..utils import download, load_clock_metadata, progress
 from ._postprocessing import *
+from ._preprocessing import *
 
 
 @progress("Load clock")
-def load_clock(
-    clock_name: str, device: str, dir: str, logger, indent_level: int = 2
-) -> Tuple:
+def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int = 2) -> Tuple:
     """
     Loads the specified aging clock from a remote source and returns its components.
 
@@ -147,7 +145,7 @@ def check_features_in_adata(
 
     Examples
     --------
-    >>> updated_adata = check_features_in_adata(adata, bitage, ['gene1', 'gene2'], logger)
+    >>> updated_adata = check_features_in_adata(adata, bitage, ["gene1", "gene2"], logger)
     >>> updated_adata.var_names
     Index(['gene1', 'gene2', ...], dtype='object')
 
@@ -158,9 +156,7 @@ def check_features_in_adata(
 
     # Find indices of matching features in adata.var_names
     feature_indices = {feature: i for i, feature in enumerate(adata.var_names)}
-    model_feature_indices = np.array(
-        [feature_indices.get(feature, -1) for feature in model.features]
-    )
+    model_feature_indices = np.array([feature_indices.get(feature, -1) for feature in model.features])
 
     # Identify missing features
     missing_features_mask = model_feature_indices == -1
@@ -169,15 +165,11 @@ def check_features_in_adata(
     # Assign values for existing features
     existing_features_mask = ~missing_features_mask
     existing_features_indices = model_feature_indices[existing_features_mask]
-    X_model[:, existing_features_mask] = np.asfortranarray(adata.X)[
-        :, existing_features_indices
-    ]
+    X_model[:, existing_features_mask] = np.asfortranarray(adata.X)[:, existing_features_indices]
 
     # Handle missing features
     if model.reference_values is not None:
-        X_model[:, missing_features_mask] = np.array(model.reference_values)[
-            missing_features_mask
-        ]
+        X_model[:, missing_features_mask] = np.array(model.reference_values)[missing_features_mask]
     else:
         X_model[:, missing_features_mask] = 0
 
@@ -214,7 +206,7 @@ def check_features_in_adata(
             )
         else:
             logger.info(
-                f"Filling missing features entirely with 0",
+                "Filling missing features entirely with 0",
                 indent_level=indent_level + 1,
             )
     else:
@@ -225,14 +217,14 @@ def check_features_in_adata(
 
     # Add matrix to obsm
     adata.obsm[f"X_{model.metadata['clock_name']}"] = X_model
-    
+
 
 @progress("Predict ages with model")
 def predict_ages_with_model(
     adata: anndata.AnnData,
     model: pyagingModel,
     device: str,
-    batch_size: int, 
+    batch_size: int,
     logger,
     indent_level: int = 2,
 ) -> torch.Tensor:
@@ -281,7 +273,7 @@ def predict_ages_with_model(
     Examples
     --------
     >>> model = load_pretrained_model()
-    >>> predictions = predict_ages_with_model(model, 'cpu', logger)
+    >>> predictions = predict_ages_with_model(model, "cpu", logger)
     >>> print(predictions[:5])
     [34.5, 29.3, 47.8, 50.1, 42.6]
 
@@ -294,9 +286,7 @@ def predict_ages_with_model(
             indent_level=indent_level + 1,
         )
     else:
-        logger.info(
-            "There is no preprocessing necessary", indent_level=indent_level + 1
-        )
+        logger.info("There is no preprocessing necessary", indent_level=indent_level + 1)
 
     # If there is a postprocessing step
     if model.postprocess_name is not None:
@@ -305,9 +295,7 @@ def predict_ages_with_model(
             indent_level=indent_level + 1,
         )
     else:
-        logger.info(
-            "There is no postprocessing necessary", indent_level=indent_level + 1
-        )
+        logger.info("There is no postprocessing necessary", indent_level=indent_level + 1)
 
     # Create an AnnLoader
     use_cuda = torch.cuda.is_available()
@@ -316,9 +304,7 @@ def predict_ages_with_model(
     # Use the AnnLoader for batched prediction
     predictions = []
     with torch.no_grad():
-        for batch in main_tqdm(
-            dataloader, indent_level=indent_level + 1, logger=logger
-        ):
+        for batch in main_tqdm(dataloader, indent_level=indent_level + 1, logger=logger):
             batch_pred = model(batch.obsm[f"X_{model.metadata['clock_name']}"])
             predictions.append(batch_pred)
     # Concatenate all batch predictions
@@ -383,15 +369,15 @@ def add_pred_ages_and_clock_metadata_adata(
     --------
     >>> adata = anndata.AnnData(np.random.rand(5, 10))
     >>> predicted_ages = [25, 30, 35, 40, 45]
-    >>> add_pred_ages_adata(adata, predicted_ages_tensor, clock, 'pyaging_data', logger)
-    >>> adata.obs['horvath2013']
+    >>> add_pred_ages_adata(adata, predicted_ages_tensor, clock, "pyaging_data", logger)
+    >>> adata.obs["horvath2013"]
     0    25
     1    30
     2    35
     3    40
     4    45
     Name: horvath2013, dtype: int64
-    >>> adata.uns['horvath2013_metadata']
+    >>> adata.uns["horvath2013_metadata"]
     {'species': 'Homo sapiens', 'data_type': 'methylation', 'citation': 'Horvath, S. (2013)'}
 
     """

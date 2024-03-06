@@ -35,13 +35,13 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/lin
    clock_notebooks/mammalian1
    clock_notebooks/mammalian2
-   clock_notebooks/mammalianblood2
-   clock_notebooks/mammalianskin2
    clock_notebooks/mammalian3
+   clock_notebooks/mammalianblood2
    clock_notebooks/mammalianblood3
-   clock_notebooks/mammalianskin3
-   clock_notebooks/mammalianlifespan
    clock_notebooks/mammalianfemale
+   clock_notebooks/mammalianlifespan
+   clock_notebooks/mammalianskin2
+   clock_notebooks/mammalianskin3
    clock_notebooks/meer
    clock_notebooks/ocampoatac1
    clock_notebooks/ocampoatac2

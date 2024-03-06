@@ -11,8 +11,6 @@ BUILDDIR      = _build
 # run python script before making html to update the python table
 html:
 	python source/make_clock_glossary.py
-	#ln -sf ../../tutorials $(SOURCEDIR)/tutorials # Create a symbolic link for tutorials directory
-	#ln -sf ../../clocks/notebooks $(SOURCEDIR)/clock_notebooks # Create a symbolic link for clocks directory
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # Clean the build directory and the file transfers to the source directory

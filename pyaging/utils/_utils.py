@@ -1,16 +1,12 @@
 import os
-import torch
-import ntpath
-import io
-from contextlib import redirect_stdout
-from IPython.display import display, HTML
-from urllib.request import urlretrieve
+from datetime import datetime
 from functools import wraps
 from pprint import pformat
-from typing import List
-from datetime import datetime
+from urllib.request import urlretrieve
+
 import pytz
 import requests
+import torch
 
 from ..logger import LoggerManager, main_tqdm
 
@@ -63,9 +59,7 @@ def progress(message: str) -> None:
         @wraps(func)
         def wrapper(*args, **kwargs):
             # Extract indent_level from kwargs, default to 1 if not provided
-            indent_level = (
-                kwargs["indent_level"] if "indent_level" in kwargs.keys() else 1
-            )
+            indent_level = kwargs["indent_level"] if "indent_level" in kwargs.keys() else 1
 
             logger = args[-1]  # Assumes logger is the last positional argument
             logger.start_progress(f"{message} started", indent_level=indent_level)
@@ -122,7 +116,7 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     <class 'dict'>
 
     """
-    url = f"https://pyaging.s3.amazonaws.com/clocks/metadata0.1.0/all_clock_metadata.pt"
+    url = "https://pyaging.s3.amazonaws.com/clocks/metadata0.1.0/all_clock_metadata.pt"
     download(url, dir, logger, indent_level=indent_level)
     all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
     return all_clock_metadata
@@ -339,9 +333,7 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
         else:
             logger.warning(f"Citation not found in {clock_name}", indent_level=2)
     else:
-        logger.warning(
-            f"{clock_name} is not currently available in pyaging", indent_level=2
-        )
+        logger.warning(f"{clock_name} is not currently available in pyaging", indent_level=2)
 
     logger.finish_progress(f"{message} finished")
     logger.done()
@@ -496,14 +488,10 @@ def print_model_details(model, max_list_length=30, max_tensor_elements=30):
         For lists longer than max_list_length and tensors with more elements than max_tensor_elements, a summary is printed instead of the full value.
         """
         if isinstance(value, list) and len(value) > max_list_length:
-            print(
-                f"{name}: {value[:max_list_length]}... [Total elements: {len(value)}]"
-            )
+            print(f"{name}: {value[:max_list_length]}... [Total elements: {len(value)}]")
         elif isinstance(value, torch.Tensor) and value.nelement() > max_tensor_elements:
             flattened_tensor = value.flatten()
-            print(
-                f"{name}: {flattened_tensor[:max_tensor_elements].tolist()}... [Tensor of shape {value.size()}]"
-            )
+            print(f"{name}: {flattened_tensor[:max_tensor_elements].tolist()}... [Tensor of shape {value.size()}]")
         else:
             print(f"{name}: {pformat(value)}")
 
