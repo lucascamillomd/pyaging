@@ -70,7 +70,6 @@ def test_all_clocks():
 
     logger = pya.logger.Logger("test_logger")
     pya.logger.silence_logger("test_logger")
-    np.random.seed(42)
     device = "cpu"
     dir = "pyaging_data"
     indent_level = 1
