@@ -10,7 +10,7 @@
 [![release](https://github.com/rsinghlab/pyaging/actions/workflows/release.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/release.yml)
 [![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
 [![beta](https://img.shields.io/badge/status-beta-yellow)](https://github.com/rsinghlab/pyaging)
-[![bioRxiv](https://img.shields.io/badge/bioRxiv-DOI-purple.svg)](https://doi.org/10.1101/2023.11.28.569069)
+[![DOI](https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtae200-blue.svg)](https://doi.org/10.1093/bioinformatics/btae200)
 [![upload](https://img.shields.io/pypi/v/pyaging?logo=PyPI)](https://pypi.org/project/pyaging/) 
 [![download](https://static.pepy.tech/badge/pyaging)](https://pepy.tech/project/pyaging)
 [![star](https://img.shields.io/github/stars/rsinghlab/pyaging?logo=GitHub&color=red)](https://github.com/rsinghlab/pyaging/stargazers)
@@ -35,15 +35,17 @@ For coding-related queries, feedback, and discussions, please visit our [GitHub 
 To cite `pyaging`, please use the following:
 
 ```
-@article {de_Lima_Camillo_pyaging,
-	author = {Lucas Paulo de Lima Camillo},
-	title = {pyaging: a Python-based compendium of GPU-optimized aging clocks},
-	elocation-id = {2023.11.28.569069},
-	year = {2023},
-	doi = {10.1101/2023.11.28.569069},
-	publisher = {Cold Spring Harbor Laboratory},
-	URL = {https://www.biorxiv.org/content/early/2023/11/29/2023.11.28.569069},
-	journal = {bioRxiv}
+@article{de_Lima_Camillo_pyaging,
+    author = {de Lima Camillo, Lucas Paulo},
+    title = "{pyaging: a Python-based compendium of GPU-optimized aging clocks}",
+    journal = {Bioinformatics},
+    pages = {btae200},
+    year = {2024},
+    month = {04},
+    issn = {1367-4811},
+    doi = {10.1093/bioinformatics/btae200},
+    url = {https://doi.org/10.1093/bioinformatics/btae200},
+    eprint = {https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btae200/57218155/btae200.pdf},
 }
 ```
 
