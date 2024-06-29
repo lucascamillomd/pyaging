@@ -56,6 +56,9 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/phenoage
    clock_notebooks/replitali
    clock_notebooks/skinandblood
+   clock_notebooks/stoch
+   clock_notebooks/stocp
+   clock_notebooks/stocz
    clock_notebooks/stubbs
    clock_notebooks/thompson
    clock_notebooks/yingadaptage

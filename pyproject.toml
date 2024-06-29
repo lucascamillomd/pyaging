@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyaging"
-version = "v0.1.6"
+version = "v0.1.7"
 description = "A Python-based compendium of GPU-optimized aging clocks."
 authors = ["Lucas Paulo de Lima Camillo <lucas_camillo@alumni.brown.edu>"]
 license = "BSD"
@@ -16,7 +16,6 @@ scikit-learn = "^1.3.2"
 pandas = "^2.1.3"
 torch = "^2.1.1"
 numpy = "^1.26.2"
-pyBigWig = "^0.3.22"
 anndata = "^0.10.3"
 
 [tool.poetry.dev-dependencies]
@@ -34,6 +33,7 @@ nbsphinx = "^0.8.11"
 pygments = "^2.6.1"
 pytest = "^7.2.0"
 nbmake = "^1.4.6"
+pyBigWig = {version = "^0.3.22", optional = true}
 
 [tool.poetry.scripts]
 pyaging = "pyaging:main"

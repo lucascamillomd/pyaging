@@ -18,9 +18,9 @@
    :target: https://github.com/rsinghlab/pyaging/blob/main/LICENSE
    :alt: License
 
-.. image:: https://img.shields.io/badge/bioRxiv-DOI-purple.svg
-   :target: https://doi.org/10.1101/2023.11.28.569069
-   :alt: bioRxiv
+.. image:: https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtae200-blue.svg
+   :target: https://doi.org/10.1093/bioinformatics/btae200
+   :alt: DOI
 
 .. raw:: html
 

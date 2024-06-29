@@ -50,6 +50,9 @@ petkovich,methylation,Mus musculus,2017,⌛,https://doi.org/10.1016/j.cmet.2017.
 phenoage,blood chemistry,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,mortality_to_phenoage,
 replitali,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s41467-022-34268-8,,,,
 skinandblood,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632/aging.101508,,,anti_log_linear,
+stoch,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-024-00600-8,,,,
+stocp,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-024-00600-8,,,,
+stocz,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-024-00600-8,,,,
 stubbs,methylation,Mus musculus,2017,⌛,https://doi.org/10.1186/s13059-017-1203-5,,quantile_normalization_and_scale_with_gold_standard,stubbs,True
 yingadaptage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
 yingcausage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,

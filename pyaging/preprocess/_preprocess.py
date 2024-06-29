@@ -3,8 +3,13 @@ from typing import List, Union
 import anndata
 import numpy as np
 import pandas as pd
-from pyBigWig import open as open_bw
 
+try:
+    from pyBigWig import open as open_bw
+    PYBIGWIG_AVAILABLE = True
+except ImportError:
+    PYBIGWIG_AVAILABLE = False
+    
 from ..logger import LoggerManager, main_tqdm, silence_logger
 from ._preprocess_utils import *
 
@@ -35,11 +40,18 @@ def bigwig_to_df(bw_files: Union[str, List[str]], dir: str = "pyaging_data", ver
         A DataFrame where each row represents a bigWig file and each column corresponds to a gene.
         The values in the DataFrame are the transformed signal data for each gene in each bigWig file.
 
+    Raises
+    ------
+    ImportError
+        If pyBigWig is not installed and the function is called.
+
     Notes
     -----
     The function utilizes Ensembl gene annotations and assumes the presence of genes on standard chromosomes
     (1-22, X). Non-standard chromosomes or regions outside annotated genes are not processed. The signal
-    transformation uses the arcsinh function for normalization.
+    transformation uses the arcsinh function for normalization. This function requires pyBigWig to be installed. 
+    If pyBigWig is not available, an ImportError will be raised. To use this function, ensure you have installed 
+    pyaging with the 'bigwig' extra: pip install pyaging[bigwig]
 
     Examples
     --------
@@ -48,6 +60,9 @@ def bigwig_to_df(bw_files: Union[str, List[str]], dir: str = "pyaging_data", ver
     # This returns a DataFrame where rows are bigWig files and columns are genes, with signal values.
 
     """
+    if not PYBIGWIG_AVAILABLE:
+        raise ImportError("pyBigWig is not installed. To use this function, install please install it.")
+        
     logger = LoggerManager.gen_logger("bigwig_to_df")
     if not verbose:
         silence_logger("bigwig_to_df")
