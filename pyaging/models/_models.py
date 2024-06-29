@@ -1378,4 +1378,21 @@ class StocP(pyagingModel):
     def postprocess(self, x):
         return x
 
+class stemTOC(pyagingModel):
+    def __init__(self):
+        super().__init__()
 
+    def preprocess(self, x):
+        # Filter out -1 values per row and calculate the 0.95 quantile per row
+        quantiles = []
+        for row in x:
+            filtered_row = row[row != -1]
+            if len(filtered_row) > 0:
+                quantile_95 = torch.quantile(filtered_row, 0.95)
+            else:
+                quantile_95 = torch.tensor(float('nan'))
+            quantiles.append(quantile_95)
+        return torch.vstack(quantiles)
+
+    def postprocess(self, x):
+        return x

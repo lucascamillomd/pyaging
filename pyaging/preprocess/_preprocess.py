@@ -61,7 +61,7 @@ def bigwig_to_df(bw_files: Union[str, List[str]], dir: str = "pyaging_data", ver
 
     """
     if not PYBIGWIG_AVAILABLE:
-        raise ImportError("pyBigWig is not installed. To use this function, install please install it.")
+        raise ImportError("pyBigWig is not installed. To use this function, please install it.")
         
     logger = LoggerManager.gen_logger("bigwig_to_df")
     if not verbose:
