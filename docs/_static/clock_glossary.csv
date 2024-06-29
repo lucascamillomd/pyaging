@@ -50,6 +50,7 @@ petkovich,methylation,Mus musculus,2017,⌛,https://doi.org/10.1016/j.cmet.2017.
 phenoage,blood chemistry,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,mortality_to_phenoage,
 replitali,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s41467-022-34268-8,,,,
 skinandblood,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632/aging.101508,,,anti_log_linear,
+stemtoc,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s41467-024-48649-8,The reference values are simply -1 for the algorithm to ignore them.,0.95 quantile,,True
 stoch,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-024-00600-8,,,,
 stocp,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-024-00600-8,,,,
 stocz,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-024-00600-8,,,,
