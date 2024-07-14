@@ -1396,3 +1396,22 @@ class stemTOC(pyagingModel):
 
     def postprocess(self, x):
         return x
+
+class epiTOC1(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        # Filter out -1 values per row and calculate the mean per row
+        means = []
+        for row in x:
+            filtered_row = row[row != -1]
+            if len(filtered_row) > 0:
+                mean = torch.mean(filtered_row)
+            else:
+                mean = torch.tensor(float('nan'))
+            means.append(mean)
+        return torch.vstack(means)
+
+    def postprocess(self, x):
+        return x
