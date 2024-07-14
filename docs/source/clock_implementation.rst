@@ -22,6 +22,7 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/dunedinpace
    clock_notebooks/encen100
    clock_notebooks/encen40
+   clock_notebooks/epitoc1
    clock_notebooks/grimage
    clock_notebooks/grimage2
    clock_notebooks/han

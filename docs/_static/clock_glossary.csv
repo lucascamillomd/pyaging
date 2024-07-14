@@ -15,12 +15,17 @@ knight,methylation,Homo sapiens,2016,✅,https://doi.org/10.1186/s13059-016-1068
 leecontrol,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
 leerefinedrobust,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
 leerobust,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
+stemtoc,methylation,Homo sapiens,2024,✅,https://doi.org/10.1038/s41467-024-48649-8,The reference values are simply -1 for the algorithm to ignore them.,0.95 quantile,,True
+stoch,methylation,Homo sapiens,2024,✅,https://doi.org/10.1038/s43587-024-00600-8,,,,
+stocp,methylation,Homo sapiens,2024,✅,https://doi.org/10.1038/s43587-024-00600-8,,,,
+stocz,methylation,Homo sapiens,2024,✅,https://doi.org/10.1038/s43587-024-00600-8,,,,
 thompson,methylation,Mus musculus,2018,✅,https://doi.org/10.18632/aging.101590,,,,
 dnamfitage,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
 dnamphenoage,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,,
 dnamtl,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.102173,,,,
 encen100,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00731-7,,,,
 encen40,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00731-7,,,,
+epitoc1,methylation,Homo sapiens,2016,⌛,https://doi.org/10.1186/s13059-016-1064-3,The reference values are simply -1 for the algorithm to ignore them.,mean,,True
 grimage,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.101684,,,cox_to_years,True
 grimage2,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
 hannum,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1016/j.molcel.2012.10.016,,,,
@@ -50,10 +55,6 @@ petkovich,methylation,Mus musculus,2017,⌛,https://doi.org/10.1016/j.cmet.2017.
 phenoage,blood chemistry,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,mortality_to_phenoage,
 replitali,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s41467-022-34268-8,,,,
 skinandblood,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632/aging.101508,,,anti_log_linear,
-stemtoc,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s41467-024-48649-8,The reference values are simply -1 for the algorithm to ignore them.,0.95 quantile,,True
-stoch,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-024-00600-8,,,,
-stocp,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-024-00600-8,,,,
-stocz,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-024-00600-8,,,,
 stubbs,methylation,Mus musculus,2017,⌛,https://doi.org/10.1186/s13059-017-1203-5,,quantile_normalization_and_scale_with_gold_standard,stubbs,True
 yingadaptage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
 yingcausage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
