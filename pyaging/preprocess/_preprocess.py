@@ -9,6 +9,12 @@ try:
     PYBIGWIG_AVAILABLE = True
 except ImportError:
     PYBIGWIG_AVAILABLE = False
+
+try:
+    import cupy as cp
+    CUPY_AVAILABLE = cp.cuda.is_available()
+except:
+    CUPY_AVAILABLE = False
     
 from ..logger import LoggerManager, main_tqdm, silence_logger
 from ._preprocess_utils import *
@@ -199,6 +205,9 @@ def df_to_adata(
     # Add unstructured data
     if "X_imputed" in adata.layers:
         add_unstructured_data(adata, imputer_strategy, logger)
+
+    # Move adata.X to GPU if possible
+    adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
 
     logger.done()
 

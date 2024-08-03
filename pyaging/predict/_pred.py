@@ -115,5 +115,6 @@ def predict_age(
 
         # Flush memory
         gc.collect()
+        torch.cuda.empty_cache()
 
     logger.done()

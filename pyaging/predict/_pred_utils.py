@@ -13,6 +13,12 @@ import torch
 from anndata.experimental.pytorch import AnnLoader
 from torch.utils.data import DataLoader, TensorDataset
 
+try:
+    import cupy as cp
+    CUPY_AVAILABLE = cp.cuda.is_available()
+except:
+    CUPY_AVAILABLE = False
+
 from ..logger import LoggerManager, main_tqdm, silence_logger
 from ..models import *
 from ..utils import download, load_clock_metadata, progress
@@ -152,7 +158,7 @@ def check_features_in_adata(
     """
 
     # Preallocate the data matrix
-    X_model = np.empty((adata.n_obs, len(model.features)), order="F")
+    adata.obsm[f"X_{model.metadata['clock_name']}"] = cp.empty((adata.n_obs, len(model.features))) if CUPY_AVAILABLE else np.empty((adata.n_obs, len(model.features)), order="F")
 
     # Find indices of matching features in adata.var_names
     feature_indices = {feature: i for i, feature in enumerate(adata.var_names)}
@@ -165,13 +171,10 @@ def check_features_in_adata(
     # Assign values for existing features
     existing_features_mask = ~missing_features_mask
     existing_features_indices = model_feature_indices[existing_features_mask]
-    X_model[:, existing_features_mask] = np.asfortranarray(adata.X)[:, existing_features_indices]
+    adata.obsm[f"X_{model.metadata['clock_name']}"][:, existing_features_mask] = adata.X[:, existing_features_indices]
 
     # Handle missing features
-    if model.reference_values is not None:
-        X_model[:, missing_features_mask] = np.array(model.reference_values)[missing_features_mask]
-    else:
-        X_model[:, missing_features_mask] = 0
+    adata.obsm[f"X_{model.metadata['clock_name']}"][:, missing_features_mask] = np.array(model.reference_values)[missing_features_mask] if model.reference_values is not None else 0
 
     # Calculate missing features statistics
     num_missing_features = len(missing_features)
@@ -214,10 +217,6 @@ def check_features_in_adata(
             "All features are present in adata.var_names.",
             indent_level=indent_level + 1,
         )
-
-    # Add matrix to obsm
-    adata.obsm[f"X_{model.metadata['clock_name']}"] = X_model
-
 
 @progress("Predict ages with model")
 def predict_ages_with_model(
@@ -303,14 +302,14 @@ def predict_ages_with_model(
 
     # Use the AnnLoader for batched prediction
     predictions = []
-    with torch.no_grad():
+    with torch.inference_mode():
         for batch in main_tqdm(dataloader, indent_level=indent_level + 1, logger=logger):
             batch_pred = model(batch.obsm[f"X_{model.metadata['clock_name']}"])
             predictions.append(batch_pred)
     # Concatenate all batch predictions
     predictions = torch.cat(predictions)
-    return predictions
 
+    return predictions
 
 @progress("Add predicted ages and clock metadata to adata")
 def add_pred_ages_and_clock_metadata_adata(
