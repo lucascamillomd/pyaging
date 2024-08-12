@@ -28,9 +28,10 @@ encen40,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-007
 epitoc1,methylation,Homo sapiens,2016,⌛,https://doi.org/10.1186/s13059-016-1064-3,The reference values are simply -1 for the algorithm to ignore them.,mean,,True
 grimage,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.101684,,,cox_to_years,True
 grimage2,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
-hannum,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1016/j.molcel.2012.10.016,,,,
+hannum,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1111/acel.14288,,,,
 horvath2013,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1186/gb-2013-14-10-r115,,,anti_log_linear,True
 hrsinchphenoage,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,
+intrinclock,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s42003-024-06609-4,,,anti_log_linear,
 lin,methylation,Homo sapiens,2016,⌛,https://doi.org/10.18632/aging.100908,,,,
 mammalian1,methylation,multi,2023,⌛,https://doi.org/10.1038/s43587-023-00462-6,,,anti_logp2,
 mammalian2,methylation,multi,2023,⌛,https://doi.org/10.1038/s43587-023-00462-6,,,mammalian2,True
@@ -54,6 +55,8 @@ pedbe,methylation,Homo sapiens,2019,⌛,https://doi.org/10.1073/pnas.1820843116,
 petkovich,methylation,Mus musculus,2017,⌛,https://doi.org/10.1016/j.cmet.2017.03.016,,,petkovich,
 phenoage,blood chemistry,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,mortality_to_phenoage,
 replitali,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s41467-022-34268-8,,,,
+retroelementagev1,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1111/acel.14288,,,,
+retroelementagev2,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1111/acel.14288,,,,
 skinandblood,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632/aging.101508,,,anti_log_linear,
 stubbs,methylation,Mus musculus,2017,⌛,https://doi.org/10.1186/s13059-017-1203-5,,quantile_normalization_and_scale_with_gold_standard,stubbs,True
 yingadaptage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,

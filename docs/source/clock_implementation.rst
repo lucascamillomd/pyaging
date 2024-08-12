@@ -29,6 +29,7 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/hannum
    clock_notebooks/horvath2013
    clock_notebooks/hrsinchphenoage
+   clock_notebooks/intrinclock
    clock_notebooks/knight
    clock_notebooks/leecontrol
    clock_notebooks/leerefinedrobust
@@ -56,6 +57,8 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/petkovich
    clock_notebooks/phenoage
    clock_notebooks/replitali
+   clock_notebooks/retroelementagev1
+   clock_notebooks/retroelementagev2
    clock_notebooks/skinandblood
    clock_notebooks/stemtoc
    clock_notebooks/stoch
