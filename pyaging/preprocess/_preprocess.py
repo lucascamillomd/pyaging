@@ -6,16 +6,18 @@ import pandas as pd
 
 try:
     from pyBigWig import open as open_bw
+
     PYBIGWIG_AVAILABLE = True
 except ImportError:
     PYBIGWIG_AVAILABLE = False
 
 try:
     import cupy as cp
+
     CUPY_AVAILABLE = cp.cuda.is_available()
 except:
     CUPY_AVAILABLE = False
-    
+
 from ..logger import LoggerManager, main_tqdm, silence_logger
 from ._preprocess_utils import *
 
@@ -55,8 +57,8 @@ def bigwig_to_df(bw_files: Union[str, List[str]], dir: str = "pyaging_data", ver
     -----
     The function utilizes Ensembl gene annotations and assumes the presence of genes on standard chromosomes
     (1-22, X). Non-standard chromosomes or regions outside annotated genes are not processed. The signal
-    transformation uses the arcsinh function for normalization. This function requires pyBigWig to be installed. 
-    If pyBigWig is not available, an ImportError will be raised. To use this function, ensure you have installed 
+    transformation uses the arcsinh function for normalization. This function requires pyBigWig to be installed.
+    If pyBigWig is not available, an ImportError will be raised. To use this function, ensure you have installed
     pyaging with the 'bigwig' extra: pip install pyaging[bigwig]
 
     Examples
@@ -68,7 +70,7 @@ def bigwig_to_df(bw_files: Union[str, List[str]], dir: str = "pyaging_data", ver
     """
     if not PYBIGWIG_AVAILABLE:
         raise ImportError("pyBigWig is not installed. To use this function, please install it.")
-        
+
     logger = LoggerManager.gen_logger("bigwig_to_df")
     if not verbose:
         silence_logger("bigwig_to_df")

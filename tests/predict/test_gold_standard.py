@@ -67,6 +67,9 @@ gold_standard_dict = {
     "stocp": -48.95705647484499,
     "stemtoc": 2.060230880575066,
     "epitoc1": 0.8689615831989005,
+    "retroelementagev1": 144.2884653588903,
+    "retroelementagev2": 53.802897567351465,
+    "intrinclock": 132.97353886880327,
 }
 
 

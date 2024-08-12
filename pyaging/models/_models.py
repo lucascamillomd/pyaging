@@ -1348,6 +1348,7 @@ class DNAmFitAge(pyagingModel):
     def postprocess(self, x):
         return x
 
+
 class StocH(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1357,6 +1358,7 @@ class StocH(pyagingModel):
 
     def postprocess(self, x):
         return x
+
 
 class StocZ(pyagingModel):
     def __init__(self):
@@ -1368,6 +1370,7 @@ class StocZ(pyagingModel):
     def postprocess(self, x):
         return x
 
+
 class StocP(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1377,6 +1380,7 @@ class StocP(pyagingModel):
 
     def postprocess(self, x):
         return x
+
 
 class stemTOC(pyagingModel):
     def __init__(self):
@@ -1390,12 +1394,13 @@ class stemTOC(pyagingModel):
             if len(filtered_row) > 0:
                 quantile_95 = torch.quantile(filtered_row, 0.95)
             else:
-                quantile_95 = torch.tensor(float('nan'))
+                quantile_95 = torch.tensor(float("nan"))
             quantiles.append(quantile_95)
         return torch.vstack(quantiles)
 
     def postprocess(self, x):
         return x
+
 
 class epiTOC1(pyagingModel):
     def __init__(self):
@@ -1409,9 +1414,60 @@ class epiTOC1(pyagingModel):
             if len(filtered_row) > 0:
                 mean = torch.mean(filtered_row)
             else:
-                mean = torch.tensor(float('nan'))
+                mean = torch.tensor(float("nan"))
             means.append(mean)
         return torch.vstack(means)
 
     def postprocess(self, x):
         return x
+
+
+class RetroelementAgeV1(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+
+class RetroelementAgeV2(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+
+class IntrinClock(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        """
+        Applies an anti-logarithmic linear transformation to a PyTorch tensor.
+        """
+        adult_age = 20
+
+        # Create a mask for negative and non-negative values
+        mask_negative = x < 0
+        mask_non_negative = ~mask_negative
+
+        # Initialize the result tensor
+        age_tensor = torch.empty_like(x)
+
+        # Exponential transformation for negative values
+        age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
+
+        # Linear transformation for non-negative values
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
+
+        return age_tensor
