@@ -91,7 +91,7 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
     weights_path = os.path.join(dir, f"{clock_name}.pt")
 
     # Load the clock from the file
-    clock = torch.load(weights_path)
+    clock = torch.load(weights_path, weights_only=False)
 
     # Prepare clock for inference
     clock.to(torch.float64)

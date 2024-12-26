@@ -1,0 +1,9 @@
+repos:
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.11
+    hooks:
+    -   id: ruff
+        args: [ --fix, --ignore=E501,E722,B904,E902 ]
+        stages: [manual]
+    -   id: ruff-format
+        stages: [manual]

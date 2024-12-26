@@ -59,7 +59,7 @@ def progress(message: str) -> None:
         @wraps(func)
         def wrapper(*args, **kwargs):
             # Extract indent_level from kwargs, default to 1 if not provided
-            indent_level = kwargs["indent_level"] if "indent_level" in kwargs.keys() else 1
+            indent_level = kwargs["indent_level"] if "indent_level" in kwargs else 1
 
             logger = args[-1]  # Assumes logger is the last positional argument
             logger.start_progress(f"{message} started", indent_level=indent_level)

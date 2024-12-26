@@ -1,9 +1,6 @@
-<<<<<<< HEAD
 pyaing/clocks
 pyaging_data/
 example_data/
-testing.ipynb
-=======
 pyaging/clocks/
 clocks/weights/
 *.pt
@@ -11,16 +8,15 @@ clocks/weights/
 pyaging_data/
 example_data/
 testing.ipynb
-pyaging_manuscript.ipynb
 .ipynb_checkpoints/
 *.pyc
 .DS_Store
 pyaging.egg-info/
-update_pipeline_steps.txt
-update_package.sh
 dist/
 build/
 docs/_build
 docs/_templates
 *.RData
->>>>>>> fd1440b (first commit)
+.ruff_cache/
+.pytest_cache/
+
