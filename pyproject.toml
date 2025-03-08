@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyaging"
-version = "v0.1.12"
+version = "v0.1.13"
 description = "A Python-based compendium of GPU-optimized aging clocks."
 authors = ["Lucas Paulo de Lima Camillo <lucas_camillo@alumni.brown.edu>"]
 license = "BSD"
@@ -18,7 +18,6 @@ torch = ">=2.2.0"
 numpy = ">=2.0.0"
 anndata = "^0.10.3"
 ipykernel = "^6.29.0"
-pybigwig = "^0.3.23"
 
 [tool.poetry.dev-dependencies]
 sphinx = "^7.1.2"
@@ -41,6 +40,7 @@ pyaging = "pyaging:main"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "ipykernel", "nbsphinx", "pygments"]
+histone = ["pyBigWig"]
 
 [tool.ruff]
 line-length = 120

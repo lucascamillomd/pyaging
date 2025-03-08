@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the new version and commit/release messages
-new_version="v0.1.12" # Replace with the actual version number
+new_version="v0.1.13" # Replace with the actual version number
 commit_message="Bump to $new_version" # Replace with the actual commit message
 release_message="Release $new_version" # Replace with the actual release message
 
