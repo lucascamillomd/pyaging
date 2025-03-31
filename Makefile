@@ -1,4 +1,4 @@
-.PHONY: lint format update build install update-clocks-notebooks update-all-clocks process-tutorials test test-tutorials docs version commit tag release release-slim
+.PHONY: lint format update build install update-clocks-notebooks update-all-clocks upload-to-s3 process-tutorials test test-tutorials docs version commit tag release release-slim
 
 VERSION ?= v0.1.14
 COMMIT_MSG ?= "Bump to $(VERSION)"
@@ -42,7 +42,13 @@ update-clocks-notebooks:
 update-all-clocks:
 	@echo "Running script to update all clocks..."
 	@cd clocks && python3 update_all_clocks.py $(VERSION) || { echo "Updating clocks failed"; exit 1; } && cd ..
-	@echo "Reminder: Upload all clocks and metadata to S3!"
+
+upload-to-s3:
+	@echo "Uploading clock metadata to S3..."
+	aws s3 cp clocks/metadata/all_clock_metadata.pt s3://pyaging/clocks/metadata0.1.0/all_clock_metadata.pt || { echo "Uploading metadata failed"; exit 1; }
+	@echo "Syncing clock weights to S3..."
+	aws s3 sync clocks/weights/ s3://pyaging/clocks/weights0.1.0/ || { echo "Syncing weights failed"; exit 1; }
+	@echo "Clock data uploaded to S3 successfully!"
 
 process-tutorials:
 	@echo "Processing tutorials..."
@@ -83,8 +89,8 @@ tag:
 	git tag -a "$(VERSION)" -m $(RELEASE_MSG)
 	git push origin "$(VERSION)" || { echo "Git tag creation or push failed"; exit 1; }
 
-release: version lint format update build install update-clocks-notebooks update-all-clocks process-tutorials test test-tutorials docs commit tag
+release: version lint format update build install update-clocks-notebooks update-all-clocks upload-to-s3 process-tutorials test test-tutorials docs commit tag
 	@echo "Release $(VERSION) completed successfully"
 
-release-slim: version lint format update build install update-all-clocks test docs commit tag
+release-slim: version lint format update build install update-all-clocks upload-to-s3 test docs commit tag
 	@echo "Release $(VERSION) (slim) completed successfully"
