@@ -1,4 +1,4 @@
-.PHONY: lint format update build install update-clocks-notebooks update-all-clocks process-tutorials test test-tutorials docs version commit tag release
+.PHONY: lint format update build install update-clocks-notebooks update-all-clocks process-tutorials test test-tutorials docs version commit tag release release-slim
 
 VERSION ?= v0.1.14
 COMMIT_MSG ?= "Bump to $(VERSION)"
@@ -85,3 +85,6 @@ tag:
 
 release: version lint format update build install update-clocks-notebooks update-all-clocks process-tutorials test test-tutorials docs commit tag
 	@echo "Release $(VERSION) completed successfully"
+
+release-slim: version lint format update build install update-all-clocks test docs commit tag
+	@echo "Release $(VERSION) (slim) completed successfully"
