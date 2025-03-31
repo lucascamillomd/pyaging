@@ -6,7 +6,6 @@ clocks/weights/
 *.pt
 *.json
 pyaging_data/
-example_data/
 testing.ipynb
 .ipynb_checkpoints/
 *.pyc

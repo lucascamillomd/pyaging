@@ -47,8 +47,3 @@ To cite `pyaging`, please use the following:
     eprint = {https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btae200/57218155/btae200.pdf},
 }
 ```
-
-## 📝 To-Do List
-
-- [ ] Add SymphonyAge
-

@@ -6,8 +6,10 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
 .. toctree::
    :maxdepth: 1
 
+   clock_notebooks/abec
    clock_notebooks/altumage
    clock_notebooks/bitage
+   clock_notebooks/cabec
    clock_notebooks/camilloh3k27ac
    clock_notebooks/camilloh3k27me3
    clock_notebooks/camilloh3k36me3
@@ -20,6 +22,7 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/dnamphenoage
    clock_notebooks/dnamtl
    clock_notebooks/dunedinpace
+   clock_notebooks/eabec
    clock_notebooks/encen100
    clock_notebooks/encen40
    clock_notebooks/epitoc1
@@ -56,6 +59,9 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/pedbe
    clock_notebooks/petkovich
    clock_notebooks/phenoage
+   clock_notebooks/pipekelasticnet
+   clock_notebooks/pipekfilteredh
+   clock_notebooks/pipekretrainedh
    clock_notebooks/replitali
    clock_notebooks/retroelementagev1
    clock_notebooks/retroelementagev2

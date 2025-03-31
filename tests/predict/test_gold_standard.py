@@ -70,6 +70,12 @@ gold_standard_dict = {
     "retroelementagev1": 144.2884653588903,
     "retroelementagev2": 53.802897567351465,
     "intrinclock": 132.97353886880327,
+    "abec": -36.241164710581,
+    "eabec": -54.4381527028459,
+    "cabec": -34.146991088056744,
+    "pipekelasticnet": -0.7248816754679486,
+    "pipekfilteredh": 10.027978304328315,
+    "pipekretrainedh": 6.480502045781151,
 }
 
 
