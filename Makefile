@@ -1,4 +1,4 @@
-.PHONY: lint format update build install update-clocks-notebooks update-all-clocks process-tutorials test test-tutorials docs version commit tag release
+.PHONY: lint format update build install update-glossary update-clocks-notebooks update-all-clocks process-tutorials test test-tutorials docs version commit tag release
 
 VERSION ?= v0.1.14
 COMMIT_MSG ?= "Bump to $(VERSION)"
@@ -23,6 +23,10 @@ build: lint format
 install: build
 	@echo "Installing the package..."
 	poetry install
+
+update-glossary:
+	@echo "Updating clock glossary..."
+	@cd docs && python3 source/make_clock_glossary.py || { echo "Clock glossary update failed"; exit 1; } && cd ..
 
 update-clocks-notebooks:
 	@echo "Updating clocks and notebooks..."
@@ -83,5 +87,5 @@ tag:
 	git tag -a "$(VERSION)" -m $(RELEASE_MSG)
 	git push origin "$(VERSION)" || { echo "Git tag creation or push failed"; exit 1; }
 
-release: version lint format update build install update-clocks-notebooks update-all-clocks process-tutorials test test-tutorials docs commit tag
+release: version lint format update build install update-glossary update-clocks-notebooks update-all-clocks process-tutorials test test-tutorials docs commit tag
 	@echo "Release $(VERSION) completed successfully"

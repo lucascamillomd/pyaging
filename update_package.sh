@@ -91,6 +91,16 @@ fi
 #cd ..
 #echo "Reminder: Upload all clocks and metadata to S3!"
 
+# # Update clock glossary
+# echo "Updating clock glossary..."
+# cd docs
+# python3 source/make_clock_glossary.py
+# if [ $? -ne 0 ]; then
+#     echo "Clock glossary update failed"
+#     exit 1
+# fi
+# cd ..
+
 # Process tutorials
 #echo "Processing tutorials..."
 #cd tutorials

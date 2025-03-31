@@ -20,9 +20,12 @@ stoch,methylation,Homo sapiens,2024,✅,https://doi.org/10.1038/s43587-024-00600
 stocp,methylation,Homo sapiens,2024,✅,https://doi.org/10.1038/s43587-024-00600-8,,,,
 stocz,methylation,Homo sapiens,2024,✅,https://doi.org/10.1038/s43587-024-00600-8,,,,
 thompson,methylation,Mus musculus,2018,✅,https://doi.org/10.18632/aging.101590,,,,
+abec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
+cabec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
 dnamfitage,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
 dnamphenoage,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,,
 dnamtl,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.102173,,,,
+eabec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
 encen100,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00731-7,,,,
 encen40,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00731-7,,,,
 epitoc1,methylation,Homo sapiens,2016,⌛,https://doi.org/10.1186/s13059-016-1064-3,The reference values are simply -1 for the algorithm to ignore them.,mean,,True
@@ -46,7 +49,6 @@ meer,methylation,Mus musculus,2018,⌛,https://doi.org/10.7554/eLife.40675,,,,
 ocampoatac1,atac,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00986-0,,tpm_norm_log1p,,
 ocampoatac2,atac,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00986-0,,tpm_norm_log1p,,
 pcdnamtl,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
-pcgrimage,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
 pchannum,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
 pchorvath2013,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,anti_log_linear,True
 pcphenoage,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
@@ -54,6 +56,9 @@ pcskinandblood,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-
 pedbe,methylation,Homo sapiens,2019,⌛,https://doi.org/10.1073/pnas.1820843116,,,anti_log_linear,
 petkovich,methylation,Mus musculus,2017,⌛,https://doi.org/10.1016/j.cmet.2017.03.016,,,petkovich,
 phenoage,blood chemistry,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,mortality_to_phenoage,
+pipekelasticnet,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1007/s10910-022-01381-4,,,anti_log_linear,
+pipekfilteredh,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1007/s10910-022-01381-4,,,anti_log_linear,
+pipekretrainedh,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1007/s10910-022-01381-4,,,anti_log_linear,
 replitali,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s41467-022-34268-8,,,,
 retroelementagev1,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1111/acel.14288,,,,
 retroelementagev2,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1111/acel.14288,,,,
