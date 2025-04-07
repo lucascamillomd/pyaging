@@ -1514,7 +1514,25 @@ class PipekElasticNet(pyagingModel):
         return x
 
     def postprocess(self, x):
-        return x
+        """
+        Applies an anti-logarithmic linear transformation to a PyTorch tensor.
+        """
+        adult_age = 20
+
+        # Create a mask for negative and non-negative values
+        mask_negative = x < 0
+        mask_non_negative = ~mask_negative
+
+        # Initialize the result tensor
+        age_tensor = torch.empty_like(x)
+
+        # Exponential transformation for negative values
+        age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
+
+        # Linear transformation for non-negative values
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
+
+        return age_tensor
 
 
 class PipekFilteredH(pyagingModel):
@@ -1525,7 +1543,25 @@ class PipekFilteredH(pyagingModel):
         return x
 
     def postprocess(self, x):
-        return x
+        """
+        Applies an anti-logarithmic linear transformation to a PyTorch tensor.
+        """
+        adult_age = 20
+
+        # Create a mask for negative and non-negative values
+        mask_negative = x < 0
+        mask_non_negative = ~mask_negative
+
+        # Initialize the result tensor
+        age_tensor = torch.empty_like(x)
+
+        # Exponential transformation for negative values
+        age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
+
+        # Linear transformation for non-negative values
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
+
+        return age_tensor
 
 
 class PipekRetrainedH(pyagingModel):
@@ -1536,4 +1572,22 @@ class PipekRetrainedH(pyagingModel):
         return x
 
     def postprocess(self, x):
-        return x
+        """
+        Applies an anti-logarithmic linear transformation to a PyTorch tensor.
+        """
+        adult_age = 20
+
+        # Create a mask for negative and non-negative values
+        mask_negative = x < 0
+        mask_non_negative = ~mask_negative
+
+        # Initialize the result tensor
+        age_tensor = torch.empty_like(x)
+
+        # Exponential transformation for negative values
+        age_tensor[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
+
+        # Linear transformation for non-negative values
+        age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
+
+        return age_tensor
