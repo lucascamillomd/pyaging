@@ -35,7 +35,15 @@ update-clocks-notebooks:
 			continue; \
 		fi; \
 		echo "Processing clock notebook ($$counter/$$total): $$notebook"; \
-		jupyter nbconvert --execute --inplace "$$notebook" || { echo "Error processing $$notebook"; exit 1; }; \
+		jupyter nbconvert --execute --inplace "$$notebook" || { \
+			echo ""; \
+			echo "ERROR: ================================================================"; \
+			echo "ERROR: Failed to process notebook: $$notebook"; \
+			echo "ERROR: ================================================================"; \
+			echo ""; \
+			counter=$$((counter+1)); \
+			continue; \
+		}; \
 		counter=$$((counter+1)); \
 	done && cd ../..
 
