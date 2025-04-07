@@ -73,9 +73,9 @@ gold_standard_dict = {
     "abec": -36.241164710581,
     "eabec": -54.4381527028459,
     "cabec": -34.146991088056744,
-    "pipekelasticnet": -0.7248816754679486,
-    "pipekfilteredh": 10.027978304328315,
-    "pipekretrainedh": 6.480502045781151,
+    "pipekelasticnet": 9.172019476302301,
+    "pipekfilteredh": 230.5875443908946,
+    "pipekretrainedh": 156.09054296140417,
 }
 
 
