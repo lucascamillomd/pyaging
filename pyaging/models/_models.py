@@ -1591,3 +1591,103 @@ class PipekRetrainedH(pyagingModel):
         age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
 
         return age_tensor
+
+class GrimAge2ADM(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+    
+class GrimAge2B2M(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+    
+class GrimAge2CystatinC(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+    
+class GrimAge2GDF15(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+    
+class GrimAge2Leptin(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+    
+class GrimAge2PackYrs(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+    
+class GrimAge2PAI1(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+    
+class GrimAge2TIMP1(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+class GrimAge2LogA1C(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+    
+class GrimAge2LogCRP(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+    
+    def postprocess(self, x):
+        return x

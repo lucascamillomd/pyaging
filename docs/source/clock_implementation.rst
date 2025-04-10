@@ -28,6 +28,16 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/epitoc1
    clock_notebooks/grimage
    clock_notebooks/grimage2
+   clock_notebooks/grimage2adm
+   clock_notebooks/grimage2b2m
+   clock_notebooks/grimage2cystatinc
+   clock_notebooks/grimage2gdf15
+   clock_notebooks/grimage2leptin
+   clock_notebooks/grimage2loga1c
+   clock_notebooks/grimage2logcrp
+   clock_notebooks/grimage2packyrs
+   clock_notebooks/grimage2pai1
+   clock_notebooks/grimage2timp1
    clock_notebooks/han
    clock_notebooks/hannum
    clock_notebooks/horvath2013

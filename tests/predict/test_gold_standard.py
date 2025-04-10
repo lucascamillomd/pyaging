@@ -76,6 +76,16 @@ gold_standard_dict = {
     "pipekelasticnet": 9.172019476302301,
     "pipekfilteredh": 230.5875443908946,
     "pipekretrainedh": 156.09054296140417,
+    "grimage2adm": 835.0431052901524,
+    "grimage2b2m": 4249653.789837368,
+    "grimage2cystatinc": 1740949.6051196898,
+    "grimage2gdf15": -1581.925298853549,
+    "grimage2leptin": 27911.184858624976,
+    "grimage2packyrs": 111.58036863505646,
+    "grimage2pai1": -80515.68285896096,
+    "grimage2timp1": 20804.937333281927,
+    "grimage2loga1c": 1.537083052058008,
+    "grimage2logcrp": -4.207680335391776,
 }
 
 
