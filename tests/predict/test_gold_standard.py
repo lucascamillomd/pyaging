@@ -86,6 +86,11 @@ gold_standard_dict = {
     "grimage2timp1": 20804.937333281927,
     "grimage2loga1c": 1.537083052058008,
     "grimage2logcrp": -4.207680335391776,
+    "dnamfitagegaitf": 1.0263311720289643,
+    "dnamfitagegaitm": 3.39326294831507,
+    "dnamfitagegripf": 28.87088040680318,
+    "dnamfitagegripm": 54.219201014679555,
+    "dnamfitagevo2max": 24.758115337489876,
 }
 
 

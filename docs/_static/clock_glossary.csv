@@ -26,6 +26,11 @@ thompson,methylation,Mus musculus,2018,✅,https://doi.org/10.18632/aging.101590
 abec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
 cabec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
 dnamfitage,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
+dnamfitagegaitf,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
+dnamfitagegaitm,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
+dnamfitagegripf,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
+dnamfitagegripm,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
+dnamfitagevo2max,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
 dnamphenoage,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,,
 dnamtl,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.102173,,,,
 eabec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
@@ -42,7 +47,7 @@ grimage2leptin,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.
 grimage2loga1c,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
 grimage2logcrp,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
 grimage2packyrs,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
-grimage2pai1,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
+grimage2pai1,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,,True
 grimage2timp1,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
 hannum,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1016/j.molcel.2012.10.016,,,,
 horvath2013,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1186/gb-2013-14-10-r115,,,anti_log_linear,True

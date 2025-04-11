@@ -1691,3 +1691,54 @@ class GrimAge2LogCRP(pyagingModel):
     
     def postprocess(self, x):
         return x
+    
+class DNAmFitAgeGaitF(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+    
+    def postprocess(self, x):
+        return x
+    
+class DNAmFitAgeGaitM(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+    
+    def postprocess(self, x):
+        return x
+    
+    
+class DNAmFitAgeGripF(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+    
+    def postprocess(self, x):
+        return x
+    
+class DNAmFitAgeGripM(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+    
+    def postprocess(self, x):
+        return x
+    
+class DNAmFitAgeVO2Max(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+    
+    def postprocess(self, x):
+        return x
