@@ -70,6 +70,7 @@ html_theme_options = dict(
 )
 html_logo = "../_static/logo.png"
 html_css_files = ["custom.css"]
+html_js_files = ["clock_glossary.js"]
 
 # -- Options for nbshpinx ----------------------------------------------------
 # https://nbsphinx.readthedocs.io/en/0.8.0/configure.html

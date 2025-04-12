@@ -24,7 +24,7 @@ With a growing number of aging clocks and biomarkers of aging, comparing and ana
 
 ## ❓ Can't find an aging clock?
 
-If you have recently developed an aging clock and would like it to be integrated into `pyaging`, please [email us](lucas_camillo@alumni.brown.edu). We aim to incorporate it within two weeks! We are also happy to adapt to any licensing terms for commercial entities.
+If you have recently developed an aging clock and would like it to be integrated into `pyaging`, please [email me](lucas_camillo@alumni.brown.edu). I aim to incorporate it within one to two weeks! I'm also happy to adapt to any licensing terms for commercial entities.
 
 ## 💬 Community Discussion
 For coding-related queries, feedback, and discussions, please visit our [GitHub Issues](https://github.com/rsinghlab/pyaging/issues) page.

@@ -1760,10 +1760,10 @@ class CpGPTGrimAge3(pyagingModel):
         """
         Converts from a Cox parameter to age in units of years.
         """
-        cox_mean = -6.60427912e-16
-        cox_std = 1.72004470842156
-        age_mean = 58.8234007654456
-        age_std = 13.091231557630831
+        cox_mean = self.postprocess_dependencies[0]
+        cox_std = self.postprocess_dependencies[1]
+        age_mean = self.postprocess_dependencies[2]
+        age_std = self.postprocess_dependencies[3]
 
         # Normalize
         x = (x - cox_mean) / cox_std
@@ -1814,10 +1814,10 @@ class CpGPTPCGrimAge3(pyagingModel):
         """
         Converts from a Cox parameter to age in units of years.
         """
-        cox_mean = 4.66184408e-17
-        cox_std = 1.70884158624939
-        age_mean = 58.8234007654456
-        age_std = 13.091231557630831
+        cox_mean = self.postprocess_dependencies[0]
+        cox_std = self.postprocess_dependencies[1]
+        age_mean = self.postprocess_dependencies[2]
+        age_std = self.postprocess_dependencies[3]
 
         # Normalize
         x = (x - cox_mean) / cox_std

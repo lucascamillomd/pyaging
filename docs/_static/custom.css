@@ -5,3 +5,182 @@ div.wy-side-nav-search > a img.logo {
     max-width: 160px;  /* Adjust the width as needed */
     max-height: auto;  /* Keeps the aspect ratio */
 }
+
+/* Clock Glossary Styling with dark mode support */
+.sortable.filterable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    font-size: 14px;
+    color: var(--color-text-primary, #333);
+}
+
+.sortable.filterable th {
+    background-color: var(--color-background-secondary, #f1f5f9);
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    position: relative;
+    border-bottom: 2px solid var(--color-border-primary, #e2e8f0);
+    cursor: pointer;
+}
+
+.sortable.filterable th:hover {
+    background-color: var(--color-background-hover, #e2e8f0);
+}
+
+.sortable.filterable th::after {
+    content: "↕";
+    position: absolute;
+    right: 8px;
+    opacity: 0.5;
+}
+
+.sortable.filterable th[aria-sort="ascending"]::after {
+    content: "↑";
+    opacity: 1;
+}
+
+.sortable.filterable th[aria-sort="descending"]::after {
+    content: "↓";
+    opacity: 1;
+}
+
+.sortable.filterable td {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--color-border-primary, #e2e8f0);
+}
+
+.sortable.filterable tr:nth-child(even) {
+    background-color: var(--color-background-tertiary, #f8fafc);
+}
+
+.sortable.filterable tr:nth-child(odd) {
+    background-color: var(--color-background-primary, #fff);
+}
+
+.sortable.filterable tr:hover {
+    background-color: var(--color-background-hover, #e2e8f0);
+}
+
+/* Clock approval styling */
+.sortable.filterable td:nth-child(4) {
+    text-align: center;
+}
+
+.sortable.filterable tr:has(td:nth-child(4):contains("✅")) {
+    border-left: 3px solid var(--color-success, #22c55e);
+}
+
+.sortable.filterable tr:has(td:nth-child(4):contains("⌛")) {
+    border-left: 3px solid var(--color-warning, #eab308);
+}
+
+/* DOI styling */
+.sortable.filterable td:nth-child(5) a {
+    color: var(--color-link, #3b82f6);
+    text-decoration: none;
+}
+
+.sortable.filterable td:nth-child(5) a:hover {
+    text-decoration: underline;
+}
+
+/* Filter controls */
+.glossary-filters {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.glossary-filters select, 
+.glossary-filters input {
+    padding: 8px 12px;
+    border: 1px solid var(--color-border-primary, #e2e8f0);
+    border-radius: 4px;
+    background-color: var(--color-input-background, white);
+    color: var(--color-text-primary, #333);
+}
+
+.glossary-filters label {
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+/* Dark mode specific adjustments */
+[data-theme="dark"] .sortable.filterable {
+    color: var(--color-text-primary, #e2e8f0);
+}
+
+[data-theme="dark"] .sortable.filterable tr:nth-child(even) {
+    background-color: var(--color-background-tertiary, #1e293b);
+}
+
+[data-theme="dark"] .sortable.filterable tr:nth-child(odd) {
+    background-color: var(--color-background-primary, #0f172a);
+}
+
+[data-theme="dark"] .sortable.filterable th {
+    background-color: var(--color-background-secondary, #1e293b);
+}
+
+[data-theme="dark"] .sortable.filterable tr:hover {
+    background-color: var(--color-background-hover, #334155);
+}
+
+[data-theme="dark"] .sortable.filterable td a {
+    color: var(--color-link, #60a5fa);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sortable.filterable {
+        font-size: 12px;
+    }
+    
+    .sortable.filterable th,
+    .sortable.filterable td {
+        padding: 8px 10px;
+    }
+}
+
+/* Constrain height and add scroll for Miscellaneous Notes column (7th column) */
+.sortable.filterable td:nth-child(7) {
+    max-height: 80px;  /* Adjust this pixel value to your preferred max height */
+    overflow-y: auto;  /* Add vertical scrollbar only when needed */
+    display: block;    /* Necessary for max-height and overflow on table cells */
+    white-space: normal; /* Ensure text wraps correctly */
+    /* Optional: Add some padding to prevent text hitting the scrollbar */
+    padding-right: 1.5em; 
+}
+
+/* Ensure other cells in the row align nicely with the potentially taller scrolling cell */
+.sortable.filterable td {
+    vertical-align: top; /* Align content to the top of the cell */
+    /* You might already have padding/border rules for td, ensure this complements them */
+    padding: 10px 15px; /* Reiterate padding if needed */
+    border-bottom: 1px solid var(--color-border-primary, #e2e8f0); /* Reiterate border if needed */
+}
+
+/* Re-specify padding for the notes column since display:block might reset it */
+.sortable.filterable td:nth-child(7) {
+    /* Keep the padding consistent, but add extra on the right for scrollbar */
+    padding: 10px 1.5em 10px 15px; 
+    /* ... keep max-height, overflow-y, display, white-space from above ... */
+    max-height: 80px;
+    overflow-y: auto;
+    display: block;
+    white-space: normal;
+}
+
+/* Prevent wrapping in Species (3rd) and DOI (6th) columns */
+.sortable.filterable th:nth-child(3),
+.sortable.filterable td:nth-child(3),
+.sortable.filterable th:nth-child(6),
+.sortable.filterable td:nth-child(6) {
+    white-space: nowrap;
+}

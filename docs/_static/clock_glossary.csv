@@ -69,6 +69,7 @@ meer,methylation,Mus musculus,2018,⌛,https://doi.org/10.7554/eLife.40675,,,,
 ocampoatac1,atac,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00986-0,,tpm_norm_log1p,,
 ocampoatac2,atac,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00986-0,,tpm_norm_log1p,,
 pcdnamtl,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
+pcgrimage,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
 pchannum,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
 pchorvath2013,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,anti_log_linear,True
 pcphenoage,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
