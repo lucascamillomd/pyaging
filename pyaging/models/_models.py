@@ -1781,14 +1781,17 @@ class CpGPTPCGrimAge3(pyagingModel):
 
     def preprocess(self, x):
         """
-        Scales an array based on the median and standard deviation.
+        Scales an array based on the mean and standard deviation.
         """
-        median = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
+        mean = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
         std = torch.tensor(self.preprocess_dependencies[1], device=x.device, dtype=x.dtype)
-        x = (x - median) / std
+        x = (x - mean) / std
         return x
     
     def forward(self, x):
+
+        x = self.preprocess(x)
+
         age = x[:, 0].unsqueeze(1)
         proxies = x[:, 1:]
 
@@ -1797,9 +1800,9 @@ class CpGPTPCGrimAge3(pyagingModel):
         x = torch.concat([age, PCs], dim=1)
 
         # Scale
-        median = torch.tensor(self.preprocess_dependencies[2], device=x.device, dtype=x.dtype)
+        mean = torch.tensor(self.preprocess_dependencies[2], device=x.device, dtype=x.dtype)
         std = torch.tensor(self.preprocess_dependencies[3], device=x.device, dtype=x.dtype)
-        x[:, 1:] = (x[:, 1:] - median) / std
+        x[:, 1:] = (x[:, 1:] - mean) / std
 
         x = self.base_model(x)
 
@@ -1811,7 +1814,7 @@ class CpGPTPCGrimAge3(pyagingModel):
         """
         Converts from a Cox parameter to age in units of years.
         """
-        cox_mean = -4.66184408e-17
+        cox_mean = 4.66184408e-17
         cox_std = 1.70884158624939
         age_mean = 58.8234007654456
         age_std = 13.091231557630831

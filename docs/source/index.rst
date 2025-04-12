@@ -31,7 +31,7 @@ Welcome to the Documentation for pyaging
 
 `pyaging` is a Python package designed for biological aging clocks analysis, leveraging a GPU-optimized PyTorch backend. `pyaging` aims to be a comprehensive toolkit for researchers and scientists in the field of aging.
 
-.. image:: ../_static/pyaging_graphical_abstract.pdf
+.. image:: ../_static/pyaging_graphical_abstract.png
    :align: center
    :alt: Pyaging Graphical Abstract
 

@@ -9,6 +9,8 @@ camilloh3k4me3,histone mark,Homo sapiens,2023,✅,https://doi.org/10.1101/2023.0
 camilloh3k9ac,histone mark,Homo sapiens,2023,✅,https://doi.org/10.1101/2023.08.21.554165,,,,
 camilloh3k9me3,histone mark,Homo sapiens,2023,✅,https://doi.org/10.1101/2023.08.21.554165,,,,
 camillopanhistone,histone mark,Homo sapiens,2023,✅,https://doi.org/10.1101/2023.08.21.554165,,,,
+cpgptgrimage3,methylation,Homo sapiens,2025,✅,https://doi.org/10.1101/2024.10.24.619766,,scale,cox_to_years,
+cpgptpcgrimage3,methylation,Homo sapiens,2025,✅,https://doi.org/10.1101/2024.10.24.619766,,scale,cox_to_years,
 dunedinpace,methylation,Homo sapiens,2022,✅,https://doi.org/10.7554/eLife.73420,This model is for research purposes only. Commercial users should contact exclusive DunedinPACE licensee TruDiagnosticTM. The automatic failure if fewer than 80% of the CpG probes are available is not implemented and left to the user's discretion.,quantile_normalization_with_gold_standard,,True
 han,methylation,Homo sapiens,2020,✅,https://doi.org/10.1186/s12915-020-00807-2,,,anti_log_linear,
 knight,methylation,Homo sapiens,2016,✅,https://doi.org/10.1186/s13059-016-1068-z,,,,True

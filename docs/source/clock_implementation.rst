@@ -18,7 +18,14 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/camilloh3k9ac
    clock_notebooks/camilloh3k9me3
    clock_notebooks/camillopanhistone
+   clock_notebooks/cpgptgrimage3
+   clock_notebooks/cpgptpcgrimage3
    clock_notebooks/dnamfitage
+   clock_notebooks/dnamfitagegaitf
+   clock_notebooks/dnamfitagegaitm
+   clock_notebooks/dnamfitagegripf
+   clock_notebooks/dnamfitagegripm
+   clock_notebooks/dnamfitagevo2max
    clock_notebooks/dnamphenoage
    clock_notebooks/dnamtl
    clock_notebooks/dunedinpace
