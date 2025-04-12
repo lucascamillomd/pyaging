@@ -91,6 +91,8 @@ gold_standard_dict = {
     "dnamfitagegripf": 28.87088040680318,
     "dnamfitagegripm": 54.219201014679555,
     "dnamfitagevo2max": 24.758115337489876,
+    "cpgptgrimage3": -259.3413628075905,
+    "cpgptpcgrimage3": 67.5197444558384,
 }
 
 

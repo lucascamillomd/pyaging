@@ -728,8 +728,8 @@ class PCGrimAge(pyagingModel):
     def __init__(self):
         super().__init__()
 
-        self.rotation = nn.Parameter(torch.empty(78464), requires_grad=False)
-        self.center = nn.Parameter(torch.empty((78464, 1933)), requires_grad=False)
+        self.center = nn.Parameter(torch.empty(78464), requires_grad=False)
+        self.rotation = nn.Parameter(torch.empty((78464, 1933)), requires_grad=False)
 
         self.PCPACKYRS = None
         self.PCADM = None
@@ -1741,4 +1741,85 @@ class DNAmFitAgeVO2Max(pyagingModel):
         return x
     
     def postprocess(self, x):
+        return x
+    
+class CpGPTGrimAge3(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        """
+        Scales an array based on the median and standard deviation.
+        """
+        median = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
+        std = torch.tensor(self.preprocess_dependencies[1], device=x.device, dtype=x.dtype)
+        x = (x - median) / std
+        return x
+
+    def postprocess(self, x):
+        """
+        Converts from a Cox parameter to age in units of years.
+        """
+        cox_mean = -6.60427912e-16
+        cox_std = 1.72004470842156
+        age_mean = 58.8234007654456
+        age_std = 13.091231557630831
+
+        # Normalize
+        x = (x - cox_mean) / cox_std
+
+        # Scale
+        x = (x * age_std) + age_mean
+
+        return x
+    
+class CpGPTPCGrimAge3(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+        self.rotation = nn.Parameter(torch.empty((30, 29)), requires_grad=False)
+
+    def preprocess(self, x):
+        """
+        Scales an array based on the median and standard deviation.
+        """
+        median = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
+        std = torch.tensor(self.preprocess_dependencies[1], device=x.device, dtype=x.dtype)
+        x = (x - median) / std
+        return x
+    
+    def forward(self, x):
+        age = x[:, 0].unsqueeze(1)
+        proxies = x[:, 1:]
+
+        PCs = torch.mm(proxies, self.rotation)  # Apply PCA rotation
+
+        x = torch.concat([age, PCs], dim=1)
+
+        # Scale
+        median = torch.tensor(self.preprocess_dependencies[2], device=x.device, dtype=x.dtype)
+        std = torch.tensor(self.preprocess_dependencies[3], device=x.device, dtype=x.dtype)
+        x[:, 1:] = (x[:, 1:] - median) / std
+
+        x = self.base_model(x)
+
+        x = self.postprocess(x)
+
+        return x
+
+    def postprocess(self, x):
+        """
+        Converts from a Cox parameter to age in units of years.
+        """
+        cox_mean = -4.66184408e-17
+        cox_std = 1.70884158624939
+        age_mean = 58.8234007654456
+        age_std = 13.091231557630831
+
+        # Normalize
+        x = (x - cox_mean) / cox_std
+
+        # Scale
+        x = (x * age_std) + age_mean
+
         return x
