@@ -18,4 +18,5 @@ docs/_templates
 *.RData
 .ruff_cache/
 .pytest_cache/
+.tox/
 
