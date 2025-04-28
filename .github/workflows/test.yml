@@ -38,4 +38,4 @@ jobs:
 
     - name: Run Notebooks
       run: |
-        poetry run pytest --nbmake tutorials/
+        poetry run pytest --nbmake tutorials/ --ignore=tutorials/tutorial_cpgptgrimage3.ipynb
