@@ -312,7 +312,7 @@ def predict_ages_with_model(
     predictions = []
     with torch.inference_mode():
         for batch in main_tqdm(dataloader, indent_level=indent_level + 1, logger=logger):
-            batch_pred = model(batch.obsm[f"X_{model.metadata['clock_name']}"])
+            batch_pred = model(batch.obsm[f"X_{model.metadata['clock_name']}"].to(torch.float64))
             predictions.append(batch_pred)
     # Concatenate all batch predictions
     predictions = torch.cat(predictions)

@@ -59,6 +59,7 @@ Contents
 
    tutorials/tutorial_utils
    tutorials/tutorial_dnam_illumina_human_array
+   tutorials/tutorial_cpgptgrimage3
    tutorials/tutorial_dnam_illumina_mammalian_array
    tutorials/tutorial_dnam_rrbs
    tutorials/tutorial_histonemarkchipseq
@@ -81,9 +82,6 @@ Contents
 .. toctree::
    :maxdepth: 1
    :caption: Additional Resources
-
-   faq
-   references
 
 Indices and Tables
 ------------------

@@ -1,6 +1,6 @@
 .PHONY: lint format update build install update-clocks-notebooks update-all-clocks upload-to-s3 process-tutorials test test-tutorials docs version commit tag release release-slim
 
-VERSION ?= v0.1.21
+VERSION ?= v0.1.22
 COMMIT_MSG ?= "Bump to $(VERSION)"
 RELEASE_MSG ?= "Release $(VERSION)"
 
