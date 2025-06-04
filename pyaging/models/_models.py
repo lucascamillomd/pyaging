@@ -158,6 +158,17 @@ class DNAmTL(pyagingModel):
         return x
 
 
+class DNAmIC(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+
 class DunedinPACE(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1592,6 +1603,7 @@ class PipekRetrainedH(pyagingModel):
 
         return age_tensor
 
+
 class GrimAge2ADM(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1601,7 +1613,8 @@ class GrimAge2ADM(pyagingModel):
 
     def postprocess(self, x):
         return x
-    
+
+
 class GrimAge2B2M(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1611,7 +1624,8 @@ class GrimAge2B2M(pyagingModel):
 
     def postprocess(self, x):
         return x
-    
+
+
 class GrimAge2CystatinC(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1621,7 +1635,8 @@ class GrimAge2CystatinC(pyagingModel):
 
     def postprocess(self, x):
         return x
-    
+
+
 class GrimAge2GDF15(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1631,7 +1646,8 @@ class GrimAge2GDF15(pyagingModel):
 
     def postprocess(self, x):
         return x
-    
+
+
 class GrimAge2Leptin(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1641,7 +1657,8 @@ class GrimAge2Leptin(pyagingModel):
 
     def postprocess(self, x):
         return x
-    
+
+
 class GrimAge2PackYrs(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1651,7 +1668,8 @@ class GrimAge2PackYrs(pyagingModel):
 
     def postprocess(self, x):
         return x
-    
+
+
 class GrimAge2PAI1(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1661,7 +1679,8 @@ class GrimAge2PAI1(pyagingModel):
 
     def postprocess(self, x):
         return x
-    
+
+
 class GrimAge2TIMP1(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1672,6 +1691,7 @@ class GrimAge2TIMP1(pyagingModel):
     def postprocess(self, x):
         return x
 
+
 class GrimAge2LogA1C(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1681,68 +1701,74 @@ class GrimAge2LogA1C(pyagingModel):
 
     def postprocess(self, x):
         return x
-    
+
+
 class GrimAge2LogCRP(pyagingModel):
     def __init__(self):
         super().__init__()
 
     def preprocess(self, x):
         return x
-    
+
     def postprocess(self, x):
         return x
-    
+
+
 class DNAmFitAgeGaitF(pyagingModel):
     def __init__(self):
         super().__init__()
 
     def preprocess(self, x):
         return x
-    
+
     def postprocess(self, x):
         return x
-    
+
+
 class DNAmFitAgeGaitM(pyagingModel):
     def __init__(self):
         super().__init__()
 
     def preprocess(self, x):
         return x
-    
+
     def postprocess(self, x):
         return x
-    
-    
+
+
 class DNAmFitAgeGripF(pyagingModel):
     def __init__(self):
         super().__init__()
 
     def preprocess(self, x):
         return x
-    
+
     def postprocess(self, x):
         return x
-    
+
+
 class DNAmFitAgeGripM(pyagingModel):
     def __init__(self):
         super().__init__()
 
     def preprocess(self, x):
         return x
-    
+
     def postprocess(self, x):
         return x
-    
+
+
 class DNAmFitAgeVO2Max(pyagingModel):
     def __init__(self):
         super().__init__()
 
     def preprocess(self, x):
         return x
-    
+
     def postprocess(self, x):
         return x
-    
+
+
 class CpGPTGrimAge3(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1772,7 +1798,8 @@ class CpGPTGrimAge3(pyagingModel):
         x = (x * age_std) + age_mean
 
         return x
-    
+
+
 class CpGPTPCGrimAge3(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1787,9 +1814,8 @@ class CpGPTPCGrimAge3(pyagingModel):
         std = torch.tensor(self.preprocess_dependencies[1], device=x.device, dtype=x.dtype)
         x = (x - mean) / std
         return x
-    
-    def forward(self, x):
 
+    def forward(self, x):
         x = self.preprocess(x)
 
         age = x[:, 0].unsqueeze(1)

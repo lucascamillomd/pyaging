@@ -93,6 +93,7 @@ gold_standard_dict = {
     "dnamfitagevo2max": 24.758115337489876,
     "cpgptgrimage3": -117.12911049408049,
     "cpgptpcgrimage3": -121.7127507600637,
+    "dnamic": 0.953789180822855,
 }
 
 

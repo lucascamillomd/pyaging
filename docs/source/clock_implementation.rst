@@ -27,6 +27,7 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/dnamfitagegripm
    clock_notebooks/dnamfitagevo2max
    clock_notebooks/dnamphenoage
+   clock_notebooks/dnamic
    clock_notebooks/dnamtl
    clock_notebooks/dunedinpace
    clock_notebooks/eabec
