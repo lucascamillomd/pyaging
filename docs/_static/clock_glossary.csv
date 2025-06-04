@@ -33,6 +33,7 @@ dnamfitagegaitm,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging
 dnamfitagegripf,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
 dnamfitagegripm,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
 dnamfitagevo2max,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
+dnamic,methylation,Homo sapiens,2025,⌛,https://doi.org/10.1038/s43587-025-00883-5,,,,
 dnamphenoage,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,,
 dnamtl,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.102173,,,,
 eabec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
