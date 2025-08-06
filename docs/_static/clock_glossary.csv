@@ -39,6 +39,8 @@ dnamtl,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.102173,,
 eabec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
 encen100,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00731-7,,,,
 encen40,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00731-7,,,,
+ensembleagestatic,methylation,Mus musculus,2025,⌛,https://doi.org/10.1007/s11357-025-01808-1,,,,
+ensembleagestatictop,methylation,Mus musculus,2025,⌛,https://doi.org/10.1007/s11357-025-01808-1,,,,
 epitoc1,methylation,Homo sapiens,2016,⌛,https://doi.org/10.1186/s13059-016-1064-3,The reference values are simply -1 for the algorithm to ignore them.,mean,,True
 grimage,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.101684,,,cox_to_years,True
 grimage2,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True

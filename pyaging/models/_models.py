@@ -1852,3 +1852,25 @@ class CpGPTPCGrimAge3(pyagingModel):
         x = (x * age_std) + age_mean
 
         return x
+
+
+class EnsembleAgeStatic(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+
+class EnsembleAgeStaticTop(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x

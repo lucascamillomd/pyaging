@@ -94,6 +94,8 @@ gold_standard_dict = {
     "cpgptgrimage3": -117.12911049408049,
     "cpgptpcgrimage3": -121.7127507600637,
     "dnamic": 0.953789180822855,
+    "ensembleagestatic": 4.7854141849046865,
+    "ensembleagestatictop": -5.717685114114133,
 }
 
 
