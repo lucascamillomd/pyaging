@@ -1,7 +1,11 @@
-import pyaging as pya
+import gc
+
+import numpy as np
 import pandas as pd
 import pytest
-import numpy as np
+import torch
+
+import pyaging as pya
 
 gold_standard_dict = {
     "altumage": 91.64974762567451,
@@ -146,3 +150,8 @@ def test_all_clocks():
         assert (
             abs(pred - gold_pred) <= tolerance
         ), f"Items {pred} and {gold_pred} differ by more than {tolerance} for clock {clock_name}"
+
+        # Explicit memory cleanup after each clock test -- [Coding Agent]
+        pya.pred._pred_utils.cleanup_clock_memory(
+            model=clock, random_adata=random_adata, random_df=random_df
+        )

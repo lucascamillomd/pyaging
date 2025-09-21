@@ -20,6 +20,8 @@ try:
 except:
     CUPY_AVAILABLE = False
 
+import gc
+
 from ..logger import LoggerManager, main_tqdm, silence_logger
 from ..models import *
 from ..utils import download, load_clock_metadata, progress
@@ -442,3 +444,53 @@ def set_torch_device(logger, indent_level: int = 1) -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info(f"Using device: {device}", indent_level=2)
     return device
+
+
+def cleanup_clock_memory(model=None, **kwargs) -> None:
+    """
+    Explicitly clean up memory from loaded clock models and other objects.
+
+    This function performs aggressive memory cleanup to prevent out-of-memory issues
+    during testing or when processing multiple clocks sequentially. It deletes
+    specified objects and forces garbage collection.
+
+    Parameters
+    ----------
+    model : pyagingModel, optional
+        The loaded clock model to delete from memory.
+    **kwargs : dict
+        Additional objects to delete from memory. Each key-value pair
+        represents an object name and the object itself to be deleted.
+
+    Notes
+    -----
+    This function is particularly useful during testing when multiple clocks
+    are loaded sequentially, as it prevents memory accumulation that can
+    lead to "No space left on device" errors in CI environments.
+
+    The function performs the following cleanup steps:
+    1. Deletes the provided model object if given
+    2. Deletes any additional objects passed via kwargs
+    3. Forces Python garbage collection
+    4. Clears PyTorch CUDA cache if available
+
+    Examples
+    --------
+    >>> model = load_clock("horvath2013", "cpu", "pyaging_data", logger)
+    >>> # ... use model ...
+    >>> cleanup_clock_memory(model=model, adata=adata, predictions=pred)
+    """
+    # Delete the model if provided -- [Coding Agent]
+    if model is not None:
+        del model
+
+    # Delete any additional objects passed via kwargs -- [Coding Agent]
+    for name, obj in kwargs.items():
+        if obj is not None:
+            del obj
+
+    # Force garbage collection -- [Coding Agent]
+    gc.collect()
+
+    # Clear PyTorch CUDA cache -- [Coding Agent]
+    torch.cuda.empty_cache()
