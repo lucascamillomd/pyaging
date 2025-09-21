@@ -16,13 +16,13 @@ Alternatively, it can be installed by cloning our GitHub repository and using pi
     git clone https://github.com/rsinghlab/pyaging.git
     pip install pyaging/ --user
 
-Or by simply going to the cloned repository if you have poetry installed:
+Or by simply going to the cloned repository if you have uv installed:
 
 .. code-block:: bash
 
     git clone https://github.com/rsinghlab/pyaging.git
     cd pyaging/
-    poetry install
+    uv sync
 
 Lastly, it can be installed from source:
 
@@ -43,13 +43,13 @@ To use histone mark clocks, you need to install pyaging with the optional pyBigW
 
     pip install pyaging[histone]
 
-When installing from a cloned repository with poetry:
+When installing from a cloned repository with uv and optional dependencies:
 
 .. code-block:: bash
 
     git clone https://github.com/rsinghlab/pyaging.git
     cd pyaging/
-    poetry install -E histone
+    uv sync --extra histone
 
 Or from source:
 

@@ -28,14 +28,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install poetry pybigwig
-        poetry install
+        pip install uv
+        uv sync --quiet
         
         
     - name: Check gold standards
       run: |
-        poetry run pytest
+        uv run pytest
 
     - name: Run Notebooks
       run: |
-        poetry run pytest --nbmake tutorials/ --ignore=tutorials/tutorial_cpgptgrimage3.ipynb
+        uv run pytest --nbmake tutorials/ --ignore=tutorials/tutorial_cpgptgrimage3.ipynb

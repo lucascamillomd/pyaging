@@ -19,5 +19,6 @@ jobs:
 
     - name: Build Package
       run: |
-        python -m pip install poetry
-        poetry build
+        python -m pip install uv
+        uv sync --quiet
+        uv build

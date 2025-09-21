@@ -96,6 +96,18 @@ gold_standard_dict = {
     "dnamic": 0.953789180822855,
     "ensembleagestatic": 4.7854141849046865,
     "ensembleagestatictop": -5.717685114114133,
+    "systemsage": 116.45061212777607,
+    "systemsageblood": 212.0760962892949,
+    "systemsagebrain": 265.0911463779384,
+    "systemsageinflammation": 72.38152927351939,
+    "systemsageheart": 112.41540077369537,
+    "systemsagehormone": 29.842685509658825,
+    "systemsageimmune": 235.5471945556336,
+    "systemsagekidney": 107.58328797203875,
+    "systemsageliver": 144.65174239112775,
+    "systemsagelung": 204.23111481802312,
+    "systemsagemetabolic": 105.43023855307393,
+    "systemsagemusculoskeletal": 69.09098794604859,
 }
 
 

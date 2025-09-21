@@ -53,7 +53,13 @@ class CamilloH3K27ac(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -64,7 +70,13 @@ class CamilloH3K27me3(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -75,7 +87,13 @@ class CamilloH3K36me3(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -86,7 +104,13 @@ class CamilloH3K4me1(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -97,7 +121,13 @@ class CamilloH3K4me3(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -108,7 +138,13 @@ class CamilloH3K9ac(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -119,7 +155,13 @@ class CamilloH3K9me3(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -130,7 +172,13 @@ class CamilloPanHistone(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -141,7 +189,13 @@ class DNAmPhenoAge(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -152,7 +206,13 @@ class DNAmTL(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -163,7 +223,13 @@ class DNAmIC(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -202,7 +268,13 @@ class ENCen100(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -213,7 +285,13 @@ class ENCen40(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -253,7 +331,13 @@ class Hannum(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -293,7 +377,13 @@ class HRSInCHPhenoAge(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -304,7 +394,13 @@ class Knight(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -315,7 +411,13 @@ class LeeControl(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -326,7 +428,13 @@ class LeeRefinedRobust(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -337,7 +445,13 @@ class LeeRobust(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -348,7 +462,13 @@ class Lin(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -729,7 +849,13 @@ class PCDNAmTL(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -800,7 +926,13 @@ class PCGrimAge(pyagingModel):
         return x
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -811,7 +943,13 @@ class PCHannum(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -851,7 +989,13 @@ class PCPhenoAge(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -958,7 +1102,13 @@ class RepliTali(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1042,7 +1192,13 @@ class Thompson(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1095,7 +1251,13 @@ class ZhangMortality(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1259,7 +1421,13 @@ class YingCausAge(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1270,7 +1438,13 @@ class YingDamAge(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1281,7 +1455,13 @@ class YingAdaptAge(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1354,7 +1534,13 @@ class DNAmFitAge(pyagingModel):
         return y
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1365,7 +1551,13 @@ class StocH(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1376,7 +1568,13 @@ class StocZ(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1387,7 +1585,13 @@ class StocP(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1438,7 +1642,13 @@ class RetroelementAgeV1(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1449,7 +1659,13 @@ class RetroelementAgeV2(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1489,7 +1705,13 @@ class ABEC(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1500,7 +1722,13 @@ class eABEC(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1511,7 +1739,13 @@ class cABEC(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1609,7 +1843,13 @@ class GrimAge2ADM(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1620,7 +1860,13 @@ class GrimAge2B2M(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1631,7 +1877,13 @@ class GrimAge2CystatinC(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1642,7 +1894,13 @@ class GrimAge2GDF15(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1653,7 +1911,13 @@ class GrimAge2Leptin(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1664,7 +1928,13 @@ class GrimAge2PackYrs(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1675,7 +1945,13 @@ class GrimAge2PAI1(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1686,7 +1962,13 @@ class GrimAge2TIMP1(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1697,7 +1979,13 @@ class GrimAge2LogA1C(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1708,7 +1996,13 @@ class GrimAge2LogCRP(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1719,7 +2013,13 @@ class DNAmFitAgeGaitF(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1730,7 +2030,13 @@ class DNAmFitAgeGaitM(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1741,7 +2047,13 @@ class DNAmFitAgeGripF(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1752,7 +2064,13 @@ class DNAmFitAgeGripM(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1763,7 +2081,13 @@ class DNAmFitAgeVO2Max(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1859,7 +2183,13 @@ class EnsembleAgeStatic(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
@@ -1870,7 +2200,206 @@ class EnsembleAgeStaticTop(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
 
     def postprocess(self, x):
         return x
+
+
+class SystemsAgeBase(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+        self.prediction_index = None
+
+        # DNAm PCA assets
+        self.dnam_center = None
+        self.dnam_rotation = None
+        self.system_vector = None
+
+        # System aggregation assets
+        self.system_labels = []
+        self.system_component_indices = []
+        self.system_modules = nn.ModuleList()
+
+        # Predicted age assets
+        self.predicted_age_model = None
+        self.predicted_age_poly = None
+
+        # Systems PCA assets
+        self.systems_pca_model = None
+
+        # Transformation assets
+        self.transformation_coefs = None
+        self.transformation_labels = None
+
+    @staticmethod
+    def _as_tensor(value, device, dtype):
+        if isinstance(value, torch.Tensor):
+            return value.to(device=device, dtype=dtype)
+        return torch.tensor(value, device=device, dtype=dtype)
+
+    def _ensure_loaded(self):
+        required = [
+            self.dnam_center,
+            self.dnam_rotation,
+            self.system_vector,
+            self.predicted_age_poly,
+            self.transformation_coefs,
+        ]
+        if any(asset is None for asset in required):
+            raise RuntimeError(
+                "SystemsAge parameters are not fully loaded. Please populate the model "
+                "attributes using the notebook export assets before calling forward()."
+            )
+        if (not self.system_modules) or (not self.system_component_indices):
+            raise RuntimeError(
+                "SystemsAge system aggregation modules are missing. Populate "
+                "system_modules and system_component_indices before use."
+            )
+        if self.predicted_age_model is None:
+            raise RuntimeError("SystemsAge predicted age model not initialised.")
+        if self.systems_pca_model is None:
+            raise RuntimeError("SystemsAge systems PCA model not initialised.")
+
+    def forward(self, x):
+        self._ensure_loaded()
+
+        x = self.preprocess(x)
+
+        device = x.device
+        dtype = x.dtype
+
+        dnam_center = self._as_tensor(self.dnam_center, device, dtype)
+        dnam_rotation = self._as_tensor(self.dnam_rotation, device, dtype)
+        system_vector = self._as_tensor(self.system_vector, device, dtype)
+
+        centered = x - dnam_center
+        dnam_pcs = centered @ dnam_rotation
+
+        system_components = dnam_pcs @ system_vector
+
+        system_scores = []
+        for module, indices in zip(self.system_modules, self.system_component_indices):
+            comps = torch.index_select(
+                system_components,
+                1,
+                indices.to(device=device),
+            )
+            system_scores.append(module(comps))
+        system_scores = torch.cat(system_scores, dim=1)
+
+        predicted_age = self.predicted_age_model(dnam_pcs).squeeze(-1)
+        predicted_age_poly = self._as_tensor(self.predicted_age_poly, device, dtype)
+        predicted_age = (
+            predicted_age * predicted_age_poly[1] + predicted_age.pow(2) * predicted_age_poly[2] + predicted_age_poly[0]
+        )
+        predicted_age = predicted_age / 12.0
+
+        base_outputs = torch.cat([system_scores, predicted_age.unsqueeze(-1)], dim=1)
+
+        if self.prediction_index == -1:
+            raw_output = self.systems_pca_model(base_outputs).squeeze(-1)
+            transform_idx = self.transformation_coefs.shape[0] - 1
+        else:
+            raw_output = base_outputs[:, self.prediction_index]
+            transform_idx = self.prediction_index
+
+        transformation_coefs = self._as_tensor(self.transformation_coefs, device, dtype)
+        coef = transformation_coefs[transform_idx]
+        transformed = ((raw_output - coef[0]) / coef[1]) * coef[3] + coef[2]
+        transformed = transformed / 12.0
+
+        return self.postprocess(transformed.unsqueeze(-1))
+
+    def preprocess(self, x):
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
+
+    def postprocess(self, x):
+        return x
+
+
+class SystemsAgeBlood(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+
+        self.prediction_index = 0
+
+
+class SystemsAgeBrain(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+
+        self.prediction_index = 1
+
+
+class SystemsAgeInflammation(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = 2
+
+
+class SystemsAgeHeart(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = 3
+
+
+class SystemsAgeHormone(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = 4
+
+
+class SystemsAgeImmune(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = 5
+
+
+class SystemsAgeKidney(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = 6
+
+
+class SystemsAgeLiver(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = 7
+
+
+class SystemsAgeMetabolic(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = 8
+
+
+class SystemsAgeLung(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = 9
+
+
+class SystemsAgeMusculoSkeletal(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = 10
+
+
+class SystemsAge(SystemsAgeBase):
+    def __init__(self):
+        super().__init__()
+        self.prediction_index = -1

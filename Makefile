@@ -1,6 +1,6 @@
 .PHONY: lint format update build install update-clocks-notebooks update-all-clocks upload-to-s3 process-tutorials test test-tutorials docs version commit tag release release-slim
 
-VERSION ?= v0.1.25
+VERSION ?= v0.1.27
 COMMIT_MSG ?= "Bump to $(VERSION)"
 RELEASE_MSG ?= "Release $(VERSION)"
 
@@ -13,16 +13,16 @@ format:
 	ruff format pyaging
 
 update:
-	@echo "Running poetry update..."
-	poetry update
+	@echo "Running uv sync..."
+	uv sync
 
 build: lint format
 	@echo "Building the package..."
-	poetry build
+	uv build
 
 install: build
 	@echo "Installing the package..."
-	poetry install
+	uv sync
 
 update-clocks-notebooks:
 	@echo "Updating clocks and notebooks..."
@@ -68,11 +68,12 @@ process-tutorials:
 
 test:
 	@echo "Running gold standard tests..."
+	uv sync --quiet || { echo "Failed to sync dependencies"; exit 1; }
 	tox || { echo "Gold standard tests failed"; exit 1; }
 
 test-tutorials:
 	@echo "Running tutorial tests..."
-	poetry run pytest --nbmake tutorials/ || { echo "Tutorial tests failed"; exit 1; }
+	uv run pytest --nbmake tutorials/ || { echo "Tutorial tests failed"; exit 1; }
 
 docs:
 	@echo "Building documentation..."

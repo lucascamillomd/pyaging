@@ -91,6 +91,18 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/stocp
    clock_notebooks/stocz
    clock_notebooks/stubbs
+   clock_notebooks/systemsage
+   clock_notebooks/systemsageblood
+   clock_notebooks/systemsagebrain
+   clock_notebooks/systemsageheart
+   clock_notebooks/systemsagehormone
+   clock_notebooks/systemsageimmune
+   clock_notebooks/systemsageinflammation
+   clock_notebooks/systemsagekidney
+   clock_notebooks/systemsageliver
+   clock_notebooks/systemsagelung
+   clock_notebooks/systemsagemetabolic
+   clock_notebooks/systemsagemusculoskeletal
    clock_notebooks/thompson
    clock_notebooks/yingadaptage
    clock_notebooks/yingcausage
