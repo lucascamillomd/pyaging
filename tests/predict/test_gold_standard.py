@@ -151,7 +151,11 @@ def test_all_clocks():
             abs(pred - gold_pred) <= tolerance
         ), f"Items {pred} and {gold_pred} differ by more than {tolerance} for clock {clock_name}"
 
-        # Explicit memory cleanup after each clock test -- [Coding Agent]
+        # Explicit memory and disk cleanup after each clock test
         pya.pred._pred_utils.cleanup_clock_memory(
-            model=clock, random_adata=random_adata, random_df=random_df
+            model=clock, 
+            clock_name=clock_name, 
+            dir=dir,
+            random_adata=random_adata, 
+            random_df=random_df
         )

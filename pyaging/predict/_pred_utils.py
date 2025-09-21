@@ -446,18 +446,23 @@ def set_torch_device(logger, indent_level: int = 1) -> None:
     return device
 
 
-def cleanup_clock_memory(model=None, **kwargs) -> None:
+def cleanup_clock_memory(model=None, clock_name=None, dir=None, **kwargs) -> None:
     """
-    Explicitly clean up memory from loaded clock models and other objects.
+    Explicitly clean up memory and disk space from loaded clock models.
 
-    This function performs aggressive memory cleanup to prevent out-of-memory issues
-    during testing or when processing multiple clocks sequentially. It deletes
-    specified objects and forces garbage collection.
+    This function performs aggressive memory and disk cleanup to prevent 
+    out-of-memory and out-of-disk-space issues during testing or when processing 
+    multiple clocks sequentially. It deletes specified objects, removes downloaded 
+    .pt files, and forces garbage collection.
 
     Parameters
     ----------
     model : pyagingModel, optional
         The loaded clock model to delete from memory.
+    clock_name : str, optional
+        The name of the clock whose .pt file should be deleted from disk.
+    dir : str, optional
+        The directory containing the .pt file to delete. Required if clock_name is provided.
     **kwargs : dict
         Additional objects to delete from memory. Each key-value pair
         represents an object name and the object itself to be deleted.
@@ -465,32 +470,43 @@ def cleanup_clock_memory(model=None, **kwargs) -> None:
     Notes
     -----
     This function is particularly useful during testing when multiple clocks
-    are loaded sequentially, as it prevents memory accumulation that can
-    lead to "No space left on device" errors in CI environments.
+    are loaded sequentially, as it prevents memory accumulation and disk space
+    consumption that can lead to "No space left on device" errors in CI environments.
 
     The function performs the following cleanup steps:
     1. Deletes the provided model object if given
     2. Deletes any additional objects passed via kwargs
-    3. Forces Python garbage collection
-    4. Clears PyTorch CUDA cache if available
+    3. Removes the downloaded .pt file from disk if clock_name and dir are provided
+    4. Forces Python garbage collection
+    5. Clears PyTorch CUDA cache if available
 
     Examples
     --------
     >>> model = load_clock("horvath2013", "cpu", "pyaging_data", logger)
     >>> # ... use model ...
-    >>> cleanup_clock_memory(model=model, adata=adata, predictions=pred)
+    >>> cleanup_clock_memory(model=model, clock_name="horvath2013", dir="pyaging_data")
     """
-    # Delete the model if provided -- [Coding Agent]
+    # Delete the model if provided
     if model is not None:
         del model
 
-    # Delete any additional objects passed via kwargs -- [Coding Agent]
+    # Delete any additional objects passed via kwargs
     for name, obj in kwargs.items():
         if obj is not None:
             del obj
 
-    # Force garbage collection -- [Coding Agent]
+    # Delete the .pt file from disk if specified
+    if clock_name is not None and dir is not None:
+        weights_path = os.path.join(dir, f"{clock_name}.pt")
+        try:
+            if os.path.exists(weights_path):
+                os.remove(weights_path)
+        except OSError:
+            # Silently ignore file deletion errors to avoid disrupting tests
+            pass
+
+    # Force garbage collection
     gc.collect()
 
-    # Clear PyTorch CUDA cache -- [Coding Agent]
+    # Clear PyTorch CUDA cache
     torch.cuda.empty_cache()
