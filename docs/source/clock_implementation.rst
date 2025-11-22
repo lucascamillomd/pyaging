@@ -20,6 +20,12 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/camillopanhistone
    clock_notebooks/cpgptgrimage3
    clock_notebooks/cpgptpcgrimage3
+   clock_notebooks/deconvolutebloodepicbcell
+   clock_notebooks/deconvolutebloodepiccd4tcell
+   clock_notebooks/deconvolutebloodepiccd8tcell
+   clock_notebooks/deconvolutebloodepicmonocyte
+   clock_notebooks/deconvolutebloodepicneutrophil
+   clock_notebooks/deconvolutebloodepicnkcell
    clock_notebooks/dnamfitage
    clock_notebooks/dnamfitagegaitf
    clock_notebooks/dnamfitagegaitm
@@ -34,6 +40,7 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/encen100
    clock_notebooks/encen40
    clock_notebooks/epitoc1
+   clock_notebooks/epitoc2
    clock_notebooks/ensembleagestatic
    clock_notebooks/ensembleagestatictop
    clock_notebooks/grimage
@@ -67,9 +74,17 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/mammalianlifespan
    clock_notebooks/mammalianskin2
    clock_notebooks/mammalianskin3
+   clock_notebooks/mccartneybmi
+   clock_notebooks/mccartneybodyfat
+   clock_notebooks/mccartneyeducation
+   clock_notebooks/mccartneyhdlcholesterol
+   clock_notebooks/mccartneyldlcholesterol
+   clock_notebooks/mccartneysmoking
+   clock_notebooks/mccartneytotalcholesterol
    clock_notebooks/meer
    clock_notebooks/ocampoatac1
    clock_notebooks/ocampoatac2
+   clock_notebooks/pasta
    clock_notebooks/pcdnamtl
    clock_notebooks/pcgrimage
    clock_notebooks/pchannum
@@ -82,6 +97,7 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/pipekelasticnet
    clock_notebooks/pipekfilteredh
    clock_notebooks/pipekretrainedh
+   clock_notebooks/reg
    clock_notebooks/replitali
    clock_notebooks/retroelementagev1
    clock_notebooks/retroelementagev2
@@ -104,6 +120,20 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/systemsagemetabolic
    clock_notebooks/systemsagemusculoskeletal
    clock_notebooks/thompson
+   clock_notebooks/twelvecelldeconvolutebloodepicbas
+   clock_notebooks/twelvecelldeconvolutebloodepicbmem
+   clock_notebooks/twelvecelldeconvolutebloodepicbnv
+   clock_notebooks/twelvecelldeconvolutebloodepiccd4mem
+   clock_notebooks/twelvecelldeconvolutebloodepiccd4nv
+   clock_notebooks/twelvecelldeconvolutebloodepiccd8mem
+   clock_notebooks/twelvecelldeconvolutebloodepiccd8nv
+   clock_notebooks/twelvecelldeconvolutebloodepiceos
+   clock_notebooks/twelvecelldeconvolutebloodepicmono
+   clock_notebooks/twelvecelldeconvolutebloodepicneu
+   clock_notebooks/twelvecelldeconvolutebloodepicnk
+   clock_notebooks/twelvecelldeconvolutebloodepictreg
+   clock_notebooks/xchrom
+   clock_notebooks/ychrom
    clock_notebooks/yingadaptage
    clock_notebooks/yingcausage
    clock_notebooks/yingdamage

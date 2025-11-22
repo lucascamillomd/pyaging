@@ -20,7 +20,7 @@ def merge_and_update_pt_files(version):
         if filename.endswith(".pt"):
             file_path = os.path.join("weights", filename)
             try:
-                clock = torch.load(file_path)
+                clock = torch.load(file_path, weights_only=False)
                 clock.version = version
                 torch.save(clock, file_path)
 

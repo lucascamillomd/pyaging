@@ -198,7 +198,7 @@ def check_features_in_adata(
         logger.error(
             f"Every single feature out of {len(model.features)} features "
             f"is missing. Please double check the features in the adata object"
-            f" actually contain the clock features such as {missing_features[:np.min([3, num_missing_features])]}, etc.",
+            f" actually contain the clock features such as {missing_features[: np.min([3, num_missing_features])]}, etc.",
             indent_level=3,
         )
         raise NameError
@@ -207,7 +207,7 @@ def check_features_in_adata(
     if len(missing_features) > 0:
         logger.warning(
             f"{num_missing_features} out of {len(model.features)} features "
-            f"({percent_missing:.2f}%) are missing: {missing_features[:np.min([3, num_missing_features])]}, etc.",
+            f"({percent_missing:.2f}%) are missing: {missing_features[: np.min([3, num_missing_features])]}, etc.",
             indent_level=indent_level + 1,
         )
         # If there are reference values provided
@@ -450,9 +450,9 @@ def cleanup_clock_memory(model=None, clock_name=None, dir=None, **kwargs) -> Non
     """
     Explicitly clean up memory and disk space from loaded clock models.
 
-    This function performs aggressive memory and disk cleanup to prevent 
-    out-of-memory and out-of-disk-space issues during testing or when processing 
-    multiple clocks sequentially. It deletes specified objects, removes downloaded 
+    This function performs aggressive memory and disk cleanup to prevent
+    out-of-memory and out-of-disk-space issues during testing or when processing
+    multiple clocks sequentially. It deletes specified objects, removes downloaded
     .pt files, and forces garbage collection.
 
     Parameters

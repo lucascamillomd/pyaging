@@ -1,6 +1,6 @@
 [project]
 name = "pyaging"
-version = "0.1.27"
+version = "0.1.28"
 description = "A Python-based compendium of GPU-optimized aging clocks."
 authors = [
     {name = "Lucas Paulo de Lima Camillo", email = "lucas_camillo@alumni.brown.edu"}
@@ -15,7 +15,9 @@ dependencies = [
     "numpy>=2.0.0",
     "anndata>=0.10.3",
     "ipykernel>=6.29.0",
-    "requests"
+    "requests",
+    "ruff>=0.14.6",
+    "tox>=4.30.3",
 ]
 
 [project.urls]

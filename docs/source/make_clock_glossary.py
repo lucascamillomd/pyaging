@@ -8,7 +8,7 @@ file_path = "_static/all_clock_metadata.pt"
 urlretrieve(url, file_path)
 
 # Load all clock metadata df
-metadata_dict = torch.load("_static/all_clock_metadata.pt")
+metadata_dict = torch.load("_static/all_clock_metadata.pt", weights_only=False)
 
 # Convert to DataFrame and do some processing
 df = pd.DataFrame(metadata_dict).T

@@ -849,13 +849,7 @@ class PCDNAmTL(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        if self.reference_values is None:
-            return x
-        if isinstance(self.reference_values, torch.Tensor):
-            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
-        else:
-            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
-        return torch.where(torch.isnan(x), reference, x)
+        return x
 
     def postprocess(self, x):
         return x
@@ -943,13 +937,7 @@ class PCHannum(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        if self.reference_values is None:
-            return x
-        if isinstance(self.reference_values, torch.Tensor):
-            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
-        else:
-            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
-        return torch.where(torch.isnan(x), reference, x)
+        return x
 
     def postprocess(self, x):
         return x
@@ -989,13 +977,7 @@ class PCPhenoAge(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        if self.reference_values is None:
-            return x
-        if isinstance(self.reference_values, torch.Tensor):
-            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
-        else:
-            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
-        return torch.where(torch.isnan(x), reference, x)
+        return x
 
     def postprocess(self, x):
         return x
@@ -1028,6 +1010,310 @@ class PCSkinAndBlood(pyagingModel):
         age_tensor[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
 
         return age_tensor
+
+
+class Pasta(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    def _rank_average(values):
+        """
+        Assign average ranks (1-based) per vector, handling ties.
+        """
+        sorted_vals, sorted_idx = torch.sort(values)
+        ranks = torch.empty_like(sorted_vals, dtype=values.dtype)
+
+        n = values.numel()
+        start = 0
+        while start < n:
+            end = start + 1
+            while end < n and sorted_vals[end] == sorted_vals[start]:
+                end += 1
+            avg_rank = (start + end - 1) / 2.0 + 1.0
+            ranks[sorted_idx[start:end]] = avg_rank
+            start = end
+
+        return ranks
+
+    def preprocess(self, x):
+        """
+        Fill missing values with the global median then rank-normalize per sample.
+        """
+        median = torch.nanmedian(x)
+        if torch.isnan(median):
+            median = torch.tensor(0.0, device=x.device, dtype=x.dtype)
+        x = torch.where(torch.isnan(x), median, x)
+
+        ranked = torch.empty_like(x, dtype=x.dtype)
+        for i in range(x.size(0)):
+            ranked[i] = self._rank_average(x[i])
+
+        return ranked
+
+    def postprocess(self, x):
+        """
+        Apply linear scaling and shifting constants from the original Pasta definition.
+        """
+        scale = self.postprocess_dependencies[0]
+        offset_factor = self.postprocess_dependencies[1]
+        return x * scale + offset_factor * scale
+
+
+class Reg(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    def _rank_average(values):
+        """
+        Assign average ranks (1-based) per vector, handling ties.
+        """
+        sorted_vals, sorted_idx = torch.sort(values)
+        ranks = torch.empty_like(sorted_vals, dtype=values.dtype)
+
+        n = values.numel()
+        start = 0
+        while start < n:
+            end = start + 1
+            while end < n and sorted_vals[end] == sorted_vals[start]:
+                end += 1
+            avg_rank = (start + end - 1) / 2.0 + 1.0
+            ranks[sorted_idx[start:end]] = avg_rank
+            start = end
+
+        return ranks
+
+    def preprocess(self, x):
+        """
+        Fill missing values with the global median then rank-normalize per sample.
+        """
+        median = torch.nanmedian(x)
+        if torch.isnan(median):
+            median = torch.tensor(0.0, device=x.device, dtype=x.dtype)
+        x = torch.where(torch.isnan(x), median, x)
+
+        ranked = torch.empty_like(x, dtype=x.dtype)
+        for i in range(x.size(0)):
+            ranked[i] = self._rank_average(x[i])
+
+        return ranked
+
+    def postprocess(self, x):
+        """
+        Add the REG intercept term after linear prediction.
+        """
+        intercept = self.postprocess_dependencies[0]
+        return x + intercept
+
+
+class McCartneySmoking(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+
+class McCartneyBMI(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return torch.sigmoid(x)
+
+
+class McCartneyEducation(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return torch.sigmoid(x)
+
+
+class McCartneyTotalCholesterol(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return torch.sigmoid(x)
+
+
+class McCartneyHDLCholesterol(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return torch.sigmoid(x)
+
+
+class McCartneyLDLCholesterol(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return torch.sigmoid(x)
+
+
+class McCartneyBodyFat(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return torch.sigmoid(x)
+
+
+class DeconvolutionSingleCell(pyagingModel):
+    def __init__(self):
+        super().__init__()
+        self.pseudo_inv = None
+        self.cell_index = 0
+
+    @staticmethod
+    def _project_simplex(v):
+        """
+        Project a batch of vectors onto the probability simplex.
+        """
+        # v: (batch, n)
+        sorted_v, _ = torch.sort(v, dim=1, descending=True)
+        cssv = torch.cumsum(sorted_v, dim=1)
+        inds = torch.arange(1, v.size(1) + 1, device=v.device, dtype=v.dtype)
+        cond = sorted_v - (cssv - 1) / inds > 0
+        rho = cond.sum(dim=1) - 1
+        theta = (cssv[torch.arange(v.size(0)), rho] - 1) / (rho.to(v.dtype) + 1)
+        w = torch.clamp(v - theta.unsqueeze(1), min=0)
+        return w
+
+    def preprocess(self, x):
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
+
+    def forward(self, x):
+        x = self.preprocess(x)
+
+        if self.pseudo_inv is None:
+            raise RuntimeError("pseudo_inv is not set for DeconvolutionSingleCell.")
+
+        pseudo_inv = self.pseudo_inv.to(device=x.device, dtype=x.dtype)
+
+        proportions = torch.matmul(x, pseudo_inv.T)
+        proportions = self._project_simplex(proportions)
+
+        cell = torch.index_select(proportions, 1, torch.tensor([self.cell_index], device=x.device))
+        return self.postprocess(cell)
+
+    def postprocess(self, x):
+        return x
+
+
+class DeconvoluteBloodEPIC(DeconvolutionSingleCell):
+    def __init__(self):
+        super().__init__()
+
+
+class TwelveCellDeconvoluteBloodEPIC(DeconvolutionSingleCell):
+    def __init__(self):
+        super().__init__()
+
+
+class DepressionBarbu(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+
+class SexScoreBase(pyagingModel):
+    def __init__(self):
+        super().__init__()
+        self.autosome_indices = None
+
+    def preprocess(self, x):
+        if self.autosome_indices is None:
+            return x
+        autosomes = torch.index_select(x, 1, self.autosome_indices.to(device=x.device))
+
+        mask = ~torch.isnan(autosomes)
+        count = mask.sum(dim=1, keepdim=True).clamp_min(1)
+        sum_vals = torch.where(mask, autosomes, torch.zeros_like(autosomes)).sum(dim=1, keepdim=True)
+        d_mean = sum_vals / count
+
+        var = torch.where(mask, (autosomes - d_mean) ** 2, torch.zeros_like(autosomes)).sum(dim=1, keepdim=True)
+        d_std = torch.sqrt(var / count)
+        d_std = torch.where(d_std == 0, torch.ones_like(d_std), d_std)
+
+        z = (x - d_mean) / d_std
+        z = torch.where(torch.isnan(z), torch.zeros_like(z), z)
+        return z
+
+    def postprocess(self, x):
+        return x
+
+
+class XChrom(SexScoreBase):
+    def __init__(self):
+        super().__init__()
+        self.x_indices = None
+        self.x_means = None
+        self.x_coeffs = None
+
+    def forward(self, x):
+        z = self.preprocess(x)
+        device = x.device
+        dtype = x.dtype
+        x_means = self.x_means.to(device=device, dtype=dtype)
+        x_coeffs = self.x_coeffs.to(device=device, dtype=dtype)
+        x_idx = self.x_indices.to(device=device)
+        x_score = torch.sum((z.index_select(1, x_idx) - x_means) * x_coeffs, dim=1)
+        return self.postprocess(x_score.unsqueeze(1))
+
+
+class YChrom(SexScoreBase):
+    def __init__(self):
+        super().__init__()
+        self.y_indices = None
+        self.y_means = None
+        self.y_coeffs = None
+
+    def forward(self, x):
+        z = self.preprocess(x)
+        device = x.device
+        dtype = x.dtype
+        y_means = self.y_means.to(device=device, dtype=dtype)
+        y_coeffs = self.y_coeffs.to(device=device, dtype=dtype)
+        y_idx = self.y_indices.to(device=device)
+        y_score = torch.sum((z.index_select(1, y_idx) - y_means) * y_coeffs, dim=1)
+        return self.postprocess(y_score.unsqueeze(1))
 
 
 class PedBE(pyagingModel):
@@ -1632,6 +1918,40 @@ class epiTOC1(pyagingModel):
                 mean = torch.tensor(float("nan"))
             means.append(mean)
         return torch.vstack(means)
+
+    def postprocess(self, x):
+        return x
+
+
+class epiTOC2(pyagingModel):
+    def __init__(self):
+        super().__init__()
+        self.delta = None
+        self.beta0 = None
+
+    def preprocess(self, x):
+        """
+        Replace NaNs with zero; missing features should already be imputed via reference_values.
+        """
+        return torch.nan_to_num(x, nan=0.0)
+
+    def forward(self, x):
+        x = self.preprocess(x)
+
+        device = x.device
+        dtype = x.dtype
+
+        delta = self.delta.to(device=device, dtype=dtype)
+        beta0 = self.beta0.to(device=device, dtype=dtype)
+
+        denom = delta * (1 - beta0)
+        denom = torch.where(denom == 0, torch.ones_like(denom), denom)
+
+        contrib = (x - beta0) / denom
+        k = contrib.size(1)
+        vals = 2.0 * torch.sum(contrib, dim=1) / k
+
+        return self.postprocess(vals.unsqueeze(1))
 
     def postprocess(self, x):
         return x

@@ -118,7 +118,7 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     """
     url = "https://pyaging.s3.amazonaws.com/clocks/metadata0.1.0/all_clock_metadata.pt"
     download(url, dir, logger, indent_level=indent_level)
-    all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt")
+    all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt", weights_only=False)
     return all_clock_metadata
 
 

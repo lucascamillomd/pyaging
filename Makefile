@@ -1,16 +1,16 @@
 .PHONY: lint format update build install update-clocks-notebooks update-all-clocks upload-to-s3 process-tutorials test test-tutorials docs version commit tag release release-slim
 
-VERSION ?= v0.1.27
+VERSION ?= v0.1.28
 COMMIT_MSG ?= "Bump to $(VERSION)"
 RELEASE_MSG ?= "Release $(VERSION)"
 
 lint:
 	@echo "Running ruff for linting..."
-	ruff check pyaging --fix
+	uv run ruff check pyaging --fix
 
 format:
 	@echo "Running ruff for code formatting..."
-	ruff format pyaging
+	uv run ruff format pyaging
 
 update:
 	@echo "Running uv sync..."
@@ -49,13 +49,13 @@ update-clocks-notebooks:
 
 update-all-clocks:
 	@echo "Running script to update all clocks..."
-	@cd clocks && python3 update_all_clocks.py $(VERSION) || { echo "Updating clocks failed"; exit 1; } && cd ..
+	@cd clocks && uv run python update_all_clocks.py $(VERSION) || { echo "Updating clocks failed"; exit 1; } && cd ..
 
 upload-to-s3:
-	@echo "Uploading clock metadata to S3..."
-	aws s3 cp clocks/metadata/all_clock_metadata.pt s3://pyaging/clocks/metadata0.1.0/all_clock_metadata.pt || { echo "Uploading metadata failed"; exit 1; }
-	@echo "Syncing clock weights to S3..."
-	aws s3 sync clocks/weights/ s3://pyaging/clocks/weights0.1.0/ || { echo "Syncing weights failed"; exit 1; }
+	@echo "Syncing clock metadata to S3 (skipping unchanged files)..."
+	aws s3 sync --size-only --exact-timestamps clocks/metadata/ s3://pyaging/clocks/metadata0.1.0/ --exclude "*" --include "all_clock_metadata.pt" || { echo "Uploading metadata failed"; exit 1; }
+	@echo "Syncing clock weights to S3 (skipping unchanged files)..."
+	aws s3 sync --size-only --exact-timestamps clocks/weights/ s3://pyaging/clocks/weights0.1.0/ || { echo "Syncing weights failed"; exit 1; }
 	@echo "Clock data uploaded to S3 successfully!"
 
 process-tutorials:
@@ -69,7 +69,7 @@ process-tutorials:
 test:
 	@echo "Running gold standard tests..."
 	uv sync --quiet || { echo "Failed to sync dependencies"; exit 1; }
-	tox || { echo "Gold standard tests failed"; exit 1; }
+	uv run tox || { echo "Gold standard tests failed"; exit 1; }
 
 test-tutorials:
 	@echo "Running tutorial tests..."
