@@ -1060,6 +1060,66 @@ class Pasta(pyagingModel):
         return x * scale + offset_factor * scale
 
 
+class PastaMouse(Pasta):
+    def __init__(self):
+        super().__init__()
+        self.base_model_features = None
+        self.mouse_feature_indices = None
+        self.full_reference_values = None
+
+    def set_mouse_features(self, full_features, full_reference_values=None, mouse_prefix="ENSMUSG"):
+        """
+        Configure the mouse-only interface while keeping the full feature space for the base model.
+        """
+        self.base_model_features = list(full_features)
+        self.full_reference_values = full_reference_values
+
+        self.mouse_feature_indices = [
+            i
+            for i, feature in enumerate(self.base_model_features)
+            if isinstance(feature, str) and feature.startswith(mouse_prefix)
+        ]
+
+        if len(self.mouse_feature_indices) == 0:
+            raise ValueError("No mouse features were identified when configuring PastaMouse.")
+
+        self.features = [self.base_model_features[i] for i in self.mouse_feature_indices]
+
+        if self.full_reference_values is None:
+            self.reference_values = None
+        elif isinstance(self.full_reference_values, torch.Tensor):
+            self.reference_values = self.full_reference_values[self.mouse_feature_indices].detach().clone()
+        else:
+            self.reference_values = [self.full_reference_values[i] for i in self.mouse_feature_indices]
+
+    def _expand_with_reference(self, x):
+        """
+        Reconstruct the full 8113-length input expected by the base model by
+        inserting reference values for human-only genes.
+        """
+        if self.base_model_features is None or self.mouse_feature_indices is None:
+            raise ValueError("PastaMouse must be configured with set_mouse_features before inference.")
+
+        if self.full_reference_values is None:
+            ref_full = torch.zeros(len(self.base_model_features), device=x.device, dtype=x.dtype)
+        elif isinstance(self.full_reference_values, torch.Tensor):
+            ref_full = self.full_reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            ref_full = torch.tensor(self.full_reference_values, device=x.device, dtype=x.dtype)
+
+        full_x = ref_full.unsqueeze(0).repeat(x.size(0), 1)
+        full_x[:, self.mouse_feature_indices] = x
+        return full_x
+
+    def forward(self, x):
+        # Build the full feature vector (mouse data + human reference values) before preprocessing.
+        x_full = self._expand_with_reference(x)
+        x_full = self.preprocess(x_full)
+        x_full = self.base_model(x_full)
+        x_full = self.postprocess(x_full)
+        return x_full
+
+
 class Reg(pyagingModel):
     def __init__(self):
         super().__init__()

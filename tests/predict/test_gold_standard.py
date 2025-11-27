@@ -142,6 +142,7 @@ gold_standard_dict = {
     "twelvecelldeconvolutebloodepicneu": 0.0,
     "twelvecelldeconvolutebloodepicnk": 0.0,
     "twelvecelldeconvolutebloodepictreg": 0.40118436082120823,
+    "pastamouse": -7.475920699153628,
 }
 
 

@@ -85,6 +85,7 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/ocampoatac1
    clock_notebooks/ocampoatac2
    clock_notebooks/pasta
+   clock_notebooks/pasta_mouse
    clock_notebooks/pcdnamtl
    clock_notebooks/pcgrimage
    clock_notebooks/pchannum
