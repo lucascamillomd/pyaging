@@ -95,7 +95,7 @@ gold_standard_dict = {
     "dnamfitagegripf": 28.87088040680318,
     "dnamfitagegripm": 54.219201014679555,
     "dnamfitagevo2max": 24.758115337489876,
-    "cpgptgrimage3": -117.12911049408049,
+    "cpgptgrimage3": -61.534670670311925,
     "cpgptpcgrimage3": -121.7127507600637,
     "dnamic": 0.953789180822855,
     "ensembleagestatic": 4.7854141849046865,
@@ -143,6 +143,7 @@ gold_standard_dict = {
     "twelvecelldeconvolutebloodepicnk": 0.0,
     "twelvecelldeconvolutebloodepictreg": 0.40118436082120823,
     "pastamouse": -7.475920699153628,
+    "hypoclock": 0.1214244021444516,
 }
 
 

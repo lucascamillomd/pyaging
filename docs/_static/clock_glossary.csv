@@ -18,6 +18,7 @@ leecontrol,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.1020
 leerefinedrobust,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
 leerobust,methylation,Homo sapiens,2019,✅,https://doi.org/10.18632/aging.102049,,,,
 pasta,transcriptomics,Homo sapiens,2025,✅,https://doi.org/10.1101/2025.06.04.657785,Rank-normalized transcriptomic clock.,median_fill_and_rank_normalization,scale_and_shift,True
+pastamouse,transcriptomics,Mus musculus,2025,✅,https://doi.org/10.1101/2025.06.04.657785,Rank-normalized Pasta clock using mouse one-to-one ortholog genes when available.,median_fill_and_rank_normalization,scale_and_shift,True
 pipekelasticnet,methylation,Homo sapiens,2022,✅,https://doi.org/10.1007/s10910-022-01381-4,,,anti_log_linear,
 pipekfilteredh,methylation,Homo sapiens,2022,✅,https://doi.org/10.1007/s10910-022-01381-4,,,anti_log_linear,
 pipekretrainedh,methylation,Homo sapiens,2022,✅,https://doi.org/10.1007/s10910-022-01381-4,,,anti_log_linear,
@@ -66,6 +67,7 @@ grimage2timp1,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.2
 hannum,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1016/j.molcel.2012.10.016,,,,
 horvath2013,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1186/gb-2013-14-10-r115,,,anti_log_linear,True
 hrsinchphenoage,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,
+hypoclock,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1038/s41588-018-0073-4,HypoClock score is 1 - mean beta across 678 solo-WCGW CpGs; reference values are -1 to ignore missing.,mean,one_minus,True
 intrinclock,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s42003-024-06609-4,,,anti_log_linear,
 lin,methylation,Homo sapiens,2016,⌛,https://doi.org/10.18632/aging.100908,,,,
 mammalian1,methylation,multi,2023,⌛,https://doi.org/10.1038/s43587-023-00462-6,,,anti_logp2,
@@ -87,7 +89,6 @@ mccartneytotalcholesterol,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1
 meer,methylation,Mus musculus,2018,⌛,https://doi.org/10.7554/eLife.40675,,,,
 ocampoatac1,atac,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00986-0,,tpm_norm_log1p,,
 ocampoatac2,atac,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00986-0,,tpm_norm_log1p,,
-pastamouse,transcriptomics,Mus musculus,2025,⌛,https://doi.org/10.1101/2025.06.04.657785,Rank-normalized Pasta clock using mouse one-to-one ortholog genes when available.,median_fill_and_rank_normalization,scale_and_shift,True
 pcdnamtl,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
 pcgrimage,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
 pchannum,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True

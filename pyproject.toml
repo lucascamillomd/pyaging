@@ -1,6 +1,6 @@
 [project]
 name = "pyaging"
-version = "0.1.29"
+version = "0.1.30"
 description = "A Python-based compendium of GPU-optimized aging clocks."
 authors = [
     {name = "Lucas Paulo de Lima Camillo", email = "lucas_camillo@alumni.brown.edu"}

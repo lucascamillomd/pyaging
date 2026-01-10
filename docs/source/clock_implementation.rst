@@ -58,6 +58,7 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/han
    clock_notebooks/hannum
    clock_notebooks/horvath2013
+   clock_notebooks/hypoclock
    clock_notebooks/hrsinchphenoage
    clock_notebooks/intrinclock
    clock_notebooks/knight

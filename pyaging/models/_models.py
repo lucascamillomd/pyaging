@@ -372,6 +372,28 @@ class Horvath2013(pyagingModel):
         return age_tensor
 
 
+class HypoClock(pyagingModel):
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        """
+        Compute mean beta per sample, excluding missing (-1) values.
+        """
+        means = []
+        for row in x:
+            filtered_row = row[row != -1]
+            if len(filtered_row) > 0:
+                mean = torch.mean(filtered_row)
+            else:
+                mean = torch.tensor(float("nan"), device=x.device, dtype=x.dtype)
+            means.append(mean)
+        return torch.vstack(means)
+
+    def postprocess(self, x):
+        return 1 - x
+
+
 class HRSInCHPhenoAge(pyagingModel):
     def __init__(self):
         super().__init__()
