@@ -27,8 +27,8 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/rsinghlab/pyaging"
-repository = "https://github.com/rsinghlab/pyaging"
+homepage = "https://github.com/lucascamillomd/pyaging"
+repository = "https://github.com/lucascamillomd/pyaging"
 
 [project.scripts]
 pyaging = "pyaging:main"

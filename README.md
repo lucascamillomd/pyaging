@@ -4,15 +4,15 @@
 
 ##
 
-[![test](https://github.com/rsinghlab/pyaging/actions/workflows/test.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/test.yml)
-[![build](https://github.com/rsinghlab/pyaging/actions/workflows/build.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/build.yml)
-[![publish](https://github.com/rsinghlab/pyaging/actions/workflows/publish.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/publish.yml)
-[![release](https://github.com/rsinghlab/pyaging/actions/workflows/release.yml/badge.svg)](https://github.com/rsinghlab/pyaging/actions/workflows/release.yml)
+[![test](https://github.com/lucascamillomd/pyaging/actions/workflows/test.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/test.yml)
+[![build](https://github.com/lucascamillomd/pyaging/actions/workflows/build.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/build.yml)
+[![publish](https://github.com/lucascamillomd/pyaging/actions/workflows/publish.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/publish.yml)
+[![release](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yml)
 [![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
 [![DOI](https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtae200-blue.svg)](https://doi.org/10.1093/bioinformatics/btae200)
 [![upload](https://img.shields.io/pypi/v/pyaging?logo=PyPI)](https://pypi.org/project/pyaging/) 
 [![download](https://static.pepy.tech/badge/pyaging)](https://pepy.tech/project/pyaging)
-[![star](https://img.shields.io/github/stars/rsinghlab/pyaging?logo=GitHub&color=red)](https://github.com/rsinghlab/pyaging/stargazers)
+[![star](https://img.shields.io/github/stars/lucascamillomd/pyaging?logo=GitHub&color=red)](https://github.com/lucascamillomd/pyaging/stargazers)
 
 ## 🐍 **pyaging**: a Python-based compendium of GPU-optimized aging clocks
 
@@ -27,7 +27,7 @@ With a growing number of aging clocks and biomarkers of aging, comparing and ana
 If you have recently developed an aging clock and would like it to be integrated into `pyaging`, please [email me](lucas_camillo@alumni.brown.edu). I aim to incorporate it within one to two weeks! I'm also happy to adapt to any licensing terms for commercial entities.
 
 ## 💬 Community Discussion
-For coding-related queries, feedback, and discussions, please visit our [GitHub Issues](https://github.com/rsinghlab/pyaging/issues) page.
+For coding-related queries, feedback, and discussions, please visit our [GitHub Issues](https://github.com/lucascamillomd/pyaging/issues) page.
 
 ## 📖 Citation
 

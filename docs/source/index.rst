@@ -14,8 +14,8 @@
    :target: https://pypi.python.org/pypi/pyaging
    :alt: PyPI version
 
-.. image:: https://img.shields.io/github/license/rsinghlab/pyaging.svg
-   :target: https://github.com/rsinghlab/pyaging/blob/main/LICENSE
+.. image:: https://img.shields.io/github/license/lucascamillomd/pyaging.svg
+   :target: https://github.com/lucascamillomd/pyaging/blob/main/LICENSE
    :alt: License
 
 .. image:: https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtae200-blue.svg
@@ -41,7 +41,7 @@ Welcome to the Documentation for pyaging
 
 Explore Our GitHub Repository
 -----------------------------
-Discover more about `pyaging` and contribute to our growing community on `GitHub <https://github.com/rsinghlab/pyaging>`_.
+Discover more about `pyaging` and contribute to our growing community on `GitHub <https://github.com/lucascamillomd/pyaging>`_.
 
 Contents
 --------

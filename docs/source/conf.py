@@ -64,7 +64,7 @@ source_suffix = [".rst", ".md"]
 html_theme = "sphinx_book_theme"
 html_theme_options = dict(
     use_repository_button=True,
-    repository_url="https://github.com/rsinghlab/pyaging",
+    repository_url="https://github.com/lucascamillomd/pyaging",
     repository_branch="main",
     navigation_with_keys=False,  # https://github.com/pydata/pydata-sphinx-theme/issues/1492
 )
