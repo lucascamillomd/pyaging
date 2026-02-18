@@ -13,14 +13,14 @@ Alternatively, it can be installed by cloning our GitHub repository and using pi
 
 .. code-block:: bash
 
-    git clone https://github.com/rsinghlab/pyaging.git
+    git clone https://github.com/lucascamillomd/pyaging.git
     pip install pyaging/ --user
 
 Or by simply going to the cloned repository if you have uv installed:
 
 .. code-block:: bash
 
-    git clone https://github.com/rsinghlab/pyaging.git
+    git clone https://github.com/lucascamillomd/pyaging.git
     cd pyaging/
     uv sync
 
@@ -28,7 +28,7 @@ Lastly, it can be installed from source:
 
 .. code-block:: bash
 
-    pip install git+https://github.com/rsinghlab/pyaging
+    pip install git+https://github.com/lucascamillomd/pyaging
 
 .. note::
     
@@ -47,7 +47,7 @@ When installing from a cloned repository with uv and optional dependencies:
 
 .. code-block:: bash
 
-    git clone https://github.com/rsinghlab/pyaging.git
+    git clone https://github.com/lucascamillomd/pyaging.git
     cd pyaging/
     uv sync --extra histone
 
@@ -55,4 +55,4 @@ Or from source:
 
 .. code-block:: bash
 
-    pip install git+https://github.com/rsinghlab/pyaging#egg=pyaging[histone]
+    pip install git+https://github.com/lucascamillomd/pyaging#egg=pyaging[histone]
