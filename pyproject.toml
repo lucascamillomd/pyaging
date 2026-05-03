@@ -24,6 +24,7 @@ dependencies = [
     "openai>=2.8.1",
     "pyarrow>=21.0.0",
     "plotly>=6.5.0",
+    "pre-commit>=4.3.0",
 ]
 
 [project.urls]
