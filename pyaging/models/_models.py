@@ -2807,11 +2807,6 @@ class SystemsAge(SystemsAgeBase):
         self.prediction_index = -1
 
 
-# ===============================================================================
-#            Clocks added in v0.2.0 (methylCIPHER / biolearn / OmniAge)
-# ===============================================================================
-
-
 class LinearReferenceClock(pyagingModel):
     """
     Base class for linear methylation clocks that impute missing features
@@ -2834,7 +2829,6 @@ class LinearReferenceClock(pyagingModel):
         return x
 
 
-# --- Standard linear predictors (sum of feature * coefficient + intercept) ---
 class VidalBralo(LinearReferenceClock):
     pass
 
@@ -2935,7 +2929,6 @@ class EnsembleAgeHumanMouse(LinearReferenceClock):
     pass
 
 
-# --- Linear predictors with an output transform ---
 class CorticalClock(LinearReferenceClock):
     def postprocess(self, x):
         """Horvath anti-logarithmic linear transformation (adult age = 20)."""
@@ -2993,7 +2986,6 @@ class ADBahadoSingh(LinearReferenceClock):
         return torch.sigmoid(x)
 
 
-# --- Predictors reusing existing mitotic / percentile infrastructure ---
 class StemTOCvitro(stemTOC):
     pass
 
