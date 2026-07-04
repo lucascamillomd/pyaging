@@ -144,7 +144,6 @@ gold_standard_dict = {
     "twelvecelldeconvolutebloodepictreg": 0.40118436082120823,
     "pastamouse": -7.475920699153628,
     "hypoclock": 0.1214244021444516,
-    # Clocks added in v0.2.0 (methylCIPHER / biolearn / OmniAge)
     "vidalbralo": 59.85404155007132,
     "mccartneyalcohol": 43.91987104784621,
     "weidner": 3.1136104024943734,
