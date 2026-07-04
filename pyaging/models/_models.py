@@ -2805,3 +2805,206 @@ class SystemsAge(SystemsAgeBase):
     def __init__(self):
         super().__init__()
         self.prediction_index = -1
+
+
+# ===============================================================================
+#            Clocks added in v0.2.0 (methylCIPHER / biolearn / OmniAge)
+# ===============================================================================
+
+
+class LinearReferenceClock(pyagingModel):
+    """
+    Base class for linear methylation clocks that impute missing features
+    from reference_values (when provided) and apply no output transform.
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, x):
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
+
+    def postprocess(self, x):
+        return x
+
+
+# --- Standard linear predictors (sum of feature * coefficient + intercept) ---
+class VidalBralo(LinearReferenceClock):
+    pass
+
+
+class McCartneyAlcohol(LinearReferenceClock):
+    pass
+
+
+class Weidner(LinearReferenceClock):
+    pass
+
+
+class Garagnani(LinearReferenceClock):
+    pass
+
+
+class Bocklandt(LinearReferenceClock):
+    pass
+
+
+class DNAmFILi(LinearReferenceClock):
+    pass
+
+
+class DNAmStress(LinearReferenceClock):
+    pass
+
+
+class CellPopAge(LinearReferenceClock):
+    pass
+
+
+class RepliTaliNorm(LinearReferenceClock):
+    pass
+
+
+class SenChronoAge(LinearReferenceClock):
+    pass
+
+
+class SenCultureAge(LinearReferenceClock):
+    pass
+
+
+class SenMortalityAge(LinearReferenceClock):
+    pass
+
+
+class DunedinPoAm38(LinearReferenceClock):
+    pass
+
+
+class ReedBMI(LinearReferenceClock):
+    pass
+
+
+class DownSyndrome(LinearReferenceClock):
+    pass
+
+
+class ProstateCancerKirby(LinearReferenceClock):
+    pass
+
+
+class HepatoXu(LinearReferenceClock):
+    pass
+
+
+class McCartneyTotalHDLRatio(LinearReferenceClock):
+    pass
+
+
+class McCartneyWHR(LinearReferenceClock):
+    pass
+
+
+class CompIL6(LinearReferenceClock):
+    pass
+
+
+class NeuSin(LinearReferenceClock):
+    pass
+
+
+class GliaSin(LinearReferenceClock):
+    pass
+
+
+class Hep(LinearReferenceClock):
+    pass
+
+
+class CTSLiver(LinearReferenceClock):
+    pass
+
+
+class EnsembleAgeHumanMouse(LinearReferenceClock):
+    pass
+
+
+# --- Linear predictors with an output transform ---
+class CorticalClock(LinearReferenceClock):
+    def postprocess(self, x):
+        """Horvath anti-logarithmic linear transformation (adult age = 20)."""
+        adult_age = 20
+        mask_negative = x < 0
+        mask_non_negative = ~mask_negative
+        age = torch.empty_like(x)
+        age[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
+        age[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
+        return age
+
+
+class Bohlin(LinearReferenceClock):
+    def postprocess(self, x):
+        """Model returns gestational age in days; convert to weeks."""
+        return x / 7.0
+
+
+class Mayne(LinearReferenceClock):
+    def postprocess(self, x):
+        """Gestational age in weeks (as published)."""
+        return x
+
+
+class EPICGA(LinearReferenceClock):
+    def postprocess(self, x):
+        """Model returns gestational age in days; convert to weeks."""
+        return x / 7.0
+
+
+class Wu(LinearReferenceClock):
+    def postprocess(self, x):
+        """Horvath anti-log (adult age = 48) giving months, then months to years."""
+        adult_age = 48
+        mask_negative = x < 0
+        mask_non_negative = ~mask_negative
+        age = torch.empty_like(x)
+        age[mask_negative] = (1 + adult_age) * torch.exp(x[mask_negative]) - 1
+        age[mask_non_negative] = (1 + adult_age) * x[mask_non_negative] + adult_age
+        return age / 12.0
+
+
+class CVDWesterman(LinearReferenceClock):
+    def postprocess(self, x):
+        """Logistic transform to a CVD risk probability."""
+        return torch.sigmoid(x)
+
+
+class ADBahadoSingh(LinearReferenceClock):
+    def postprocess(self, x):
+        """Logistic transform to an Alzheimer's disease risk probability.
+
+        The published logit constant (-0.072) is carried in the linear intercept.
+        """
+        return torch.sigmoid(x)
+
+
+# --- Predictors reusing existing mitotic / percentile infrastructure ---
+class StemTOCvitro(stemTOC):
+    pass
+
+
+class EpiCMITHyper(epiTOC1):
+    pass
+
+
+class EpiCMITHypo(epiTOC1):
+    pass
+
+
+class EpiTOC3(epiTOC2):
+    pass

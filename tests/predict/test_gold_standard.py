@@ -144,6 +144,44 @@ gold_standard_dict = {
     "twelvecelldeconvolutebloodepictreg": 0.40118436082120823,
     "pastamouse": -7.475920699153628,
     "hypoclock": 0.1214244021444516,
+    # Clocks added in v0.2.0 (methylCIPHER / biolearn / OmniAge)
+    "vidalbralo": 59.85404155007132,
+    "mccartneyalcohol": 43.91987104784621,
+    "weidner": 3.1136104024943734,
+    "mccartneytotalhdlratio": 56.434422495764025,
+    "mccartneywhr": 2.4627336180946062,
+    "compil6": 0.7193142129390948,
+    "neusin": 199.8046790805833,
+    "gliasin": 184.82862667559112,
+    "hep": 149.92087248470966,
+    "ctsliver": 107.1110186916904,
+    "ensembleagehumanmouse": 1.6255471597614426,
+    "epicga": 38.54624678112676,
+    "stemtocvitro": 2.08938964493979,
+    "epicmithyper": 0.8013780174906733,
+    "epicmithypo": 0.12232840182624483,
+    "epitoc3": 6036.50729078819,
+    "dnamfili": -0.3502088431427517,
+    "dnamstress": -25.04337071176504,
+    "cellpopage": 3.5238776914709335,
+    "senchronoage": 503.58636774801926,
+    "sencultureage": 476.04490235536286,
+    "senmortalityage": 4.497838344644176,
+    "garagnani": 0.9967141530112327,
+    "bocklandt": 0.9967141530112327,
+    "dunedinpoam38": -0.6489813887331162,
+    "mayne": -44.98738606903137,
+    "bohlin": 30.68511271070039,
+    "replitalinorm": 21.267746083492682,
+    "corticalclock": 234.08860785262925,
+    "depressionbarbu": 14.33949010804578,
+    "reedbmi": 0.1820651169572712,
+    "downsyndrome": 7.113409134826435,
+    "prostatecancerkirby": -1.7091649019734394,
+    "hepatoxu": 24.711353159897975,
+    "wu": -0.0831811425679023,
+    "cvdwesterman": 0.5282845773841061,
+    "adbahadosingh": 0.16751476786659578,
 }
 
 
@@ -161,8 +199,8 @@ def test_all_clocks():
             clock_name, device, dir, logger, indent_level=indent_level
         )
         partial_clock_features = clock.features[
-            0 : len(clock.features) * 2 // 3
-        ]  # 1/3 dropout to simulate missing features
+            0 : max(1, len(clock.features) * 2 // 3)
+        ]  # 1/3 dropout to simulate missing features (keep >=1 for tiny clocks)
         np.random.seed(42)
         random_df = pd.DataFrame(
             np.abs(
