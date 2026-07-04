@@ -103,8 +103,8 @@ the notebook + weights are missing.
 | 3 | vidalbralo | linear | identity | 8 | Vidal-Bralo 2016, 10.3389/fgene.2016.00126 |
 | 4 | garagnani | linear (1 CpG ELOVL2) | identity | 1 | Garagnani 2012, 10.1111/acel.12005 |
 | 5 | bocklandt | linear (1 CpG) | identity | 1 | Bocklandt 2011, 10.1371/journal.pone.0014821 |
-| 6 | dnamfili | linear (frailty) | identity | 20 | Li 2022, 10.1111/acel.13704 |
-| 7 | dnamstress | linear | identity | 211 | Jung 2023, 10.1016/j.biopsych.2022.08.012 |
+| 6 | dnamfili | linear (frailty) | identity | 20 | Li 2022, 10.1038/s41467-022-32893-x |
+| 7 | dnamstress | linear | identity | 211 | Jung 2023, 10.1016/j.biopsych.2022.06.036 |
 | 8 | cellpopage | linear | identity | 42 | Lujan 2024, PMID 38956711 |
 | 9 | replitalinorm | linear | identity | 218 | Endicott 2022, PMID 36347867 |
 | 10 | senchronoage | linear | identity | 187 | Kasamoto 2026, PMID 41746138 |
