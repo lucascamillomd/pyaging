@@ -7,8 +7,11 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    :maxdepth: 1
 
    clock_notebooks/abec
+   clock_notebooks/adbahadosingh
    clock_notebooks/altumage
    clock_notebooks/bitage
+   clock_notebooks/bocklandt
+   clock_notebooks/bohlin
    clock_notebooks/cabec
    clock_notebooks/camilloh3k27ac
    clock_notebooks/camilloh3k27me3
@@ -18,14 +21,21 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/camilloh3k9ac
    clock_notebooks/camilloh3k9me3
    clock_notebooks/camillopanhistone
+   clock_notebooks/cellpopage
+   clock_notebooks/compil6
+   clock_notebooks/corticalclock
    clock_notebooks/cpgptgrimage3
    clock_notebooks/cpgptpcgrimage3
+   clock_notebooks/ctsliver
+   clock_notebooks/cvdwesterman
    clock_notebooks/deconvolutebloodepicbcell
    clock_notebooks/deconvolutebloodepiccd4tcell
    clock_notebooks/deconvolutebloodepiccd8tcell
    clock_notebooks/deconvolutebloodepicmonocyte
    clock_notebooks/deconvolutebloodepicneutrophil
    clock_notebooks/deconvolutebloodepicnkcell
+   clock_notebooks/depressionbarbu
+   clock_notebooks/dnamfili
    clock_notebooks/dnamfitage
    clock_notebooks/dnamfitagegaitf
    clock_notebooks/dnamfitagegaitm
@@ -34,15 +44,25 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/dnamfitagevo2max
    clock_notebooks/dnamphenoage
    clock_notebooks/dnamic
+   clock_notebooks/dnamstress
    clock_notebooks/dnamtl
+   clock_notebooks/downsyndrome
    clock_notebooks/dunedinpace
+   clock_notebooks/dunedinpoam38
    clock_notebooks/eabec
    clock_notebooks/encen100
    clock_notebooks/encen40
+   clock_notebooks/ensembleagehumanmouse
+   clock_notebooks/epicga
+   clock_notebooks/epicmithyper
+   clock_notebooks/epicmithypo
    clock_notebooks/epitoc1
    clock_notebooks/epitoc2
    clock_notebooks/ensembleagestatic
    clock_notebooks/ensembleagestatictop
+   clock_notebooks/epitoc3
+   clock_notebooks/garagnani
+   clock_notebooks/gliasin
    clock_notebooks/grimage
    clock_notebooks/grimage2
    clock_notebooks/grimage2adm
@@ -57,6 +77,8 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/grimage2timp1
    clock_notebooks/han
    clock_notebooks/hannum
+   clock_notebooks/hep
+   clock_notebooks/hepatoxu
    clock_notebooks/horvath2013
    clock_notebooks/hypoclock
    clock_notebooks/hrsinchphenoage
@@ -75,6 +97,8 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/mammalianlifespan
    clock_notebooks/mammalianskin2
    clock_notebooks/mammalianskin3
+   clock_notebooks/mayne
+   clock_notebooks/mccartneyalcohol
    clock_notebooks/mccartneybmi
    clock_notebooks/mccartneybodyfat
    clock_notebooks/mccartneyeducation
@@ -82,11 +106,14 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/mccartneyldlcholesterol
    clock_notebooks/mccartneysmoking
    clock_notebooks/mccartneytotalcholesterol
+   clock_notebooks/mccartneytotalhdlratio
+   clock_notebooks/mccartneywhr
    clock_notebooks/meer
+   clock_notebooks/neusin
    clock_notebooks/ocampoatac1
    clock_notebooks/ocampoatac2
    clock_notebooks/pasta
-   clock_notebooks/pasta_mouse
+   clock_notebooks/pastamouse
    clock_notebooks/pcdnamtl
    clock_notebooks/pcgrimage
    clock_notebooks/pchannum
@@ -99,12 +126,19 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/pipekelasticnet
    clock_notebooks/pipekfilteredh
    clock_notebooks/pipekretrainedh
+   clock_notebooks/prostatecancerkirby
+   clock_notebooks/reedbmi
    clock_notebooks/reg
    clock_notebooks/replitali
+   clock_notebooks/replitalinorm
    clock_notebooks/retroelementagev1
    clock_notebooks/retroelementagev2
+   clock_notebooks/senchronoage
+   clock_notebooks/sencultureage
+   clock_notebooks/senmortalityage
    clock_notebooks/skinandblood
    clock_notebooks/stemtoc
+   clock_notebooks/stemtocvitro
    clock_notebooks/stoch
    clock_notebooks/stocp
    clock_notebooks/stocz
@@ -134,6 +168,9 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/twelvecelldeconvolutebloodepicneu
    clock_notebooks/twelvecelldeconvolutebloodepicnk
    clock_notebooks/twelvecelldeconvolutebloodepictreg
+   clock_notebooks/vidalbralo
+   clock_notebooks/weidner
+   clock_notebooks/wu
    clock_notebooks/xchrom
    clock_notebooks/ychrom
    clock_notebooks/yingadaptage
@@ -143,3 +180,4 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/zhangen
    clock_notebooks/zhangmortality
    clock_notebooks/template
+

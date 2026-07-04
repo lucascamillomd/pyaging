@@ -29,13 +29,23 @@ stocp,methylation,Homo sapiens,2024,✅,https://doi.org/10.1038/s43587-024-00600
 stocz,methylation,Homo sapiens,2024,✅,https://doi.org/10.1038/s43587-024-00600-8,,,,
 thompson,methylation,Mus musculus,2018,✅,https://doi.org/10.18632/aging.101590,,,,
 abec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
+adbahadosingh,methylation,Homo sapiens,2021,⌛,https://doi.org/10.1371/journal.pone.0248375,,,sigmoid,
+bocklandt,methylation,Homo sapiens,2011,⌛,https://doi.org/10.1371/journal.pone.0014821,,,,
+bohlin,methylation,Homo sapiens,2016,⌛,https://doi.org/10.1186/s13059-016-1063-4,,,days_to_weeks,
 cabec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
+cellpopage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1186/s13073-024-01349-w,,,,
+compil6,methylation,Homo sapiens,2021,⌛,https://doi.org/10.1093/gerona/glab046,,,,
+corticalclock,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1093/brain/awaa334,,,anti_log_linear,True
+ctsliver,methylation,Homo sapiens,2024,⌛,https://doi.org/10.18632/aging.206184,,,,
+cvdwesterman,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1161/JAHA.119.015299,,,sigmoid,
 deconvolutebloodepicbcell,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-025-00987-y,Estimated proportion of b_cell from EPIC reference.,fill_with_reference_means,,True
 deconvolutebloodepiccd4tcell,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-025-00987-y,Estimated proportion of cd4_t_cell from EPIC reference.,fill_with_reference_means,,True
 deconvolutebloodepiccd8tcell,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-025-00987-y,Estimated proportion of cd8_t_cell from EPIC reference.,fill_with_reference_means,,True
 deconvolutebloodepicmonocyte,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-025-00987-y,Estimated proportion of monocyte from EPIC reference.,fill_with_reference_means,,True
 deconvolutebloodepicneutrophil,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-025-00987-y,Estimated proportion of neutrophil from EPIC reference.,fill_with_reference_means,,True
 deconvolutebloodepicnkcell,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-025-00987-y,Estimated proportion of nk_cell from EPIC reference.,fill_with_reference_means,,True
+depressionbarbu,methylation,Homo sapiens,2021,⌛,https://doi.org/10.1038/s41380-020-0808-3,,,,
+dnamfili,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s41467-022-32893-x,,,,
 dnamfitage,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
 dnamfitagegaitf,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
 dnamfitagegaitm,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
@@ -44,14 +54,24 @@ dnamfitagegripm,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging
 dnamfitagevo2max,methylation,Homo sapiens,2023,⌛,https://doi.org/10.18632/aging.204538,Reference values is mean between male and female training medians,,,True
 dnamic,methylation,Homo sapiens,2025,⌛,https://doi.org/10.1038/s43587-025-00883-5,,,,
 dnamphenoage,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,,
+dnamstress,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1016/j.biopsych.2022.06.036,,,,
 dnamtl,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.102173,,,,
+downsyndrome,methylation,Homo sapiens,2021,⌛,https://doi.org/10.1038/s41467-021-21064-z,,,,
+dunedinpoam38,methylation,Homo sapiens,2020,⌛,https://doi.org/10.7554/eLife.54870,,,,
 eabec,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s12864-020-07168-8,,,,
 encen100,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00731-7,,,,
 encen40,methylation,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00731-7,,,,
+ensembleagehumanmouse,methylation,Homo sapiens,2025,⌛,https://doi.org/10.1007/s11357-025-01808-1,,,,
 ensembleagestatic,methylation,Mus musculus,2025,⌛,https://doi.org/10.1007/s11357-025-01808-1,,,,
 ensembleagestatictop,methylation,Mus musculus,2025,⌛,https://doi.org/10.1007/s11357-025-01808-1,,,,
+epicga,methylation,Homo sapiens,2021,⌛,https://doi.org/10.1186/s13148-021-01055-z,,,days_to_weeks,
+epicmithyper,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1038/s43018-020-00131-2,,mean,,True
+epicmithypo,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1038/s43018-020-00131-2,,mean,,True
 epitoc1,methylation,Homo sapiens,2016,⌛,https://doi.org/10.1186/s13059-016-1064-3,The reference values are simply -1 for the algorithm to ignore them.,mean,,True
 epitoc2,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s13073-020-00752-3,Stem cell division rate estimate using EpiTOC2.,nan_to_zero,,True
+epitoc3,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s13073-020-00752-3,,nan_to_zero,,True
+garagnani,methylation,Homo sapiens,2012,⌛,https://doi.org/10.1111/acel.12005,,,,
+gliasin,methylation,Homo sapiens,2024,⌛,https://doi.org/10.18632/aging.206184,,,,
 grimage,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.101684,,,cox_to_years,True
 grimage2,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
 grimage2adm,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
@@ -65,6 +85,8 @@ grimage2packyrs,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging
 grimage2pai1,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,,True
 grimage2timp1,methylation,Homo sapiens,2022,⌛,https://doi.org/10.18632/aging.204434,,,cox_to_years,True
 hannum,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1016/j.molcel.2012.10.016,,,,
+hep,methylation,Homo sapiens,2024,⌛,https://doi.org/10.18632/aging.206184,,,,
+hepatoxu,methylation,Homo sapiens,2017,⌛,https://doi.org/10.1038/nmat4997,,,,
 horvath2013,methylation,Homo sapiens,2013,⌛,https://doi.org/10.1186/gb-2013-14-10-r115,,,anti_log_linear,True
 hrsinchphenoage,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,
 hypoclock,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1038/s41588-018-0073-4,HypoClock score is 1 - mean beta across 678 solo-WCGW CpGs; reference values are -1 to ignore missing.,mean,one_minus,True
@@ -79,6 +101,8 @@ mammalianfemale,methylation,multi,2023,⌛,https://doi.org/10.1101/2023.11.02.56
 mammalianlifespan,methylation,multi,2023,⌛,https://doi.org/10.1101/2023.11.02.565286,,,anti_log,True
 mammalianskin2,methylation,multi,2023,⌛,https://doi.org/10.1038/s43587-023-00462-6,,,mammalian2,True
 mammalianskin3,methylation,multi,2023,⌛,https://doi.org/10.1038/s43587-023-00462-6,,,mammalian3,True
+mayne,methylation,Homo sapiens,2017,⌛,https://doi.org/10.2217/epi-2016-0103,,,,
+mccartneyalcohol,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1186/s13059-018-1514-1,,,,
 mccartneybmi,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1186/s13059-018-1514-1,DNAm score for BMI; logistic transform.,,sigmoid,
 mccartneybodyfat,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1186/s13059-018-1514-1,DNAm score for body fat percentage; logistic transform.,,sigmoid,
 mccartneyeducation,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1186/s13059-018-1514-1,DNAm score for educational attainment; logistic transform.,,sigmoid,
@@ -86,7 +110,10 @@ mccartneyhdlcholesterol,methylation,Homo sapiens,2018,⌛,https://doi.org/10.118
 mccartneyldlcholesterol,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1186/s13059-018-1514-1,DNAm score for LDL with remnant cholesterol; logistic transform.,,sigmoid,
 mccartneysmoking,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1186/s13059-018-1514-1,Linear CpG score; higher values indicate smoking exposure.,,,
 mccartneytotalcholesterol,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1186/s13059-018-1514-1,DNAm score for total cholesterol; logistic transform.,,sigmoid,
+mccartneytotalhdlratio,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1186/s13059-018-1514-1,,,,
+mccartneywhr,methylation,Homo sapiens,2018,⌛,https://doi.org/10.1186/s13059-018-1514-1,,,,
 meer,methylation,Mus musculus,2018,⌛,https://doi.org/10.7554/eLife.40675,,,,
+neusin,methylation,Homo sapiens,2024,⌛,https://doi.org/10.18632/aging.206184,,,,
 ocampoatac1,atac,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00986-0,,tpm_norm_log1p,,
 ocampoatac2,atac,Homo sapiens,2023,⌛,https://doi.org/10.1007/s11357-023-00986-0,,tpm_norm_log1p,,
 pcdnamtl,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-022-00248-2,,,,True
@@ -98,10 +125,17 @@ pcskinandblood,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s43587-
 pedbe,methylation,Homo sapiens,2019,⌛,https://doi.org/10.1073/pnas.1820843116,,,anti_log_linear,
 petkovich,methylation,Mus musculus,2017,⌛,https://doi.org/10.1016/j.cmet.2017.03.016,,,petkovich,
 phenoage,blood chemistry,Homo sapiens,2018,⌛,https://doi.org/10.18632%2Faging.101414,,,mortality_to_phenoage,
+prostatecancerkirby,methylation,Homo sapiens,2017,⌛,https://doi.org/10.1186/s12885-017-3252-2,,,,
+reedbmi,methylation,Homo sapiens,2020,⌛,https://doi.org/10.1186/s13148-020-00841-5,,,,
 replitali,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s41467-022-34268-8,,,,
+replitalinorm,methylation,Homo sapiens,2022,⌛,https://doi.org/10.1038/s41467-022-34268-8,,,,
 retroelementagev1,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1111/acel.14288,,,,
 retroelementagev2,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1111/acel.14288,,,,
+senchronoage,methylation,Homo sapiens,2026,⌛,https://doi.org/10.1111/acel.70430,,,,
+sencultureage,methylation,Homo sapiens,2026,⌛,https://doi.org/10.1111/acel.70430,,,,
+senmortalityage,methylation,Homo sapiens,2026,⌛,https://doi.org/10.1111/acel.70430,,,,
 skinandblood,methylation,Homo sapiens,2018,⌛,https://doi.org/10.18632/aging.101508,,,anti_log_linear,
+stemtocvitro,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s41467-024-48649-8,,0.95 quantile,,True
 stubbs,methylation,Mus musculus,2017,⌛,https://doi.org/10.1186/s13059-017-1203-5,,quantile_normalization_and_scale_with_gold_standard,stubbs,True
 systemsage,methylation,Homo sapiens,2025,⌛,https://doi.org/10.1038/s43587-025-00958-3,,,,True
 systemsageblood,methylation,Homo sapiens,2025,⌛,https://doi.org/10.1038/s43587-025-00958-3,,,,True
@@ -127,6 +161,9 @@ twelvecelldeconvolutebloodepicmono,methylation,Homo sapiens,2024,⌛,https://doi
 twelvecelldeconvolutebloodepicneu,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-025-00987-y,Estimated proportion of Neu from 12-cell EPIC reference.,fill_with_reference_means,,True
 twelvecelldeconvolutebloodepicnk,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-025-00987-y,Estimated proportion of NK from 12-cell EPIC reference.,fill_with_reference_means,,True
 twelvecelldeconvolutebloodepictreg,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-025-00987-y,Estimated proportion of Treg from 12-cell EPIC reference.,fill_with_reference_means,,True
+vidalbralo,methylation,Homo sapiens,2016,⌛,https://doi.org/10.3389/fgene.2016.00126,,,,
+weidner,methylation,Homo sapiens,2014,⌛,https://doi.org/10.1186/gb-2014-15-2-r24,,,,
+wu,methylation,Homo sapiens,2019,⌛,https://doi.org/10.18632/aging.102399,,,anti_log_linear,
 xchrom,methylation,Homo sapiens,2021,⌛,https://doi.org/10.1186/s12864-021-07675-2,"X-chrom score: positive ~ more X (female/XX/XXY), negative ~ fewer X (male/XO).",sex_estimation_autosomal_zscore,,True
 ychrom,methylation,Homo sapiens,2021,⌛,https://doi.org/10.1186/s12864-021-07675-2,"Y-chrom score: positive ~ Y present (male/XXY), negative ~ Y absent (female/XO).",sex_estimation_autosomal_zscore,,True
 yingadaptage,methylation,Homo sapiens,2024,⌛,https://doi.org/10.1038/s43587-023-00557-0,,,,
