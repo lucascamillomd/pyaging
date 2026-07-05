@@ -32,7 +32,6 @@ pyaging
 .. raw:: html
 
    <div class="pyaging-hero">
-     <h1>pyaging</h1>
      <p class="tagline">GPU-accelerated biological aging clocks in Python — 170+ published clocks across DNA methylation, histone marks, ATAC-seq, RNA-seq, and blood chemistry, behind a one-line prediction API.</p>
    </div>
 
@@ -99,7 +98,7 @@ Quick start
 .. image:: ../_static/pyaging_graphical_abstract.png
    :align: center
    :alt: pyaging graphical abstract
-   :class: only-light
+   :class: pyaging-abstract
 
 .. raw:: html
 

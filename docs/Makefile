@@ -8,8 +8,10 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = _build
 
-# run python script before making html to update the clock data
-html: data
+# The conf.py `builder-inited` hook regenerates clocks.json (with a committed
+# fallback if S3 is unreachable), so `html` does not depend on `data` and builds
+# offline. Run `make data` only to refresh the committed artifacts by hand.
+html:
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 data:

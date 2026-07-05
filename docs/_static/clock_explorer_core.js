@@ -2,9 +2,11 @@
 (function (root) {
   "use strict";
 
-  var FACET_FIELDS = ["data_type", "species", "platform", "model_type", "unit", "predicts"];
+  var FACET_FIELDS = ["data_type", "species", "platform", "model_type", "unit", "approved_by_author"];
   var NUMERIC = { n_features: true, year: true, citations: true };
-  var SEARCH_FIELDS = ["clock_name", "last_author", "notes", "predicts", "tissue", "journal"];
+  // Search scans every metadata value on a clock except these keys (notebook is
+  // an internal link path, not user-facing text worth matching on).
+  var SEARCH_EXCLUDE = { notebook: true };
 
   function computeFacets(clocks) {
     var facets = {};
@@ -31,8 +33,13 @@
         if (vals.length && vals.indexOf(c[f]) === -1) return false;
       }
       if (q) {
-        var hay = SEARCH_FIELDS.map(function (k) { return c[k]; })
-          .filter(Boolean).join(" ").toLowerCase();
+        var hay = "";
+        for (var k in c) {
+          if (!c.hasOwnProperty(k) || SEARCH_EXCLUDE[k]) continue;
+          var val = c[k];
+          if (val === null || val === undefined) continue;
+          hay += String(val).toLowerCase() + " ";
+        }
         if (hay.indexOf(q) === -1) return false;
       }
       return true;

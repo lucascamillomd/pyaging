@@ -32,10 +32,18 @@ html[data-theme="dark"] {
 .sd-card:hover { box-shadow: 0 6px 22px rgba(11, 27, 43, 0.10); transform: translateY(-2px); }
 .bd-content .sd-btn-primary { background: var(--pst-color-primary); border-color: var(--pst-color-primary); }
 
-/* Landing hero */
-.pyaging-hero { text-align: center; padding: 2.5rem 1rem 1rem; }
-.pyaging-hero h1 { font-size: 2.6rem; margin: 0.4rem 0; color: var(--pst-heading-color); }
+/* Landing hero. The real docutils page title (landing section id "pyaging")
+   doubles as the hero heading, so there is exactly one visible "pyaging" and no
+   reliance on CSS :has() to hide a duplicate. */
+#pyaging > h1 { text-align: center; font-size: 2.6rem; margin: 2.2rem 0 0.4rem; color: var(--pst-heading-color); }
+.pyaging-hero { text-align: center; padding: 0 1rem 1rem; }
 .pyaging-hero .tagline { font-size: 1.15rem; color: var(--pst-color-text-muted); max-width: 60ch; margin: 0 auto 1.2rem; }
+
+/* Graphical abstract: the artwork has a white background, so present it on a
+   light card in BOTH themes (default_mode="auto") rather than hiding it in dark
+   mode via .only-light. */
+.pyaging-abstract { background: #ffffff; padding: 1rem 1.25rem; border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(11, 27, 43, 0.08); max-width: 100%; }
 .pyaging-stats { display: flex; justify-content: center; gap: 2.2rem; flex-wrap: wrap; margin: 1.4rem 0; }
 .pyaging-stat { text-align: center; }
 .pyaging-stat .num { font-size: 1.8rem; font-weight: 700; color: var(--pst-color-primary); display: block; }
@@ -43,7 +51,3 @@ html[data-theme="dark"] {
 
 /* Tighten default heading weights for a cleaner look */
 h1, h2, h3 { letter-spacing: -0.01em; }
-
-/* Home page: the hero supplies the visible title, so hide the redundant
-   docutils page title — scoped to pages that contain the hero. */
-.bd-article section:has(> .pyaging-hero) > h1 { display: none; }

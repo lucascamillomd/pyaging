@@ -16,6 +16,10 @@ assert.deepStrictEqual(core.filterClocks(data, { data_type: ["methylation"] }, "
 assert.strictEqual(core.filterClocks(data, { data_type: ["methylation", "rna"] }, "").length, 3);
 assert.deepStrictEqual(core.filterClocks(data, { data_type: ["methylation"], unit: ["weeks"] }, "").map((c) => c.clock_name), ["c"]);
 assert.deepStrictEqual(core.filterClocks(data, {}, "LIVER").map((c) => c.clock_name), ["a"]);
+// Near full-row search: numeric/other fields beyond the old narrow list now match.
+assert.deepStrictEqual(core.filterClocks(data, {}, "2020").map((c) => c.clock_name), ["a"]); // year
+assert.deepStrictEqual(core.filterClocks(data, {}, "450k").map((c) => c.clock_name), ["b"]); // platform
+assert.deepStrictEqual(core.filterClocks(data, {}, "cord blood").map((c) => c.clock_name), ["c"]); // notes phrase
 
 assert.deepStrictEqual(core.sortClocks(data, "citations", "desc").map((c) => c.clock_name), ["a", "b", "c"]);
 assert.deepStrictEqual(core.sortClocks(data, "clock_name", "asc").map((c) => c.clock_name), ["a", "b", "c"]);

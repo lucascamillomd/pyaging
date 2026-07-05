@@ -10,7 +10,7 @@
   var core = window.ClockExplorerCore;
   var FACET_LABELS = {
     data_type: "Data type", species: "Species", platform: "Platform",
-    model_type: "Model type", unit: "Unit", predicts: "Predicts",
+    model_type: "Model type", unit: "Unit", approved_by_author: "Approval",
   };
   var COLUMNS = [
     { key: "clock_name", label: "Clock", def: true },
@@ -35,16 +35,16 @@
     ["last_author", "Last author"], ["journal", "Journal"], ["species", "Species"],
     ["data_type", "Data type"], ["approved_by_author", "Approved by author"],
   ];
-  var SORT_OPTIONS = [
-    { key: "clock_name", label: "Name" }, { key: "citations", label: "Citations" },
-    { key: "year", label: "Year" }, { key: "n_features", label: "N features" },
-  ];
+  // Every sortable table column is offered in the quick-sort dropdown so a
+  // column-header click always has a matching option and render() can re-sync
+  // the dropdown instead of leaving it showing a stale key.
+  var SORT_OPTIONS = COLUMNS.map(function (c) { return { key: c.key, label: c.label }; });
 
   var state = {
     clocks: [], selected: {}, search: "", sortKey: "citations", sortDir: "desc",
     view: "table", cols: null, expanded: {}, facetsCollapsed: false,
   };
-  var mount, body, sortSelEl, sortDirBtn, mainEl;
+  var mount, body, sortSelEl, sortDirBtn, mainEl, viewToggleBtns;
 
   function el(tag, cls, txt) {
     var e = document.createElement(tag);
@@ -96,7 +96,7 @@
 
     var search = el("input", "ce-search");
     search.type = "search";
-    search.placeholder = "Search name, author, notes…";
+    search.placeholder = "Search clocks…";
     search.value = state.search;
     search.addEventListener("input", function () { state.search = search.value; render(); });
     bar.appendChild(search);
@@ -117,10 +117,12 @@
     });
 
     var toggle = el("div", "ce-viewtoggle");
+    viewToggleBtns = [];
     ["table", "cards"].forEach(function (v) {
       var b = el("button", "ce-btn" + (state.view === v ? " active" : ""), v === "table" ? "Table" : "Cards");
       b.type = "button";
       b.addEventListener("click", function () { state.view = v; render(); });
+      viewToggleBtns.push({ view: v, btn: b });
       toggle.appendChild(b);
     });
 
@@ -140,7 +142,16 @@
     var dl = el("button", "ce-btn", "Download CSV");
     dl.type = "button";
     dl.addEventListener("click", function () {
-      var csv = core.toCSV(visible(), COLUMNS.map(function (c) { return c.key; }));
+      var rows = visible();
+      // Export every metadata field (except the internal notebook link path), so
+      // the download is complete — not limited to the visible table columns.
+      var keys = [], seen = {};
+      rows.forEach(function (c) {
+        for (var k in c) {
+          if (c.hasOwnProperty(k) && k !== "notebook" && !seen[k]) { seen[k] = true; keys.push(k); }
+        }
+      });
+      var csv = core.toCSV(rows, keys);
       var blob = new Blob([csv], { type: "text/csv" });
       var a = el("a"); a.href = URL.createObjectURL(blob); a.download = "pyaging_clocks.csv";
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -265,6 +276,13 @@
       SORT_OPTIONS.forEach(function (o) { if (o.key === state.sortKey) hasKey = true; });
       if (hasKey) sortSelEl.value = state.sortKey;
     }
+    // Keep the Table/Cards toggle highlight in sync with the active view.
+    if (viewToggleBtns) {
+      viewToggleBtns.forEach(function (t) {
+        if (t.view === state.view) t.btn.classList.add("active");
+        else t.btn.classList.remove("active");
+      });
+    }
     body.innerHTML = "";
     body.appendChild(state.view === "cards" ? buildCards(rows) : buildTable(rows));
   }
@@ -281,6 +299,11 @@
     main.appendChild(body);
     layout.appendChild(main);
     mount.appendChild(layout);
+    // Hide the static no-JS/SEO fallback (intro note + full csv-table) now that
+    // the live Explorer has mounted. Done in JS so it works even in browsers
+    // without CSS :has() support; the CSS rule remains as belt-and-suspenders.
+    var sib = mount.nextElementSibling;
+    while (sib) { sib.style.display = "none"; sib = sib.nextElementSibling; }
     render();
   }
 
