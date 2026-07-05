@@ -26,8 +26,8 @@
 
    </center>
 
-Welcome to the Documentation for pyaging
-========================================
+pyaging
+=======
 
 .. raw:: html
 

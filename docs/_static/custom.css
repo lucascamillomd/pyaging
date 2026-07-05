@@ -43,3 +43,7 @@ html[data-theme="dark"] {
 
 /* Tighten default heading weights for a cleaner look */
 h1, h2, h3 { letter-spacing: -0.01em; }
+
+/* Home page: the hero supplies the visible title, so hide the redundant
+   docutils page title — scoped to pages that contain the hero. */
+.bd-article section:has(> .pyaging-hero) > h1 { display: none; }
