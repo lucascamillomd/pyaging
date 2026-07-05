@@ -7,22 +7,39 @@ div.wy-side-nav-search > a img.logo {
 }
 
 /* Clock Glossary Styling with dark mode support */
-.sortable.filterable {
+
+/* Horizontal-scroll container for the (wide) glossary table */
+.glossary-scroll {
+    overflow-x: auto;
     width: 100%;
+    border-radius: 4px;
+}
+
+.sortable.filterable {
+    width: max-content;
+    min-width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 4px;
-    overflow: hidden;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--color-text-primary, #333);
+}
+
+/* Keep long free-text columns readable instead of stretching the table */
+.sortable.filterable td {
+    max-width: 320px;
+    white-space: normal;
+    vertical-align: top;
+    overflow-wrap: anywhere;
 }
 
 .sortable.filterable th {
     background-color: var(--color-background-secondary, #f1f5f9);
-    padding: 12px 15px;
+    padding: 10px 26px 10px 12px;
     text-align: left;
     font-weight: 600;
     position: relative;
+    white-space: nowrap;
     border-bottom: 2px solid var(--color-border-primary, #e2e8f0);
     cursor: pointer;
 }
@@ -65,41 +82,35 @@ div.wy-side-nav-search > a img.logo {
     background-color: var(--color-background-hover, #e2e8f0);
 }
 
-/* Clock approval styling */
-.sortable.filterable td:nth-child(4) {
-    text-align: center;
-}
-
-.sortable.filterable tr:has(td:nth-child(4):contains("✅")) {
-    border-left: 3px solid var(--color-success, #22c55e);
-}
-
-.sortable.filterable tr:has(td:nth-child(4):contains("⌛")) {
-    border-left: 3px solid var(--color-warning, #eab308);
-}
-
-/* DOI styling */
-.sortable.filterable td:nth-child(5) a {
+/* DOI link styling (JS renders these as <a>link</a>) */
+.sortable.filterable td a {
     color: var(--color-link, #3b82f6);
     text-decoration: none;
+    white-space: nowrap;
 }
 
-.sortable.filterable td:nth-child(5) a:hover {
+.sortable.filterable td a:hover {
     text-decoration: underline;
 }
 
 /* Filter controls */
 .glossary-filters {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
 }
 
-.glossary-filters select, 
+.glossary-filter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.glossary-filters select,
 .glossary-filters input {
-    padding: 8px 12px;
+    padding: 6px 10px;
     border: 1px solid var(--color-border-primary, #e2e8f0);
     border-radius: 4px;
     background-color: var(--color-input-background, white);
@@ -108,7 +119,23 @@ div.wy-side-nav-search > a img.logo {
 
 .glossary-filters label {
     font-weight: 600;
-    margin-right: 5px;
+    margin-right: 3px;
+    white-space: nowrap;
+}
+
+.glossary-reset {
+    padding: 6px 12px;
+    border: 1px solid var(--color-border-primary, #e2e8f0);
+    border-radius: 4px;
+    background-color: var(--color-background-secondary, #f1f5f9);
+    color: var(--color-text-primary, #333);
+    cursor: pointer;
+}
+
+.glossary-count {
+    font-size: 13px;
+    opacity: 0.75;
+    margin-left: auto;
 }
 
 /* Dark mode specific adjustments */
