@@ -81,3 +81,18 @@ nbsphinx_execute = "never"
 
 # ... (Add other configurations from the provided conf.py here)
 # Make sure to resolve any conflicts with the existing settings above.
+
+# -- Generate Clock Explorer data at build time (local + Read the Docs) -------
+
+def _generate_clock_data(app):
+    try:
+        from make_clock_data import generate
+
+        n = generate()
+        print("[clocks] regenerated clocks.json with {} clocks".format(n))
+    except Exception as exc:  # noqa: BLE001 — never break the build
+        print("[clocks] WARNING: using committed clocks.json ({})".format(exc))
+
+
+def setup(app):
+    app.connect("builder-inited", _generate_clock_data)
