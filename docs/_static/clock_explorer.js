@@ -42,9 +42,9 @@
 
   var state = {
     clocks: [], selected: {}, search: "", sortKey: "citations", sortDir: "desc",
-    view: "table", cols: null, expanded: {},
+    view: "table", cols: null, expanded: {}, facetsCollapsed: false,
   };
-  var mount, body, sortSelEl, sortDirBtn;
+  var mount, body, sortSelEl, sortDirBtn, mainEl;
 
   function el(tag, cls, txt) {
     var e = document.createElement(tag);
@@ -124,6 +124,19 @@
       toggle.appendChild(b);
     });
 
+    var filtersBtn = el("button", "ce-btn" + (state.facetsCollapsed ? "" : " active"), "Filters");
+    filtersBtn.type = "button";
+    filtersBtn.title = "Show or hide the filters panel";
+    filtersBtn.addEventListener("click", function () {
+      state.facetsCollapsed = !state.facetsCollapsed;
+      if (mainEl) {
+        if (state.facetsCollapsed) mainEl.classList.add("facets-collapsed");
+        else mainEl.classList.remove("facets-collapsed");
+      }
+      if (state.facetsCollapsed) filtersBtn.classList.remove("active");
+      else filtersBtn.classList.add("active");
+    });
+
     var dl = el("button", "ce-btn", "Download CSV");
     dl.type = "button";
     dl.addEventListener("click", function () {
@@ -143,7 +156,7 @@
     var count = el("span", "ce-count");
     count.id = "ce-count";
 
-    [sortSelEl, sortDirBtn, toggle, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
+    [sortSelEl, sortDirBtn, toggle, filtersBtn, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
     return bar;
   }
 
@@ -261,6 +274,8 @@
     var layout = el("div", "ce-root");
     layout.appendChild(buildToolbar());
     var main = el("div", "ce-main");
+    mainEl = main;
+    if (state.facetsCollapsed) main.classList.add("facets-collapsed");
     main.appendChild(buildFacets());
     body = el("div", "ce-body");
     main.appendChild(body);

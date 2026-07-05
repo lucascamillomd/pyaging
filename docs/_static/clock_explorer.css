@@ -17,6 +17,8 @@
 .ce-count { margin-left: auto; color: var(--ce-muted); font-size: 0.85rem; }
 
 .ce-main { display: grid; grid-template-columns: 220px 1fr; gap: 18px; align-items: start; }
+.ce-main.facets-collapsed { grid-template-columns: 1fr; }
+.ce-main.facets-collapsed .ce-facets { display: none; }
 .ce-facets { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 16px; }
 .ce-facet h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ce-muted); margin: 0 0 6px; }
 .ce-chips { display: flex; flex-wrap: wrap; gap: 5px; }

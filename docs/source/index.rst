@@ -53,7 +53,7 @@ pyaging
       Filter, sort, and search every available clock.
 
    .. grid-item-card:: :octicon:`beaker;1.5em;sd-text-primary` Tutorials
-      :link: tutorials/tutorial_dnam_illumina_human_array
+      :link: tutorials/index
       :link-type: doc
 
       End-to-end walkthroughs for each data type.
@@ -119,15 +119,7 @@ Contents
    :maxdepth: 1
    :caption: Tutorials
 
-   tutorials/tutorial_utils
-   tutorials/tutorial_dnam_illumina_human_array
-   tutorials/tutorial_cpgptgrimage3
-   tutorials/tutorial_dnam_illumina_mammalian_array
-   tutorials/tutorial_dnam_rrbs
-   tutorials/tutorial_histonemarkchipseq
-   tutorials/tutorial_atacseq
-   tutorials/tutorial_rnaseq
-   tutorials/tutorial_bloodchemistry
+   tutorials/index
 
 .. toctree::
    :maxdepth: 1
