@@ -23,3 +23,8 @@ docs/_templates
 *.parquet
 .direnv/
 .envrc
+
+# Clock Explorer data: committed build artifact used as the fallback when the
+# build-time regeneration (docs/source/make_clock_data.py) can't reach S3.
+# Overrides the blanket "*.json" ignore above; the .pt binary stays ignored.
+!docs/_static/clocks.json

@@ -37,7 +37,7 @@ pyaging = "pyaging:main"
 [project.optional-dependencies]
 docs = [
     "sphinx>=7.1.2",
-    "sphinx-rtd-theme>=1.3.0rc1",
+    "pydata-sphinx-theme>=0.15.4",
     "sphinx-autodoc-typehints>=1.12.0",
     "ipykernel>=6.29.0",
     "nbsphinx>=0.8.11",
@@ -51,7 +51,7 @@ dev = [
     "sphinx-rtd-theme>=1.3.0rc1",
     "sphinx-autodoc-typehints>=1.12.0",
     "sphinx-copybutton>=0.5.2",
-    "sphinx-book-theme>=1.1.0",
+    "pydata-sphinx-theme>=0.15.4",
     "sphinx-issues>=3.0.1",
     "sphinx-design>=0.5.0",
     "scanpydoc>=0.10.0",

@@ -1,9 +1,25 @@
-Clock glossary
-==============
+Aging Clock Explorer
+====================
 
-This is a table with the metadata of the clocks available at the moment on `pyaging`, including additional implementation notes for each clock:
+Browse and filter every aging clock available in ``pyaging``. Use the facets to
+narrow by data type, species, platform, model type, unit, and prediction target;
+search by name, author, or notes; sort any column; toggle between table and card
+views; and click a clock to expand its full details.
+
+.. raw:: html
+
+   <div id="clock-explorer">
+     <noscript>
+       <p>Enable JavaScript for the interactive explorer, or
+       <a href="_static/clock_glossary.csv">download the full table as CSV</a>.</p>
+     </noscript>
+   </div>
+
+.. only:: html
+
+   The data below is a static fallback rendered without JavaScript.
 
 .. csv-table::
    :file: ../_static/clock_glossary.csv
    :header-rows: 1
-   :class: sortable filterable
+   :class: ce-fallback
