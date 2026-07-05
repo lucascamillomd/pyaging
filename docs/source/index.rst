@@ -29,19 +29,81 @@
 Welcome to the Documentation for pyaging
 ========================================
 
-`pyaging` is a Python package designed for biological aging clocks analysis, leveraging a GPU-optimized PyTorch backend. `pyaging` aims to be a comprehensive toolkit for researchers and scientists in the field of aging.
+.. raw:: html
+
+   <div class="pyaging-hero">
+     <h1>pyaging</h1>
+     <p class="tagline">GPU-accelerated biological aging clocks in Python — 170+ published clocks across DNA methylation, histone marks, ATAC-seq, RNA-seq, and blood chemistry, behind a one-line prediction API.</p>
+   </div>
+
+.. grid:: 2 2 4 4
+   :gutter: 3
+   :class-container: sd-text-center
+
+   .. grid-item-card:: :octicon:`rocket;1.5em;sd-text-primary` Get started
+      :link: installation
+      :link-type: doc
+
+      Install pyaging and predict ages in a few lines.
+
+   .. grid-item-card:: :octicon:`telescope;1.5em;sd-text-primary` Clock Explorer
+      :link: clock_glossary
+      :link-type: doc
+
+      Filter, sort, and search every available clock.
+
+   .. grid-item-card:: :octicon:`beaker;1.5em;sd-text-primary` Tutorials
+      :link: tutorials/tutorial_dnam_illumina_human_array
+      :link-type: doc
+
+      End-to-end walkthroughs for each data type.
+
+   .. grid-item-card:: :octicon:`mark-github;1.5em;sd-text-primary` GitHub
+      :link: https://github.com/lucascamillomd/pyaging
+
+      Source, issues, and contributions.
+
+Why pyaging
+-----------
+
+.. grid:: 1 1 3 3
+   :gutter: 3
+
+   .. grid-item-card:: 170+ clocks
+
+      A comprehensive, curated collection of published aging clocks, each cross-validated against its source.
+
+   .. grid-item-card:: Multi-omic
+
+      DNA methylation, histone marks, ATAC-seq, RNA-seq, and blood chemistry — one consistent interface.
+
+   .. grid-item-card:: GPU-optimized
+
+      A PyTorch backend runs predictions on CPU or GPU with no code changes.
+
+Quick start
+-----------
+
+.. code-block:: bash
+
+   pip install pyaging
+
+.. code-block:: python
+
+   import pyaging as pya
+
+   adata = pya.data.download_example_data("GSE139307")
+   pya.pred.predict_age(adata, ["horvath2013", "grimage2", "pcphenoage"])
+   adata.obs.head()
 
 .. image:: ../_static/pyaging_graphical_abstract.png
    :align: center
-   :alt: Pyaging Graphical Abstract
+   :alt: pyaging graphical abstract
+   :class: only-light
 
 .. raw:: html
 
    <br><br>
-
-Explore Our GitHub Repository
------------------------------
-Discover more about `pyaging` and contribute to our growing community on `GitHub <https://github.com/lucascamillomd/pyaging>`_.
 
 Contents
 --------
