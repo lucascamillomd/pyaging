@@ -61,16 +61,32 @@ source_suffix = [".rst", ".md"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_book_theme"
-html_theme_options = dict(
-    use_repository_button=True,
-    repository_url="https://github.com/lucascamillomd/pyaging",
-    repository_branch="main",
-    navigation_with_keys=False,  # https://github.com/pydata/pydata-sphinx-theme/issues/1492
-)
+html_theme = "pydata_sphinx_theme"
+html_theme_options = {
+    "github_url": "https://github.com/lucascamillomd/pyaging",
+    "icon_links": [
+        {"name": "PyPI", "url": "https://pypi.org/project/pyaging/", "icon": "fa-brands fa-python"},
+        {"name": "Paper", "url": "https://doi.org/10.1093/bioinformatics/btae200", "icon": "fa-solid fa-book-open"},
+    ],
+    "navbar_start": ["navbar-logo"],
+    "navbar_center": ["navbar-nav"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "navbar_align": "left",
+    "show_prev_next": False,
+    "navigation_with_keys": False,
+    "pygments_light_style": "friendly",
+    "pygments_dark_style": "monokai",
+    "header_links_before_dropdown": 6,
+}
+html_context = {
+    "default_mode": "auto",
+    "github_user": "lucascamillomd",
+    "github_repo": "pyaging",
+    "github_version": "main",
+}
 html_logo = "../_static/logo.png"
-html_css_files = ["custom.css"]
-html_js_files = ["clock_glossary.js"]
+html_css_files = ["custom.css", "clock_explorer.css"]
+html_js_files = ["clock_explorer_core.js", "clock_explorer.js"]
 
 # -- Options for nbshpinx ----------------------------------------------------
 # https://nbsphinx.readthedocs.io/en/0.8.0/configure.html
@@ -81,3 +97,21 @@ nbsphinx_execute = "never"
 
 # ... (Add other configurations from the provided conf.py here)
 # Make sure to resolve any conflicts with the existing settings above.
+
+# -- Generate Clock Explorer data at build time (local + Read the Docs) -------
+
+def _generate_clock_data(app):
+    # Ensure this conf dir is importable when builder-inited fires (Read the Docs
+    # does not keep the confdir on sys.path by the time the event runs).
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        from make_clock_data import generate
+
+        n = generate()
+        print("[clocks] regenerated clocks.json with {} clocks".format(n))
+    except Exception as exc:  # noqa: BLE001 — never break the build
+        print("[clocks] WARNING: using committed clocks.json ({})".format(exc))
+
+
+def setup(app):
+    app.connect("builder-inited", _generate_clock_data)
