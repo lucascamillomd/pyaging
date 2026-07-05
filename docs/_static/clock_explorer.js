@@ -44,7 +44,7 @@
     clocks: [], selected: {}, search: "", sortKey: "citations", sortDir: "desc",
     view: "table", cols: null, expanded: {},
   };
-  var mount, body;
+  var mount, body, sortSelEl, sortDirBtn;
 
   function el(tag, cls, txt) {
     var e = document.createElement(tag);
@@ -101,19 +101,19 @@
     search.addEventListener("input", function () { state.search = search.value; render(); });
     bar.appendChild(search);
 
-    var sortSel = el("select", "ce-sort");
+    sortSelEl = el("select", "ce-sort");
     SORT_OPTIONS.forEach(function (o) {
       var opt = el("option", null, o.label); opt.value = o.key;
       if (o.key === state.sortKey) opt.selected = true;
-      sortSel.appendChild(opt);
+      sortSelEl.appendChild(opt);
     });
-    sortSel.addEventListener("change", function () { state.sortKey = sortSel.value; render(); });
-    var sortDir = el("button", "ce-btn ce-sortdir", state.sortDir === "desc" ? "▼" : "▲");
-    sortDir.type = "button";
-    sortDir.title = "Toggle sort direction";
-    sortDir.addEventListener("click", function () {
+    sortSelEl.addEventListener("change", function () { state.sortKey = sortSelEl.value; render(); });
+    sortDirBtn = el("button", "ce-btn ce-sortdir", state.sortDir === "desc" ? "▼" : "▲");
+    sortDirBtn.type = "button";
+    sortDirBtn.title = "Toggle sort direction";
+    sortDirBtn.addEventListener("click", function () {
       state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
-      sortDir.textContent = state.sortDir === "desc" ? "▼" : "▲"; render();
+      render();
     });
 
     var toggle = el("div", "ce-viewtoggle");
@@ -131,6 +131,7 @@
       var blob = new Blob([csv], { type: "text/csv" });
       var a = el("a"); a.href = URL.createObjectURL(blob); a.download = "pyaging_clocks.csv";
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
     });
 
     var reset = el("button", "ce-btn", "Reset");
@@ -142,14 +143,12 @@
     var count = el("span", "ce-count");
     count.id = "ce-count";
 
-    [sortSel, sortDir, toggle, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
+    [sortSelEl, sortDirBtn, toggle, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
     return bar;
   }
 
   // ---------- detail ----------
-  function detailPanel(c, colspan) {
-    var td = el("td", "ce-detail-cell");
-    if (colspan) td.colSpan = colspan;
+  function buildDetailBox(c) {
     var box = el("div", "ce-detail");
     if (c.notes) box.appendChild(el("p", "ce-notes", c.notes));
     var grid = el("dl", "ce-detail-grid");
@@ -160,9 +159,14 @@
     box.appendChild(grid);
     var links = el("div", "ce-links");
     if (c.doi) { var a = el("a", "ce-link", "Paper (DOI)"); a.href = c.doi; a.target = "_blank"; a.rel = "noopener"; links.appendChild(a); }
-    if (c.notebook) { var nb = el("a", "ce-link", "Implementation notebook"); nb.href = staticBase() + "../" + c.notebook; nb.appendChild(document.createTextNode("")); links.appendChild(nb); }
+    if (c.notebook) { var nb = el("a", "ce-link", "Implementation notebook"); nb.href = staticBase() + "../" + c.notebook; nb.target = "_blank"; nb.rel = "noopener"; links.appendChild(nb); }
     box.appendChild(links);
-    td.appendChild(box);
+    return box;
+  }
+  function detailPanel(c, colspan) {
+    var td = el("td", "ce-detail-cell");
+    if (colspan) td.colSpan = colspan;
+    td.appendChild(buildDetailBox(c));
     return td;
   }
 
@@ -230,13 +234,7 @@
       more.addEventListener("click", function () { state.expanded[c.clock_name] = !state.expanded[c.clock_name]; render(); });
       card.appendChild(more);
       if (state.expanded[c.clock_name]) {
-        var box = el("div", "ce-detail");
-        if (c.notes) box.appendChild(el("p", "ce-notes", c.notes));
-        var grid2 = el("dl", "ce-detail-grid");
-        DETAIL_FIELDS.forEach(function (pair) { grid2.appendChild(el("dt", null, pair[1])); grid2.appendChild(el("dd", null, fmt(c[pair[0]]))); });
-        box.appendChild(grid2);
-        if (c.doi) { var a = el("a", "ce-link", "Paper (DOI)"); a.href = c.doi; a.target = "_blank"; a.rel = "noopener"; box.appendChild(a); }
-        card.appendChild(box);
+        card.appendChild(buildDetailBox(c));
       }
       grid.appendChild(card);
     });
@@ -248,6 +246,12 @@
     var rows = visible();
     var countEl = document.getElementById("ce-count");
     if (countEl) countEl.textContent = rows.length + " / " + state.clocks.length + " clocks";
+    if (sortDirBtn) sortDirBtn.textContent = state.sortDir === "desc" ? "▼" : "▲";
+    if (sortSelEl) {
+      var hasKey = false;
+      SORT_OPTIONS.forEach(function (o) { if (o.key === state.sortKey) hasKey = true; });
+      if (hasKey) sortSelEl.value = state.sortKey;
+    }
     body.innerHTML = "";
     body.appendChild(state.view === "cards" ? buildCards(rows) : buildTable(rows));
   }
