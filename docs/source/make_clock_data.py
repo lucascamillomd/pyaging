@@ -23,17 +23,25 @@ FIELDS = [
 
 
 def _json_safe(o):
-    if hasattr(o, "item"):          # numpy scalar
-        return o.item()
-    if hasattr(o, "tolist"):        # numpy array / tensor
+    # Prefer tolist(): it works for numpy scalars, numpy arrays, and torch
+    # tensors, whereas .item() raises on multi-element arrays.
+    if hasattr(o, "tolist"):
         return o.tolist()
+    if hasattr(o, "item"):
+        return o.item()
     return str(o)
 
 
 def _shorten(v):
-    # reference_values can be a long array; keep the file lean.
-    if isinstance(v, (list, tuple)) and len(v) > 8:
-        return "{} values".format(len(v))
+    # reference_values can be a long array (list/tuple/ndarray/tensor); collapse
+    # it to keep the file lean and avoid embedding large numeric blobs.
+    if not isinstance(v, str):
+        try:
+            n = len(v)
+        except TypeError:
+            n = None
+        if n is not None and n > 8:
+            return "{} values".format(n)
     return v
 
 
