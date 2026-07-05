@@ -13,30 +13,51 @@ metadata_dict = torch.load("_static/all_clock_metadata.pt", weights_only=False)
 # Convert to DataFrame and do some processing
 df = pd.DataFrame(metadata_dict).T
 df = df.sort_values(["approved_by_author", "clock_name"], ascending=[False, True])
-df = df.loc[
-    :,
-    [
-        "data_type",
-        "species",
-        "year",
-        "approved_by_author",
-        "doi",
-        "notes",
-        "preprocess",
-        "postprocess",
-        "reference_values",
-    ],
+
+# Column order tuned for "choose your clock": what/how it predicts first, then
+# provenance and implementation details. reindex tolerates clocks missing a field.
+columns = [
+    "data_type",
+    "species",
+    "predicts",
+    "unit",
+    "tissue",
+    "platform",
+    "population",
+    "model_type",
+    "n_features",
+    "year",
+    "citations",
+    "last_author",
+    "journal",
+    "doi",
+    "notes",
+    "preprocess",
+    "postprocess",
+    "reference_values",
+    "approved_by_author",
 ]
+df = df.reindex(columns=columns)
 df.columns = [
     "Data type",
     "Species",
+    "Predicts",
+    "Unit",
+    "Tissue",
+    "Platform",
+    "Population",
+    "Model type",
+    "N features",
     "Year",
-    "Approved by author(s)",
+    "Citations",
+    "Last author",
+    "Journal",
     "DOI",
-    "Miscellaneous notes",
+    "Notes",
     "Preprocess",
     "Postprocess",
     "Reference values",
+    "Approved by author(s)",
 ]
 df.index.name = "Clock name"
 
