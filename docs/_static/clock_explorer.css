@@ -67,3 +67,10 @@
   .ce-facets { position: static; }
   .ce-count { margin-left: 0; }
 }
+
+/* Hide the static no-JS/SEO fallback (intro note + csv-table) once the Explorer
+   app has actually mounted. Keyed on the injected .ce-root so the fallback stays
+   visible when JS is off and when the data fetch fails (the error message points
+   users to "the table below"). Uses ~ * to also catch the theme's
+   .pst-scrollable-table-container wrapper around the .ce-fallback table. */
+#clock-explorer:has(.ce-root) ~ * { display: none; }
