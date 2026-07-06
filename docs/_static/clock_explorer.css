@@ -42,6 +42,7 @@
 .ce-active { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .ce-active-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 4px 3px 10px; border-radius: 999px;
   background: var(--ce-surface); border: 1px solid var(--ce-border); font-size: 0.8rem; }
+.ce-active-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40ch; }
 .ce-active-x { cursor: pointer; border: none; background: none; color: var(--ce-muted); font-size: 1rem; line-height: 1;
   padding: 0 4px; }
 .ce-active-x:hover { color: var(--ce-primary); }

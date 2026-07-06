@@ -145,7 +145,21 @@
         e.stopPropagation();
         var isOpen = pop.style.display !== "none";
         closePopover();
-        if (!isOpen) { pop.style.display = "block"; openPopover = pop; search.value = ""; search.focus(); }
+        if (!isOpen) {
+          pop.style.display = "block";
+          openPopover = pop;
+          // Reset the in-dropdown search: clear the box AND re-show every row
+          // (setting value alone does not fire the input handler).
+          search.value = "";
+          for (var i = 0; i < list.childNodes.length; i++) list.childNodes[i].style.display = "";
+          // Keep the popover inside the viewport on the full-width page: if it
+          // would overflow the right edge, anchor it to the button's right side.
+          pop.style.left = "0"; pop.style.right = "auto";
+          if (pop.getBoundingClientRect().right > document.documentElement.clientWidth - 4) {
+            pop.style.left = "auto"; pop.style.right = "0";
+          }
+          search.focus();
+        }
       });
 
       wrap.appendChild(btn);
