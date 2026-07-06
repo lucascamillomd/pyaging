@@ -1,4 +1,4 @@
-/* pyaging Clock Explorer — bespoke DOM controller. Depends on clock_explorer_core.js. */
+/* pyaging Clock Catalogue — bespoke DOM controller. Depends on clock_explorer_core.js. */
 (function () {
   "use strict";
 
@@ -10,7 +10,9 @@
   var core = window.ClockExplorerCore;
   var FACET_LABELS = {
     data_type: "Data type", species: "Species", platform: "Platform",
-    model_type: "Model type", unit: "Unit", approved_by_author: "Approval",
+    model_type: "Model type", unit: "Unit", tissue: "Tissue",
+    last_author: "Last author", journal: "Journal", predicts: "Predicts",
+    population: "Population", approved_by_author: "Approval",
   };
   var COLUMNS = [
     { key: "clock_name", label: "Clock", def: true },
@@ -42,9 +44,10 @@
 
   var state = {
     clocks: [], selected: {}, search: "", sortKey: "citations", sortDir: "desc",
-    view: "table", cols: null, expanded: {}, facetsCollapsed: false,
+    view: "table", cols: null, expanded: {},
   };
-  var mount, body, sortSelEl, sortDirBtn, mainEl, viewToggleBtns;
+  var mount, body, sortSelEl, sortDirBtn, viewToggleBtns;
+  var filterBtns, activeChipsEl, checkboxIndex, openPopover = null;
 
   function el(tag, cls, txt) {
     var e = document.createElement(tag);
@@ -61,33 +64,123 @@
   }
   function fmt(v) { return v == null || v === "" ? "—" : String(v); }
 
-  // ---------- facets ----------
-  function buildFacets() {
-    var facets = core.computeFacets(state.clocks);
-    var wrap = el("aside", "ce-facets");
-    core.FACET_FIELDS.forEach(function (f) {
-      if (!facets[f] || !facets[f].length) return;
-      var group = el("div", "ce-facet");
-      group.appendChild(el("h3", null, FACET_LABELS[f]));
-      var chips = el("div", "ce-chips");
-      facets[f].forEach(function (o) {
-        var chip = el("button", "ce-chip");
-        chip.type = "button";
-        chip.appendChild(el("span", "ce-chip-label", o.value));
-        chip.appendChild(el("span", "ce-chip-count", String(o.count)));
-        chip.addEventListener("click", function () {
-          var sel = state.selected[f] || (state.selected[f] = []);
-          var i = sel.indexOf(o.value);
-          if (i === -1) { sel.push(o.value); chip.classList.add("active"); }
-          else { sel.splice(i, 1); chip.classList.remove("active"); }
-          render();
-        });
-        chips.appendChild(chip);
-      });
-      group.appendChild(chips);
-      wrap.appendChild(group);
+  // ---------- filter bar ----------
+  function boxKey(f, value) { return f + " " + value; }
+  function selectedCount(f) { return (state.selected[f] || []).length; }
+
+  function closePopover() {
+    if (openPopover) { openPopover.style.display = "none"; openPopover = null; }
+  }
+
+  function updateFilterBadges() {
+    filterBtns.forEach(function (fb) {
+      var n = selectedCount(fb.field);
+      fb.badge.textContent = n ? String(n) : "";
+      fb.badge.style.display = n ? "" : "none";
+      if (n) fb.btn.classList.add("active"); else fb.btn.classList.remove("active");
     });
-    return wrap;
+  }
+
+  function toggleValue(f, value, on) {
+    var sel = state.selected[f] || (state.selected[f] = []);
+    var i = sel.indexOf(value);
+    if (on && i === -1) sel.push(value);
+    else if (!on && i !== -1) sel.splice(i, 1);
+    if (!sel.length) delete state.selected[f];
+    updateFilterBadges();
+    updateActiveChips();
+    render();
+  }
+
+  function buildFilterBar() {
+    var facets = core.computeFacets(state.clocks);
+    filterBtns = [];
+    checkboxIndex = {};
+    var bar = el("div", "ce-filterbar");
+    core.FACET_FIELDS.forEach(function (f) {
+      var opts = facets[f];
+      if (!opts || !opts.length) return;
+      var wrap = el("div", "ce-filter");
+
+      var btn = el("button", "ce-btn ce-filter-btn");
+      btn.type = "button";
+      btn.appendChild(document.createTextNode(FACET_LABELS[f] || f));
+      btn.appendChild(el("span", "ce-filter-caret", "▾"));
+      var badge = el("span", "ce-filter-badge");
+      badge.style.display = "none";
+      btn.appendChild(badge);
+
+      var pop = el("div", "ce-filter-pop");
+      pop.style.display = "none";
+      pop.addEventListener("click", function (e) { e.stopPropagation(); });
+
+      var search = el("input", "ce-filter-search");
+      search.type = "search";
+      search.placeholder = "Search " + (FACET_LABELS[f] || f).toLowerCase() + "…";
+      var list = el("div", "ce-filter-list");
+      opts.forEach(function (o) {
+        var row = el("label", "ce-filter-opt");
+        var cb = el("input");
+        cb.type = "checkbox";
+        cb.checked = (state.selected[f] || []).indexOf(o.value) !== -1;
+        cb.addEventListener("change", function () { toggleValue(f, o.value, cb.checked); });
+        checkboxIndex[boxKey(f, o.value)] = cb;
+        row.appendChild(cb);
+        row.appendChild(el("span", "ce-opt-label", o.value));
+        row.appendChild(el("span", "ce-opt-count", String(o.count)));
+        row._label = String(o.value).toLowerCase();
+        list.appendChild(row);
+      });
+      search.addEventListener("input", function () {
+        var q = search.value.trim().toLowerCase();
+        for (var i = 0; i < list.childNodes.length; i++) {
+          var row = list.childNodes[i];
+          row.style.display = (!q || row._label.indexOf(q) !== -1) ? "" : "none";
+        }
+      });
+      pop.appendChild(search);
+      pop.appendChild(list);
+
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var isOpen = pop.style.display !== "none";
+        closePopover();
+        if (!isOpen) { pop.style.display = "block"; openPopover = pop; search.value = ""; search.focus(); }
+      });
+
+      wrap.appendChild(btn);
+      wrap.appendChild(pop);
+      bar.appendChild(wrap);
+      filterBtns.push({ field: f, btn: btn, badge: badge });
+    });
+    return bar;
+  }
+
+  function buildActiveChips() {
+    activeChipsEl = el("div", "ce-active");
+    updateActiveChips();
+    return activeChipsEl;
+  }
+  function updateActiveChips() {
+    if (!activeChipsEl) return;
+    activeChipsEl.innerHTML = "";
+    core.FACET_FIELDS.forEach(function (f) {
+      (state.selected[f] || []).forEach(function (value) {
+        var chip = el("span", "ce-active-chip");
+        chip.appendChild(el("span", "ce-active-label", (FACET_LABELS[f] || f) + ": " + value));
+        var x = el("button", "ce-active-x", "×");
+        x.type = "button";
+        x.title = "Remove filter";
+        x.addEventListener("click", function () {
+          var cb = checkboxIndex[boxKey(f, value)];
+          if (cb) cb.checked = false;
+          toggleValue(f, value, false);
+        });
+        chip.appendChild(x);
+        activeChipsEl.appendChild(chip);
+      });
+    });
+    activeChipsEl.style.display = activeChipsEl.childNodes.length ? "flex" : "none";
   }
 
   // ---------- toolbar ----------
@@ -126,25 +219,10 @@
       toggle.appendChild(b);
     });
 
-    var filtersBtn = el("button", "ce-btn" + (state.facetsCollapsed ? "" : " active"), "Filters");
-    filtersBtn.type = "button";
-    filtersBtn.title = "Show or hide the filters panel";
-    filtersBtn.addEventListener("click", function () {
-      state.facetsCollapsed = !state.facetsCollapsed;
-      if (mainEl) {
-        if (state.facetsCollapsed) mainEl.classList.add("facets-collapsed");
-        else mainEl.classList.remove("facets-collapsed");
-      }
-      if (state.facetsCollapsed) filtersBtn.classList.remove("active");
-      else filtersBtn.classList.add("active");
-    });
-
     var dl = el("button", "ce-btn", "Download CSV");
     dl.type = "button";
     dl.addEventListener("click", function () {
       var rows = visible();
-      // Export every metadata field (except the internal notebook link path), so
-      // the download is complete — not limited to the visible table columns.
       var keys = [], seen = {};
       rows.forEach(function (c) {
         for (var k in c) {
@@ -167,7 +245,7 @@
     var count = el("span", "ce-count");
     count.id = "ce-count";
 
-    [sortSelEl, sortDirBtn, toggle, filtersBtn, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
+    [sortSelEl, sortDirBtn, toggle, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
     return bar;
   }
 
@@ -276,7 +354,6 @@
       SORT_OPTIONS.forEach(function (o) { if (o.key === state.sortKey) hasKey = true; });
       if (hasKey) sortSelEl.value = state.sortKey;
     }
-    // Keep the Table/Cards toggle highlight in sync with the active view.
     if (viewToggleBtns) {
       viewToggleBtns.forEach(function (t) {
         if (t.view === state.view) t.btn.classList.add("active");
@@ -289,19 +366,20 @@
 
   function buildAll() {
     mount.innerHTML = "";
+    // The Catalogue page uses the full content width once its sidebars are gone;
+    // Task 3's CSS keys off this body class (scoped to where the app mounts).
+    document.body.classList.add("ce-fullwidth");
     var layout = el("div", "ce-root");
     layout.appendChild(buildToolbar());
+    layout.appendChild(buildFilterBar());
+    layout.appendChild(buildActiveChips());
     var main = el("div", "ce-main");
-    mainEl = main;
-    if (state.facetsCollapsed) main.classList.add("facets-collapsed");
-    main.appendChild(buildFacets());
     body = el("div", "ce-body");
     main.appendChild(body);
     layout.appendChild(main);
     mount.appendChild(layout);
     // Hide the static no-JS/SEO fallback (intro note + full csv-table) now that
-    // the live Explorer has mounted. Done in JS so it works even in browsers
-    // without CSS :has() support; the CSS rule remains as belt-and-suspenders.
+    // the live app has mounted. Done in JS so it works even without CSS :has().
     var sib = mount.nextElementSibling;
     while (sib) { sib.style.display = "none"; sib = sib.nextElementSibling; }
     render();
@@ -310,6 +388,8 @@
   function init() {
     mount = document.getElementById("clock-explorer");
     if (!mount || !core) return;
+    document.addEventListener("click", closePopover);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closePopover(); });
     fetch(staticBase() + "clocks.json")
       .then(function (r) { return r.json(); })
       .then(function (data) { state.clocks = data; buildAll(); })
