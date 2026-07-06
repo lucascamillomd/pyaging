@@ -1,10 +1,13 @@
-Aging Clock Explorer
-====================
+:html_theme.sidebar_secondary.remove: true
 
-Browse and filter every aging clock available in ``pyaging``. Use the facets to
-narrow by data type, species, platform, model type, unit, and prediction target;
-search by name, author, or notes; sort any column; toggle between table and card
-views; and click a clock to expand its full details.
+Clock Catalogue
+===============
+
+Browse and filter every aging clock available in ``pyaging``. Filter by any
+categorical column — data type, species, platform, model type, unit, tissue,
+last author, journal, and more; search by name, author, or notes; sort any
+column; toggle between table and card views; and click a clock to expand its
+full details.
 
 .. raw:: html
 

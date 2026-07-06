@@ -84,6 +84,8 @@ html_context = {
     "github_repo": "pyaging",
     "github_version": "main",
 }
+# The Clock Catalogue owns the full width — drop its left section-nav sidebar.
+html_sidebars = {"clock_glossary": []}
 html_logo = "../_static/logo.png"
 html_css_files = ["custom.css", "clock_explorer.css"]
 html_js_files = ["clock_explorer_core.js", "clock_explorer.js"]

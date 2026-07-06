@@ -93,3 +93,12 @@
    users to "the table below"). Uses ~ * to also catch the theme's
    .pst-scrollable-table-container wrapper around the .ce-fallback table. */
 #clock-explorer:has(.ce-root) ~ * { display: none; }
+
+/* Full-width Catalogue. buildAll() adds .ce-fullwidth to <body> when the app
+   mounts, so this is scoped to the Catalogue page only (no-JS fallback keeps the
+   normal width). The secondary-sidebar hide is belt-and-suspenders alongside the
+   page's :html_theme.sidebar_secondary.remove metadata. */
+.ce-fullwidth .bd-sidebar-secondary { display: none; }
+.ce-fullwidth .bd-main .bd-content { max-width: 100%; }
+.ce-fullwidth .bd-article-container { max-width: 100%; }
+.ce-fullwidth .bd-article { max-width: 100%; }
