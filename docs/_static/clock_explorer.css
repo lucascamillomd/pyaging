@@ -3,7 +3,12 @@
   --ce-surface: var(--pst-color-surface, #f6f8fa); --ce-muted: var(--pst-color-text-muted, #6b7a8d);
   font-size: 0.9rem; }
 
-.ce-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+/* Controls block: search/sort/view + filter bar + active chips. The table
+   itself scrolls inside a bounded box (.ce-scroll), so these controls stay put
+   and the page barely scrolls — no page-level sticky needed (and a theme
+   ancestor's overflow would trap it anyway). */
+.ce-controls { padding-bottom: 4px; }
+.ce-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
 .ce-search { flex: 1 1 240px; min-width: 200px; padding: 8px 12px; border: 1px solid var(--ce-border);
   border-radius: 8px; background: var(--pst-color-background, #fff); color: inherit; }
 .ce-btn { padding: 7px 12px; border: 1px solid var(--ce-border); border-radius: 8px; background: var(--ce-surface);
@@ -35,7 +40,7 @@
 .ce-filter-opt { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
 .ce-filter-opt:hover { background: var(--ce-surface); }
 .ce-filter-opt input { margin: 0; flex: none; }
-.ce-opt-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ce-opt-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .ce-opt-count { margin-left: auto; opacity: 0.65; font-variant-numeric: tabular-nums; font-size: 0.8rem; }
 
 /* Active-filter chips */
@@ -47,7 +52,9 @@
   padding: 0 4px; }
 .ce-active-x:hover { color: var(--ce-primary); }
 
-.ce-scroll { overflow-x: auto; border: 1px solid var(--ce-border); border-radius: 10px; }
+/* Bounded scroll box: the 170+ rows scroll here, not the page, so the sticky
+   <thead> pins against this container and the controls above stay visible. */
+.ce-scroll { max-height: 72vh; overflow: auto; border: 1px solid var(--ce-border); border-radius: 10px; }
 .ce-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
 .ce-table th, .ce-table td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--ce-border); }
 .ce-table thead th { position: sticky; top: 0; background: var(--ce-surface); cursor: pointer; user-select: none;

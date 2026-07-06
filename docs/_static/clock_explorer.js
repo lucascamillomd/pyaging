@@ -118,19 +118,24 @@
       search.type = "search";
       search.placeholder = "Search " + (FACET_LABELS[f] || f).toLowerCase() + "…";
       var list = el("div", "ce-filter-list");
-      opts.forEach(function (o) {
-        var row = el("label", "ce-filter-opt");
-        var cb = el("input");
-        cb.type = "checkbox";
-        cb.checked = (state.selected[f] || []).indexOf(o.value) !== -1;
-        cb.addEventListener("change", function () { toggleValue(f, o.value, cb.checked); });
-        checkboxIndex[boxKey(f, o.value)] = cb;
-        row.appendChild(cb);
-        row.appendChild(el("span", "ce-opt-label", o.value));
-        row.appendChild(el("span", "ce-opt-count", String(o.count)));
-        row._label = String(o.value).toLowerCase();
-        list.appendChild(row);
-      });
+      // Build the (potentially long, free-text) checkbox list lazily on first
+      // open, so mounting the page doesn't materialize thousands of hidden rows.
+      var listBuilt = false;
+      function buildList() {
+        opts.forEach(function (o) {
+          var row = el("label", "ce-filter-opt");
+          var cb = el("input");
+          cb.type = "checkbox";
+          cb.checked = (state.selected[f] || []).indexOf(o.value) !== -1;
+          cb.addEventListener("change", function () { toggleValue(f, o.value, cb.checked); });
+          checkboxIndex[boxKey(f, o.value)] = cb;
+          row.appendChild(cb);
+          row.appendChild(el("span", "ce-opt-label", o.value));
+          row.appendChild(el("span", "ce-opt-count", String(o.count)));
+          row._label = String(o.value).toLowerCase();
+          list.appendChild(row);
+        });
+      }
       search.addEventListener("input", function () {
         var q = search.value.trim().toLowerCase();
         for (var i = 0; i < list.childNodes.length; i++) {
@@ -146,6 +151,7 @@
         var isOpen = pop.style.display !== "none";
         closePopover();
         if (!isOpen) {
+          if (!listBuilt) { buildList(); listBuilt = true; }
           pop.style.display = "block";
           openPopover = pop;
           // Reset the in-dropdown search: clear the box AND re-show every row
@@ -384,9 +390,14 @@
     // Task 3's CSS keys off this body class (scoped to where the app mounts).
     document.body.classList.add("ce-fullwidth");
     var layout = el("div", "ce-root");
-    layout.appendChild(buildToolbar());
-    layout.appendChild(buildFilterBar());
-    layout.appendChild(buildActiveChips());
+    // Group the search/sort/view controls, the filter bar, and the active-filter
+    // chips into one block above the bounded, self-scrolling table (.ce-scroll),
+    // so they stay reachable while the 170+ rows scroll inside their box.
+    var controls = el("div", "ce-controls");
+    controls.appendChild(buildToolbar());
+    controls.appendChild(buildFilterBar());
+    controls.appendChild(buildActiveChips());
+    layout.appendChild(controls);
     var main = el("div", "ce-main");
     body = el("div", "ce-body");
     main.appendChild(body);

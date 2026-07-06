@@ -35,4 +35,17 @@ assert.deepStrictEqual(core.sortClocks(data, "citations", "desc").map((c) => c.c
 assert.deepStrictEqual(core.sortClocks(data, "clock_name", "asc").map((c) => c.clock_name), ["a", "b", "c"]);
 assert.strictEqual(core.toCSV([data[0]], ["clock_name", "citations"]), "clock_name,citations\nb,10");
 
+// Case-insensitive faceting: case variants collapse to one option (first-seen
+// casing displayed), and a selected value matches every casing.
+const caseData = [
+  { clock_name: "p", predicts: "chronological age" },
+  { clock_name: "q", predicts: "Chronological age" },
+  { clock_name: "r", predicts: "GESTATIONAL AGE" },
+];
+const cf = core.computeFacets(caseData);
+assert.strictEqual(cf.predicts.length, 2);
+assert.strictEqual(cf.predicts.find((x) => x.value.toLowerCase() === "chronological age").count, 2);
+assert.strictEqual(core.filterClocks(caseData, { predicts: ["chronological age"] }, "").length, 2);
+assert.deepStrictEqual(core.filterClocks(caseData, { predicts: ["gestational age"] }, "").map((c) => c.clock_name), ["r"]);
+
 console.log("all clock_explorer_core tests passed");
