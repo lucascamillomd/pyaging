@@ -3,7 +3,12 @@
   --ce-surface: var(--pst-color-surface, #f6f8fa); --ce-muted: var(--pst-color-text-muted, #6b7a8d);
   font-size: 0.9rem; }
 
-.ce-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+/* Controls block: search/sort/view + filter bar + active chips. The table
+   itself scrolls inside a bounded box (.ce-scroll), so these controls stay put
+   and the page barely scrolls — no page-level sticky needed (and a theme
+   ancestor's overflow would trap it anyway). */
+.ce-controls { padding-bottom: 4px; }
+.ce-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
 .ce-search { flex: 1 1 240px; min-width: 200px; padding: 8px 12px; border: 1px solid var(--ce-border);
   border-radius: 8px; background: var(--pst-color-background, #fff); color: inherit; }
 .ce-btn { padding: 7px 12px; border: 1px solid var(--ce-border); border-radius: 8px; background: var(--ce-surface);
@@ -16,19 +21,40 @@
 .ce-sort { padding: 7px 10px; border: 1px solid var(--ce-border); border-radius: 8px; background: var(--ce-surface); color: inherit; }
 .ce-count { margin-left: auto; color: var(--ce-muted); font-size: 0.85rem; }
 
-.ce-main { display: grid; grid-template-columns: 220px 1fr; gap: 18px; align-items: start; }
-.ce-main.facets-collapsed { grid-template-columns: 1fr; }
-.ce-main.facets-collapsed .ce-facets { display: none; }
-.ce-facets { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 16px; }
-.ce-facet h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ce-muted); margin: 0 0 6px; }
-.ce-chips { display: flex; flex-wrap: wrap; gap: 5px; }
-.ce-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1px solid var(--ce-border);
-  border-radius: 999px; background: var(--pst-color-background, #fff); color: inherit; cursor: pointer; font-size: 0.8rem; }
-.ce-chip:hover { border-color: var(--ce-primary); }
-.ce-chip.active { background: var(--ce-primary); color: #fff; border-color: var(--ce-primary); }
-.ce-chip-count { opacity: 0.7; font-variant-numeric: tabular-nums; }
+.ce-main { display: block; }
 
-.ce-scroll { overflow-x: auto; border: 1px solid var(--ce-border); border-radius: 10px; }
+/* Filter bar — one dropdown button per categorical column, above the table. */
+.ce-filterbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.ce-filter { position: relative; }
+.ce-filter-btn { display: inline-flex; align-items: center; gap: 6px; }
+.ce-filter-caret { opacity: 0.6; font-size: 0.75rem; }
+.ce-filter-badge { display: inline-flex; min-width: 18px; height: 18px; padding: 0 5px; align-items: center;
+  justify-content: center; border-radius: 999px; background: var(--ce-primary); color: #fff; font-size: 0.7rem;
+  font-variant-numeric: tabular-nums; }
+.ce-filter-pop { position: absolute; z-index: 30; top: calc(100% + 4px); left: 0; width: 260px; max-width: 80vw;
+  background: var(--pst-color-background, #fff); border: 1px solid var(--ce-border); border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(11, 27, 43, 0.16); padding: 8px; }
+.ce-filter-search { width: 100%; box-sizing: border-box; padding: 6px 9px; border: 1px solid var(--ce-border);
+  border-radius: 7px; background: var(--pst-color-background, #fff); color: inherit; margin-bottom: 6px; }
+.ce-filter-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
+.ce-filter-opt { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
+.ce-filter-opt:hover { background: var(--ce-surface); }
+.ce-filter-opt input { margin: 0; flex: none; }
+.ce-opt-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.ce-opt-count { margin-left: auto; opacity: 0.65; font-variant-numeric: tabular-nums; font-size: 0.8rem; }
+
+/* Active-filter chips */
+.ce-active { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.ce-active-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 4px 3px 10px; border-radius: 999px;
+  background: var(--ce-surface); border: 1px solid var(--ce-border); font-size: 0.8rem; }
+.ce-active-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40ch; }
+.ce-active-x { cursor: pointer; border: none; background: none; color: var(--ce-muted); font-size: 1rem; line-height: 1;
+  padding: 0 4px; }
+.ce-active-x:hover { color: var(--ce-primary); }
+
+/* Bounded scroll box: the 170+ rows scroll here, not the page, so the sticky
+   <thead> pins against this container and the controls above stay visible. */
+.ce-scroll { max-height: 72vh; overflow: auto; border: 1px solid var(--ce-border); border-radius: 10px; }
 .ce-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
 .ce-table th, .ce-table td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--ce-border); }
 .ce-table thead th { position: sticky; top: 0; background: var(--ce-surface); cursor: pointer; user-select: none;
@@ -65,9 +91,8 @@
 .ce-error { padding: 12px; border: 1px solid var(--ce-border); border-radius: 8px; }
 
 @media (max-width: 820px) {
-  .ce-main { grid-template-columns: 1fr; }
-  .ce-facets { position: static; }
   .ce-count { margin-left: 0; }
+  .ce-filter-pop { width: 220px; }
 }
 
 /* Hide the static no-JS/SEO fallback (intro note + csv-table) once the Explorer
@@ -76,3 +101,12 @@
    users to "the table below"). Uses ~ * to also catch the theme's
    .pst-scrollable-table-container wrapper around the .ce-fallback table. */
 #clock-explorer:has(.ce-root) ~ * { display: none; }
+
+/* Full-width Catalogue. buildAll() adds .ce-fullwidth to <body> when the app
+   mounts, so this is scoped to the Catalogue page only (no-JS fallback keeps the
+   normal width). The secondary-sidebar hide is belt-and-suspenders alongside the
+   page's :html_theme.sidebar_secondary.remove metadata. */
+.ce-fullwidth .bd-sidebar-secondary { display: none; }
+.ce-fullwidth .bd-main .bd-content { max-width: 100%; }
+.ce-fullwidth .bd-article-container { max-width: 100%; }
+.ce-fullwidth .bd-article { max-width: 100%; }

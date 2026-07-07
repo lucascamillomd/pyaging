@@ -2,7 +2,7 @@
 (function (root) {
   "use strict";
 
-  var FACET_FIELDS = ["data_type", "species", "platform", "model_type", "unit", "approved_by_author"];
+  var FACET_FIELDS = ["data_type", "species", "platform", "model_type", "unit", "tissue", "last_author", "journal", "predicts", "population", "approved_by_author"];
   var NUMERIC = { n_features: true, year: true, citations: true };
   // Search scans every metadata value on a clock except these keys (notebook is
   // an internal link path, not user-facing text worth matching on).
@@ -11,15 +11,19 @@
   function computeFacets(clocks) {
     var facets = {};
     FACET_FIELDS.forEach(function (f) {
-      var counts = {};
+      // Group case-insensitively so "Chronological age" and "chronological age"
+      // collapse into one option; display the first-seen casing.
+      var counts = {}, display = {};
       clocks.forEach(function (c) {
         var v = c[f];
         if (v === null || v === undefined || v === "") return;
-        counts[v] = (counts[v] || 0) + 1;
+        var key = String(v).toLowerCase();
+        if (!Object.prototype.hasOwnProperty.call(counts, key)) { counts[key] = 0; display[key] = String(v); }
+        counts[key] += 1;
       });
       facets[f] = Object.keys(counts)
-        .sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); })
-        .map(function (v) { return { value: v, count: counts[v] }; });
+        .sort(function (a, b) { return a.localeCompare(b); })
+        .map(function (key) { return { value: display[key], count: counts[key] }; });
     });
     return facets;
   }
@@ -30,7 +34,14 @@
       for (var f in selected) {
         if (!selected.hasOwnProperty(f)) continue;
         var vals = selected[f] || [];
-        if (vals.length && vals.indexOf(c[f]) === -1) return false;
+        if (vals.length) {
+          var cv = c[f] == null ? "" : String(c[f]).toLowerCase();
+          var hit = false;
+          for (var vi = 0; vi < vals.length; vi++) {
+            if (String(vals[vi]).toLowerCase() === cv) { hit = true; break; }
+          }
+          if (!hit) return false;
+        }
       }
       if (q) {
         var hay = "";

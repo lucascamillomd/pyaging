@@ -4,6 +4,10 @@
 
 .. raw:: html
 
+   <div class="pyaging-hero-logo-wrap"><img class="pyaging-hero-logo" src="_static/logo.png" alt="pyaging logo"></div>
+
+.. raw:: html
+
    <center>
 
 .. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
@@ -40,12 +44,12 @@ pyaging
    :class-container: sd-text-center
 
    .. grid-item-card:: :octicon:`rocket;1.5em;sd-text-primary` Get started
-      :link: installation
+      :link: tutorials/tutorial_dnam_illumina_human_array
       :link-type: doc
 
-      Install pyaging and predict ages in a few lines.
+      Install pyaging and run your first prediction — the Illumina 450K/EPIC walkthrough.
 
-   .. grid-item-card:: :octicon:`telescope;1.5em;sd-text-primary` Clock Explorer
+   .. grid-item-card:: :octicon:`telescope;1.5em;sd-text-primary` Clock Catalogue
       :link: clock_glossary
       :link-type: doc
 
@@ -80,21 +84,6 @@ Why pyaging
 
       A PyTorch backend runs predictions on CPU or GPU with no code changes.
 
-Quick start
------------
-
-.. code-block:: bash
-
-   pip install pyaging
-
-.. code-block:: python
-
-   import pyaging as pya
-
-   adata = pya.data.download_example_data("GSE139307")
-   pya.pred.predict_age(adata, ["horvath2013", "grimage2", "pcphenoage"])
-   adata.obs.head()
-
 .. image:: ../_static/pyaging_graphical_abstract.png
    :align: center
    :alt: pyaging graphical abstract
@@ -104,40 +93,27 @@ Quick start
 
    <br><br>
 
-Contents
---------
-
 .. toctree::
-   :maxdepth: 1
+   :hidden:
    :caption: Getting Started
 
    installation
    clock_glossary
 
 .. toctree::
-   :maxdepth: 1
+   :hidden:
    :caption: Tutorials
 
    tutorials/index
 
 .. toctree::
-   :maxdepth: 1
+   :hidden:
    :caption: API Reference
 
    pyaging
 
 .. toctree::
-   :maxdepth: 1
+   :hidden:
    :caption: Clock implementation
 
    clock_implementation
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Additional Resources
-
-Indices and Tables
-------------------
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
