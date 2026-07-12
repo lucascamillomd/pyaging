@@ -1,14 +1,12 @@
 import os
-from datetime import datetime
 from functools import wraps
 from pprint import pformat
 from urllib.request import urlretrieve
 
-import pytz
-import requests
 import torch
 
 from ..logger import LoggerManager, main_tqdm
+from ._hf import download_hf_file
 
 
 def progress(message: str) -> None:
@@ -75,12 +73,10 @@ def progress(message: str) -> None:
 @progress("Load all clock metadata")
 def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     """
-    Loads the clock metadata from a specified source.
+    Loads the clock metadata from Hugging Face.
 
-    This function checks if the metadata file exists locally in the specified directory.
-    If it doesn't, the function downloads the file from AWS S3 using the provided file name
-    and saves it in the 'pyaging_data' directory. After downloading or confirming the file's
-    existence, it reads and returns the metadata.
+    This function downloads or resolves the metadata file from Hugging Face in the specified
+    directory, then reads and returns the metadata.
 
     Parameters
     ----------
@@ -103,10 +99,8 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
 
     Notes
     -----
-    The function assumes the presence of a folder named 'pyaging_data' in the current directory
-    or creates it if it doesn't exist. It uses a predefined AWS S3 url to download the
-    metadata file. The function is decorated with `@progress`, which adds start and end log
-    messages for this process.
+    The function retrieves the metadata file from the pyaging Hugging Face data repository.
+    It is decorated with `@progress`, which adds start and end log messages for this process.
 
     Examples
     --------
@@ -116,75 +110,41 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     <class 'dict'>
 
     """
-    url = "https://pyaging.s3.amazonaws.com/clocks/metadata0.1.0/all_clock_metadata.pt"
-    download(url, dir, logger, indent_level=indent_level)
-    all_clock_metadata = torch.load(f"{dir}/all_clock_metadata.pt", weights_only=False)
+    metadata_path = download_hf_file("all_clock_metadata.pt", dir, logger, indent_level=indent_level)
+    all_clock_metadata = torch.load(metadata_path, weights_only=False)
     return all_clock_metadata
 
 
-def download(url: str, dir: str, logger, indent_level: int = 1):
-    """
-    Downloads a file from a specified URL to a local directory.
-
-    This function checks if the file specified by the URL already exists in the local
-    'pyaging_data' directory. If the file is not present or it is not the latest, it downloads
-    the file from the URL and saves it in this directory. The function logs the progress of the
-    download, including whether the file is found locally or needs to be downloaded.
+def download(url: str, dir: str, logger, indent_level: int = 1) -> None:
+    """Download a remote file to a flat local directory unless it is already cached.
 
     Parameters
     ----------
     url : str
-        The URL of the file to be downloaded.
+        The URL of the file to download.
     dir : str
-        The directory to deposit the downloaded file.
+        The directory in which to save the downloaded file.
     logger : object
-        Logger object for logging messages at various stages of the download process.
+        Logger object used to report cache and download progress.
     indent_level : int, optional
-        The level of indentation for logging messages, by default 1.
-
-    Raises
-    ------
-    IOError
-        If the download fails or the file cannot be saved to the local directory.
+        The indentation level for logging messages, by default 1.
 
     Notes
     -----
-    The function assumes the presence of a folder named 'pyaging_data' in the current directory,
-    creating it if it doesn't exist. It uses Python's `urlretrieve` function from the `urllib`
-    module for downloading the file. The function is decorated with `@progress`, which adds
-    start and end log messages for the download process.
-
-    Examples
-    --------
-    >>> logger = Logger()
-    >>> download("https://example.com/datafile.zip", "pyaging_data", logger)
-    Data found in pyaging_data/datafile.zip
-    or
-    Downloading data to pyaging_data/datafile.zip
-
+    The local filename is the basename of the URL. Existing local files are reused without
+    contacting the remote host.
     """
-    file_path = url.split("/")[-1]
-    file_path = os.path.join(dir, file_path)
+    file_path = os.path.join(dir, url.split("/")[-1])
 
-    # aws_newer = is_newer_than_target(url, '2024-01-22')
-    aws_newer = False  # REVISIT THIS
-
-    if os.path.exists(file_path) and not aws_newer:
+    if os.path.exists(file_path):
         logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
-    elif os.path.exists(file_path) and aws_newer:
-        logger.info(
-            f"Data found in {file_path} is not the latest",
-            indent_level=indent_level + 1,
-        )
-        logger.info(f"Redownloading data to {file_path}", indent_level=indent_level + 1)
-        logger.indent_level = indent_level + 1
-        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
-    else:
-        if not os.path.exists(dir):
-            os.mkdir(dir)
-        logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
-        logger.indent_level = indent_level + 1
-        urlretrieve(url, file_path, reporthook=logger.request_report_hook)
+        return
+
+    if not os.path.exists(dir):
+        os.mkdir(dir)
+    logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
+    logger.indent_level = indent_level + 1
+    urlretrieve(url, file_path, reporthook=logger.request_report_hook)
 
 
 def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
@@ -513,50 +473,3 @@ def print_model_details(model, max_list_length=30, max_tensor_elements=30):
         formatted_print(name, param.data)
 
     print(divider)
-
-
-def is_newer_than_target(url, target_date_str):
-    """
-    Check if the 'Last-Modified' date of the metadata of a url is newer than a
-    specific target date.
-
-    Parameters
-    ----------
-    url : str
-        The url of interest from S3. The header must include the 'Last-Modified'
-        key with its value in the format: 'Day, DD Mon YYYY HH:MM:SS GMT'.
-    target_date_str : str
-        The target date as a string in the format 'YYYY-MM-DD'.
-
-    Returns
-    -------
-    bool
-        True if the 'Last-Modified' date is newer than the target date, False otherwise.
-
-    Notes
-    -----
-    The function parses the 'Last-Modified' date from the provided metadata and compares
-    it against a predefined target date (January 21st, 2024). The comparison accounts for
-    the UTC timezone.
-
-    Example
-    -------
-    metadata = {'Last-Modified': 'Sun, 21 Jan 2024 09:54:49 GMT'}
-    result = is_newer_than_target(metadata)
-    # result will be True if 'Last-Modified' is after Jan 21st, 2024, False otherwise.
-    """
-
-    response = requests.head(url)
-    metadata = response.headers
-
-    # Parse the Last-Modified timestamp
-    last_modified_str = metadata["Last-Modified"]
-    timestamp_format = "%a, %d %b %Y %H:%M:%S GMT"
-    last_modified = datetime.strptime(last_modified_str, timestamp_format)
-    last_modified = last_modified.replace(tzinfo=pytz.UTC)
-
-    # Parse the target date
-    target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
-    target_date = target_date.replace(tzinfo=pytz.UTC)
-
-    return last_modified > target_date

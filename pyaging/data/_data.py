@@ -1,5 +1,15 @@
 from ..logger import LoggerManager, silence_logger
-from ..utils import download
+from ..utils._hf import download_hf_file
+
+_EXAMPLE_DATA_FILENAMES = {
+    "GSE130735": "GSE130735_subset.pkl",
+    "GSE193140": "GSE193140.pkl",
+    "GSE139307": "GSE139307.pkl",
+    "GSE223748": "GSE223748_subset.pkl",
+    "ENCFF386QWG": "ENCFF386QWG.bigWig",
+    "GSE65765": "GSE65765_CPM.pkl",
+    "blood_chemistry_example": "blood_chemistry_example.pkl",
+}
 
 
 def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
@@ -30,9 +40,9 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
 
     Notes
     -----
-    The function maps the specified data_type to its corresponding URL and then calls the `download`
-    function to retrieve the dataset. The datasets are sourced from AWS S3 and are chosen to represent
-    typical data formats and structures used in aging research.
+    The function maps the specified data_type to its corresponding filename in the public pyaging
+    Hugging Face data repository. The datasets represent typical data formats and structures used in
+    aging research.
 
 
     Examples
@@ -46,23 +56,13 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         silence_logger("download_example_data")
     logger.first_info("Starting download_example_data function")
 
-    data_type_to_url = {
-        "GSE130735": "https://pyaging.s3.amazonaws.com/example_data/GSE130735_subset.pkl",
-        "GSE193140": "https://pyaging.s3.amazonaws.com/example_data/GSE193140.pkl",
-        "GSE139307": "https://pyaging.s3.amazonaws.com/example_data/GSE139307.pkl",
-        "GSE223748": "https://pyaging.s3.amazonaws.com/example_data/GSE223748_subset.pkl",
-        "ENCFF386QWG": "https://pyaging.s3.amazonaws.com/example_data/ENCFF386QWG.bigWig",
-        "GSE65765": "https://pyaging.s3.amazonaws.com/example_data/GSE65765_CPM.pkl",
-        "blood_chemistry_example": "https://pyaging.s3.amazonaws.com/example_data/blood_chemistry_example.pkl",
-    }
-
-    if data_type not in data_type_to_url:
+    if data_type not in _EXAMPLE_DATA_FILENAMES:
         logger.error(
             f"Example data {data_type} has not yet been implemented in pyaging.",
             indent_level=2,
         )
         raise ValueError
 
-    url = data_type_to_url[data_type]
-    download(url, dir, logger, indent_level=1)
+    filename = _EXAMPLE_DATA_FILENAMES[data_type]
+    download_hf_file(filename, dir, logger, indent_level=1)
     logger.done()

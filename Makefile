@@ -1,6 +1,9 @@
-.PHONY: lint format update build install update-clocks-notebooks update-all-clocks upload-to-s3 process-tutorials test test-tutorials docs version commit tag release release-slim
+.PHONY: lint format update build install update-clocks-notebooks update-all-clocks verify-hf-auth verify-hf-data-repo-public create-hf-data-repo upload-clocks-to-hf upload-static-data-to-hf process-tutorials test test-tutorials docs version commit tag release release-slim
 
-VERSION ?= v0.1.30
+VERSION ?= v0.3.0
+HF_REPO_ID ?= lucascamillomd/pyaging-data
+HF_REPO_OWNER ?= lucascamillomd
+HF_STATIC_DIR ?= hf_static_data
 COMMIT_MSG ?= "Bump to $(VERSION)"
 RELEASE_MSG ?= "Release $(VERSION)"
 
@@ -51,12 +54,31 @@ update-all-clocks:
 	@echo "Running script to update all clocks..."
 	@cd clocks && uv run python update_all_clocks.py $(VERSION) || { echo "Updating clocks failed"; exit 1; } && cd ..
 
-upload-to-s3:
-	@echo "Syncing clock metadata to S3 (skipping unchanged files)..."
-	aws s3 sync --size-only --exact-timestamps clocks/metadata/ s3://pyaging/clocks/metadata0.1.0/ --exclude "*" --include "all_clock_metadata.pt" || { echo "Uploading metadata failed"; exit 1; }
-	@echo "Syncing clock weights to S3 (skipping unchanged files)..."
-	aws s3 sync --size-only --exact-timestamps clocks/weights/ s3://pyaging/clocks/weights0.1.0/ || { echo "Syncing weights failed"; exit 1; }
-	@echo "Clock data uploaded to S3 successfully!"
+verify-hf-auth:
+	@account=$$(uv run hf auth whoami --format json | uv run python -c 'import json, sys; print(json.load(sys.stdin)["user"])'); \
+	if [ "$$account" != "$(HF_REPO_OWNER)" ]; then \
+		echo "Expected HF account $(HF_REPO_OWNER), got $$account"; \
+		exit 1; \
+	fi
+
+verify-hf-data-repo-public: verify-hf-auth
+	@uv run hf models info "$(HF_REPO_ID)" --format json | uv run python -c 'import json, sys; private=json.load(sys.stdin)["private"]; sys.exit("Expected public HF repository $(HF_REPO_ID)") if private is not False else print("Verified public HF repository: $(HF_REPO_ID)")'
+
+create-hf-data-repo: verify-hf-auth
+	uv run hf repos create "$(HF_REPO_ID)" --type model --public --exist-ok
+	$(MAKE) verify-hf-data-repo-public
+	uv run hf upload "$(HF_REPO_ID)" clocks/huggingface/README.md README.md --type model --commit-message "Document pyaging data repository"
+
+upload-clocks-to-hf: verify-hf-data-repo-public
+	@echo "Uploading changed clock weights to Hugging Face..."
+	uv run hf upload "$(HF_REPO_ID)" clocks/weights . --type model --commit-message "Update pyaging clock weights"
+	@echo "Publishing aggregate metadata after weights..."
+	uv run hf upload "$(HF_REPO_ID)" clocks/metadata/all_clock_metadata.pt all_clock_metadata.pt --type model --commit-message "Update aggregate clock metadata"
+	@uv run hf models info "$(HF_REPO_ID)" --format json | uv run python -c 'import json, sys; print("HF revision:", json.load(sys.stdin)["sha"])'
+
+upload-static-data-to-hf: verify-hf-data-repo-public
+	@test -d "$(HF_STATIC_DIR)/repo" || { echo "Missing $(HF_STATIC_DIR)/repo staging directory"; exit 1; }
+	uv run hf upload "$(HF_REPO_ID)" "$(HF_STATIC_DIR)/repo" . --type model --commit-message "Add current pyaging static data dependencies"
 
 process-tutorials:
 	@echo "Processing tutorials..."
@@ -98,8 +120,35 @@ tag:
 	git tag -a "$(VERSION)" -m $(RELEASE_MSG)
 	git push origin "$(VERSION)" || { echo "Git tag creation or push failed"; exit 1; }
 
-release: version lint format update build install update-clocks-notebooks update-all-clocks upload-to-s3 process-tutorials test test-tutorials docs commit tag
+release:
+	$(MAKE) version
+	$(MAKE) lint
+	$(MAKE) format
+	$(MAKE) update
+	$(MAKE) build
+	$(MAKE) install
+	$(MAKE) update-clocks-notebooks
+	$(MAKE) update-all-clocks
+	$(MAKE) process-tutorials
+	$(MAKE) test
+	$(MAKE) test-tutorials
+	$(MAKE) docs
+	$(MAKE) upload-clocks-to-hf
+	$(MAKE) commit
+	$(MAKE) tag
 	@echo "Release $(VERSION) completed successfully"
 
-release-slim: version lint format update build install update-all-clocks upload-to-s3 test docs commit tag
+release-slim:
+	$(MAKE) version
+	$(MAKE) lint
+	$(MAKE) format
+	$(MAKE) update
+	$(MAKE) build
+	$(MAKE) install
+	$(MAKE) update-all-clocks
+	$(MAKE) test
+	$(MAKE) docs
+	$(MAKE) upload-clocks-to-hf
+	$(MAKE) commit
+	$(MAKE) tag
 	@echo "Release $(VERSION) (slim) completed successfully"
