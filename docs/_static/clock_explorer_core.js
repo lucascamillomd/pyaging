@@ -72,6 +72,15 @@
     });
   }
 
+  function defaultOrder(clocks) {
+    return clocks.slice().sort(function (a, b) {
+      var aApproved = String(a.approved_by_author || "").toLowerCase() === "approved" ? 0 : 1;
+      var bApproved = String(b.approved_by_author || "").toLowerCase() === "approved" ? 0 : 1;
+      if (aApproved !== bApproved) return aApproved - bApproved;
+      return String(a.clock_name || "").toLowerCase().localeCompare(String(b.clock_name || "").toLowerCase());
+    });
+  }
+
   function toCSV(clocks, columns) {
     function esc(v) {
       if (v == null) return "";
@@ -88,7 +97,7 @@
   var api = {
     FACET_FIELDS: FACET_FIELDS, NUMERIC: NUMERIC,
     computeFacets: computeFacets, filterClocks: filterClocks,
-    sortClocks: sortClocks, toCSV: toCSV,
+    sortClocks: sortClocks, defaultOrder: defaultOrder, toCSV: toCSV,
   };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   root.ClockExplorerCore = api;
