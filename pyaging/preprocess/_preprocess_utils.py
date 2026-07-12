@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 
 import anndata
@@ -6,7 +5,8 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import KNNImputer, SimpleImputer
 
-from ..utils import download, progress
+from ..utils import progress
+from ..utils._hf import download_hf_file
 
 
 @progress("Impute missing values")
@@ -324,8 +324,8 @@ def load_ensembl_metadata(dir: str, logger, indent_level: int = 1) -> pd.DataFra
     """
     Load and filter Ensembl genome metadata specific to Homo sapiens.
 
-    This function downloads the Ensembl gene metadata for Homo sapiens from a predefined URL and
-    filters it to include only the genes located on specified chromosomes.
+    This function downloads the Ensembl gene metadata for Homo sapiens from the public pyaging
+    Hugging Face data repository and filters it to include only genes on specified chromosomes.
 
     Parameters
     ----------
@@ -357,8 +357,12 @@ def load_ensembl_metadata(dir: str, logger, indent_level: int = 1) -> pd.DataFra
     # This returns a DataFrame with Ensembl gene metadata for Homo sapiens filtered by specified chromosomes.
 
     """
-    url = "https://pyaging.s3.amazonaws.com/supporting_files/Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv"
-    download(url, dir, logger, indent_level=1)
+    genes_path = download_hf_file(
+        "Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv",
+        dir,
+        logger,
+        indent_level=1,
+    )
 
     # Define chromosomes of interest
     chromosomes = [
@@ -388,7 +392,6 @@ def load_ensembl_metadata(dir: str, logger, indent_level: int = 1) -> pd.DataFra
     ]
 
     # Read and filter the gene data
-    genes_path = os.path.join(dir, "Ensembl-105-EnsDb-for-Homo-sapiens-genes.csv")
     genes = pd.read_csv(genes_path)
     genes = genes[genes["chr"].apply(lambda x: x in chromosomes)]
     genes.index = genes.gene_id

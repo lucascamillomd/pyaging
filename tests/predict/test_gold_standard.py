@@ -7,6 +7,8 @@ import torch
 
 import pyaging as pya
 
+pytestmark = pytest.mark.full_catalog
+
 gold_standard_dict = {
     "altumage": 91.64974762567451,
     "bitage": -76.70067243278027,

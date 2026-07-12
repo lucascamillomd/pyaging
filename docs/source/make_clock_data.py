@@ -1,18 +1,18 @@
 """Build-time generator for the Clock Explorer data.
 
-Downloads the public aggregate clock metadata from S3 and writes:
+Downloads the public aggregate clock metadata from Hugging Face and writes:
   - docs/_static/clocks.json  (array consumed by the Explorer front-end)
   - docs/_static/clock_glossary.csv  (download + no-JS fallback)
 """
 import json
 import math
 import os
-from urllib.request import urlretrieve
 
 import pandas as pd
 import torch
 
-URL = "https://pyaging.s3.amazonaws.com/clocks/metadata0.1.0/all_clock_metadata.pt"
+from pyaging.utils._hf import download_hf_file
+
 STATIC = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "_static"))
 
 FIELDS = [
@@ -81,14 +81,13 @@ def _shorten(v):
         except TypeError:
             n = None
         if n is not None and n > 8:
-            return "{} values".format(n)
+            return f"{n} values"
     return v
 
 
 def generate():
     os.makedirs(STATIC, exist_ok=True)
-    pt_path = os.path.join(STATIC, "all_clock_metadata.pt")
-    urlretrieve(URL, pt_path)
+    pt_path = download_hf_file("all_clock_metadata.pt", STATIC)
     meta = torch.load(pt_path, weights_only=False)
 
     rows = []
@@ -97,7 +96,7 @@ def generate():
         for f in FIELDS:
             row[f] = _finite(_shorten(m.get(f)))
         row["approved_by_author"] = _approval(m.get("approved_by_author"))
-        row["notebook"] = "clock_notebooks/{}.html".format(name)
+        row["notebook"] = f"clock_notebooks/{name}.html"
         rows.append(row)
     # Approved-by-author clocks first, then alphabetical by name.
     rows.sort(key=lambda r: (r["approved_by_author"] != "approved", r["clock_name"].lower()))
@@ -117,4 +116,4 @@ def generate():
 
 
 if __name__ == "__main__":
-    print("generated {} clocks".format(generate()))
+    print(f"generated {generate()} clocks")
