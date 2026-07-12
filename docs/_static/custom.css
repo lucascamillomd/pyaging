@@ -34,7 +34,8 @@ html[data-theme="dark"] {
 
 /* Hero logo sits above the page title on the landing page. */
 .pyaging-hero-logo-wrap { text-align: center; }
-.pyaging-hero-logo { display: block; margin: 1.6rem auto 0.4rem; width: 108px; height: auto; }
+.pyaging-hero-logo { display: block; margin: 1.6rem auto 0.4rem; width: 108px; height: 108px;
+  border-radius: 50%; object-fit: cover; }
 
 /* Landing hero. The real docutils page title (landing section id "pyaging")
    doubles as the hero heading, so there is exactly one visible "pyaging" and no
