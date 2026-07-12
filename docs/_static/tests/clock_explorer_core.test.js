@@ -33,6 +33,13 @@ assert.deepStrictEqual(core.filterClocks(data, {}, "cord blood").map((c) => c.cl
 
 assert.deepStrictEqual(core.sortClocks(data, "citations", "desc").map((c) => c.clock_name), ["a", "b", "c"]);
 assert.deepStrictEqual(core.sortClocks(data, "clock_name", "asc").map((c) => c.clock_name), ["a", "b", "c"]);
+const defaultOrdered = core.defaultOrder([
+  { clock_name: "Zulu", approved_by_author: "not approved" },
+  { clock_name: "beta", approved_by_author: "approved" },
+  { clock_name: "Alpha", approved_by_author: "approved" },
+  { clock_name: "aardvark", approved_by_author: "not approved" },
+]);
+assert.deepStrictEqual(defaultOrdered.map((c) => c.clock_name), ["Alpha", "beta", "aardvark", "Zulu"]);
 assert.strictEqual(core.toCSV([data[0]], ["clock_name", "citations"]), "clock_name,citations\nb,10");
 
 // Case-insensitive faceting: case variants collapse to one option (first-seen
