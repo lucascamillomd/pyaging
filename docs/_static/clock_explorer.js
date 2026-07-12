@@ -15,20 +15,21 @@
     population: "Population", approved_by_author: "Approval",
   };
   var COLUMNS = [
-    { key: "clock_name", label: "Clock", def: true },
-    { key: "data_type", label: "Data type", def: true },
-    { key: "species", label: "Species", def: true },
-    { key: "predicts", label: "Predicts", def: true },
-    { key: "model_type", label: "Model", def: true },
-    { key: "platform", label: "Platform", def: true },
-    { key: "citations", label: "Citations", def: true, num: true },
-    { key: "year", label: "Year", def: true, num: true },
-    { key: "n_features", label: "N features", def: false, num: true },
-    { key: "unit", label: "Unit", def: false },
-    { key: "tissue", label: "Tissue", def: false },
-    { key: "population", label: "Population", def: false },
-    { key: "last_author", label: "Last author", def: false },
-    { key: "journal", label: "Journal", def: false },
+    { key: "clock_name", label: "Clock", def: true, cls: "ce-col-clock" },
+    { key: "approved_by_author", label: "Approval", def: true, cls: "ce-col-approval" },
+    { key: "data_type", label: "Data type", def: true, cls: "ce-col-short" },
+    { key: "species", label: "Species", def: true, cls: "ce-col-short" },
+    { key: "year", label: "Year", def: true, num: true, cls: "ce-col-num" },
+    { key: "citations", label: "Citations", def: true, num: true, cls: "ce-col-num" },
+    { key: "n_features", label: "N features", def: true, num: true, cls: "ce-col-num" },
+    { key: "unit", label: "Unit", def: true, cls: "ce-col-short" },
+    { key: "model_type", label: "Model", def: true, cls: "ce-col-long" },
+    { key: "platform", label: "Platform", def: true, cls: "ce-col-long" },
+    { key: "predicts", label: "Predicts", def: true, cls: "ce-col-long" },
+    { key: "tissue", label: "Tissue", def: true, cls: "ce-col-long" },
+    { key: "population", label: "Population", def: true, cls: "ce-col-long" },
+    { key: "last_author", label: "Last author", def: true, cls: "ce-col-long" },
+    { key: "journal", label: "Journal", def: true, cls: "ce-col-long" },
   ];
   var DETAIL_FIELDS = [
     ["predicts", "Predicts"], ["unit", "Unit"], ["tissue", "Tissue"],
@@ -40,10 +41,12 @@
   // Every sortable table column is offered in the quick-sort dropdown so a
   // column-header click always has a matching option and render() can re-sync
   // the dropdown instead of leaving it showing a stale key.
-  var SORT_OPTIONS = COLUMNS.map(function (c) { return { key: c.key, label: c.label }; });
+  var SORT_OPTIONS = [{ key: "default", label: "Approved first, then name" }].concat(
+    COLUMNS.map(function (c) { return { key: c.key, label: c.label }; })
+  );
 
   var state = {
-    clocks: [], selected: {}, search: "", sortKey: "citations", sortDir: "desc",
+    clocks: [], selected: {}, search: "", sortKey: "default", sortDir: "asc",
     view: "table", cols: null, expanded: {},
   };
   var mount, body, sortSelEl, sortDirBtn, viewToggleBtns;
@@ -60,9 +63,15 @@
     return COLUMNS.filter(function (c) { return state.cols[c.key]; });
   }
   function visible() {
-    return core.sortClocks(core.filterClocks(state.clocks, state.selected, state.search), state.sortKey, state.sortDir);
+    var filtered = core.filterClocks(state.clocks, state.selected, state.search);
+    return state.sortKey === "default" ? core.defaultOrder(filtered) : core.sortClocks(filtered, state.sortKey, state.sortDir);
   }
   function fmt(v) { return v == null || v === "" ? "—" : String(v); }
+  function columnClass(col) { return (col.num ? "ce-num " : "") + (col.cls || ""); }
+  function approvalBadge(value) {
+    var approved = String(value || "").toLowerCase() === "approved";
+    return el("span", "ce-approval " + (approved ? "is-approved" : "is-pending"), approved ? "Approved" : "Not approved");
+  }
 
   // ---------- filter bar ----------
   function boxKey(f, value) { return f + " " + value; }
@@ -224,6 +233,7 @@
     sortDirBtn = el("button", "ce-btn ce-sortdir", state.sortDir === "desc" ? "▼" : "▲");
     sortDirBtn.type = "button";
     sortDirBtn.title = "Toggle sort direction";
+    sortDirBtn.setAttribute("aria-label", "Toggle sort direction");
     sortDirBtn.addEventListener("click", function () {
       state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
       render();
@@ -299,7 +309,7 @@
     var thead = el("thead"), htr = el("tr");
     htr.appendChild(el("th", "ce-expander-col", ""));
     cols().forEach(function (col) {
-      var th = el("th", col.num ? "ce-num" : null, col.label);
+      var th = el("th", columnClass(col), col.label);
       if (state.sortKey === col.key) th.classList.add(state.sortDir === "desc" ? "sort-desc" : "sort-asc");
       th.addEventListener("click", function () {
         if (state.sortKey === col.key) state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
@@ -318,8 +328,8 @@
       exp.appendChild(el("span", "ce-caret" + (state.expanded[c.clock_name] ? " open" : ""), "▸"));
       tr.appendChild(exp);
       cols().forEach(function (col) {
-        var td = el("td", col.num ? "ce-num" : null);
-        td.appendChild(document.createTextNode(fmt(c[col.key])));
+        var td = el("td", columnClass(col));
+        td.appendChild(col.key === "approved_by_author" ? approvalBadge(c[col.key]) : document.createTextNode(fmt(c[col.key])));
         tr.appendChild(td);
       });
       tr.addEventListener("click", function () {
@@ -369,6 +379,11 @@
     var countEl = document.getElementById("ce-count");
     if (countEl) countEl.textContent = rows.length + " / " + state.clocks.length + " clocks";
     if (sortDirBtn) sortDirBtn.textContent = state.sortDir === "desc" ? "▼" : "▲";
+    if (sortDirBtn) {
+      sortDirBtn.disabled = state.sortKey === "default";
+      sortDirBtn.title = state.sortKey === "default" ? "Default order is approved first, then name" : "Toggle sort direction";
+      sortDirBtn.setAttribute("aria-label", sortDirBtn.title);
+    }
     if (sortSelEl) {
       var hasKey = false;
       SORT_OPTIONS.forEach(function (o) { if (o.key === state.sortKey) hasKey = true; });
