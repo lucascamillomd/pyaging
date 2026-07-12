@@ -1,13 +1,15 @@
-"""Hermetic checks on the committed Clock Explorer artifacts.
+"""Hermetic checks for Clock Explorer generation and committed artifacts.
 
-These tests validate the checked-in docs/_static/clocks.json and
-clock_glossary.csv WITHOUT downloading from S3 and WITHOUT writing any file.
-generate() itself is exercised at build time by the conf.py `builder-inited`
-hook, so it does not need to run here.
+The generator test uses temporary input and output paths; committed-artifact
+checks validate docs/_static without network access.
 """
 import csv
 import json
 import os
+from unittest.mock import Mock
+
+import make_clock_data
+import torch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATIC = os.path.normpath(os.path.join(HERE, "..", "_static"))
@@ -30,6 +32,22 @@ EXPECTED_CSV_HEADER = [
 def _load_rows():
     with open(os.path.join(STATIC, "clocks.json"), encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def test_generate_downloads_metadata_from_hugging_face(tmp_path, monkeypatch):
+    source_metadata = tmp_path / "source_metadata.pt"
+    torch.save({"minimal_clock": {}}, source_metadata)
+    static = tmp_path / "static"
+    download_hf_file = Mock(return_value=str(source_metadata))
+    monkeypatch.setattr(make_clock_data, "STATIC", str(static))
+    monkeypatch.setattr(make_clock_data, "download_hf_file", download_hf_file)
+
+    count = make_clock_data.generate()
+
+    assert count == 1
+    download_hf_file.assert_called_once_with("all_clock_metadata.pt", str(static))
+    assert (static / "clocks.json").exists()
+    assert (static / "clock_glossary.csv").exists()
 
 
 def test_committed_clocks_json_is_valid():

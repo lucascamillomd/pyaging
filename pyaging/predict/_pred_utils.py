@@ -4,7 +4,6 @@ import ntpath
 import os
 import types
 from typing import Dict, List, Tuple
-from urllib.request import urlretrieve
 
 import anndata
 import numpy as np
@@ -24,7 +23,8 @@ import gc
 
 from ..logger import LoggerManager, main_tqdm, silence_logger
 from ..models import *
-from ..utils import download, load_clock_metadata, progress
+from ..utils import load_clock_metadata, progress
+from ..utils._hf import PyAgingResourceNotFoundError, download_hf_file
 from ._postprocessing import *
 from ._preprocessing import *
 
@@ -32,16 +32,16 @@ from ._preprocessing import *
 @progress("Load clock")
 def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int = 2) -> Tuple:
     """
-    Loads the specified aging clock from a remote source and returns its components.
+    Loads the specified aging clock from Hugging Face and returns its components.
 
-    This function downloads the weights and configuration of a specified aging clock from a
-    remote server. This allows users to instantiate and use the clock in their analyses.
+    This function downloads the weights and configuration of a specified aging clock from
+    Hugging Face. This allows users to instantiate and use the clock in their analyses.
 
     Parameters
     ----------
     clock_name : str
-        The name of the aging clock to be loaded. This name is used to construct the URL
-        for downloading the clock's weights and configuration.
+        The name of the aging clock to be loaded. This name identifies the clock's weights
+        and configuration on Hugging Face.
 
     device : str
         Device to move clock to. Eithe 'cpu' or 'cuda'.
@@ -63,10 +63,8 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
 
     Notes
     -----
-    The clock's weights and configuration are assumed to be stored in a .pt (PyTorch) file
-    on a remote server. The URL for the clock is constructed based on the clock's name.
-    The function uses the `download` utility to retrieve the file. If the clock or its
-    components are not found, the function may fail or return incomplete information.
+    The clock's weights and configuration are stored in a .pt (PyTorch) file on Hugging Face.
+    If the requested clock is unavailable, the function raises a ``NameError``.
 
     The logger is used extensively for progress tracking and information logging, enhancing
     transparency and user experience.
@@ -77,20 +75,16 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
 
     """
     clock_name = clock_name.lower()
-    url = f"https://pyaging.s3.amazonaws.com/clocks/weights0.1.0/{clock_name}.pt"
     try:
-        download(url, dir, logger, indent_level=indent_level)
-    except:
-        logger.error(
+        weights_path = download_hf_file(f"{clock_name}.pt", dir, logger, indent_level=indent_level)
+    except PyAgingResourceNotFoundError as exc:
+        message = (
             f"Clock {clock_name} is not available on pyaging. "
-            f"Please refer to the clock names in the clock glossary table "
-            f"in the package documentation page: pyaging.readthedocs.io",
-            indent_level=indent_level + 1,
+            "Please refer to the clock names in the clock glossary table "
+            "in the package documentation page: pyaging.readthedocs.io"
         )
-        raise NameError
-
-    # Define the path to the clock weights file
-    weights_path = os.path.join(dir, f"{clock_name}.pt")
+        logger.error(message, indent_level=indent_level + 1)
+        raise NameError(message) from exc
 
     # Load the clock from the file
     clock = torch.load(weights_path, weights_only=False)
