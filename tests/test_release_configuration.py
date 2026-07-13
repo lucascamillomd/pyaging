@@ -16,6 +16,7 @@ MAKEFILE = Path("Makefile").read_text(encoding="utf-8")
 HF_README = Path("clocks/huggingface/README.md")
 GITIGNORE = Path(".gitignore").read_text(encoding="utf-8")
 WORKFLOW_DIRECTORY = Path(".github/workflows")
+DOCS_ENVIRONMENT = Path("docs/environment.yml")
 RELEASE_BUILD_EXCLUSIONS = {
     "/.venv",
     "/.worktrees",
@@ -135,6 +136,23 @@ def _target_recipe(target):
             break
         commands.append(line.removeprefix("\t"))
     return lines[header_index], commands
+
+
+def test_readthedocs_environment_includes_hugging_face_runtime_dependency():
+    environment = yaml.safe_load(DOCS_ENVIRONMENT.read_text(encoding="utf-8"))
+    pip_dependencies = next(
+        dependency["pip"]
+        for dependency in environment["dependencies"]
+        if isinstance(dependency, dict) and "pip" in dependency
+    )
+
+    assert any(dependency.startswith("huggingface-hub") for dependency in pip_dependencies)
+
+
+def test_docs_target_runs_sphinx_in_managed_environment():
+    _, commands = _target_recipe("docs")
+
+    assert "uv run make -C docs html" in commands
 
 
 def test_makefile_uses_only_hf_publish_targets():
