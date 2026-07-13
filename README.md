@@ -4,15 +4,13 @@
 
 ##
 
-[![test](https://github.com/lucascamillomd/pyaging/actions/workflows/test.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/test.yml)
-[![build](https://github.com/lucascamillomd/pyaging/actions/workflows/build.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/build.yml)
-[![publish](https://github.com/lucascamillomd/pyaging/actions/workflows/publish.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/publish.yml)
-[![release](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yml)
-[![documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
+[![CI](https://github.com/lucascamillomd/pyaging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/lucascamillomd/pyaging/actions/workflows/ci.yml)
+[![Release](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yml)
+[![Documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
 [![DOI](https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtae200-blue.svg)](https://doi.org/10.1093/bioinformatics/btae200)
-[![upload](https://img.shields.io/pypi/v/pyaging?logo=PyPI)](https://pypi.org/project/pyaging/) 
-[![download](https://static.pepy.tech/badge/pyaging)](https://pepy.tech/project/pyaging)
-[![star](https://img.shields.io/github/stars/lucascamillomd/pyaging?logo=GitHub&color=red)](https://github.com/lucascamillomd/pyaging/stargazers)
+[![PyPI](https://img.shields.io/pypi/v/pyaging?logo=pypi)](https://pypi.org/project/pyaging/)
+[![Downloads](https://static.pepy.tech/badge/pyaging)](https://pepy.tech/project/pyaging)
+[![Stars](https://img.shields.io/github/stars/lucascamillomd/pyaging.svg?label=stars&style=flat&logo=github&color=red)](https://github.com/lucascamillomd/pyaging/stargazers)
 
 ## 🐍 **pyaging**: a Python-based compendium of GPU-optimized aging clocks
 
