@@ -12,11 +12,11 @@
     data_type: "Data type", species: "Species", platform: "Platform",
     model_type: "Model type", unit: "Unit", tissue: "Tissue",
     last_author: "Last author", journal: "Journal", predicts: "Predicts",
-    population: "Population", approved_by_author: "Approval",
+    population: "Population", approved_by_author: "Verified",
   };
   var COLUMNS = [
     { key: "clock_name", label: "Clock", def: true, cls: "ce-col-clock" },
-    { key: "approved_by_author", label: "Approval", def: true, cls: "ce-col-approval" },
+    { key: "approved_by_author", label: "Verified", def: true, cls: "ce-col-approval" },
     { key: "data_type", label: "Data type", def: true, cls: "ce-col-short" },
     { key: "species", label: "Species", def: true, cls: "ce-col-short" },
     { key: "year", label: "Year", def: true, num: true, cls: "ce-col-num" },
@@ -36,12 +36,12 @@
     ["platform", "Platform"], ["population", "Population"], ["model_type", "Model type"],
     ["n_features", "N features"], ["year", "Year"], ["citations", "Citations"],
     ["last_author", "Last author"], ["journal", "Journal"], ["species", "Species"],
-    ["data_type", "Data type"], ["approved_by_author", "Approved by author"],
+    ["data_type", "Data type"], ["approved_by_author", "Verified"],
   ];
   // Every sortable table column is offered in the quick-sort dropdown so a
   // column-header click always has a matching option and render() can re-sync
   // the dropdown instead of leaving it showing a stale key.
-  var SORT_OPTIONS = [{ key: "default", label: "Approved first, then name" }].concat(
+  var SORT_OPTIONS = [{ key: "default", label: "Verified first, then name" }].concat(
     COLUMNS.map(function (c) { return { key: c.key, label: c.label }; })
   );
 
@@ -69,8 +69,8 @@
   function fmt(v) { return v == null || v === "" ? "—" : String(v); }
   function columnClass(col) { return (col.num ? "ce-num " : "") + (col.cls || ""); }
   function approvalBadge(value) {
-    var approved = String(value || "").toLowerCase() === "approved";
-    return el("span", "ce-approval " + (approved ? "is-approved" : "is-pending"), approved ? "Approved" : "Not approved");
+    var verified = String(value || "").toLowerCase() === "by authors";
+    return el("span", "ce-approval " + (verified ? "is-approved" : "is-pending"), verified ? "By authors" : "Not yet");
   }
 
   // ---------- filter bar ----------
@@ -381,7 +381,7 @@
     if (sortDirBtn) sortDirBtn.textContent = state.sortDir === "desc" ? "▼" : "▲";
     if (sortDirBtn) {
       sortDirBtn.disabled = state.sortKey === "default";
-      sortDirBtn.title = state.sortKey === "default" ? "Default order is approved first, then name" : "Toggle sort direction";
+      sortDirBtn.title = state.sortKey === "default" ? "Default order is verified first, then name" : "Toggle sort direction";
       sortDirBtn.setAttribute("aria-label", sortDirBtn.title);
     }
     if (sortSelEl) {

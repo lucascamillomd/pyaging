@@ -2,9 +2,9 @@ const assert = require("node:assert");
 const core = require("../clock_explorer_core.js");
 
 const data = [
-  { clock_name: "b", data_type: "methylation", species: "Homo sapiens", platform: "Illumina 450K", model_type: "Elastic net", unit: "years", predicts: "chronological age", tissue: "blood", journal: "Aging Cell", population: "adult", approved_by_author: "approved", citations: 10, year: 2018, n_features: 100, last_author: "X", notes: "blood clock" },
-  { clock_name: "a", data_type: "rna", species: "Mus musculus", platform: "RNA-seq", model_type: "LASSO", unit: "years", predicts: "chronological age", tissue: "liver", journal: "Nature", population: "adult", approved_by_author: "not approved", citations: 50, year: 2020, n_features: 5, last_author: "Y", notes: "liver" },
-  { clock_name: "c", data_type: "methylation", species: "Homo sapiens", platform: "Illumina EPIC", model_type: "Elastic net", unit: "weeks", predicts: "gestational age", tissue: "cord blood", journal: "Aging Cell", population: "neonate", approved_by_author: "approved", citations: 5, year: 2016, n_features: 200, last_author: "Z", notes: "cord blood" },
+  { clock_name: "b", data_type: "methylation", species: "Homo sapiens", platform: "Illumina 450K", model_type: "Elastic net", unit: "years", predicts: "chronological age", tissue: "blood", journal: "Aging Cell", population: "adult", approved_by_author: "By authors", citations: 10, year: 2018, n_features: 100, last_author: "X", notes: "blood clock" },
+  { clock_name: "a", data_type: "rna", species: "Mus musculus", platform: "RNA-seq", model_type: "LASSO", unit: "years", predicts: "chronological age", tissue: "liver", journal: "Nature", population: "adult", approved_by_author: "Not yet", citations: 50, year: 2020, n_features: 5, last_author: "Y", notes: "liver" },
+  { clock_name: "c", data_type: "methylation", species: "Homo sapiens", platform: "Illumina EPIC", model_type: "Elastic net", unit: "weeks", predicts: "gestational age", tissue: "cord blood", journal: "Aging Cell", population: "neonate", approved_by_author: "By authors", citations: 5, year: 2016, n_features: 200, last_author: "Z", notes: "cord blood" },
 ];
 
 const facets = core.computeFacets(data);
@@ -34,10 +34,10 @@ assert.deepStrictEqual(core.filterClocks(data, {}, "cord blood").map((c) => c.cl
 assert.deepStrictEqual(core.sortClocks(data, "citations", "desc").map((c) => c.clock_name), ["a", "b", "c"]);
 assert.deepStrictEqual(core.sortClocks(data, "clock_name", "asc").map((c) => c.clock_name), ["a", "b", "c"]);
 const defaultOrdered = core.defaultOrder([
-  { clock_name: "Zulu", approved_by_author: "not approved" },
-  { clock_name: "beta", approved_by_author: "approved" },
-  { clock_name: "Alpha", approved_by_author: "approved" },
-  { clock_name: "aardvark", approved_by_author: "not approved" },
+  { clock_name: "Zulu", approved_by_author: "Not yet" },
+  { clock_name: "beta", approved_by_author: "By authors" },
+  { clock_name: "Alpha", approved_by_author: "By authors" },
+  { clock_name: "aardvark", approved_by_author: "Not yet" },
 ]);
 assert.deepStrictEqual(defaultOrdered.map((c) => c.clock_name), ["Alpha", "beta", "aardvark", "Zulu"]);
 assert.strictEqual(core.toCSV([data[0]], ["clock_name", "citations"]), "clock_name,citations\nb,10");

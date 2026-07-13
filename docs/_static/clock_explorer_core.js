@@ -74,9 +74,9 @@
 
   function defaultOrder(clocks) {
     return clocks.slice().sort(function (a, b) {
-      var aApproved = String(a.approved_by_author || "").toLowerCase() === "approved" ? 0 : 1;
-      var bApproved = String(b.approved_by_author || "").toLowerCase() === "approved" ? 0 : 1;
-      if (aApproved !== bApproved) return aApproved - bApproved;
+      var aVerified = String(a.approved_by_author || "").toLowerCase() === "by authors" ? 0 : 1;
+      var bVerified = String(b.approved_by_author || "").toLowerCase() === "by authors" ? 0 : 1;
+      if (aVerified !== bVerified) return aVerified - bVerified;
       return String(a.clock_name || "").toLowerCase().localeCompare(String(b.clock_name || "").toLowerCase());
     });
   }
