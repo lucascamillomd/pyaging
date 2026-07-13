@@ -25,7 +25,7 @@ EXPECTED_CSV_HEADER = [
     "Clock name", "Data type", "Species", "Predicts", "Unit", "Tissue",
     "Platform", "Population", "Model type", "N features", "Year", "Citations",
     "Citations date", "Last author", "Journal", "DOI", "Notes", "Preprocess",
-    "Postprocess", "Reference values", "Approved by author(s)",
+    "Postprocess", "Reference values", "Verified",
 ]
 
 
@@ -36,7 +36,13 @@ def _load_rows():
 
 def test_generate_downloads_metadata_from_hugging_face(tmp_path, monkeypatch):
     source_metadata = tmp_path / "source_metadata.pt"
-    torch.save({"minimal_clock": {}}, source_metadata)
+    torch.save(
+        {
+            "verified_clock": {"approved_by_author": "✅"},
+            "pending_clock": {"approved_by_author": "⌛"},
+        },
+        source_metadata,
+    )
     static = tmp_path / "static"
     download_hf_file = Mock(return_value=str(source_metadata))
     monkeypatch.setattr(make_clock_data, "STATIC", str(static))
@@ -44,10 +50,12 @@ def test_generate_downloads_metadata_from_hugging_face(tmp_path, monkeypatch):
 
     count = make_clock_data.generate()
 
-    assert count == 1
+    assert count == 2
     download_hf_file.assert_called_once_with("all_clock_metadata.pt", str(static))
     assert (static / "clocks.json").exists()
     assert (static / "clock_glossary.csv").exists()
+    rows = json.loads((static / "clocks.json").read_text(encoding="utf-8"))
+    assert {row["approved_by_author"] for row in rows} == {"By authors", "Not yet"}
 
 
 def test_committed_clocks_json_is_valid():
@@ -62,12 +70,12 @@ def test_committed_clocks_json_is_valid():
         # notebook link points into the gallery
         assert row["notebook"].startswith("clock_notebooks/")
 
-    # ordering: approved-by-author clocks first, then alphabetical by name
-    keys = [(r["approved_by_author"] != "approved", r["clock_name"].lower()) for r in rows]
-    assert keys == sorted(keys), "rows are not sorted approved-first then A-Z"
+    # ordering: author-verified clocks first, then alphabetical by name
+    keys = [(r["approved_by_author"] != "By authors", r["clock_name"].lower()) for r in rows]
+    assert keys == sorted(keys), "rows are not sorted verified-first then A-Z"
 
     # every approval value is one of the normalized strings
-    assert {r["approved_by_author"] for r in rows} <= {"approved", "not approved"}
+    assert {r["approved_by_author"] for r in rows} <= {"By authors", "Not yet"}
 
     # strict JSON: no NaN/Infinity leakage (browsers' JSON.parse would reject those)
     json.dumps(rows, allow_nan=False)

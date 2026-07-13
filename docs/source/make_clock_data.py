@@ -44,7 +44,7 @@ LABELS = {
     "preprocess": "Preprocess",
     "postprocess": "Postprocess",
     "reference_values": "Reference values",
-    "approved_by_author": "Approved by author(s)",
+    "approved_by_author": "Verified",
 }
 
 
@@ -57,9 +57,9 @@ def _finite(v):
 
 
 def _approval(v):
-    # Upstream marks author approval with an emoji (✅ approved, ⌛ pending);
-    # normalize to a searchable/filterable string for the Explorer + CSV.
-    return "approved" if str(v).strip() == "✅" else "not approved"
+    # Upstream marks author verification with an emoji (✅ verified, ⌛ pending);
+    # normalize to a searchable/filterable public label for the Explorer + CSV.
+    return "By authors" if str(v).strip() == "✅" else "Not yet"
 
 
 def _json_safe(o):
@@ -98,8 +98,8 @@ def generate():
         row["approved_by_author"] = _approval(m.get("approved_by_author"))
         row["notebook"] = f"clock_notebooks/{name}.html"
         rows.append(row)
-    # Approved-by-author clocks first, then alphabetical by name.
-    rows.sort(key=lambda r: (r["approved_by_author"] != "approved", r["clock_name"].lower()))
+    # Author-verified clocks first, then alphabetical by name.
+    rows.sort(key=lambda r: (r["approved_by_author"] != "By authors", r["clock_name"].lower()))
 
     with open(os.path.join(STATIC, "clocks.json"), "w", encoding="utf-8") as fh:
         json.dump(
