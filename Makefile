@@ -101,7 +101,7 @@ docs:
 	@echo "Building documentation..."
 	cp tutorials/*.ipynb docs/source/tutorials
 	cp clocks/notebooks/*.ipynb docs/source/clock_notebooks
-	@cd docs && make html || { echo "Documentation build failed"; exit 1; }
+	uv run make -C docs html
 
 version:
 	@echo "Updating version in pyproject.toml to $(VERSION)..."
