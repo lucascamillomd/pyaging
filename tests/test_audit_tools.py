@@ -139,13 +139,16 @@ def test_normalize_runtime_value_intentionally_treats_tuples_as_json_lists():
 
 def test_fingerprint_normalization_encodes_distinct_nonfinite_float_sentinels():
     assert audit_tools._normalize_fingerprint_value(float("nan")) == {
-        "__nonfinite_float__": "nan"
+        "__pyaging_runtime_type__": "nonfinite_float",
+        "value": "nan",
     }
     assert audit_tools._normalize_fingerprint_value(float("inf")) == {
-        "__nonfinite_float__": "+inf"
+        "__pyaging_runtime_type__": "nonfinite_float",
+        "value": "+inf",
     }
     assert audit_tools._normalize_fingerprint_value(np.float32("-inf")) == {
-        "__nonfinite_float__": "-inf"
+        "__pyaging_runtime_type__": "nonfinite_float",
+        "value": "-inf",
     }
 
 
@@ -153,12 +156,39 @@ def test_fingerprint_normalization_is_deterministic_for_pasta_like_nan_list():
     values = [float("nan"), np.float64("nan"), {"z": float("nan")}]
 
     assert audit_tools._normalize_fingerprint_value(values) == [
-        {"__nonfinite_float__": "nan"},
-        {"__nonfinite_float__": "nan"},
-        {"z": {"__nonfinite_float__": "nan"}},
+        {"__pyaging_runtime_type__": "nonfinite_float", "value": "nan"},
+        {"__pyaging_runtime_type__": "nonfinite_float", "value": "nan"},
+        {
+            "__pyaging_runtime_type__": "dict",
+            "items": [
+                [
+                    "z",
+                    {
+                        "__pyaging_runtime_type__": "nonfinite_float",
+                        "value": "nan",
+                    },
+                ]
+            ],
+        },
     ]
     with pytest.raises(ValueError, match="non-finite"):
         normalize_runtime_value(values)
+
+
+def test_fingerprint_nonfinite_tag_cannot_collide_with_a_legitimate_runtime_dict():
+    nonfinite = audit_tools._normalize_fingerprint_value(float("nan"))
+    legitimate = audit_tools._normalize_fingerprint_value(
+        {"__pyaging_runtime_type__": "nonfinite_float", "value": "nan"}
+    )
+
+    assert legitimate == {
+        "__pyaging_runtime_type__": "dict",
+        "items": [
+            ["__pyaging_runtime_type__", "nonfinite_float"],
+            ["value", "nan"],
+        ],
+    }
+    assert legitimate != nonfinite
 
 
 @pytest.mark.parametrize(
@@ -250,9 +280,9 @@ def test_model_fingerprint_preserves_pasta_like_nonfinite_reference_values():
     model.reference_values = [float("nan")] * 3
 
     assert model_fingerprint(model)["reference_values"] == [
-        {"__nonfinite_float__": "nan"},
-        {"__nonfinite_float__": "nan"},
-        {"__nonfinite_float__": "nan"},
+        {"__pyaging_runtime_type__": "nonfinite_float", "value": "nan"},
+        {"__pyaging_runtime_type__": "nonfinite_float", "value": "nan"},
+        {"__pyaging_runtime_type__": "nonfinite_float", "value": "nan"},
     ]
 
 
@@ -370,6 +400,25 @@ def test_verify_fingerprints_compares_exact_sets_and_values_read_only(tmp_path):
     write_json(set_mismatch, changed)
     with pytest.raises(ValueError, match="clock set mismatch"):
         audit_tools.verify_fingerprints(weights, set_mismatch, expected_count=1)
+
+
+@pytest.mark.parametrize("different_json_scalar", [True, 1.0])
+def test_verify_fingerprints_distinguishes_int_from_bool_and_float(
+    tmp_path, different_json_scalar
+):
+    weights = tmp_path / "weights"
+    weights.mkdir()
+    model = TinyFingerprintModel()
+    model.metadata["clock_name"] = "tiny"
+    model.version = 1
+    torch.save(model, weights / "tiny.pt")
+    current = model_fingerprint(model)
+    current["version"] = different_json_scalar
+    baseline = tmp_path / "baseline.json"
+    write_json(baseline, {"tiny": current})
+
+    with pytest.raises(ValueError, match="fingerprint mismatch.*tiny"):
+        audit_tools.verify_fingerprints(weights, baseline, expected_count=1)
 
 
 def test_cli_fingerprint_and_verify_fingerprints(tmp_path, capsys):

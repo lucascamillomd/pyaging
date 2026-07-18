@@ -115,7 +115,10 @@ def _normalize_runtime_value(value, encode_nonfinite):
             if not encode_nonfinite:
                 raise ValueError(f"non-finite runtime float {value!r}")
             label = "nan" if math.isnan(value) else "+inf" if value > 0 else "-inf"
-            return {"__nonfinite_float__": label}
+            return {
+                "__pyaging_runtime_type__": "nonfinite_float",
+                "value": label,
+            }
         return value
     if isinstance(value, np.generic):
         return _normalize_runtime_value(value.item(), encode_nonfinite)
@@ -133,10 +136,16 @@ def _normalize_runtime_value(value, encode_nonfinite):
     if type(value) is dict:
         if any(type(key) is not str for key in value):
             raise ValueError("runtime dictionaries must have string keys")
-        return {
+        normalized = {
             key: _normalize_runtime_value(value[key], encode_nonfinite)
             for key in sorted(value)
         }
+        if encode_nonfinite:
+            return {
+                "__pyaging_runtime_type__": "dict",
+                "items": [[key, normalized[key]] for key in normalized],
+            }
+        return normalized
     raise ValueError(
         f"unsupported runtime value type {type(value).__module__}.{type(value).__qualname__}"
     )
@@ -264,8 +273,19 @@ def verify_fingerprints(weights_path, baseline_path, expected_count=173):
         raise ValueError(
             f"fingerprint clock set mismatch: missing={missing}, extra={extra}"
         )
+    def canonical(value):
+        return json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+
     mismatches = [
-        name for name in sorted(current) if current[name] != baseline[name]
+        name
+        for name in sorted(current)
+        if canonical(current[name]) != canonical(baseline[name])
     ]
     if mismatches:
         raise ValueError(f"fingerprint mismatch for clocks: {mismatches}")
