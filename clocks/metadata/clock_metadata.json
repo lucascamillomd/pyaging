@@ -3729,7 +3729,7 @@
     "population": "adults",
     "journal": "GeroScience",
     "last_author": "Alejandro Ocampo",
-    "n_features": 228,
+    "n_features": 380,
     "citations": 49,
     "citations_date": "2026-07-05",
     "version": "v0.3.0",
@@ -4309,7 +4309,7 @@
     "population": "all ages",
     "journal": "Clinical Epigenetics",
     "last_author": "Gibran Hemani",
-    "n_features": 134,
+    "n_features": 135,
     "citations": 86,
     "citations_date": "2026-07-05",
     "version": "v0.3.0"

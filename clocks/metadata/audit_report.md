@@ -55,7 +55,7 @@
 - hepatoxu: First-pass source limitation (retained for provenance; final metadata evidence resolved): The publisher main-text PDF required subscription; bibliographic facts came from the publisher page and model details from the publicly accessible original supplement.
 - hypoclock: First-pass source limitation (retained for provenance; final metadata evidence resolved): The 2018 Nature Genetics/PMC supplementary attachment bundle was not retrievable through the Europe PMC bundle endpoint (HTTP 404), and direct legacy attachment paths returned HTML rather than the files. The structured full text, supplementary captions, authors’ official probe annotations, the 2020 HypoClock supplement/code, and the packaged model were available and used.
 - lin: First-pass source limitation (retained for provenance; final metadata evidence resolved): The Lin supplementary PDF downloaded successfully, but two independent local PDF engines hung during text extraction/rendering; coefficient count and executable form were therefore cross-checked against the packaged pyaging model, while the paper HTML supplied the training and outcome evidence.
-- reedbmi: First-pass source limitation (retained for provenance; final metadata evidence resolved): No official author clock implementation was identified. The downstream coefficient file used by pyaging contains 134 CpGs plus a zero intercept, whereas the paper describes a 135-CpG methylation score.
+- reedbmi: First-pass source limitation (retained for provenance; final metadata evidence resolved): No official author clock implementation was identified. A parsed review of the downstream coefficient file used by pyaging confirms 135 CpG rows plus a zero intercept, matching the paper's 135-CpG methylation score; the earlier 134 count came from file line-ending behavior.
 - replitalinorm: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper does not name the 218-CpG upstream normalizer “RepliTaliNorm” as a standalone clock; Pyaging exposes it separately. Its metadata therefore describes its actual construction role, not the final RepliTali target.
 - senchronoage: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper/supplement and methylCIPHER README report 188 CpGs, but the official author-lab coefficient object and packaged Pyaging model both contain 187 methylation inputs. n_features records the executable-model count.
 - sencultureage: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper/supplement and methylCIPHER README report 141 CpGs, but the official author-lab coefficient object and packaged Pyaging model both contain 142 methylation inputs. n_features records the executable-model count.
@@ -130,7 +130,11 @@ CpGPTPCGrimAge3 training to FHS whole blood on Illumina 450K with mortality as
 the training target; expressing DunedinPoAm38 in biological years per
 chronological year; expressing SenMortalityAge as a log-hazard score; and
 recording ZhangMortality as the paper's unitless weighted score while retaining
-the documented implementation discrepancy.
+the documented implementation discrepancy. The final runtime-consistency review
+also corrected OcampoATAC2 from the 228 predictors used by OcampoATAC1 to the
+380 non-zero OCR coefficients in the authors' separate all-samples model, and
+corrected ReedBMI from 134 to the 135 CpG coefficient rows confirmed by both the
+paper and parsed coefficient table.
 
 ## Field change counts
 
@@ -149,7 +153,7 @@ the documented implementation discrepancy.
 - population: 147
 - journal: 45
 - last_author: 39
-- n_features: 7
+- n_features: 6
 
 ## Validation
 

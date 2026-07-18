@@ -1,9 +1,13 @@
+import ast
+import gc
 import json
 import math
 import re
 from datetime import date
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
+
+import torch
 
 ARRAY_FIELDS = ("tissue", "platform", "predicts", "training_target", "unit")
 CONTROLLED_SCALAR_FIELDS = ("data_type", "species", "model_type", "population")
@@ -33,6 +37,29 @@ EVIDENCE_STATUSES = {
     "unresolved",
 }
 ADMIN_FIELDS = {"approved_by_author", "research_only", "citations", "citations_date"}
+CURATED_METADATA_FIELDS = (
+    "clock_name",
+    "data_type",
+    "species",
+    "year",
+    "approved_by_author",
+    "citation",
+    "doi",
+    "notes",
+    "research_only",
+    "tissue",
+    "predicts",
+    "training_target",
+    "unit",
+    "model_type",
+    "platform",
+    "population",
+    "journal",
+    "last_author",
+    "n_features",
+    "citations",
+    "citations_date",
+)
 SOURCE_TYPES = {"paper", "supplement", "code", "author communication"}
 CONFIRMED_SOURCE_TYPES = {
     "paper-confirmed": "paper",
@@ -380,5 +407,219 @@ def validate_evidence(registry, ledger):
                     _fail(clock_name, field, "resolved evidence cannot use provisional source_text")
 
 
+def _effective_model_feature_count(model):
+    """Return the number of predictors that can affect a model's output."""
+    base_model_features = getattr(model, "base_model_features", None)
+    if base_model_features is not None:
+        return len(base_model_features)
+    base_model = getattr(model, "base_model", None)
+    linear = getattr(base_model, "linear", None)
+    weight = getattr(linear, "weight", None)
+    if isinstance(weight, torch.Tensor) and weight.ndim == 2:
+        return int(torch.count_nonzero(torch.any(weight.detach() != 0, dim=0)).item())
+    coefficient_vectors = [
+        value
+        for key, value in vars(model).items()
+        if key.endswith("_coeffs") and isinstance(value, torch.Tensor) and value.ndim == 1
+    ]
+    if len(coefficient_vectors) == 1:
+        return len(coefficient_vectors[0])
+    return len(model.features)
+
+
+def _model_feature_count_candidates(model):
+    candidates = {len(model.features), _effective_model_feature_count(model)}
+    base_model_features = getattr(model, "base_model_features", None)
+    if base_model_features is not None:
+        candidates.add(len(base_model_features))
+    coefficient_vectors = [
+        value
+        for key, value in vars(model).items()
+        if key.endswith("_coeffs") and isinstance(value, torch.Tensor) and value.ndim == 1
+    ]
+    candidates.update(len(value) for value in coefficient_vectors)
+    return candidates
+
+
 def validate_artifact_consistency(root):
-    raise NotImplementedError("artifact consistency is implemented after migration")
+    """Validate the canonical registry against notebooks and local runtime artifacts."""
+    root = Path(root)
+    metadata_dir = root / "clocks" / "metadata"
+    registry = load_json(metadata_dir / "clock_metadata.json")
+    vocabulary = load_json(metadata_dir / "controlled_vocabulary.json")
+    validate_registry(registry, vocabulary)
+    expected = set(registry)
+    notebooks = {
+        path.stem: path
+        for path in (root / "clocks" / "notebooks").glob("*.ipynb")
+        if path.stem != "template"
+    }
+    weights = {
+        path.stem: path for path in (root / "clocks" / "weights").glob("*.pt")
+    }
+    aggregate_path = metadata_dir / "all_clock_metadata.pt"
+    aggregate = torch.load(aggregate_path, weights_only=False, map_location="cpu")
+    artifact_sets = {
+        "notebooks": set(notebooks),
+        "weights": set(weights),
+        "aggregate": set(aggregate) if type(aggregate) is dict else set(),
+    }
+    for label, names in artifact_sets.items():
+        if names != expected:
+            raise ValueError(
+                f"{label} clock set mismatch: missing={sorted(expected - names)}, "
+                f"extra={sorted(names - expected)}"
+            )
+    if type(aggregate) is not dict:
+        raise ValueError("aggregate must be a dictionary")
+
+    notebook_values = {}
+    for name in sorted(expected):
+        notebook = load_json(notebooks[name])
+        cells = notebook.get("cells") if type(notebook) is dict else None
+        if type(cells) is not list:
+            raise ValueError(f"{name}: invalid notebook structure")
+        matches = []
+        for index, cell in enumerate(cells):
+            if type(cell) is not dict or cell.get("cell_type") != "code":
+                continue
+            source_value = cell.get("source")
+            if type(source_value) is str:
+                source = source_value
+            elif type(source_value) is list and all(
+                type(line) is str for line in source_value
+            ):
+                source = "".join(source_value)
+            else:
+                raise ValueError(f"{name}.cells[{index}]: invalid source")
+            if "metadata" not in source or "clock_name" not in source:
+                continue
+            try:
+                tree = ast.parse(source)
+            except SyntaxError as error:
+                raise ValueError(
+                    f"{name}.cells[{index}]: invalid Python: {error.msg}"
+                ) from error
+            assignments = {}
+            nodes = {}
+            valid_cell = False
+            for statement in tree.body:
+                field = _artifact_metadata_assignment_field(statement)
+                if field is None:
+                    continue
+                if field == "clock_name":
+                    valid_cell = True
+                if field in assignments:
+                    raise ValueError(f"{name}.{field}: duplicate notebook assignment")
+                try:
+                    assignments[field] = ast.literal_eval(statement.value)
+                except (ValueError, TypeError) as error:
+                    raise ValueError(
+                        f"{name}.{field}: notebook value must be a Python literal"
+                    ) from error
+                nodes[field] = statement
+            if valid_cell:
+                matches.append((source, assignments, nodes))
+        if len(matches) != 1:
+            raise ValueError(f"{name}: expected exactly one metadata cell, found {len(matches)}")
+        source, assignments, nodes = matches[0]
+        if set(assignments) != set(CURATED_METADATA_FIELDS):
+            raise ValueError(
+                f"{name}: notebook metadata field mismatch: "
+                f"missing={sorted(set(CURATED_METADATA_FIELDS) - set(assignments))}, "
+                f"extra={sorted(set(assignments) - set(CURATED_METADATA_FIELDS))}"
+            )
+        source_lines = source.splitlines()
+        for field in ARRAY_FIELDS + CONTROLLED_SCALAR_FIELDS:
+            line = source_lines[nodes[field].end_lineno - 1]
+            marker = "# Paper:"
+            if marker not in line or not line.split(marker, 1)[1].strip():
+                raise ValueError(
+                    f"{name}.{field}: requires a nonempty same-line # Paper: comment"
+                )
+        for field in CURATED_METADATA_FIELDS:
+            if not _same_json_value(assignments[field], registry[name][field]):
+                raise ValueError(f"{name}.{field}: notebook value does not match registry")
+        notebook_values[name] = assignments
+
+    runtime_by_name = {}
+    for name in sorted(expected):
+        model = torch.load(weights[name], weights_only=False, map_location="cpu")
+        try:
+            model_metadata = getattr(model, "metadata", None)
+            if type(model_metadata) is not dict:
+                raise ValueError(f"{name}: weight metadata must be a dictionary")
+            if set(model_metadata) != set(registry[name]):
+                raise ValueError(f"{name}: weight metadata field set does not match registry")
+            for field in registry[name]:
+                if not _same_json_value(model_metadata[field], registry[name][field]):
+                    raise ValueError(f"{name}.{field}: weight metadata does not match registry")
+            try:
+                feature_counts = _model_feature_count_candidates(model)
+            except (AttributeError, TypeError) as error:
+                raise ValueError(f"{name}.n_features: weight features have no length") from error
+            if registry[name]["n_features"] not in feature_counts:
+                raise ValueError(
+                    f"{name}.n_features: weight feature counts {sorted(feature_counts)} "
+                    f"does not match registry {registry[name]['n_features']}"
+                )
+            runtime = {
+                "version": getattr(model, "version", None),
+                "preprocess": getattr(model, "preprocess_name", None),
+                "postprocess": getattr(model, "postprocess_name", None),
+                "reference_values": (
+                    True if getattr(model, "reference_values", None) is not None else None
+                ),
+            }
+            runtime_by_name[name] = {
+                field: value for field, value in runtime.items() if value is not None
+            }
+        finally:
+            del model
+            gc.collect()
+
+    for name in sorted(expected):
+        entry = aggregate[name]
+        if type(entry) is not dict:
+            raise ValueError(f"{name}: aggregate entry must be a dictionary")
+        if set(registry[name]) - set(entry):
+            raise ValueError(f"{name}: aggregate is missing curated metadata fields")
+        for field in registry[name]:
+            if not _same_json_value(entry[field], registry[name][field]):
+                raise ValueError(f"{name}.{field}: aggregate value does not match registry")
+        runtime = {
+            field: entry[field]
+            for field in ("version", "preprocess", "postprocess", "reference_values")
+            if field in entry
+        }
+        if not _same_json_value(runtime, runtime_by_name[name]):
+            raise ValueError(f"{name}: aggregate runtime metadata does not match weight")
+        allowed = set(registry[name]) | {
+            "version",
+            "preprocess",
+            "postprocess",
+            "reference_values",
+        }
+        if set(entry) - allowed:
+            raise ValueError(f"{name}: aggregate contains unsupported metadata fields")
+    return {"clock_count": len(registry)}
+
+
+def _artifact_metadata_assignment_field(statement):
+    if not isinstance(statement, ast.Assign) or len(statement.targets) != 1:
+        return None
+    target = statement.targets[0]
+    if not isinstance(target, ast.Subscript):
+        return None
+    value = target.value
+    if (
+        not isinstance(value, ast.Attribute)
+        or value.attr != "metadata"
+        or not isinstance(value.value, ast.Name)
+        or value.value.id != "model"
+    ):
+        return None
+    key = target.slice
+    if isinstance(key, ast.Constant) and type(key.value) is str:
+        return key.value
+    return None

@@ -1,12 +1,15 @@
 import copy
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
+import torch
 
 from clocks.metadata.validate_metadata import (
     ARRAY_FIELDS,
     AUDITED_FIELDS,
+    _effective_model_feature_count,
     load_json,
     load_ledger,
     validate_artifact_consistency,
@@ -58,6 +61,133 @@ def test_evidence_is_complete_and_resolved(registry, ledger):
     for clock_name, record in ledger.items():
         for field in AUDITED_FIELDS:
             assert record["fields"][field]["status"] != "unresolved", f"{clock_name}.{field}"
+
+
+def _write_consistent_artifact_fixture(tmp_path, registry):
+    root = tmp_path
+    metadata_dir = root / "clocks" / "metadata"
+    notebooks_dir = root / "clocks" / "notebooks"
+    weights_dir = root / "clocks" / "weights"
+    metadata_dir.mkdir(parents=True)
+    notebooks_dir.mkdir()
+    weights_dir.mkdir()
+    record = copy.deepcopy(next(iter(registry.values())))
+    for runtime_field in ("version", "preprocess", "postprocess", "reference_values"):
+        record.pop(runtime_field, None)
+    record["clock_name"] = "tiny"
+    record["n_features"] = 2
+    (metadata_dir / "clock_metadata.json").write_text(
+        json.dumps({"tiny": record}, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    (metadata_dir / "controlled_vocabulary.json").write_bytes(VOCABULARY_PATH.read_bytes())
+    controlled = ARRAY_FIELDS + ("data_type", "species", "model_type", "population")
+    lines = []
+    for field, value in record.items():
+        literal = repr(value)
+        comment = "  # Paper: exact source wording" if field in controlled else ""
+        lines.append(f'model.metadata["{field}"] = {literal}{comment}\n')
+    notebook = {
+        "cells": [
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": lines,
+            }
+        ],
+        "metadata": {},
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+    (notebooks_dir / "tiny.ipynb").write_text(
+        json.dumps(notebook, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+    )
+    model = SimpleNamespace(
+        metadata=copy.deepcopy(record),
+        features=["a", "b"],
+        version="1",
+        preprocess_name="none",
+        postprocess_name="none",
+        reference_values=None,
+    )
+    torch.save(model, weights_dir / "tiny.pt")
+    aggregate_record = copy.deepcopy(record)
+    aggregate_record.update(
+        {"version": "1", "preprocess": "none", "postprocess": "none"}
+    )
+    torch.save({"tiny": aggregate_record}, metadata_dir / "all_clock_metadata.pt")
+    return root
+
+
+def test_validate_artifact_consistency_checks_notebooks_weights_and_aggregate(tmp_path, registry):
+    root = _write_consistent_artifact_fixture(tmp_path, registry)
+
+    assert validate_artifact_consistency(root) == {"clock_count": 1}
+
+
+def test_validate_artifact_consistency_verifies_registry_runtime_fields_separately(tmp_path, registry):
+    root = _write_consistent_artifact_fixture(tmp_path, registry)
+    registry_path = root / "clocks" / "metadata" / "clock_metadata.json"
+    local_registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    local_registry["tiny"]["version"] = "1"
+    registry_path.write_text(json.dumps(local_registry) + "\n", encoding="utf-8")
+    weight_path = root / "clocks" / "weights" / "tiny.pt"
+    model = torch.load(weight_path, weights_only=False, map_location="cpu")
+    model.metadata["version"] = "1"
+    torch.save(model, weight_path)
+
+    assert validate_artifact_consistency(root) == {"clock_count": 1}
+
+
+def test_validate_artifact_consistency_requires_same_line_paper_comments(tmp_path, registry):
+    root = _write_consistent_artifact_fixture(tmp_path, registry)
+    notebook_path = root / "clocks" / "notebooks" / "tiny.ipynb"
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    notebook["cells"][0]["source"] = [
+        line.replace("  # Paper: exact source wording", "")
+        if '["tissue"]' in line
+        else line
+        for line in notebook["cells"][0]["source"]
+    ]
+    notebook_path.write_text(json.dumps(notebook) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match=r"tiny\.tissue.*same-line.*# Paper:"):
+        validate_artifact_consistency(root)
+
+
+def test_validate_artifact_consistency_checks_weight_feature_count(tmp_path, registry):
+    root = _write_consistent_artifact_fixture(tmp_path, registry)
+    weight_path = root / "clocks" / "weights" / "tiny.pt"
+    model = torch.load(weight_path, weights_only=False, map_location="cpu")
+    model.features.append("extra")
+    torch.save(model, weight_path)
+
+    with pytest.raises(ValueError, match=r"tiny\.n_features.*weight feature count"):
+        validate_artifact_consistency(root)
+
+
+def test_effective_model_feature_count_uses_selected_linear_predictors():
+    linear = torch.nn.Linear(5, 1)
+    with torch.no_grad():
+        linear.weight.copy_(torch.tensor([[1.0, 0.0, 2.0, 0.0, 0.0]]))
+    model = SimpleNamespace(
+        features=list("abcde"),
+        base_model_features=None,
+        base_model=SimpleNamespace(linear=linear),
+    )
+
+    assert _effective_model_feature_count(model) == 2
+
+
+def test_effective_model_feature_count_prefers_explicit_base_model_features():
+    model = SimpleNamespace(
+        features=list("abcde"),
+        base_model_features=["a", "c", "e"],
+        base_model=SimpleNamespace(),
+    )
+
+    assert _effective_model_feature_count(model) == 3
 
 
 @pytest.mark.full_catalog
