@@ -83,6 +83,14 @@ def test_load_json_rejects_non_finite_numbers(tmp_path, constant):
         load_json(path)
 
 
+def test_load_json_rejects_nested_duplicate_keys_with_file_context(tmp_path):
+    path = tmp_path / "metadata.json"
+    path.write_text('{"outer": {"value": 1, "value": 2}}', encoding="utf-8")
+
+    with pytest.raises(ValueError, match=r"metadata\.json.*duplicate key.*value"):
+        load_json(path)
+
+
 @pytest.mark.parametrize(
     ("line", "context"),
     [
@@ -108,6 +116,17 @@ def test_load_ledger_requires_alphabetical_order(tmp_path):
     path.write_text('{"clock_name": "z"}\n{"clock_name": "a"}\n', encoding="utf-8")
 
     with pytest.raises(ValueError, match=r"line 2.*alphabetical"):
+        load_ledger(path)
+
+
+def test_load_ledger_rejects_nested_duplicate_keys_with_line_context(tmp_path):
+    path = tmp_path / "ledger.jsonl"
+    path.write_text(
+        '{"clock_name": "a"}\n{"clock_name": "b", "nested": {"value": 1, "value": 2}}\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match=r"line 2.*duplicate key.*value"):
         load_ledger(path)
 
 
@@ -142,10 +161,6 @@ def test_validate_registry_rejects_representative_invalid_values(registry, vocab
             r"vocabulary\.species\.description",
         ),
         (
-            lambda value: value["fields"]["species"].__setitem__("values", ["z", "a"]),
-            r"vocabulary\.species\.values.*sorted",
-        ),
-        (
             lambda value: value["fields"]["species"].__setitem__("values", []),
             r"vocabulary\.species\.values.*nonempty",
         ),
@@ -171,6 +186,13 @@ def test_validate_vocabulary_rejects_malformed_schema(vocabulary, mutation, cont
         validate_vocabulary(invalid_vocabulary)
 
 
+def test_validate_vocabulary_preserves_unique_declared_order(vocabulary):
+    declared_order_vocabulary = copy.deepcopy(vocabulary)
+    declared_order_vocabulary["fields"]["species"]["values"].reverse()
+
+    validate_vocabulary(declared_order_vocabulary)
+
+
 @pytest.mark.parametrize(
     ("mutation", "context"),
     [
@@ -179,7 +201,15 @@ def test_validate_vocabulary_rejects_malformed_schema(vocabulary, mutation, cont
             r"example\.year.*status",
         ),
         (
+            lambda record: record["fields"]["year"].__setitem__("status", []),
+            r"example\.year.*status",
+        ),
+        (
             lambda record: record["fields"]["year"].__setitem__("source_id", "missing"),
+            r"example\.year.*source_id",
+        ),
+        (
+            lambda record: record["fields"]["year"].__setitem__("source_id", {}),
             r"example\.year.*source_id",
         ),
         (
@@ -207,6 +237,10 @@ def test_validate_vocabulary_rejects_malformed_schema(vocabulary, mutation, cont
             r"example\.sources.*type",
         ),
         (
+            lambda record: record["sources"][0].__setitem__("type", []),
+            r"example\.sources.*type",
+        ),
+        (
             lambda record: record["sources"][0].__setitem__("url", "http://example.test"),
             r"example\.sources.*url",
         ),
@@ -231,6 +265,28 @@ def test_validate_evidence_rejects_representative_invalid_values(registry, ledge
 
     with pytest.raises(ValueError, match=context):
         validate_evidence(invalid_registry, invalid_ledger)
+
+
+@pytest.mark.parametrize(
+    ("status", "source_type"),
+    [
+        ("paper-confirmed", "code"),
+        ("supplement-confirmed", "paper"),
+        ("code-confirmed", "paper"),
+    ],
+)
+def test_resolved_evidence_status_must_match_source_type(registry, ledger, status, source_type):
+    registry_record = copy.deepcopy(next(iter(registry.values())))
+    clock_name = registry_record["clock_name"]
+    ledger_record = copy.deepcopy(ledger[clock_name])
+    evidence = ledger_record["fields"]["year"]
+    ledger_record["reviewer"] = "reviewer"
+    ledger_record["sources"][0]["type"] = source_type
+    evidence["status"] = status
+    evidence["locator"] = "page 1"
+
+    with pytest.raises(ValueError, match=rf"{clock_name}\.year.*{status}.*{source_type}"):
+        validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
 
 
 def test_resolved_evidence_rejects_provisional_assignment(registry, ledger):

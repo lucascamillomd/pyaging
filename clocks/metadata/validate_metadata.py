@@ -27,6 +27,11 @@ AUDITED_FIELDS = (
 EVIDENCE_STATUSES = {"paper-confirmed", "supplement-confirmed", "code-confirmed", "unresolved"}
 ADMIN_FIELDS = {"approved_by_author", "research_only", "citations", "citations_date"}
 SOURCE_TYPES = {"paper", "supplement", "code"}
+CONFIRMED_SOURCE_TYPES = {
+    "paper-confirmed": "paper",
+    "supplement-confirmed": "supplement",
+    "code-confirmed": "code",
+}
 PROVISIONAL_SOURCE_TEXT = {"pending source audit", "unresolved", "unknown"}
 
 
@@ -34,9 +39,22 @@ def _reject_non_finite(value):
     raise ValueError(f"non-finite JSON number {value!r} is not allowed")
 
 
+def _reject_duplicate_keys(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate key {key!r} is not allowed")
+        result[key] = value
+    return result
+
+
 def _parse_json(text, context):
     try:
-        return json.loads(text, parse_constant=_reject_non_finite)
+        return json.loads(
+            text,
+            parse_constant=_reject_non_finite,
+            object_pairs_hook=_reject_duplicate_keys,
+        )
     except json.JSONDecodeError as error:
         raise ValueError(f"{context}: invalid JSON at column {error.colno}: {error.msg}") from error
     except ValueError as error:
@@ -115,8 +133,6 @@ def validate_vocabulary(vocabulary):
             raise ValueError(f"{context}.values: expected nonempty string values")
         if len(values) != len(set(values)):
             raise ValueError(f"{context}.values: values must be unique")
-        if values != sorted(values):
-            raise ValueError(f"{context}.values: values must be deterministically sorted")
         aliases = descriptor.get("aliases")
         if type(aliases) is not dict:
             raise ValueError(f"{context}.aliases: expected an object")
@@ -228,7 +244,7 @@ def validate_evidence(registry, ledger):
         sources = ledger_record.get("sources")
         if type(sources) is not list or not sources:
             _fail(clock_name, "sources", "expected a nonempty list")
-        source_ids = set()
+        source_types = {}
         for index, source in enumerate(sources):
             source_field = f"sources[{index}]"
             if type(source) is not dict:
@@ -236,11 +252,12 @@ def validate_evidence(registry, ledger):
             source_id = source.get("id")
             if type(source_id) is not str or not source_id.strip():
                 _fail(clock_name, f"{source_field}.id", "must be a nonempty string")
-            if source_id in source_ids:
+            if source_id in source_types:
                 _fail(clock_name, "sources", f"duplicate source id {source_id!r}")
-            source_ids.add(source_id)
-            if source.get("type") not in SOURCE_TYPES:
+            source_type = source.get("type")
+            if type(source_type) is not str or source_type not in SOURCE_TYPES:
                 _fail(clock_name, f"{source_field}.type", f"must be one of {sorted(SOURCE_TYPES)}")
+            source_types[source_id] = source_type
             url = source.get("url")
             parsed_url = urlsplit(url) if type(url) is str else None
             if parsed_url is None or parsed_url.scheme != "https" or not parsed_url.netloc:
@@ -263,19 +280,32 @@ def validate_evidence(registry, ledger):
             evidence = fields[field]
             if type(evidence) is not dict:
                 _fail(clock_name, field, "evidence must be an object")
-            if evidence.get("status") not in EVIDENCE_STATUSES:
-                _fail(clock_name, field, f"status {evidence.get('status')!r} is not allowed")
+            status = evidence.get("status")
+            if type(status) is not str or not status.strip():
+                _fail(clock_name, field, "status must be a nonempty string")
+            if status not in EVIDENCE_STATUSES:
+                _fail(clock_name, field, f"status {status!r} is not allowed")
             source_text = evidence.get("source_text")
             if type(source_text) is not str or not source_text.strip():
                 _fail(clock_name, field, "source_text must be nonempty")
             locator = evidence.get("locator")
             if type(locator) is not str or not locator.strip():
                 _fail(clock_name, field, "locator must be nonempty")
-            if evidence.get("source_id") not in source_ids:
-                _fail(clock_name, field, f"source_id {evidence.get('source_id')!r} is not defined")
+            source_id = evidence.get("source_id")
+            if type(source_id) is not str or not source_id.strip():
+                _fail(clock_name, field, "source_id must be a nonempty string")
+            if source_id not in source_types:
+                _fail(clock_name, field, f"source_id {source_id!r} is not defined")
             if not _same_json_value(evidence.get("value"), registry_record[field]):
                 _fail(clock_name, field, "value does not exactly match registry")
-            if evidence["status"] != "unresolved":
+            expected_source_type = CONFIRMED_SOURCE_TYPES.get(status)
+            if expected_source_type is not None and source_types[source_id] != expected_source_type:
+                _fail(
+                    clock_name,
+                    field,
+                    f"{status} requires source type {expected_source_type!r}, got {source_types[source_id]!r}",
+                )
+            if status != "unresolved":
                 if reviewer.strip().casefold() == "unassigned":
                     _fail(clock_name, field, "resolved evidence requires an assigned reviewer")
                 if locator.strip().casefold() == "pending source audit":
