@@ -16,14 +16,18 @@ from clocks.metadata._audit_tools import (
     apply_vocabulary_decisions,
     assign_families,
     build_manifest,
+    collapse_source_text,
+    discover_metadata_cell,
     fingerprint_weights,
     main,
     materialize,
     merge_shards,
+    migrate_dry_run,
     model_fingerprint,
     normalize_doi,
     normalize_merged,
     normalize_runtime_value,
+    render_metadata_lines,
     tensor_digest,
     validate_shard,
     vocabulary_report,
@@ -109,6 +113,254 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
 
 
+def complete_registry_record(clock_name="tiny"):
+    return {
+        "clock_name": clock_name,
+        "data_type": "DNA methylation",
+        "species": "Homo sapiens",
+        "year": 2020,
+        "approved_by_author": "⌛",
+        "citation": "A citation",
+        "doi": "https://doi.org/10.1000/example",
+        "notes": "A note",
+        "research_only": None,
+        "tissue": ["whole blood"],
+        "predicts": ["chronological age"],
+        "training_target": ["chronological age"],
+        "unit": ["years"],
+        "model_type": "elastic net regression",
+        "platform": ["Illumina 450K"],
+        "population": "adults",
+        "journal": "Journal",
+        "last_author": "Author",
+        "n_features": 2,
+        "citations": 4,
+        "citations_date": "2026-07-18",
+    }
+
+
+def complete_ledger_record(clock_name="tiny"):
+    record = complete_registry_record(clock_name)
+    return {
+        "clock_name": clock_name,
+        "doi": record["doi"],
+        "reviewer": "paper-audit-01",
+        "sources": [
+            {
+                "id": "paper",
+                "type": "paper",
+                "url": record["doi"],
+                "accessed": "2026-07-18",
+            }
+        ],
+        "fields": {
+            field: {
+                "value": record[field],
+                "source_text": f"Exact {field}\n wording\tfrom paper.",
+                "source_id": "paper",
+                "locator": "Methods",
+                "status": "paper-confirmed",
+                "note": "",
+            }
+            for field in AUDITED_FIELDS
+        },
+        "access_issues": [],
+    }
+
+
+def notebook_with_metadata(clock_name="tiny", duplicate=False):
+    cell = {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            f'model.metadata["clock_name"] = "{clock_name}"\n',
+            'model.metadata["data_type"] = "old"\n',
+        ],
+    }
+    cells = [copy.deepcopy(cell)]
+    if duplicate:
+        cells.append(copy.deepcopy(cell))
+    return {
+        "cells": cells,
+        "metadata": {},
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+
+
+def test_collapse_source_text_makes_control_characters_one_readable_line():
+    assert collapse_source_text("  exact\npaper\r\nwording\twith\x00 controls  ") == (
+        "exact paper wording with controls"
+    )
+
+
+def test_discover_metadata_cell_finds_assignment_semantically():
+    notebook = notebook_with_metadata()
+    notebook["cells"].insert(
+        0,
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": ["%load_ext autoreload\n"],
+        },
+    )
+    notebook["cells"][1]["source"][0] = "model.metadata [ 'clock_name' ] = 'tiny'\n"
+
+    assert discover_metadata_cell(notebook, "tiny.ipynb") == 1
+
+
+@pytest.mark.parametrize(
+    ("notebook", "message"),
+    [
+        ({"cells": []}, "zero metadata cells"),
+        (notebook_with_metadata(duplicate=True), "multiple metadata cells"),
+    ],
+)
+def test_discover_metadata_cell_rejects_zero_or_multiple_cells(notebook, message):
+    with pytest.raises(ValueError, match=message):
+        discover_metadata_cell(notebook, "tiny.ipynb")
+
+
+def test_render_metadata_lines_renders_every_field_and_controlled_comments():
+    record = complete_registry_record()
+    evidence = complete_ledger_record()["fields"]
+
+    lines = render_metadata_lines(record, evidence)
+
+    assert len(lines) == len(record)
+    assert lines[0] == 'model.metadata["clock_name"] = "tiny"\n'
+    assert (
+        'model.metadata["tissue"] = ["whole blood"]'
+        "  # Paper: Exact tissue wording from paper.\n"
+    ) in lines
+    assert (
+        'model.metadata["model_type"] = "elastic net regression"'
+        "  # Paper: Exact model_type wording from paper.\n"
+    ) in lines
+    assert 'model.metadata["research_only"] = None\n' in lines
+    for field in ARRAY_FIELDS:
+        line = next(item for item in lines if f'["{field}"]' in item)
+        assert ast.literal_eval(line.split(" = ", 1)[1].split("  #", 1)[0]) == record[field]
+    assert all("\r" not in line and "\x00" not in line for line in lines)
+
+
+def test_render_metadata_lines_rejects_missing_fields_and_unresolved_evidence():
+    record = complete_registry_record()
+    del record["unit"]
+    with pytest.raises(ValueError, match="missing curated fields"):
+        render_metadata_lines(record, complete_ledger_record()["fields"])
+
+    record = complete_registry_record()
+    evidence = complete_ledger_record()["fields"]
+    evidence["tissue"]["status"] = "unresolved"
+    with pytest.raises(ValueError, match="tiny.tissue.*resolved"):
+        render_metadata_lines(record, evidence)
+
+
+def test_migrate_dry_run_reports_changes_and_preserves_all_input_artifacts(tmp_path):
+    registry = {"tiny": complete_registry_record()}
+    registry_path = tmp_path / "registry.json"
+    write_json(registry_path, registry)
+    (tmp_path / "controlled_vocabulary.json").write_bytes(
+        (ROOT / "clocks/metadata/controlled_vocabulary.json").read_bytes()
+    )
+    ledger_path = tmp_path / "ledger.jsonl"
+    ledger_path.write_text(
+        json.dumps(complete_ledger_record(), ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    notebooks = tmp_path / "notebooks"
+    notebooks.mkdir()
+    notebook_path = notebooks / "tiny.ipynb"
+    write_json(notebook_path, notebook_with_metadata())
+    weights = tmp_path / "weights"
+    weights.mkdir()
+    model = TinyFingerprintModel()
+    model.metadata["clock_name"] = "tiny"
+    weight_path = weights / "tiny.pt"
+    torch.save(model, weight_path)
+    aggregate_path = tmp_path / "all_clock_metadata.pt"
+    torch.save({"tiny": copy.deepcopy(model.metadata)}, aggregate_path)
+    baseline_path = tmp_path / "baseline.json"
+    write_json(baseline_path, {"tiny": model_fingerprint(model)})
+    report_path = tmp_path / "proposed_changes.json"
+    before = {
+        path: (path.read_bytes(), path.lstat(), os.readlink(path) if path.is_symlink() else None)
+        for path in (notebook_path, weight_path, aggregate_path)
+    }
+
+    report = migrate_dry_run(
+        registry_path,
+        ledger_path,
+        notebooks,
+        weights,
+        aggregate_path,
+        baseline_path,
+        report_path,
+        expected_count=1,
+    )
+
+    assert report["schema_version"] == 1
+    assert report["clock_count"] == 1
+    assert report["dry_run"] is True
+    assert report["fingerprint_verification"] == {"clock_count": 1, "matches": True}
+    assert list(report["clocks"]) == ["tiny"]
+    change = report["clocks"]["tiny"]
+    assert set(change["curated_fields"]) == set(registry["tiny"])
+    assert change["curated_fields"]["data_type"] == {
+        "old": "old",
+        "new": "DNA methylation",
+        "changed": True,
+    }
+    assert change["weight_metadata"]["additions"]["training_target"] == [
+        "chronological age"
+    ]
+    assert change["weight_metadata"]["removals"] == {"obsolete": "remove"}
+    assert change["aggregate_metadata"]["additions"]
+    assert len(change["notebook_lines"]) == len(registry["tiny"])
+    assert change["unchanged_fields"]
+    assert report_path.is_file()
+    assert json.loads(report_path.read_text(encoding="utf-8")) == report
+    for path, (contents, stat_result, link_target) in before.items():
+        assert path.read_bytes() == contents
+        assert path.lstat() == stat_result
+        assert (os.readlink(path) if path.is_symlink() else None) == link_target
+
+
+def test_migrate_dry_run_excludes_template_and_rejects_clock_set_mismatches(tmp_path):
+    registry = {"tiny": complete_registry_record()}
+    registry_path = tmp_path / "registry.json"
+    write_json(registry_path, registry)
+    (tmp_path / "controlled_vocabulary.json").write_bytes(
+        (ROOT / "clocks/metadata/controlled_vocabulary.json").read_bytes()
+    )
+    ledger_path = tmp_path / "ledger.jsonl"
+    ledger_path.write_text(
+        json.dumps(complete_ledger_record()) + "\n", encoding="utf-8"
+    )
+    notebooks = tmp_path / "notebooks"
+    notebooks.mkdir()
+    write_json(notebooks / "template.ipynb", notebook_with_metadata("tiny"))
+    weights = tmp_path / "weights"
+    weights.mkdir()
+
+    with pytest.raises(ValueError, match="notebook clock set mismatch"):
+        migrate_dry_run(
+            registry_path,
+            ledger_path,
+            notebooks,
+            weights,
+            tmp_path / "aggregate.pt",
+            tmp_path / "baseline.json",
+            tmp_path / "report.json",
+            expected_count=1,
+        )
+
+
 @pytest.mark.parametrize(
     ("value", "expected"),
     [
@@ -189,6 +441,11 @@ def test_fingerprint_nonfinite_tag_cannot_collide_with_a_legitimate_runtime_dict
         ],
     }
     assert legitimate != nonfinite
+
+
+def test_migration_fingerprint_comparison_is_type_strict():
+    assert audit_tools._same_fingerprint({"features": [1]}, {"features": [1]})
+    assert not audit_tools._same_fingerprint({"features": [1]}, {"features": [True]})
 
 
 @pytest.mark.parametrize(

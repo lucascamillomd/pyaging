@@ -1,6 +1,7 @@
 """Temporary helpers for partitioning and validating the clock metadata paper audit."""
 
 import argparse
+import ast
 import copy
 import gc
 import hashlib
@@ -32,6 +33,7 @@ try:
         SOURCE_TYPES,
         _parse_json,
         load_json,
+        load_ledger,
         normalize_doi,
         validate_audited_value,
         validate_registry,
@@ -48,11 +50,39 @@ except ImportError:  # Direct script execution.
         SOURCE_TYPES,
         _parse_json,
         load_json,
+        load_ledger,
         normalize_doi,
         validate_audited_value,
         validate_registry,
         validate_vocabulary,
     )
+
+CURATED_METADATA_FIELDS = (
+    "clock_name",
+    "data_type",
+    "species",
+    "year",
+    "approved_by_author",
+    "citation",
+    "doi",
+    "notes",
+    "research_only",
+    "tissue",
+    "predicts",
+    "training_target",
+    "unit",
+    "model_type",
+    "platform",
+    "population",
+    "journal",
+    "last_author",
+    "n_features",
+    "citations",
+    "citations_date",
+)
+CONTROLLED_FIELDS = ARRAY_FIELDS + CONTROLLED_SCALAR_FIELDS
+RUNTIME_AGGREGATE_FIELDS = ("version", "preprocess", "postprocess", "reference_values")
+
 
 def _validate_batch_count(batch_count):
     if type(batch_count) is not int or batch_count <= 0:
@@ -290,6 +320,332 @@ def verify_fingerprints(weights_path, baseline_path, expected_count=173):
     if mismatches:
         raise ValueError(f"fingerprint mismatch for clocks: {mismatches}")
     return {"clock_count": len(current), "matches": True}
+
+
+def collapse_source_text(value):
+    """Collapse paper wording to a safe, readable single-line Python comment."""
+    if type(value) is not str or not value.strip():
+        raise ValueError("source_text must be a nonempty string")
+    characters = []
+    for character in value:
+        if character.isspace() or unicodedata.category(character).startswith("C"):
+            characters.append(" ")
+        else:
+            characters.append(character)
+    collapsed = re.sub(r" +", " ", "".join(characters)).strip()
+    if not collapsed:
+        raise ValueError("source_text must contain readable characters")
+    return collapsed
+
+
+def _metadata_assignment_field(statement):
+    if not isinstance(statement, ast.Assign) or len(statement.targets) != 1:
+        return None
+    target = statement.targets[0]
+    if not isinstance(target, ast.Subscript):
+        return None
+    value = target.value
+    if (
+        not isinstance(value, ast.Attribute)
+        or value.attr != "metadata"
+        or not isinstance(value.value, ast.Name)
+        or value.value.id != "model"
+    ):
+        return None
+    slice_value = target.slice
+    if isinstance(slice_value, ast.Constant) and type(slice_value.value) is str:
+        return slice_value.value
+    return None
+
+
+def _cell_source(cell, context):
+    source = cell.get("source")
+    if type(source) is str:
+        return source
+    if type(source) is list and all(type(line) is str for line in source):
+        return "".join(source)
+    raise ValueError(f"{context}: cell source must be a string or string list")
+
+
+def discover_metadata_cell(notebook, context="notebook"):
+    """Return the sole code-cell index assigning model.metadata['clock_name']."""
+    if type(notebook) is not dict or type(notebook.get("cells")) is not list:
+        raise ValueError(f"{context}: invalid notebook structure")
+    matches = []
+    for index, cell in enumerate(notebook["cells"]):
+        if type(cell) is not dict or cell.get("cell_type") != "code":
+            continue
+        source = _cell_source(cell, f"{context}.cells[{index}]")
+        if "metadata" not in source or "clock_name" not in source:
+            continue
+        try:
+            tree = ast.parse(source)
+        except SyntaxError as error:
+            raise ValueError(f"{context}.cells[{index}]: invalid Python: {error.msg}") from error
+        if any(_metadata_assignment_field(statement) == "clock_name" for statement in tree.body):
+            matches.append(index)
+    if not matches:
+        raise ValueError(f"{context}: zero metadata cells")
+    if len(matches) != 1:
+        raise ValueError(f"{context}: multiple metadata cells")
+    return matches[0]
+
+
+def _notebook_metadata_values(source, context):
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as error:
+        raise ValueError(f"{context}: invalid metadata cell Python: {error.msg}") from error
+    values = {}
+    for statement in tree.body:
+        field = _metadata_assignment_field(statement)
+        if field is None:
+            continue
+        if field in values:
+            raise ValueError(f"{context}: duplicate metadata assignment for {field!r}")
+        try:
+            values[field] = ast.literal_eval(statement.value)
+        except (ValueError, TypeError) as error:
+            raise ValueError(f"{context}.{field}: value must be a Python literal") from error
+    return values
+
+
+def _render_python_literal(value):
+    if value is None:
+        return "None"
+    if type(value) is bool:
+        return "True" if value else "False"
+    if type(value) in (str, int, float, list):
+        rendered = json.dumps(value, ensure_ascii=False, allow_nan=False)
+        if type(value) is list and any(type(item) is not str for item in value):
+            raise ValueError("metadata arrays must contain only strings")
+        return rendered
+    raise ValueError(f"unsupported curated metadata type {type(value).__name__}")
+
+
+def render_metadata_lines(record, evidence_fields):
+    """Render all curated assignments with same-line controlled-field evidence."""
+    clock_name = record.get("clock_name") if type(record) is dict else None
+    if type(clock_name) is not str or not clock_name:
+        raise ValueError("record.clock_name must be a nonempty string")
+    missing = [field for field in CURATED_METADATA_FIELDS if field not in record]
+    if missing:
+        raise ValueError(f"{clock_name}: missing curated fields {missing}")
+    if type(evidence_fields) is not dict:
+        raise ValueError(f"{clock_name}: evidence fields must be an object")
+    lines = []
+    for field in CURATED_METADATA_FIELDS:
+        value = record[field]
+        if field in ARRAY_FIELDS and type(value) is not list:
+            raise ValueError(f"{clock_name}.{field}: expected a list")
+        line = f'model.metadata["{field}"] = {_render_python_literal(value)}'
+        if field in CONTROLLED_FIELDS:
+            evidence = evidence_fields.get(field)
+            if type(evidence) is not dict:
+                raise ValueError(f"{clock_name}.{field}: missing evidence")
+            if evidence.get("status") == "unresolved":
+                raise ValueError(f"{clock_name}.{field}: evidence must be resolved")
+            if evidence.get("value") != value:
+                raise ValueError(f"{clock_name}.{field}: registry/evidence value mismatch")
+            line += f"  # Paper: {collapse_source_text(evidence.get('source_text'))}"
+        lines.append(line + "\n")
+    return lines
+
+
+def _sha256_path(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as source:
+        for block in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _artifact_state(path):
+    path = Path(path)
+    stat_result = path.lstat()
+    return {
+        "lstat": (
+            stat_result.st_dev,
+            stat_result.st_ino,
+            stat_result.st_mode,
+            stat_result.st_size,
+            stat_result.st_mtime_ns,
+        ),
+        "link_target": os.readlink(str(path)) if path.is_symlink() else None,
+        "sha256": _sha256_path(path),
+    }
+
+
+def _metadata_changes(old, new):
+    additions = {key: copy.deepcopy(new[key]) for key in new if key not in old}
+    changes = {
+        key: {"old": copy.deepcopy(old[key]), "new": copy.deepcopy(new[key])}
+        for key in new
+        if key in old and old[key] != new[key]
+    }
+    removals = {key: copy.deepcopy(old[key]) for key in old if key not in new}
+    unchanged = [key for key in new if key in old and old[key] == new[key]]
+    return {
+        "additions": additions,
+        "changes": changes,
+        "removals": removals,
+        "unchanged": unchanged,
+    }
+
+
+def _same_fingerprint(left, right):
+    options = {
+        "ensure_ascii": False,
+        "sort_keys": True,
+        "separators": (",", ":"),
+        "allow_nan": False,
+    }
+    return json.dumps(left, **options) == json.dumps(right, **options)
+
+
+def _aggregate_runtime_metadata(model):
+    values = {
+        "version": model.version,
+        "preprocess": model.preprocess_name,
+        "postprocess": model.postprocess_name,
+        "reference_values": True if model.reference_values is not None else None,
+    }
+    return {key: value for key, value in values.items() if value is not None}
+
+
+def _validate_migration_inputs(registry_path, ledger_path, notebooks_path, weights_path, expected_count):
+    registry = load_json(registry_path)
+    vocabulary_path = Path(registry_path).with_name("controlled_vocabulary.json")
+    vocabulary = load_json(vocabulary_path)
+    validate_registry(registry, vocabulary)
+    ledger = load_ledger(ledger_path)
+    if len(registry) != expected_count:
+        raise ValueError(
+            f"registry count mismatch: expected {expected_count}, found {len(registry)}"
+        )
+    if set(ledger) != set(registry):
+        raise ValueError(
+            f"ledger clock set mismatch: missing={sorted(set(registry) - set(ledger))}, "
+            f"extra={sorted(set(ledger) - set(registry))}"
+        )
+    for name, record in ledger.items():
+        _validate_record(record)
+        for field in AUDITED_FIELDS:
+            evidence = record["fields"][field]
+            if evidence["status"] == "unresolved":
+                raise ValueError(f"{name}.{field}: evidence must be resolved")
+            if evidence["value"] != registry[name][field]:
+                raise ValueError(f"{name}.{field}: registry/evidence value mismatch")
+
+    notebook_dir = Path(notebooks_path)
+    notebooks = _clock_paths(notebook_dir, ".ipynb", excluded=("template",))
+    weights = _clock_paths(weights_path, ".pt")
+    for label, paths in (("notebook", notebooks), ("weight", weights)):
+        if set(paths) != set(registry):
+            raise ValueError(
+                f"{label} clock set mismatch: missing={sorted(set(registry) - set(paths))}, "
+                f"extra={sorted(set(paths) - set(registry))}"
+            )
+    return registry, ledger, notebooks, weights
+
+
+def migrate_dry_run(
+    registry_path,
+    ledger_path,
+    notebooks_path,
+    weights_path,
+    aggregate_path,
+    baseline_path,
+    report_path,
+    expected_count=173,
+):
+    """Preflight and report the one-off metadata migration without artifact writes."""
+    registry, ledger, notebooks, weights = _validate_migration_inputs(
+        registry_path, ledger_path, notebooks_path, weights_path, expected_count
+    )
+    aggregate_path = Path(aggregate_path)
+    baseline = load_json(baseline_path)
+    if type(baseline) is not dict or set(baseline) != set(registry):
+        raise ValueError("fingerprint baseline clock set mismatch")
+    aggregate = torch.load(aggregate_path, weights_only=False, map_location="cpu")
+    if type(aggregate) is not dict or set(aggregate) != set(registry):
+        raise ValueError("aggregate clock set mismatch")
+
+    artifact_paths = list(notebooks.values()) + list(weights.values()) + [aggregate_path]
+    before = {str(path): _artifact_state(path) for path in artifact_paths}
+    clocks = {}
+    for name in sorted(registry):
+        notebook = load_json(notebooks[name])
+        cell_index = discover_metadata_cell(notebook, str(notebooks[name]))
+        source = _cell_source(
+            notebook["cells"][cell_index],
+            f"{notebooks[name]}.cells[{cell_index}]",
+        )
+        old_notebook = _notebook_metadata_values(source, str(notebooks[name]))
+        if old_notebook.get("clock_name") != name:
+            raise ValueError(f"{name}: notebook metadata clock_name mismatch")
+        lines = render_metadata_lines(registry[name], ledger[name]["fields"])
+
+        model = torch.load(weights[name], weights_only=False, map_location="cpu")
+        if type(getattr(model, "metadata", None)) is not dict:
+            raise ValueError(f"{name}: weight metadata must be a dictionary")
+        if model.metadata.get("clock_name") != name:
+            raise ValueError(f"{name}: weight metadata clock_name mismatch")
+        fingerprint = model_fingerprint(model)
+        if not _same_fingerprint(fingerprint, baseline[name]):
+            raise ValueError(f"{name}: fingerprint mismatch")
+        weight_changes = _metadata_changes(
+            model.metadata,
+            copy.deepcopy(registry[name]),
+        )
+        desired_aggregate = {
+            field: copy.deepcopy(registry[name][field])
+            for field in CURATED_METADATA_FIELDS
+        }
+        desired_aggregate.update(_aggregate_runtime_metadata(model))
+        aggregate_changes = _metadata_changes(aggregate[name], desired_aggregate)
+        del model
+        gc.collect()
+
+        curated_changes = {
+            field: {
+                "old": copy.deepcopy(old_notebook.get(field)),
+                "new": copy.deepcopy(registry[name][field]),
+                "changed": old_notebook.get(field) != registry[name][field],
+            }
+            for field in CURATED_METADATA_FIELDS
+        }
+        clocks[name] = {
+            "curated_fields": curated_changes,
+            "notebook_cell_index": cell_index,
+            "notebook_lines": lines,
+            "weight_metadata": weight_changes,
+            "aggregate_metadata": aggregate_changes,
+            "unchanged_fields": [
+                field for field, change in curated_changes.items() if not change["changed"]
+            ],
+            "fingerprint_matches": True,
+        }
+    del aggregate
+    gc.collect()
+    after = {str(path): _artifact_state(path) for path in artifact_paths}
+    if before != after:
+        changed = [path for path in before if before[path] != after[path]]
+        raise ValueError(f"dry-run modified repository artifacts: {changed}")
+
+    report = {
+        "schema_version": 1,
+        "dry_run": True,
+        "clock_count": len(clocks),
+        "fingerprint_verification": {"clock_count": len(clocks), "matches": True},
+        "artifact_preservation": {
+            "artifact_count": len(artifact_paths),
+            "bytes_and_symlinks_unchanged": True,
+        },
+        "clocks": clocks,
+    }
+    _write_json_atomic(report_path, report)
+    return report
 
 
 def build_manifest(registry_path, output_dir, batch_count=12):
@@ -1791,6 +2147,16 @@ def _parser():
     verification.add_argument("--weights", required=True)
     verification.add_argument("--baseline", required=True)
     verification.add_argument("--expected-count", type=int, default=173)
+    migration = subparsers.add_parser("migrate")
+    migration.add_argument("--registry", required=True)
+    migration.add_argument("--ledger", required=True)
+    migration.add_argument("--notebooks", required=True)
+    migration.add_argument("--weights", required=True)
+    migration.add_argument("--aggregate", required=True)
+    migration.add_argument("--baseline", required=True)
+    migration.add_argument("--report", required=True)
+    migration.add_argument("--expected-count", type=int, default=173)
+    migration.add_argument("--dry-run", action="store_true", required=True)
     return parser
 
 
@@ -1842,13 +2208,25 @@ def main(argv=None):
                 arguments.expected_count,
             )
             print(f"fingerprinted {len(fingerprints)} clocks")
-        else:
+        elif arguments.command == "verify-fingerprints":
             summary = verify_fingerprints(
                 arguments.weights,
                 arguments.baseline,
                 arguments.expected_count,
             )
             print(f"verified {summary['clock_count']} clock fingerprints")
+        else:
+            summary = migrate_dry_run(
+                arguments.registry,
+                arguments.ledger,
+                arguments.notebooks,
+                arguments.weights,
+                arguments.aggregate,
+                arguments.baseline,
+                arguments.report,
+                arguments.expected_count,
+            )
+            print(f"proposed metadata migration for {summary['clock_count']} clocks")
     except (OSError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 2

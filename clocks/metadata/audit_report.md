@@ -111,6 +111,26 @@
 
 ## Changed-value summary
 
+The reviewed dry-run proposed changes for all 173 clocks exactly once. It
+rendered 3,633 curated notebook assignments, including 1,557 controlled-field
+assignments with same-line `# Paper:` evidence comments. The five multi-valued
+fields changed structurally in every notebook because their prior scalar values
+become Python lists; the evidence audit's semantic change counts remain listed
+below.
+
+Across serialized model metadata, the proposal contains 2,250 key additions,
+740 value changes, and no removals. Across the aggregate metadata object, it
+contains 173 key additions, 1,668 value changes, and no removals. Runtime
+metadata is preserved: `version` is updated from the prior null metadata value
+to the registry/runtime value rather than removed.
+
+Notable scientific corrections include limiting CpGPTGrimAge3 and
+CpGPTPCGrimAge3 training to FHS whole blood on Illumina 450K with mortality as
+the training target; expressing DunedinPoAm38 in biological years per
+chronological year; expressing SenMortalityAge as a log-hazard score; and
+recording ZhangMortality as the paper's unitless weighted score while retaining
+the documented implementation discrepancy.
+
 ## Field change counts
 
 - data_type: 169
@@ -133,6 +153,14 @@
 ## Validation
 
 - 173 clocks and 2768 audited fields materialized with no unresolved evidence.
+- The dry-run matched all 173 registry, ledger, notebook, weight, aggregate, and
+  baseline-fingerprint clock identities.
+- All 173 prediction-state fingerprints matched the immutable baseline.
+- SHA-256 bytes plus logical symlink `lstat` and link targets were unchanged for
+  all 347 repository artifacts (173 notebooks, 173 weights, and one aggregate).
+- All controlled values passed the canonical vocabulary and resolved-evidence
+  checks; all 1,557 paper comments are single physical lines (maximum rendered
+  assignment length: 277 characters).
 
 ## Hugging Face publication
 
