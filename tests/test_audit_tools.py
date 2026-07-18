@@ -1,3 +1,4 @@
+import ast
 import copy
 import json
 from pathlib import Path
@@ -25,6 +26,19 @@ from clocks.metadata.validate_metadata import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_audit_tools_do_not_use_python_310_zip_strict_keyword():
+    tree = ast.parse(Path(audit_tools.__file__).read_text(encoding="utf-8"))
+    incompatible_calls = [
+        node.lineno
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "zip"
+        and any(keyword.arg == "strict" for keyword in node.keywords)
+    ]
+    assert incompatible_calls == []
 
 
 def test_audit_report_has_exact_fixed_scaffold():
@@ -977,6 +991,73 @@ def test_materialize_rolls_back_every_target_on_publish_or_validation_failure(
     assert {target: target.read_bytes() for target in targets} == original_bytes
     assert {target: target.stat().st_mode for target in targets} == original_modes
     assert not [path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-")]
+
+
+def _assert_materialized_targets_are_new_and_consistent(targets, merged):
+    registry = json.loads(targets[0].read_text())
+    assert registry["alpha"]["notes"] == merged["records"][0]["fields"]["notes"]["value"]
+    assert [json.loads(line) for line in targets[1].read_text().splitlines()] == merged["records"]
+    assert targets[2].read_text().startswith("# Clock Metadata Audit Materialization\n")
+
+
+@pytest.mark.parametrize("failure_boundary", [1, 2, 3])
+def test_materialize_backup_cleanup_failure_keeps_fully_committed_targets(
+    tmp_path, monkeypatch, failure_boundary
+):
+    normalized_path, current_path, vocabulary_path, targets, merged, _current = materialization_fixture(tmp_path)
+    original_cleanup = audit_tools._cleanup_materialization_backup
+    cleanup_count = 0
+
+    def failing_cleanup(backup):
+        nonlocal cleanup_count
+        cleanup_count += 1
+        if cleanup_count == failure_boundary:
+            raise OSError(f"injected backup cleanup {failure_boundary}")
+        original_cleanup(backup)
+
+    monkeypatch.setattr(audit_tools, "_cleanup_materialization_backup", failing_cleanup)
+
+    with pytest.raises(ValueError) as error:
+        materialize(normalized_path, current_path, vocabulary_path, *targets)
+
+    assert "targets committed" in str(error.value)
+    assert "recovery artifact" in str(error.value)
+    _assert_materialized_targets_are_new_and_consistent(targets, merged)
+    leftovers = [
+        path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-backup-")
+    ]
+    assert len(leftovers) == 1
+    assert not (tmp_path / ".clock-metadata-materialize.lock").exists()
+
+
+@pytest.mark.parametrize("failure_kind", ["unlink", "fsync"])
+def test_materialize_lock_cleanup_failure_never_rolls_back_committed_targets(
+    tmp_path, monkeypatch, failure_kind
+):
+    normalized_path, current_path, vocabulary_path, targets, merged, _current = materialization_fixture(tmp_path)
+    lock = tmp_path / ".clock-metadata-materialize.lock"
+    if failure_kind == "unlink":
+        monkeypatch.setattr(
+            audit_tools,
+            "_remove_materialization_lock",
+            lambda _path: (_ for _ in ()).throw(OSError("injected lock unlink")),
+        )
+    else:
+        monkeypatch.setattr(
+            audit_tools,
+            "_fsync_materialization_lock_removal",
+            lambda _parent: (_ for _ in ()).throw(OSError("injected lock fsync")),
+        )
+
+    with pytest.raises(ValueError) as error:
+        materialize(normalized_path, current_path, vocabulary_path, *targets)
+
+    assert "targets committed" in str(error.value)
+    assert "lock cleanup failure" in str(error.value)
+    _assert_materialized_targets_are_new_and_consistent(targets, merged)
+    assert lock.exists() is (failure_kind == "unlink")
+    if failure_kind == "unlink":
+        assert "remove manually" in str(error.value)
 
 
 def test_materialize_rolls_back_new_targets_by_removing_them(tmp_path, monkeypatch):

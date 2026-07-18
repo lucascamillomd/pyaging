@@ -877,34 +877,77 @@ def _publish_replace(source, target):
 
 
 def _post_validate_materialization(targets, expected_bytes):
-    for target, expected in zip(targets, expected_bytes, strict=True):
+    if len(targets) != len(expected_bytes):
+        raise ValueError("materialization target/content count mismatch")
+    for target, expected in zip(targets, expected_bytes):
         if target.read_bytes() != expected:
             raise ValueError(f"post-publish validation failed for {target}")
 
 
+def _cleanup_materialization_backup(backup):
+    backup.unlink()
+
+
+class _CommittedMaterializationError(ValueError):
+    """A cleanup failure after all canonical targets crossed the commit boundary."""
+
+
 def _transactional_install_materialization(parent, targets, contents):
+    if len(targets) != len(contents):
+        raise ValueError("materialization target/content count mismatch")
     stages = []
     backups = {}
     originally_missing = set()
     published = []
     rollback_failed_backups = set()
+    committed = False
     try:
-        for index, (target, content) in enumerate(zip(targets, contents, strict=True), start=1):
+        for index, (target, content) in enumerate(zip(targets, contents), start=1):
             stages.append(_stage_materialization_bytes(parent, target, content, index))
         for index, target in enumerate(targets, start=1):
             if target.exists():
                 backups[target] = _backup_materialization_target(parent, target, index)
             else:
                 originally_missing.add(target)
-        for stage, target in zip(stages, targets, strict=True):
+        # Make recovery links durable before publishing the first canonical target.
+        _fsync_directory(parent)
+        for stage, target in zip(stages, targets):
             _publish_replace(stage, target)
             published.append(target)
         _fsync_directory(parent)
         _post_validate_materialization(targets, contents)
+        committed = True
+
+        cleanup_errors = []
+        recovery_artifacts = []
         for backup in backups.values():
-            backup.unlink()
-        _fsync_directory(parent)
+            try:
+                _cleanup_materialization_backup(backup)
+            except Exception as cleanup_error:
+                cleanup_errors.append(f"{backup}: {cleanup_error}")
+                recovery_artifacts.append(str(backup))
+        try:
+            _fsync_directory(parent)
+        except Exception as cleanup_error:
+            cleanup_errors.append(f"directory fsync: {cleanup_error}")
+        if cleanup_errors:
+            message = (
+                "materialization targets committed; post-commit cleanup failed: "
+                + "; ".join(cleanup_errors)
+            )
+            if recovery_artifacts:
+                message += (
+                    f"; recovery artifact(s) retained: {', '.join(recovery_artifacts)}; "
+                    "remove manually after verifying canonical targets"
+                )
+            raise _CommittedMaterializationError(message)
     except Exception as primary_error:
+        if committed:
+            if isinstance(primary_error, _CommittedMaterializationError):
+                raise
+            raise _CommittedMaterializationError(
+                f"materialization targets committed; post-commit cleanup failed: {primary_error}"
+            ) from primary_error
         rollback_errors = []
         for target in reversed(published):
             try:
@@ -929,10 +972,19 @@ def _transactional_install_materialization(parent, targets, contents):
         for stage in stages:
             with suppress(FileNotFoundError):
                 stage.unlink()
-        for backup in backups.values():
-            if backup not in rollback_failed_backups:
-                with suppress(FileNotFoundError):
-                    backup.unlink()
+        if not committed:
+            for backup in backups.values():
+                if backup not in rollback_failed_backups:
+                    with suppress(FileNotFoundError):
+                        backup.unlink()
+
+
+def _remove_materialization_lock(lock_path):
+    lock_path.unlink()
+
+
+def _fsync_materialization_lock_removal(parent):
+    _fsync_directory(parent)
 
 
 def materialize(
@@ -956,6 +1008,7 @@ def materialize(
         raise ValueError(f"materialization output parent is not an existing directory: {parent}")
     lock_path = _acquire_materialization_lock(parent)
     transaction_error = None
+    targets_committed = False
     result = None
     try:
         merged = _load_merged(normalized_path)
@@ -996,6 +1049,7 @@ def materialize(
 
         # All input reads, validation, and byte construction precede target mutation.
         _transactional_install_materialization(parent, targets, contents)
+        targets_committed = True
         result = {
             "paper_count": merged["paper_count"],
             "clock_count": merged["clock_count"],
@@ -1003,12 +1057,23 @@ def materialize(
             "ledger": str(targets[1]),
             "report": str(targets[2]),
         }
+    except _CommittedMaterializationError as error:
+        transaction_error = error
+        targets_committed = True
     except Exception as error:
         transaction_error = error
     try:
-        lock_path.unlink()
-        _fsync_directory(parent)
+        _remove_materialization_lock(lock_path)
+        _fsync_materialization_lock_removal(parent)
     except Exception as lock_error:
+        stale_lock = lock_path.exists()
+        if targets_committed:
+            message = f"materialization targets committed; lock cleanup failure: {lock_error}"
+            if stale_lock:
+                message += f"; stale lock retained at {lock_path}; remove manually after verification"
+            if transaction_error is not None:
+                message = f"{transaction_error}; {message}"
+            raise ValueError(message) from lock_error
         if transaction_error is not None:
             raise ValueError(f"{transaction_error}; lock cleanup failure: {lock_error}") from transaction_error
         raise ValueError(f"materialization lock cleanup failed: {lock_error}") from lock_error
