@@ -1213,7 +1213,19 @@ def _report_text(records, current):
             if evidence["note"]:
                 detail += f" {evidence['note']}"
             author_adjudications.append(detail)
-        access_issues.extend(f"- {name}: {issue}" for issue in record["access_issues"])
+        has_unresolved_evidence = any(
+            evidence["status"] == "unresolved" for evidence in record["fields"].values()
+        )
+        if has_unresolved_evidence:
+            access_issues.extend(f"- {name}: {issue}" for issue in record["access_issues"])
+        else:
+            access_issues.extend(
+                (
+                    f"- {name}: First-pass source limitation "
+                    f"(retained for provenance; final metadata evidence resolved): {issue}"
+                )
+                for issue in record["access_issues"]
+            )
     lines = [
         "# Clock Metadata Source Audit",
         "",

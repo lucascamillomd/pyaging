@@ -1433,6 +1433,25 @@ def test_materialized_report_preserves_scaffold_and_records_author_adjudication(
     assert "manuscript anonymizes the cohort" in report
 
 
+def test_materialized_report_labels_stale_unresolved_access_issue_as_superseded(tmp_path):
+    normalized_path, current_path, vocabulary_path, targets, merged, _current = materialization_fixture(tmp_path)
+    merged["records"][0]["access_issues"] = [
+        "The training target remains unresolved in the assigned paper."
+    ]
+    write_json(normalized_path, merged)
+
+    materialize(normalized_path, current_path, vocabulary_path, *targets)
+
+    report = targets[2].read_text()
+    assert (
+        "- alpha: First-pass source limitation "
+        "(retained for provenance; final metadata evidence resolved): "
+        "The training target remains unresolved in the assigned paper."
+    ) in report
+    assert "\n- alpha: The training target remains unresolved" not in report
+    assert "## Source contradictions and adjudications" in report
+
+
 @pytest.mark.parametrize("failure_point", [1, 2, 3, "post-validate"])
 def test_materialize_rolls_back_every_target_on_publish_or_validation_failure(tmp_path, monkeypatch, failure_point):
     normalized_path, current_path, vocabulary_path, targets, _merged, _current = materialization_fixture(tmp_path)
