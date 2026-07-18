@@ -52,6 +52,10 @@ assert.strictEqual(
   core.toCSV([{ tissue: ["blood", "serum, plasma"], notes: ['called "mixed"'] }], ["tissue", "notes"]),
   'tissue,notes\n"blood | serum, plasma","called ""mixed"""',
 );
+assert.strictEqual(
+  core.toCSV([{ tissue: ["blood\rcells", "plasma"], notes: "line 1\r\nline 2" }], ["tissue", "notes"]),
+  'tissue,notes\n"blood\rcells | plasma","line 1\r\nline 2"',
+);
 
 assert.deepStrictEqual(core.valuesOf(null), []);
 assert.deepStrictEqual(core.valuesOf(undefined), []);
@@ -76,5 +80,27 @@ assert.strictEqual(cf.predicts.find((x) => x.value.toLowerCase() === "chronologi
 assert.strictEqual(core.filterClocks(caseData, { predicts: ["chronological age"] }, "").length, 2);
 assert.deepStrictEqual(core.filterClocks(caseData, { predicts: ["gestational age"] }, "").map((c) => c.clock_name), ["r"]);
 assert.deepStrictEqual(core.filterClocks(caseData, { predicts: ["MORTALITY", "gestational age"] }, "").map((c) => c.clock_name), ["p", "r"]);
+
+// Prototype-named values and null-prototype/shadowed records remain ordinary
+// searchable/filterable metadata rather than colliding with Object internals.
+const nullProtoClock = Object.create(null);
+nullProtoClock.clock_name = "prototype-safe";
+nullProtoClock.predicts = ["__proto__", "constructor", "__PROTO__"];
+nullProtoClock.notes = "null prototype record";
+const shadowedClock = {
+  clock_name: "shadowed",
+  predicts: ["constructor"],
+  notes: "own hasOwnProperty field",
+  hasOwnProperty: "shadowed",
+};
+const prototypeData = [nullProtoClock, shadowedClock];
+const prototypeFacets = core.computeFacets(prototypeData);
+assert.strictEqual(prototypeFacets.predicts.find((x) => x.value.toLowerCase() === "__proto__").count, 1);
+assert.strictEqual(prototypeFacets.predicts.find((x) => x.value.toLowerCase() === "constructor").count, 2);
+const nullProtoSelected = Object.create(null);
+nullProtoSelected.predicts = ["__PROTO__"];
+assert.deepStrictEqual(core.filterClocks(prototypeData, nullProtoSelected, "").map((c) => c.clock_name), ["prototype-safe"]);
+assert.deepStrictEqual(core.filterClocks(prototypeData, {}, "null prototype").map((c) => c.clock_name), ["prototype-safe"]);
+assert.deepStrictEqual(core.filterClocks(prototypeData, {}, "own hasownproperty").map((c) => c.clock_name), ["shadowed"]);
 
 console.log("all clock_explorer_core tests passed");

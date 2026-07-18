@@ -22,9 +22,9 @@
     FACET_FIELDS.forEach(function (f) {
       // Group case-insensitively so "Chronological age" and "chronological age"
       // collapse into one option; display the first-seen casing.
-      var counts = {}, display = {};
+      var counts = Object.create(null), display = Object.create(null);
       clocks.forEach(function (c) {
-        var seen = {};
+        var seen = Object.create(null);
         valuesOf(c[f]).forEach(function (v) {
           if (v === null || v === undefined || v === "") return;
           var key = String(v).toLowerCase();
@@ -45,7 +45,7 @@
     var q = (search || "").trim().toLowerCase();
     return clocks.filter(function (c) {
       for (var f in selected) {
-        if (!selected.hasOwnProperty(f)) continue;
+        if (!Object.prototype.hasOwnProperty.call(selected, f)) continue;
         var vals = selected[f] || [];
         if (vals.length) {
           var clockValues = valuesOf(c[f]).map(function (v) { return String(v).toLowerCase(); });
@@ -59,7 +59,7 @@
       if (q) {
         var hay = "";
         for (var k in c) {
-          if (!c.hasOwnProperty(k) || SEARCH_EXCLUDE[k]) continue;
+          if (!Object.prototype.hasOwnProperty.call(c, k) || SEARCH_EXCLUDE[k]) continue;
           valuesOf(c[k]).forEach(function (val) {
             hay += String(val).toLowerCase() + " ";
           });
@@ -98,7 +98,7 @@
     function esc(v) {
       if (v == null) return "";
       v = formatValue(v, " | ");
-      return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+      return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
     }
     var lines = [columns.map(esc).join(",")];
     clocks.forEach(function (c) {
