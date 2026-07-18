@@ -12,6 +12,7 @@ from clocks.metadata.validate_metadata import (
     validate_artifact_consistency,
     validate_evidence,
     validate_registry,
+    validate_vocabulary,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -73,6 +74,43 @@ def test_load_ledger_rejects_duplicate_clock_names(tmp_path):
         load_ledger(path)
 
 
+@pytest.mark.parametrize("constant", ["NaN", "Infinity", "-Infinity"])
+def test_load_json_rejects_non_finite_numbers(tmp_path, constant):
+    path = tmp_path / "metadata.json"
+    path.write_text(f'{{"value": {constant}}}', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="non-finite"):
+        load_json(path)
+
+
+@pytest.mark.parametrize(
+    ("line", "context"),
+    [
+        ("{", r"line 1"),
+        ("null", r"line 1.*object"),
+        ("[]", r"line 1.*object"),
+        ('{"other": "value"}', r"line 1.*clock_name"),
+        ('{"clock_name": 3}', r"line 1.*clock_name"),
+        ('{"clock_name": ""}', r"line 1.*clock_name"),
+        ('{"clock_name": "clock", "value": NaN}', r"line 1.*non-finite"),
+    ],
+)
+def test_load_ledger_rejects_malformed_records(tmp_path, line, context):
+    path = tmp_path / "ledger.jsonl"
+    path.write_text(line, encoding="utf-8")
+
+    with pytest.raises(ValueError, match=context):
+        load_ledger(path)
+
+
+def test_load_ledger_requires_alphabetical_order(tmp_path):
+    path = tmp_path / "ledger.jsonl"
+    path.write_text('{"clock_name": "z"}\n{"clock_name": "a"}\n', encoding="utf-8")
+
+    with pytest.raises(ValueError, match=r"line 2.*alphabetical"):
+        load_ledger(path)
+
+
 @pytest.mark.parametrize(
     ("mutation", "context"),
     [
@@ -80,6 +118,8 @@ def test_load_ledger_rejects_duplicate_clock_names(tmp_path):
         (lambda record: record.__setitem__("year", True), r"example\.year"),
         (lambda record: record.__setitem__("data_type", "unknown"), r"example\.data_type"),
         (lambda record: record.pop("approved_by_author"), r"example\.approved_by_author"),
+        (lambda record: record.__setitem__("citations", True), r"example\.citations"),
+        (lambda record: record.__setitem__("citation", {"raw": "citation"}), r"example\.citation"),
     ],
 )
 def test_validate_registry_rejects_representative_invalid_values(registry, vocabulary, mutation, context):
@@ -89,6 +129,46 @@ def test_validate_registry_rejects_representative_invalid_values(registry, vocab
 
     with pytest.raises(ValueError, match=context):
         validate_registry(invalid_registry, vocabulary)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "context"),
+    [
+        (lambda value: value.__setitem__("schema_version", 2), r"vocabulary\.schema_version"),
+        (lambda value: value.__setitem__("array_fields", ["tissue"]), r"vocabulary\.array_fields"),
+        (lambda value: value["fields"].pop("species"), r"vocabulary\.fields"),
+        (
+            lambda value: value["fields"]["species"].__setitem__("description", ""),
+            r"vocabulary\.species\.description",
+        ),
+        (
+            lambda value: value["fields"]["species"].__setitem__("values", ["z", "a"]),
+            r"vocabulary\.species\.values.*sorted",
+        ),
+        (
+            lambda value: value["fields"]["species"].__setitem__("values", []),
+            r"vocabulary\.species\.values.*nonempty",
+        ),
+        (
+            lambda value: value["fields"]["species"].__setitem__("values", ["a", "a"]),
+            r"vocabulary\.species\.values.*unique",
+        ),
+        (
+            lambda value: value["fields"]["species"].__setitem__("values", [True]),
+            r"vocabulary\.species\.values",
+        ),
+        (
+            lambda value: value["fields"]["species"].__setitem__("aliases", {"human": "missing"}),
+            r"vocabulary\.species\.aliases",
+        ),
+    ],
+)
+def test_validate_vocabulary_rejects_malformed_schema(vocabulary, mutation, context):
+    invalid_vocabulary = copy.deepcopy(vocabulary)
+    mutation(invalid_vocabulary)
+
+    with pytest.raises(ValueError, match=context):
+        validate_vocabulary(invalid_vocabulary)
 
 
 @pytest.mark.parametrize(
@@ -106,6 +186,38 @@ def test_validate_registry_rejects_representative_invalid_values(registry, vocab
             lambda record: record["fields"]["year"].__setitem__("value", 1900),
             r"example\.year.*value",
         ),
+        (
+            lambda record: record["fields"]["year"].__setitem__("value", True),
+            r"example\.year.*value",
+        ),
+        (
+            lambda record: record["fields"]["year"].__setitem__("value", float(record["fields"]["year"]["value"])),
+            r"example\.year.*value",
+        ),
+        (lambda record: record.__setitem__("clock_name", "wrong"), r"example\.clock_name"),
+        (lambda record: record.__setitem__("doi", "https://doi.org/wrong"), r"example\.doi"),
+        (lambda record: record.__setitem__("reviewer", ""), r"example\.reviewer"),
+        (lambda record: record.__setitem__("sources", []), r"example\.sources"),
+        (
+            lambda record: record["sources"].append(copy.deepcopy(record["sources"][0])),
+            r"example\.sources.*duplicate",
+        ),
+        (
+            lambda record: record["sources"][0].__setitem__("type", "website"),
+            r"example\.sources.*type",
+        ),
+        (
+            lambda record: record["sources"][0].__setitem__("url", "http://example.test"),
+            r"example\.sources.*url",
+        ),
+        (
+            lambda record: record["sources"][0].__setitem__("url", "https://"),
+            r"example\.sources.*url",
+        ),
+        (
+            lambda record: record["sources"][0].__setitem__("accessed", "2026-7-18"),
+            r"example\.sources.*accessed",
+        ),
     ],
 )
 def test_validate_evidence_rejects_representative_invalid_values(registry, ledger, mutation, context):
@@ -119,3 +231,38 @@ def test_validate_evidence_rejects_representative_invalid_values(registry, ledge
 
     with pytest.raises(ValueError, match=context):
         validate_evidence(invalid_registry, invalid_ledger)
+
+
+def test_resolved_evidence_rejects_provisional_assignment(registry, ledger):
+    registry_record = copy.deepcopy(next(iter(registry.values())))
+    clock_name = registry_record["clock_name"]
+    ledger_record = copy.deepcopy(ledger[clock_name])
+    ledger_record["fields"]["year"]["status"] = "paper-confirmed"
+
+    with pytest.raises(ValueError, match=rf"{clock_name}\.year.*reviewer"):
+        validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
+
+
+def test_resolved_evidence_rejects_provisional_locator(registry, ledger):
+    registry_record = copy.deepcopy(next(iter(registry.values())))
+    clock_name = registry_record["clock_name"]
+    ledger_record = copy.deepcopy(ledger[clock_name])
+    ledger_record["reviewer"] = "reviewer"
+    ledger_record["fields"]["year"]["status"] = "paper-confirmed"
+
+    with pytest.raises(ValueError, match=rf"{clock_name}\.year.*locator"):
+        validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
+
+
+def test_resolved_evidence_rejects_provisional_source_text(registry, ledger):
+    registry_record = copy.deepcopy(next(iter(registry.values())))
+    clock_name = registry_record["clock_name"]
+    ledger_record = copy.deepcopy(ledger[clock_name])
+    evidence = ledger_record["fields"]["year"]
+    ledger_record["reviewer"] = "reviewer"
+    evidence["status"] = "paper-confirmed"
+    evidence["locator"] = "page 1"
+    evidence["source_text"] = "pending source audit"
+
+    with pytest.raises(ValueError, match=rf"{clock_name}\.year.*source_text"):
+        validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})

@@ -1,5 +1,8 @@
 import json
+import math
+from datetime import date
 from pathlib import Path
+from urllib.parse import urlsplit
 
 ARRAY_FIELDS = ("tissue", "platform", "predicts", "training_target", "unit")
 CONTROLLED_SCALAR_FIELDS = ("data_type", "species", "model_type", "population")
@@ -23,10 +26,26 @@ AUDITED_FIELDS = (
 )
 EVIDENCE_STATUSES = {"paper-confirmed", "supplement-confirmed", "code-confirmed", "unresolved"}
 ADMIN_FIELDS = {"approved_by_author", "research_only", "citations", "citations_date"}
+SOURCE_TYPES = {"paper", "supplement", "code"}
+PROVISIONAL_SOURCE_TEXT = {"pending source audit", "unresolved", "unknown"}
+
+
+def _reject_non_finite(value):
+    raise ValueError(f"non-finite JSON number {value!r} is not allowed")
+
+
+def _parse_json(text, context):
+    try:
+        return json.loads(text, parse_constant=_reject_non_finite)
+    except json.JSONDecodeError as error:
+        raise ValueError(f"{context}: invalid JSON at column {error.colno}: {error.msg}") from error
+    except ValueError as error:
+        raise ValueError(f"{context}: {error}") from error
 
 
 def load_json(path):
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    path = Path(path)
+    return _parse_json(path.read_text(encoding="utf-8"), str(path))
 
 
 def load_ledger(path):
@@ -34,10 +53,16 @@ def load_ledger(path):
     for line_number, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), start=1):
         if not line.strip():
             continue
-        record = json.loads(line)
+        record = _parse_json(line, f"line {line_number}")
+        if type(record) is not dict:
+            raise ValueError(f"line {line_number}: expected an object")
         clock_name = record.get("clock_name")
+        if type(clock_name) is not str or not clock_name.strip():
+            raise ValueError(f"line {line_number}: clock_name must be a nonempty string")
         if clock_name in ledger:
             raise ValueError(f"duplicate clock_name {clock_name!r} at line {line_number}")
+        if ledger and clock_name < next(reversed(ledger)):
+            raise ValueError(f"line {line_number}: clock_name records must be in alphabetical order")
         ledger[clock_name] = record
     return ledger
 
@@ -46,7 +71,98 @@ def _fail(clock_name, field, message):
     raise ValueError(f"{clock_name}.{field}: {message}")
 
 
+def _same_json_value(left, right):
+    if type(left) is not type(right):
+        return False
+    if isinstance(left, float) and (not math.isfinite(left) or not math.isfinite(right)):
+        return False
+    if type(left) is list:
+        return len(left) == len(right) and all(_same_json_value(a, b) for a, b in zip(left, right))
+    if type(left) is dict:
+        return left.keys() == right.keys() and all(_same_json_value(left[key], right[key]) for key in left)
+    return left == right
+
+
+def validate_vocabulary(vocabulary):
+    if type(vocabulary) is not dict:
+        raise ValueError("vocabulary: expected top-level object")
+    if type(vocabulary.get("schema_version")) is not int or vocabulary["schema_version"] != 1:
+        raise ValueError("vocabulary.schema_version: expected integer 1")
+    if vocabulary.get("array_fields") != list(ARRAY_FIELDS) or type(vocabulary["array_fields"]) is not list:
+        raise ValueError(f"vocabulary.array_fields: expected exactly {list(ARRAY_FIELDS)!r}")
+
+    fields = vocabulary.get("fields")
+    if type(fields) is not dict:
+        raise ValueError("vocabulary.fields: expected an object")
+    required_fields = set(ARRAY_FIELDS) | set(CONTROLLED_SCALAR_FIELDS)
+    missing = sorted(required_fields - set(fields))
+    if missing:
+        raise ValueError(f"vocabulary.fields: missing controlled fields {missing}")
+
+    for field, descriptor in fields.items():
+        context = f"vocabulary.{field}"
+        if type(descriptor) is not dict:
+            raise ValueError(f"{context}: expected an object")
+        description = descriptor.get("description")
+        if type(description) is not str or not description.strip():
+            raise ValueError(f"{context}.description: expected a nonempty string")
+        values = descriptor.get("values")
+        if type(values) is not list:
+            raise ValueError(f"{context}.values: expected a list")
+        if not values:
+            raise ValueError(f"{context}.values: expected a nonempty list")
+        if any(type(value) is not str or not value.strip() for value in values):
+            raise ValueError(f"{context}.values: expected nonempty string values")
+        if len(values) != len(set(values)):
+            raise ValueError(f"{context}.values: values must be unique")
+        if values != sorted(values):
+            raise ValueError(f"{context}.values: values must be deterministically sorted")
+        aliases = descriptor.get("aliases")
+        if type(aliases) is not dict:
+            raise ValueError(f"{context}.aliases: expected an object")
+        for alias, target in aliases.items():
+            if type(alias) is not str or not alias.strip():
+                raise ValueError(f"{context}.aliases: alias names must be nonempty strings")
+            if type(target) is not str or target not in values:
+                raise ValueError(f"{context}.aliases: alias {alias!r} must reference an existing value")
+
+
+def _validate_registry_field_types(clock_name, record):
+    string_fields = (
+        "data_type",
+        "species",
+        "doi",
+        "notes",
+        "model_type",
+        "population",
+        "journal",
+        "last_author",
+        "approved_by_author",
+        "citations_date",
+    )
+    for field in string_fields:
+        if type(record[field]) is not str or not record[field].strip():
+            _fail(clock_name, field, "expected a nonempty string")
+
+    citation = record["citation"]
+    if type(citation) is str:
+        valid_citation = bool(citation.strip())
+    elif type(citation) is list:
+        valid_citation = bool(citation) and all(type(item) is str and item.strip() for item in citation)
+    else:
+        valid_citation = False
+    if not valid_citation:
+        _fail(clock_name, "citation", "expected a nonempty string or list of nonempty strings")
+
+    for field in ("year", "n_features", "citations"):
+        if type(record[field]) is not int:
+            _fail(clock_name, field, "expected an integer")
+    if record["research_only"] is not None and type(record["research_only"]) is not bool:
+        _fail(clock_name, "research_only", "expected a boolean or null")
+
+
 def validate_registry(registry, vocabulary):
+    validate_vocabulary(vocabulary)
     if type(registry) is not dict:
         raise ValueError("registry: expected top-level object")
     if list(registry) != sorted(registry):
@@ -64,6 +180,7 @@ def validate_registry(registry, vocabulary):
         for field in (*AUDITED_FIELDS, *ADMIN_FIELDS):
             if field not in record:
                 _fail(clock_name, field, "required curated field is missing")
+        _validate_registry_field_types(clock_name, record)
 
         for field in ARRAY_FIELDS:
             value = record[field]
@@ -71,24 +188,22 @@ def validate_registry(registry, vocabulary):
                 _fail(clock_name, field, "expected a list")
             if not value:
                 _fail(clock_name, field, "must not be empty")
-            if len(value) != len({json.dumps(item, sort_keys=True) for item in value}):
+            if any(type(item) is not str or not item.strip() for item in value):
+                _fail(clock_name, field, "expected nonempty string values")
+            if len(value) != len(set(value)):
                 _fail(clock_name, field, "values must be unique")
             allowed = vocabulary_fields.get(field, {}).get("values", [])
             for item in value:
-                if item not in allowed:
+                if not any(_same_json_value(item, allowed_item) for allowed_item in allowed):
                     _fail(clock_name, field, f"{item!r} is not in the controlled vocabulary")
 
         for field in CONTROLLED_SCALAR_FIELDS:
             value = record[field]
             allowed = vocabulary_fields.get(field, {}).get("values", [])
-            if value not in allowed:
+            if not any(_same_json_value(value, allowed_item) for allowed_item in allowed):
                 _fail(clock_name, field, f"{value!r} is not in the controlled vocabulary")
 
-        for field in ("year", "n_features"):
-            if type(record[field]) is not int:
-                _fail(clock_name, field, "expected an integer")
-
-        if not isinstance(record["doi"], str) or not record["doi"].startswith("https://doi.org/"):
+        if not record["doi"].startswith("https://doi.org/"):
             _fail(clock_name, "doi", "must start with https://doi.org/")
 
 
@@ -100,10 +215,44 @@ def validate_evidence(registry, ledger):
 
     for clock_name, registry_record in registry.items():
         ledger_record = ledger[clock_name]
+        if type(ledger_record) is not dict:
+            _fail(clock_name, "record", "expected an object")
+        if ledger_record.get("clock_name") != clock_name:
+            _fail(clock_name, "clock_name", "must exactly match registry key")
+        if not _same_json_value(ledger_record.get("doi"), registry_record["doi"]):
+            _fail(clock_name, "doi", "must exactly match registry DOI")
+        reviewer = ledger_record.get("reviewer")
+        if type(reviewer) is not str or not reviewer.strip():
+            _fail(clock_name, "reviewer", "must be a nonempty string")
+
         sources = ledger_record.get("sources")
-        if type(sources) is not list:
-            _fail(clock_name, "sources", "expected a list")
-        source_ids = {source.get("id") for source in sources if type(source) is dict}
+        if type(sources) is not list or not sources:
+            _fail(clock_name, "sources", "expected a nonempty list")
+        source_ids = set()
+        for index, source in enumerate(sources):
+            source_field = f"sources[{index}]"
+            if type(source) is not dict:
+                _fail(clock_name, source_field, "expected an object")
+            source_id = source.get("id")
+            if type(source_id) is not str or not source_id.strip():
+                _fail(clock_name, f"{source_field}.id", "must be a nonempty string")
+            if source_id in source_ids:
+                _fail(clock_name, "sources", f"duplicate source id {source_id!r}")
+            source_ids.add(source_id)
+            if source.get("type") not in SOURCE_TYPES:
+                _fail(clock_name, f"{source_field}.type", f"must be one of {sorted(SOURCE_TYPES)}")
+            url = source.get("url")
+            parsed_url = urlsplit(url) if type(url) is str else None
+            if parsed_url is None or parsed_url.scheme != "https" or not parsed_url.netloc:
+                _fail(clock_name, f"{source_field}.url", "must be an https URL")
+            accessed = source.get("accessed")
+            try:
+                parsed_accessed = date.fromisoformat(accessed) if type(accessed) is str else None
+            except ValueError:
+                parsed_accessed = None
+            if parsed_accessed is None or parsed_accessed.isoformat() != accessed:
+                _fail(clock_name, f"{source_field}.accessed", "must use ISO YYYY-MM-DD")
+
         fields = ledger_record.get("fields")
         if type(fields) is not dict:
             _fail(clock_name, "fields", "expected an object")
@@ -112,16 +261,30 @@ def validate_evidence(registry, ledger):
             if field not in fields:
                 _fail(clock_name, field, "evidence is missing")
             evidence = fields[field]
+            if type(evidence) is not dict:
+                _fail(clock_name, field, "evidence must be an object")
             if evidence.get("status") not in EVIDENCE_STATUSES:
                 _fail(clock_name, field, f"status {evidence.get('status')!r} is not allowed")
-            if not isinstance(evidence.get("source_text"), str) or not evidence["source_text"].strip():
+            source_text = evidence.get("source_text")
+            if type(source_text) is not str or not source_text.strip():
                 _fail(clock_name, field, "source_text must be nonempty")
-            if not isinstance(evidence.get("locator"), str) or not evidence["locator"].strip():
+            locator = evidence.get("locator")
+            if type(locator) is not str or not locator.strip():
                 _fail(clock_name, field, "locator must be nonempty")
             if evidence.get("source_id") not in source_ids:
                 _fail(clock_name, field, f"source_id {evidence.get('source_id')!r} is not defined")
-            if evidence.get("value") != registry_record[field]:
+            if not _same_json_value(evidence.get("value"), registry_record[field]):
                 _fail(clock_name, field, "value does not exactly match registry")
+            if evidence["status"] != "unresolved":
+                if reviewer.strip().casefold() == "unassigned":
+                    _fail(clock_name, field, "resolved evidence requires an assigned reviewer")
+                if locator.strip().casefold() == "pending source audit":
+                    _fail(clock_name, field, "resolved evidence requires a specific locator")
+                normalized_source_text = source_text.strip().casefold()
+                if normalized_source_text in PROVISIONAL_SOURCE_TEXT or (
+                    normalized_source_text.startswith("no current ") and normalized_source_text.endswith(" recorded.")
+                ):
+                    _fail(clock_name, field, "resolved evidence cannot use provisional source_text")
 
 
 def validate_artifact_consistency(root):
