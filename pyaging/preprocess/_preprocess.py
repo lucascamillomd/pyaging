@@ -37,7 +37,7 @@ def bigwig_to_df(bw_files: Union[str, List[str]], dir: str = "pyaging_data", ver
         A list of bigWig file paths. If a single string is provided, it is converted to a list.
 
     dir : str
-        The directory to deposit the downloaded file. Defaults to "pyaging_data".
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     verbose: bool
         Whether to log the output to console with the logger. Defaults to True.
