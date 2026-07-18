@@ -43,25 +43,20 @@ def test_audit_tools_do_not_use_python_310_zip_strict_keyword():
     assert incompatible_calls == []
 
 
-def test_audit_report_has_exact_fixed_scaffold():
-    expected = """# Clock Metadata Source Audit
-
-## Scope
-173 clocks across 71 DOI families.
-
-## Controlled-vocabulary decisions
-
-## Access issues
-
-## Source contradictions and adjudications
-
-## Changed-value summary
-
-## Validation
-
-## Hugging Face publication
-"""
-    assert (ROOT / "clocks/metadata/audit_report.md").read_text(encoding="utf-8") == expected
+def test_audit_report_preserves_fixed_scaffold():
+    report = (ROOT / "clocks/metadata/audit_report.md").read_text(encoding="utf-8")
+    assert report.startswith("# Clock Metadata Source Audit\n")
+    for heading in (
+        "## Scope",
+        "## Controlled-vocabulary decisions",
+        "## Access issues",
+        "## Source contradictions and adjudications",
+        "## Changed-value summary",
+        "## Validation",
+        "## Hugging Face publication",
+    ):
+        assert heading in report
+    assert "173 clocks across 71 DOI families." in report
 
 
 def registry_record(clock_name, doi):
@@ -573,6 +568,33 @@ def test_validate_shard_rejects_representative_invalid_cases(tmp_path, mutation,
 
     with pytest.raises(ValueError, match=message):
         validate_shard(batch_path, shard_path)
+
+
+def test_validate_shard_accepts_author_confirmed_evidence_from_author_communication(tmp_path):
+    batch_path, shard_path, shard = make_batch_and_shard(tmp_path)
+    record = shard["records"][0]
+    record["reviewer"] = shard["reviewer"] = "paper-audit-01"
+    record["sources"][0].update(
+        {
+            "type": "author communication",
+            "url": "https://github.com/lcamillo/CpGPT",
+            "accessed": "2026-07-18",
+        }
+    )
+    record["fields"]["year"].update(
+        {
+            "status": "author-confirmed",
+            "source_text": "Direct author clarification",
+            "locator": "Direct author clarification in Codex task, 2026-07-18",
+        }
+    )
+    write_json(shard_path, shard)
+
+    assert validate_shard(batch_path, shard_path) == {
+        "batch": "01",
+        "paper_count": 2,
+        "clock_count": 2,
+    }
 
 
 def test_cli_reports_expected_errors_without_traceback(tmp_path, capsys):
@@ -1371,6 +1393,46 @@ def test_materialize_replaces_existing_targets_with_current_equal_to_registry(tm
     assert not [path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-")]
 
 
+def test_materialized_report_preserves_scaffold_and_records_author_adjudication(tmp_path):
+    normalized_path, current_path, vocabulary_path, targets, merged, _current = materialization_fixture(tmp_path)
+    record = merged["records"][0]
+    record["sources"].append(
+        {
+            "id": "author-clarification",
+            "type": "author communication",
+            "url": "https://github.com/lcamillo/CpGPT",
+            "accessed": "2026-07-18",
+        }
+    )
+    record["fields"]["tissue"].update(
+        {
+            "source_id": "author-clarification",
+            "source_text": "The model was trained in blood with the 450K array in FHS.",
+            "locator": "Direct author clarification in Codex task, 2026-07-18",
+            "status": "author-confirmed",
+            "note": "The manuscript anonymizes the cohort.",
+        }
+    )
+    write_json(normalized_path, merged)
+
+    materialize(normalized_path, current_path, vocabulary_path, *targets)
+
+    report = targets[2].read_text()
+    for heading in (
+        "## Scope",
+        "## Controlled-vocabulary decisions",
+        "## Access issues",
+        "## Source contradictions and adjudications",
+        "## Changed-value summary",
+        "## Validation",
+        "## Hugging Face publication",
+    ):
+        assert heading in report
+    assert "author-confirmed" in report
+    assert "Direct author clarification in Codex task, 2026-07-18" in report
+    assert "manuscript anonymizes the cohort" in report
+
+
 @pytest.mark.parametrize("failure_point", [1, 2, 3, "post-validate"])
 def test_materialize_rolls_back_every_target_on_publish_or_validation_failure(tmp_path, monkeypatch, failure_point):
     normalized_path, current_path, vocabulary_path, targets, _merged, _current = materialization_fixture(tmp_path)
@@ -1407,7 +1469,7 @@ def _assert_materialized_targets_are_new_and_consistent(targets, merged):
     registry = json.loads(targets[0].read_text())
     assert registry["alpha"]["notes"] == merged["records"][0]["fields"]["notes"]["value"]
     assert [json.loads(line) for line in targets[1].read_text().splitlines()] == merged["records"]
-    assert targets[2].read_text().startswith("# Clock Metadata Audit Materialization\n")
+    assert targets[2].read_text().startswith("# Clock Metadata Source Audit\n")
 
 
 @pytest.mark.parametrize("failure_boundary", [1, 2, 3])

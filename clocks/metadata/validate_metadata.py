@@ -25,13 +25,20 @@ AUDITED_FIELDS = (
     "last_author",
     "n_features",
 )
-EVIDENCE_STATUSES = {"paper-confirmed", "supplement-confirmed", "code-confirmed", "unresolved"}
+EVIDENCE_STATUSES = {
+    "paper-confirmed",
+    "supplement-confirmed",
+    "code-confirmed",
+    "author-confirmed",
+    "unresolved",
+}
 ADMIN_FIELDS = {"approved_by_author", "research_only", "citations", "citations_date"}
-SOURCE_TYPES = {"paper", "supplement", "code"}
+SOURCE_TYPES = {"paper", "supplement", "code", "author communication"}
 CONFIRMED_SOURCE_TYPES = {
     "paper-confirmed": "paper",
     "supplement-confirmed": "supplement",
     "code-confirmed": "code",
+    "author-confirmed": "author communication",
 }
 PROVISIONAL_SOURCE_TEXT = {"pending source audit", "unresolved", "unknown"}
 NONEMPTY_STRING_FIELDS = {

@@ -1186,18 +1186,71 @@ def _report_text(records, current):
     statuses = Counter(evidence["status"] for record in records for evidence in record["fields"].values())
     changes = Counter()
     access_issues = []
+    author_adjudications = []
+    dois = set()
     for record in records:
         name = record["clock_name"]
+        dois.add(record["doi"])
         for field, evidence in record["fields"].items():
             if current[name].get(field) != evidence["value"]:
                 changes[field] += 1
+        author_evidence = [
+            evidence
+            for evidence in record["fields"].values()
+            if evidence["status"] == "author-confirmed"
+        ]
+        seen_adjudications = set()
+        for evidence in author_evidence:
+            adjudication = (
+                evidence["source_text"],
+                evidence["locator"],
+                evidence["note"],
+            )
+            if adjudication in seen_adjudications:
+                continue
+            seen_adjudications.add(adjudication)
+            detail = f"- {name}: {evidence['source_text']} ({evidence['locator']})."
+            if evidence["note"]:
+                detail += f" {evidence['note']}"
+            author_adjudications.append(detail)
         access_issues.extend(f"- {name}: {issue}" for issue in record["access_issues"])
-    lines = ["# Clock Metadata Audit Materialization", "", "## Evidence status counts", ""]
+    lines = [
+        "# Clock Metadata Source Audit",
+        "",
+        "## Scope",
+        "",
+        f"{len(records)} clocks across {len(dois)} DOI families.",
+        "",
+        "## Controlled-vocabulary decisions",
+        "",
+        "- Tissue, platform, prediction target, training target, and unit use multi-valued controlled terms.",
+        "- Source-specific detail remains in the evidence ledger.",
+        "",
+        "## Evidence status counts",
+        "",
+    ]
     lines.extend(f"- {status}: {statuses[status]}" for status in sorted(EVIDENCE_STATUSES))
     lines.extend(["", "## Access issues", ""])
     lines.extend(access_issues or ["- None"])
-    lines.extend(["", "## Field change counts", ""])
+    lines.extend(["", "## Source contradictions and adjudications", ""])
+    lines.extend(author_adjudications or ["- None"])
+    lines.extend(["", "## Changed-value summary", "", "## Field change counts", ""])
     lines.extend(f"- {field}: {changes[field]}" for field in AUDITED_FIELDS)
+    lines.extend(
+        [
+            "",
+            "## Validation",
+            "",
+            (
+                f"- {len(records)} clocks and {sum(statuses.values())} audited fields "
+                "materialized with no unresolved evidence."
+            ),
+            "",
+            "## Hugging Face publication",
+            "",
+            "- Not performed by this one-off materialization step.",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 

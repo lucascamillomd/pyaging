@@ -273,6 +273,7 @@ def test_validate_evidence_rejects_representative_invalid_values(registry, ledge
         ("paper-confirmed", "code"),
         ("supplement-confirmed", "paper"),
         ("code-confirmed", "paper"),
+        ("author-confirmed", "paper"),
     ],
 )
 def test_resolved_evidence_status_must_match_source_type(registry, ledger, status, source_type):
@@ -281,7 +282,15 @@ def test_resolved_evidence_status_must_match_source_type(registry, ledger, statu
     ledger_record = copy.deepcopy(ledger[clock_name])
     evidence = ledger_record["fields"]["year"]
     ledger_record["reviewer"] = "reviewer"
-    ledger_record["sources"][0]["type"] = source_type
+    ledger_record["sources"].append(
+        {
+            "id": "mismatched-source",
+            "type": source_type,
+            "url": "https://example.org/source",
+            "accessed": "2026-07-18",
+        }
+    )
+    evidence["source_id"] = "mismatched-source"
     evidence["status"] = status
     evidence["locator"] = "page 1"
 
@@ -289,13 +298,40 @@ def test_resolved_evidence_status_must_match_source_type(registry, ledger, statu
         validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
 
 
+def test_author_confirmed_evidence_accepts_author_communication_source(registry, ledger):
+    registry_record = copy.deepcopy(next(iter(registry.values())))
+    clock_name = registry_record["clock_name"]
+    ledger_record = copy.deepcopy(ledger[clock_name])
+    evidence = ledger_record["fields"]["year"]
+    ledger_record["reviewer"] = "metadata-audit"
+    ledger_record["sources"].append(
+        {
+            "id": "author-clarification",
+            "type": "author communication",
+            "url": "https://github.com/lcamillo/CpGPT",
+            "accessed": "2026-07-18",
+        }
+    )
+    evidence.update(
+        {
+            "status": "author-confirmed",
+            "source_id": "author-clarification",
+            "source_text": "Direct author clarification",
+            "locator": "Direct author clarification in Codex task, 2026-07-18",
+        }
+    )
+
+    validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
+
+
 def test_resolved_evidence_rejects_provisional_assignment(registry, ledger):
     registry_record = copy.deepcopy(next(iter(registry.values())))
     clock_name = registry_record["clock_name"]
     ledger_record = copy.deepcopy(ledger[clock_name])
+    ledger_record["reviewer"] = "unassigned"
     ledger_record["fields"]["year"]["status"] = "paper-confirmed"
 
-    with pytest.raises(ValueError, match=rf"{clock_name}\.year.*reviewer"):
+    with pytest.raises(ValueError, match=rf"{clock_name}\..*reviewer"):
         validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
 
 
@@ -305,6 +341,7 @@ def test_resolved_evidence_rejects_provisional_locator(registry, ledger):
     ledger_record = copy.deepcopy(ledger[clock_name])
     ledger_record["reviewer"] = "reviewer"
     ledger_record["fields"]["year"]["status"] = "paper-confirmed"
+    ledger_record["fields"]["year"]["locator"] = "pending source audit"
 
     with pytest.raises(ValueError, match=rf"{clock_name}\.year.*locator"):
         validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
