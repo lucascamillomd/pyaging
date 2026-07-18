@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import json
 from pathlib import Path
 
 import torch
@@ -12,35 +13,35 @@ RUNTIME_METADATA_FIELDS = {
 }
 
 
-def merge_clock_metadata(generated_metadata, existing_metadata):
-    """Merge generated runtime data into the existing curated metadata."""
+def merge_clock_metadata(generated_metadata, curated_metadata):
+    """Merge generated runtime data into registry-backed curated metadata."""
     merged_metadata = {}
 
-    for clock_name, generated_entry in generated_metadata.items():
-        existing_entry = existing_metadata.get(clock_name)
-        if existing_entry is None:
-            merged_metadata[clock_name] = generated_entry.copy()
-            continue
-
-        merged_entry = {key: value for key, value in existing_entry.items() if key not in RUNTIME_METADATA_FIELDS}
+    for clock_name, curated_entry in curated_metadata.items():
+        generated_entry = generated_metadata[clock_name]
+        merged_entry = {key: value for key, value in curated_entry.items() if key not in RUNTIME_METADATA_FIELDS}
         merged_entry.update({key: generated_entry[key] for key in RUNTIME_METADATA_FIELDS if key in generated_entry})
         merged_metadata[clock_name] = merged_entry
 
     return merged_metadata
 
 
-def load_curated_metadata(metadata_path):
-    """Load and validate the existing curated metadata aggregate."""
-    if not metadata_path.is_file():
-        raise FileNotFoundError(f"Existing curated metadata aggregate is required: {metadata_path}")
+def load_curated_metadata(registry_path):
+    """Load and validate the curated JSON metadata registry."""
+    if not registry_path.is_file():
+        raise FileNotFoundError(f"Curated metadata registry is required: {registry_path}")
 
-    metadata = torch.load(metadata_path, weights_only=False)
+    try:
+        with registry_path.open(encoding="utf-8") as registry_file:
+            metadata = json.load(registry_file)
+    except json.JSONDecodeError as error:
+        raise ValueError(f"Invalid curated metadata JSON: {registry_path}") from error
     if not isinstance(metadata, dict):
         raise ValueError("Curated metadata must be a top-level dictionary")
 
     for clock_name, entry in metadata.items():
         if not isinstance(clock_name, str) or not clock_name or clock_name != clock_name.lower():
-            raise ValueError("Every curated metadata key must be a lowercase string")
+            raise ValueError("Every curated metadata key must be a lowercase non-empty string")
         if not isinstance(entry, dict):
             raise ValueError(f"Curated metadata entry for '{clock_name}' must be a dictionary")
         if entry.get("clock_name") != clock_name:
@@ -53,11 +54,11 @@ def _generated_metadata_entry(clock):
     if not isinstance(clock.metadata, dict):
         raise ValueError("Clock metadata must be a dictionary")
 
-    file_data = {key: value for key, value in clock.metadata.items() if key not in RUNTIME_METADATA_FIELDS}
-    key = file_data.get("clock_name")
+    key = clock.metadata.get("clock_name")
     if not isinstance(key, str) or not key:
         raise ValueError("Clock metadata must contain a non-empty string clock_name")
 
+    file_data = {}
     if clock.reference_values is not None:
         file_data["reference_values"] = True
     if clock.preprocess_name is not None:
@@ -124,14 +125,24 @@ def merge_and_update_pt_files(version, weight_paths):
 def regenerate_clock_metadata(
     version,
     weights_dir=Path("weights"),
+    registry_path=Path("metadata/clock_metadata.json"),
     metadata_path=Path("metadata/all_clock_metadata.pt"),
 ):
     """Validate inputs, update all weights, and save the merged aggregate."""
     weights_dir = Path(weights_dir)
+    registry_path = Path(registry_path)
     metadata_path = Path(metadata_path)
-    existing_dictionary = load_curated_metadata(metadata_path)
+    curated_dictionary = load_curated_metadata(registry_path)
 
     weight_paths, validated_clock_names = preflight_weight_files(weights_dir)
+    registry_clock_names = set(curated_dictionary)
+    if validated_clock_names != registry_clock_names:
+        raise ValueError(
+            "Registry and weight clock names must match exactly: "
+            f"registry {sorted(registry_clock_names)}, "
+            f"weights {sorted(validated_clock_names)}"
+        )
+
     generated_dictionary = merge_and_update_pt_files(version, weight_paths)
 
     generated_clock_names = set(generated_dictionary)
@@ -142,7 +153,7 @@ def regenerate_clock_metadata(
             f"generated {sorted(generated_clock_names)}"
         )
 
-    combined_dictionary = merge_clock_metadata(generated_dictionary, existing_dictionary)
+    combined_dictionary = merge_clock_metadata(generated_dictionary, curated_dictionary)
     torch.save(combined_dictionary, metadata_path)
     return combined_dictionary
 
