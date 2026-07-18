@@ -4,14 +4,25 @@ from pathlib import Path
 
 import pytest
 
+import clocks.metadata._audit_tools as audit_tools
 from clocks.metadata._audit_tools import (
     assign_families,
     build_manifest,
     main,
+    materialize,
+    merge_shards,
     normalize_doi,
+    normalize_merged,
     validate_shard,
+    vocabulary_report,
 )
-from clocks.metadata.validate_metadata import AUDITED_FIELDS, validate_audited_value
+from clocks.metadata.validate_metadata import (
+    ADMIN_FIELDS,
+    ARRAY_FIELDS,
+    AUDITED_FIELDS,
+    CONTROLLED_SCALAR_FIELDS,
+    validate_audited_value,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -528,3 +539,360 @@ def test_real_registry_manifest_is_complete_unique_and_byte_deterministic(tmp_pa
     assert sorted(path.name for path in output_one.iterdir()) == sorted(path.name for path in output_two.iterdir())
     for path in output_one.iterdir():
         assert path.read_bytes() == (output_two / path.name).read_bytes()
+
+
+def reconciliation_fixture(tmp_path):
+    batch_path, shard_path, shard = make_batch_and_shard(tmp_path)
+    batch = json.loads(batch_path.read_text())
+    manifest = {
+        "schema_version": 1,
+        "paper_count": 2,
+        "clock_count": 2,
+        "batches": [
+            {"batch": "01", "paper_count": 2, "clock_count": 2, "path": "batch-01.json"}
+        ],
+    }
+    manifest_path = tmp_path / "manifest.json"
+    write_json(manifest_path, manifest)
+    vocabulary = {
+        "schema_version": 1,
+        "array_fields": list(ARRAY_FIELDS),
+        "fields": {},
+    }
+    for field in (*ARRAY_FIELDS, *CONTROLLED_SCALAR_FIELDS):
+        values = []
+        for record in shard["records"]:
+            value = record["fields"][field]["value"]
+            values.extend(value if field in ARRAY_FIELDS else [value])
+        vocabulary["fields"][field] = {
+            "description": f"Allowed {field}",
+            "values": sorted(set(values)),
+            "aliases": {},
+        }
+    vocabulary_path = tmp_path / "vocabulary.json"
+    write_json(vocabulary_path, vocabulary)
+    return manifest_path, batch_path, shard_path, shard, vocabulary_path, vocabulary
+
+
+def test_merge_shards_happy_path_preserves_exact_records_and_refuses_existing_output(tmp_path):
+    manifest_path, _batch, _shard_path, shard, _vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
+    output = tmp_path / "merged.json"
+
+    merged = merge_shards(manifest_path, tmp_path, output)
+
+    assert merged == {
+        "schema_version": 1,
+        "paper_count": 2,
+        "clock_count": 2,
+        "records": shard["records"],
+    }
+    assert json.loads(output.read_text()) == merged
+    original = output.read_bytes()
+    with pytest.raises(ValueError, match="already exists"):
+        merge_shards(manifest_path, tmp_path, output)
+    assert output.read_bytes() == original
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (lambda root, manifest: (root / "shard-01.json").unlink(), "missing shard"),
+        (lambda root, manifest: write_json(root / "shard-99.json", {}), "extra shard"),
+        (lambda root, manifest: write_json(root / "batch-99.json", {}), "extra batch"),
+        (
+            lambda root, manifest: manifest["batches"][0].__setitem__("clock_count", 1),
+            "clock_count",
+        ),
+        (
+            lambda root, manifest: manifest.__setitem__("clock_count", 3),
+            "clock_count",
+        ),
+    ],
+)
+def test_merge_shards_rejects_missing_extra_and_bad_coverage(tmp_path, mutation, message):
+    manifest_path, _batch, _shard_path, _shard, _vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
+    manifest = json.loads(manifest_path.read_text())
+    mutation(tmp_path, manifest)
+    write_json(manifest_path, manifest)
+    output = tmp_path / "merged.json"
+
+    with pytest.raises(ValueError, match=message):
+        merge_shards(manifest_path, tmp_path, output)
+
+    assert not output.exists()
+
+
+def test_merge_shards_rejects_duplicate_clock_across_batches(tmp_path):
+    manifest_path, _batch, _shard_path, shard, _vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
+    manifest = json.loads(manifest_path.read_text())
+    batch = json.loads((tmp_path / "batch-01.json").read_text())
+    beta_paper = batch["papers"].pop()
+    batch["paper_count"] = batch["clock_count"] = 1
+    shard["records"].pop()
+    write_json(tmp_path / "batch-01.json", batch)
+    write_json(tmp_path / "shard-01.json", shard)
+
+    duplicate_batch = copy.deepcopy(batch)
+    duplicate_batch["batch"] = "02"
+    duplicate_batch["papers"][0]["current_metadata"]["alpha"]["doi"] = beta_paper["doi"]
+    duplicate_batch["papers"][0]["doi"] = beta_paper["doi"]
+    duplicate_shard = copy.deepcopy(shard)
+    duplicate_shard["batch"] = "02"
+    duplicate_shard["reviewer"] = "paper-audit-02"
+    duplicate_shard["records"][0]["reviewer"] = "paper-audit-02"
+    duplicate_shard["records"][0]["doi"] = beta_paper["doi"]
+    write_json(tmp_path / "batch-02.json", duplicate_batch)
+    write_json(tmp_path / "shard-02.json", duplicate_shard)
+    manifest["paper_count"] = manifest["clock_count"] = 2
+    manifest["batches"] = [
+        {"batch": "01", "paper_count": 1, "clock_count": 1, "path": "batch-01.json"},
+        {"batch": "02", "paper_count": 1, "clock_count": 1, "path": "batch-02.json"},
+    ]
+    write_json(manifest_path, manifest)
+
+    with pytest.raises(ValueError, match="duplicate clock"):
+        merge_shards(manifest_path, tmp_path, tmp_path / "merged.json")
+
+
+def test_merge_shards_rejects_doi_split_across_batches(tmp_path):
+    manifest_path, _batch, _shard_path, shard, _vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
+    manifest = json.loads(manifest_path.read_text())
+    batch = json.loads((tmp_path / "batch-01.json").read_text())
+    second_paper = batch["papers"].pop()
+    second_record = shard["records"].pop()
+    batch["paper_count"] = batch["clock_count"] = 1
+    shard["records"][0] = shard["records"][0]
+    write_json(tmp_path / "batch-01.json", batch)
+    write_json(tmp_path / "shard-01.json", shard)
+
+    second_paper["doi"] = batch["papers"][0]["doi"]
+    second_paper["current_metadata"]["beta"]["doi"] = second_paper["doi"]
+    second_record["doi"] = second_paper["doi"]
+    second_record["reviewer"] = "paper-audit-02"
+    second_batch = {
+        "schema_version": 1,
+        "batch": "02",
+        "paper_count": 1,
+        "clock_count": 1,
+        "papers": [second_paper],
+    }
+    second_shard = {
+        "schema_version": 1,
+        "batch": "02",
+        "reviewer": "paper-audit-02",
+        "records": [second_record],
+    }
+    write_json(tmp_path / "batch-02.json", second_batch)
+    write_json(tmp_path / "shard-02.json", second_shard)
+    manifest["batches"] = [
+        {"batch": "01", "paper_count": 1, "clock_count": 1, "path": "batch-01.json"},
+        {"batch": "02", "paper_count": 1, "clock_count": 1, "path": "batch-02.json"},
+    ]
+    write_json(manifest_path, manifest)
+
+    with pytest.raises(ValueError, match="DOI split"):
+        merge_shards(manifest_path, tmp_path, tmp_path / "merged.json")
+
+
+def test_vocabulary_report_classifies_values_and_groups_only_conservative_variants(tmp_path):
+    manifest_path, _batch, _shard_path, shard, vocabulary_path, vocabulary = reconciliation_fixture(tmp_path)
+    merged_path = tmp_path / "merged.json"
+    merge_shards(manifest_path, tmp_path, merged_path)
+    merged = json.loads(merged_path.read_text())
+    vocabulary["fields"]["tissue"]["aliases"] = {"Blood": "blood"}
+    write_json(vocabulary_path, vocabulary)
+    merged["records"][0]["fields"]["tissue"]["value"] = ["blood"]
+    merged["records"][1]["fields"]["tissue"]["value"] = [
+        "Blood",
+        "cell-lines",
+        "blood plasma",
+    ]
+    merged["records"][1]["fields"]["tissue"]["status"] = "paper-confirmed"
+    merged["records"][1]["fields"]["tissue"]["source_text"] = "Blood; cell lines; blood plasma"
+    merged["records"][1]["fields"]["tissue"]["locator"] = "page 1"
+    write_json(merged_path, merged)
+
+    report = vocabulary_report(merged_path, vocabulary_path, tmp_path / "vocabulary-report.json")
+    tissue = report["fields"]["tissue"]
+
+    assert tissue["exact_known"][0]["value"] == "blood"
+    assert tissue["alias_known"][0]["value"] == "Blood"
+    assert [item["value"] for item in tissue["unknown_values"]] == ["blood plasma", "cell-lines"]
+    groups = [[value["value"] for value in group["values"]] for group in tissue["candidate_groups"]]
+    assert ["Blood", "blood"] in groups
+    assert all("blood plasma" not in group or "blood" not in group for group in groups)
+    assert tissue["alias_known"][0]["clock_names"] == ["beta"]
+    assert tissue["alias_known"][0]["statuses"] == ["paper-confirmed"]
+    assert tissue["alias_known"][0]["source_terms"] == ["Blood; cell lines; blood plasma"]
+
+
+def test_normalize_merged_applies_explicit_aliases_only_and_preserves_evidence(tmp_path):
+    manifest_path, _batch, _shard_path, _shard, vocabulary_path, vocabulary = reconciliation_fixture(tmp_path)
+    merged_path = tmp_path / "merged.json"
+    merge_shards(manifest_path, tmp_path, merged_path)
+    merged = json.loads(merged_path.read_text())
+    vocabulary["fields"]["tissue"]["aliases"] = {"Blood": "blood"}
+    write_json(vocabulary_path, vocabulary)
+    evidence = merged["records"][0]["fields"]["tissue"]
+    evidence["value"] = ["Blood"]
+    before = copy.deepcopy(evidence)
+    write_json(merged_path, merged)
+
+    normalized = normalize_merged(merged_path, vocabulary_path, tmp_path / "normalized.json")
+    after = normalized["records"][0]["fields"]["tissue"]
+
+    assert after["value"] == ["blood"]
+    assert {key: after[key] for key in after if key != "value"} == {
+        key: before[key] for key in before if key != "value"
+    }
+
+
+def test_normalize_merged_aggregates_unknowns_and_rejects_alias_duplicates(tmp_path):
+    manifest_path, _batch, _shard_path, _shard, vocabulary_path, vocabulary = reconciliation_fixture(tmp_path)
+    merged_path = tmp_path / "merged.json"
+    merge_shards(manifest_path, tmp_path, merged_path)
+    merged = json.loads(merged_path.read_text())
+    merged["records"][0]["fields"]["tissue"]["value"] = ["mystery"]
+    merged["records"][1]["fields"]["model_type"]["value"] = "Mystery model"
+    write_json(merged_path, merged)
+    output = tmp_path / "normalized.json"
+
+    with pytest.raises(ValueError) as error:
+        normalize_merged(merged_path, vocabulary_path, output)
+    message = str(error.value)
+    assert "model_type='Mystery model': beta" in message
+    assert "tissue='mystery': alpha" in message
+    assert not output.exists()
+
+    vocabulary["fields"]["tissue"]["aliases"] = {"Blood": "blood"}
+    write_json(vocabulary_path, vocabulary)
+    merged["records"][0]["fields"]["tissue"]["value"] = ["blood", "Blood"]
+    merged["records"][1]["fields"]["model_type"]["value"] = "Elastic net"
+    write_json(merged_path, merged)
+    with pytest.raises(ValueError, match="duplicate.*alias"):
+        normalize_merged(merged_path, vocabulary_path, output)
+
+
+def _resolve_all(merged):
+    for record in merged["records"]:
+        for evidence in record["fields"].values():
+            evidence.update(
+                {
+                    "source_text": f"Confirmed {evidence['value']}",
+                    "locator": "page 1",
+                    "status": "paper-confirmed",
+                }
+            )
+    return merged
+
+
+def test_materialize_preserves_admin_and_runtime_and_writes_report_last(tmp_path, monkeypatch):
+    manifest_path, _batch, _shard_path, _shard, vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
+    merged_path = tmp_path / "merged.json"
+    merge_shards(manifest_path, tmp_path, merged_path)
+    merged = _resolve_all(json.loads(merged_path.read_text()))
+    normalized_path = tmp_path / "normalized.json"
+    write_json(normalized_path, merged)
+    current = {}
+    for record in merged["records"]:
+        name = record["clock_name"]
+        current[name] = {
+            field: copy.deepcopy(evidence["value"])
+            for field, evidence in record["fields"].items()
+        }
+        current[name].update(
+            {
+                "clock_name": name,
+                "approved_by_author": "pending",
+                "research_only": None,
+                "citations": 0,
+                "citations_date": "2026-07-18",
+                "runtime_extra": {"keep": True},
+            }
+        )
+    current["alpha"]["notes"] = "stale"
+    current_path = tmp_path / "current.json"
+    write_json(current_path, current)
+    registry_path = tmp_path / "new-registry.json"
+    ledger_path = tmp_path / "new-ledger.jsonl"
+    report_path = tmp_path / "new-report.md"
+    writes = []
+    original_write = audit_tools._write_bytes_atomic
+
+    def recording_write(path, content):
+        writes.append(Path(path).name)
+        original_write(path, content)
+
+    monkeypatch.setattr(audit_tools, "_write_bytes_atomic", recording_write)
+
+    result = materialize(
+        normalized_path,
+        current_path,
+        vocabulary_path,
+        registry_path,
+        ledger_path,
+        report_path,
+    )
+
+    registry = json.loads(registry_path.read_text())
+    assert registry["alpha"]["notes"] == merged["records"][0]["fields"]["notes"]["value"]
+    assert registry["alpha"]["runtime_extra"] == {"keep": True}
+    assert {key: registry["alpha"][key] for key in ADMIN_FIELDS} == {
+        key: current["alpha"][key] for key in ADMIN_FIELDS
+    }
+    assert [json.loads(line) for line in ledger_path.read_text().splitlines()] == merged["records"]
+    assert result["clock_count"] == 2
+    report = report_path.read_text()
+    assert "## Evidence status counts" in report
+    assert "## Access issues" in report
+    assert "## Field change counts" in report
+    assert writes == ["new-registry.json", "new-ledger.jsonl", "new-report.md"]
+
+
+def test_materialize_blocks_unresolved_and_preflight_errors_write_nothing(tmp_path):
+    manifest_path, _batch, _shard_path, _shard, vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
+    normalized_path = tmp_path / "normalized.json"
+    merge_shards(manifest_path, tmp_path, normalized_path)
+    current = {
+        record["clock_name"]: {
+            **{
+                field: copy.deepcopy(evidence["value"])
+                for field, evidence in record["fields"].items()
+            },
+            "clock_name": record["clock_name"],
+            "approved_by_author": "pending",
+            "research_only": None,
+            "citations": 0,
+            "citations_date": "2026-07-18",
+        }
+        for record in json.loads(normalized_path.read_text())["records"]
+    }
+    current_path = tmp_path / "current.json"
+    write_json(current_path, current)
+    outputs = [tmp_path / name for name in ("registry.json", "ledger.jsonl", "report.md")]
+
+    with pytest.raises(ValueError, match="unresolved"):
+        materialize(normalized_path, current_path, vocabulary_path, *outputs)
+
+    assert not any(path.exists() for path in outputs)
+
+
+def test_reconciliation_cli_wiring(tmp_path, capsys):
+    manifest_path, _batch, _shard_path, _shard, vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
+    merged = tmp_path / "merged.json"
+    assert main(
+        ["merge-shards", "--manifest", str(manifest_path), "--shards", str(tmp_path), "--output", str(merged)]
+    ) == 0
+    report = tmp_path / "vocab.json"
+    assert main(
+        [
+            "vocabulary-report",
+            "--merged",
+            str(merged),
+            "--vocabulary",
+            str(vocabulary_path),
+            "--output",
+            str(report),
+        ]
+    ) == 0
+    assert "merged 2 clocks" in capsys.readouterr().out
