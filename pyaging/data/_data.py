@@ -27,7 +27,7 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         'ENCFF386QWG', 'GSE65765', 'GSE193140', and 'blood_chemistry_example'.
 
     dir : str
-        The directory to deposit the downloaded file. Defaults to "pyaging_data".
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     verbose : bool
         Whether to log the output to console with the logger. Defaults to True.

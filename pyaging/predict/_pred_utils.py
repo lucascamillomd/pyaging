@@ -47,7 +47,7 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
         Device to move clock to. Eithe 'cpu' or 'cuda'.
 
     dir : str
-        The directory to deposit the downloaded file.
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     logger : Logger
         A logger object used for logging information during the function execution.
@@ -347,7 +347,7 @@ def add_pred_ages_and_clock_metadata_adata(
         of this array should match the number of samples in `adata`.
 
     dir: str
-        The directory to deposit the downloaded file.
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     logger : Logger
         A logger object for logging the progress or relevant information during the operation.

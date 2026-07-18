@@ -50,6 +50,9 @@ example_path = download_hf_file("blood_chemistry_example.pkl", data_dir)
 assert os.path.basename(metadata_path) == "all_clock_metadata.pt"
 assert os.path.basename(clock_path) == "horvath2013.pt"
 assert os.path.basename(example_path) == "blood_chemistry_example.pkl"
+assert not os.path.exists(data_dir)
+assert all(os.path.commonpath([path, os.environ["HF_HUB_CACHE"]]) == os.environ["HF_HUB_CACHE"]
+           for path in (metadata_path, clock_path, example_path))
 assert "horvath2013" in torch.load(metadata_path, weights_only=False)
 assert torch.load(clock_path, weights_only=False).metadata["clock_name"].lower() == "horvath2013"
 """
