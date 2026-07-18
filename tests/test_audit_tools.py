@@ -726,6 +726,43 @@ def test_vocabulary_report_classifies_values_and_groups_only_conservative_varian
     assert tissue["alias_known"][0]["source_terms"] == ["Blood; cell lines; blood plasma"]
 
 
+@pytest.mark.parametrize(
+    ("left", "right"),
+    [
+        ("blood cell", "blood cells"),
+        ("brain tissue", "brain tissues"),
+        ("methylation assay", "methylation assays"),
+        ("450K array", "450K arrays"),
+        ("10 probe", "10 probes"),
+        ("clock CpG", "clock CpGs"),
+        ("training sample", "training samples"),
+        ("healthy adult", "healthy adults"),
+        ("histone mark", "histone marks"),
+        ("risk score", "risk scores"),
+        ("CD4 + cell", "cd4+ cells"),
+        ("blood‐cell", "blood-cell"),
+    ],
+)
+def test_candidate_key_groups_only_explicit_domain_safe_plurals(left, right):
+    assert audit_tools._candidate_key(left) == audit_tools._candidate_key(right)
+
+
+@pytest.mark.parametrize(
+    ("left", "right"),
+    [
+        ("axe", "axes"),
+        ("CD4+", "CD4-"),
+        ("CD4+ cells", "CD4- cells"),
+        ("blood/cells", "blood-cells"),
+        ("risk (score)", "risk score"),
+        ("5% sample", "5 sample"),
+        ("cell+cell", "cell-cell"),
+    ],
+)
+def test_candidate_key_preserves_meaningful_punctuation_and_unsafe_plurals(left, right):
+    assert audit_tools._candidate_key(left) != audit_tools._candidate_key(right)
+
+
 def test_normalize_merged_applies_explicit_aliases_only_and_preserves_evidence(tmp_path):
     manifest_path, _batch, _shard_path, _shard, vocabulary_path, vocabulary = reconciliation_fixture(tmp_path)
     merged_path = tmp_path / "merged.json"
@@ -875,6 +912,45 @@ def test_materialize_blocks_unresolved_and_preflight_errors_write_nothing(tmp_pa
         materialize(normalized_path, current_path, vocabulary_path, *outputs)
 
     assert not any(path.exists() for path in outputs)
+
+
+@pytest.mark.parametrize(
+    "targets",
+    [
+        ("same.json", "same.json", "report.md"),
+        ("registry.json", "same.json", "same.json"),
+        ("same.json", "ledger.jsonl", "same.json"),
+        ("same.json", "same.json", "same.json"),
+    ],
+)
+def test_materialize_rejects_pairwise_and_all_same_output_paths_before_reading_inputs(tmp_path, targets):
+    output_paths = [tmp_path / target for target in targets]
+
+    with pytest.raises(ValueError, match="distinct"):
+        materialize(
+            tmp_path / "missing-normalized.json",
+            tmp_path / "missing-current.json",
+            tmp_path / "missing-vocabulary.json",
+            *output_paths,
+        )
+
+    assert not any(path.exists() for path in set(output_paths))
+
+
+def test_materialize_rejects_output_paths_that_resolve_to_same_location(tmp_path):
+    alias = tmp_path / "alias"
+    alias.symlink_to(tmp_path, target_is_directory=True)
+    targets = [tmp_path / "same.json", alias / "same.json", tmp_path / "report.md"]
+
+    with pytest.raises(ValueError, match="distinct"):
+        materialize(
+            tmp_path / "missing-normalized.json",
+            tmp_path / "missing-current.json",
+            tmp_path / "missing-vocabulary.json",
+            *targets,
+        )
+
+    assert not any(path.exists() for path in targets)
 
 
 def test_reconciliation_cli_wiring(tmp_path, capsys):

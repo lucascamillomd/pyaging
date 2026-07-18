@@ -16,8 +16,8 @@ from urllib.parse import urlsplit
 
 try:
     from .validate_metadata import (
-        AUDITED_FIELDS,
         ARRAY_FIELDS,
+        AUDITED_FIELDS,
         CONFIRMED_SOURCE_TYPES,
         CONTROLLED_SCALAR_FIELDS,
         EVIDENCE_STATUSES,
@@ -31,8 +31,8 @@ try:
     )
 except ImportError:  # Direct script execution.
     from validate_metadata import (
-        AUDITED_FIELDS,
         ARRAY_FIELDS,
+        AUDITED_FIELDS,
         CONFIRMED_SOURCE_TYPES,
         CONTROLLED_SCALAR_FIELDS,
         EVIDENCE_STATUSES,
@@ -626,15 +626,29 @@ def _observations(merged, field):
 
 def _candidate_key(value):
     normalized = unicodedata.normalize("NFKC", value).casefold().strip()
-    normalized = re.sub(r"[\W_]+", " ", normalized, flags=re.UNICODE)
     normalized = " ".join(normalized.split())
-    words = normalized.split()
-    if words and len(words[-1]) > 3:
-        if words[-1].endswith("ies") and len(words[-1]) > 4:
-            words[-1] = words[-1][:-3] + "y"
-        elif words[-1].endswith("s") and not words[-1].endswith("ss"):
-            words[-1] = words[-1][:-1]
-    return " ".join(words)
+    normalized = re.sub(
+        r"[\u00ad\u2010-\u2015\u2212\u2e3a\u2e3b\ufe58\ufe63\uff0d]",
+        "-",
+        normalized,
+    )
+    normalized = re.sub(r"\s*([^\w\s])\s*", r"\1", normalized, flags=re.UNICODE)
+    safe_plurals = {
+        "cells": "cell",
+        "tissues": "tissue",
+        "assays": "assay",
+        "arrays": "array",
+        "probes": "probe",
+        "cpgs": "cpg",
+        "samples": "sample",
+        "adults": "adult",
+        "marks": "mark",
+        "scores": "score",
+    }
+    final_token = re.fullmatch(r"(.*?)([^\W\d_]+)([^\w]*)", normalized, flags=re.UNICODE)
+    if final_token and final_token.group(2) in safe_plurals:
+        normalized = final_token.group(1) + safe_plurals[final_token.group(2)] + final_token.group(3)
+    return normalized
 
 
 def vocabulary_report(merged_path, vocabulary_path, output_path):
@@ -783,6 +797,9 @@ def materialize(
 ):
     """Preflight and materialize registry/ledger/report, with report written last."""
     targets = [Path(registry_path), Path(ledger_path), Path(report_path)]
+    resolved_targets = [path.resolve(strict=False) for path in targets]
+    if len(set(resolved_targets)) != len(resolved_targets):
+        raise ValueError("registry, ledger, and report output paths must resolve to three distinct paths")
     _refuse_existing(targets)
     merged = _load_merged(normalized_path)
     vocabulary = _load_vocabulary(vocabulary_path)
