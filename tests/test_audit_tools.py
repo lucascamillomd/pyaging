@@ -694,6 +694,33 @@ def test_merge_shards_rejects_doi_split_across_batches(tmp_path):
         merge_shards(manifest_path, tmp_path, tmp_path / "merged.json")
 
 
+def test_merge_shards_loads_each_batch_and_shard_exactly_once(tmp_path, monkeypatch):
+    manifest_path, batch_path, shard_path, shard, _vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
+    original_load = audit_tools.load_json
+    load_counts = {}
+
+    def counting_load(path):
+        resolved = Path(path).resolve()
+        load_counts[resolved] = load_counts.get(resolved, 0) + 1
+        value = original_load(path)
+        if resolved == batch_path.resolve():
+            replacement = json.loads(batch_path.read_text())
+            replacement["papers"][0]["current_metadata"]["alpha"]["notes"] = "replacement after read"
+            write_json(batch_path, replacement)
+        if resolved == shard_path.resolve():
+            replacement = copy.deepcopy(shard)
+            replacement["records"][0]["fields"]["notes"]["value"] = "replacement after read"
+            write_json(shard_path, replacement)
+        return value
+
+    monkeypatch.setattr(audit_tools, "load_json", counting_load)
+    merged = merge_shards(manifest_path, tmp_path, tmp_path / "merged.json")
+
+    assert load_counts[batch_path.resolve()] == 1
+    assert load_counts[shard_path.resolve()] == 1
+    assert merged["records"][0]["fields"]["notes"]["value"] == "Example note"
+
+
 def test_vocabulary_report_classifies_values_and_groups_only_conservative_variants(tmp_path):
     manifest_path, _batch, _shard_path, shard, vocabulary_path, vocabulary = reconciliation_fixture(tmp_path)
     merged_path = tmp_path / "merged.json"
@@ -816,6 +843,18 @@ def test_normalize_merged_aggregates_unknowns_and_rejects_alias_duplicates(tmp_p
         normalize_merged(merged_path, vocabulary_path, output)
 
 
+def test_merged_record_requires_evidence_doi_to_exactly_match_record_doi(tmp_path):
+    manifest_path, _batch, _shard_path, _shard, vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
+    merged_path = tmp_path / "merged.json"
+    merge_shards(manifest_path, tmp_path, merged_path)
+    merged = json.loads(merged_path.read_text())
+    merged["records"][0]["fields"]["doi"]["value"] = "https://doi.org/10.1000/different"
+    write_json(merged_path, merged)
+
+    with pytest.raises(ValueError, match=r"alpha\.doi.*record DOI"):
+        normalize_merged(merged_path, vocabulary_path, tmp_path / "normalized.json")
+
+
 def _resolve_all(merged):
     for record in merged["records"]:
         for evidence in record["fields"].values():
@@ -829,7 +868,7 @@ def _resolve_all(merged):
     return merged
 
 
-def test_materialize_preserves_admin_and_runtime_and_writes_report_last(tmp_path, monkeypatch):
+def materialization_fixture(tmp_path, *, current_is_registry=False):
     manifest_path, _batch, _shard_path, _shard, vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
     merged_path = tmp_path / "merged.json"
     merge_shards(manifest_path, tmp_path, merged_path)
@@ -854,42 +893,220 @@ def test_materialize_preserves_admin_and_runtime_and_writes_report_last(tmp_path
             }
         )
     current["alpha"]["notes"] = "stale"
-    current_path = tmp_path / "current.json"
+    current_path = tmp_path / ("registry.json" if current_is_registry else "current.json")
     write_json(current_path, current)
-    registry_path = tmp_path / "new-registry.json"
-    ledger_path = tmp_path / "new-ledger.jsonl"
-    report_path = tmp_path / "new-report.md"
-    writes = []
-    original_write = audit_tools._write_bytes_atomic
+    targets = [
+        tmp_path / "registry.json",
+        tmp_path / "ledger.jsonl",
+        tmp_path / "report.md",
+    ]
+    if not current_is_registry:
+        targets[0].write_bytes(b"old registry bytes\n")
+    targets[1].write_bytes(audit_tools._ledger_bytes(merged["records"]))
+    targets[2].write_text("# Existing Clock Metadata Audit Report\n", encoding="utf-8")
+    for index, target in enumerate(targets):
+        target.chmod(0o640 + index)
+    return normalized_path, current_path, vocabulary_path, targets, merged, current
 
-    def recording_write(path, content):
-        writes.append(Path(path).name)
-        original_write(path, content)
 
-    monkeypatch.setattr(audit_tools, "_write_bytes_atomic", recording_write)
+def test_materialize_replaces_existing_targets_with_current_equal_to_registry(tmp_path, monkeypatch):
+    normalized_path, current_path, vocabulary_path, targets, merged, current = materialization_fixture(
+        tmp_path, current_is_registry=True
+    )
+    publishes = []
+    original_publish = audit_tools._publish_replace
+
+    def recording_publish(source, target):
+        publishes.append(Path(target).name)
+        original_publish(source, target)
+
+    monkeypatch.setattr(audit_tools, "_publish_replace", recording_publish)
 
     result = materialize(
         normalized_path,
         current_path,
         vocabulary_path,
-        registry_path,
-        ledger_path,
-        report_path,
+        *targets,
     )
 
-    registry = json.loads(registry_path.read_text())
+    registry = json.loads(targets[0].read_text())
     assert registry["alpha"]["notes"] == merged["records"][0]["fields"]["notes"]["value"]
     assert registry["alpha"]["runtime_extra"] == {"keep": True}
     assert {key: registry["alpha"][key] for key in ADMIN_FIELDS} == {
         key: current["alpha"][key] for key in ADMIN_FIELDS
     }
-    assert [json.loads(line) for line in ledger_path.read_text().splitlines()] == merged["records"]
+    assert [json.loads(line) for line in targets[1].read_text().splitlines()] == merged["records"]
     assert result["clock_count"] == 2
-    report = report_path.read_text()
+    report = targets[2].read_text()
     assert "## Evidence status counts" in report
     assert "## Access issues" in report
     assert "## Field change counts" in report
-    assert writes == ["new-registry.json", "new-ledger.jsonl", "new-report.md"]
+    assert publishes == ["registry.json", "ledger.jsonl", "report.md"]
+    assert not [path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-")]
+
+
+@pytest.mark.parametrize("failure_point", [1, 2, 3, "post-validate"])
+def test_materialize_rolls_back_every_target_on_publish_or_validation_failure(
+    tmp_path, monkeypatch, failure_point
+):
+    normalized_path, current_path, vocabulary_path, targets, _merged, _current = materialization_fixture(tmp_path)
+    original_bytes = {target: target.read_bytes() for target in targets}
+    original_modes = {target: target.stat().st_mode for target in targets}
+    original_publish = audit_tools._publish_replace
+    publish_count = 0
+
+    def failing_publish(source, target):
+        nonlocal publish_count
+        publish_count += 1
+        if publish_count == failure_point:
+            raise OSError(f"injected replace {failure_point}")
+        original_publish(source, target)
+
+    if failure_point == "post-validate":
+        monkeypatch.setattr(
+            audit_tools,
+            "_post_validate_materialization",
+            lambda *_args: (_ for _ in ()).throw(ValueError("injected post-validate")),
+        )
+    else:
+        monkeypatch.setattr(audit_tools, "_publish_replace", failing_publish)
+
+    with pytest.raises(ValueError, match="materialization transaction failed"):
+        materialize(normalized_path, current_path, vocabulary_path, *targets)
+
+    assert {target: target.read_bytes() for target in targets} == original_bytes
+    assert {target: target.stat().st_mode for target in targets} == original_modes
+    assert not [path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-")]
+
+
+def test_materialize_rolls_back_new_targets_by_removing_them(tmp_path, monkeypatch):
+    normalized_path, current_path, vocabulary_path, targets, _merged, _current = materialization_fixture(tmp_path)
+    targets[1].unlink()
+    targets[2].unlink()
+    original_registry = targets[0].read_bytes()
+    original_publish = audit_tools._publish_replace
+    publish_count = 0
+
+    def fail_third(source, target):
+        nonlocal publish_count
+        publish_count += 1
+        if publish_count == 3:
+            raise OSError("injected third replace")
+        original_publish(source, target)
+
+    monkeypatch.setattr(audit_tools, "_publish_replace", fail_third)
+
+    with pytest.raises(ValueError, match="materialization transaction failed"):
+        materialize(normalized_path, current_path, vocabulary_path, *targets)
+
+    assert targets[0].read_bytes() == original_registry
+    assert not targets[1].exists()
+    assert not targets[2].exists()
+    assert not [path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-")]
+
+
+def test_materialize_reports_both_publication_and_rollback_failure(tmp_path, monkeypatch):
+    normalized_path, current_path, vocabulary_path, targets, _merged, _current = materialization_fixture(tmp_path)
+    original_publish = audit_tools._publish_replace
+    original_replace = audit_tools.os.replace
+    publish_count = 0
+
+    def fail_second(source, target):
+        nonlocal publish_count
+        publish_count += 1
+        if publish_count == 2:
+            raise OSError("injected publication failure")
+        original_publish(source, target)
+
+    def fail_backup_restore(source, target):
+        if ".clock-metadata-backup-" in str(source):
+            raise OSError("injected rollback failure")
+        original_replace(source, target)
+
+    monkeypatch.setattr(audit_tools, "_publish_replace", fail_second)
+    monkeypatch.setattr(audit_tools.os, "replace", fail_backup_restore)
+
+    with pytest.raises(ValueError) as error:
+        materialize(normalized_path, current_path, vocabulary_path, *targets)
+
+    assert "injected publication failure" in str(error.value)
+    assert "injected rollback failure" in str(error.value)
+
+
+def test_materialize_fails_cleanly_when_transaction_lock_exists(tmp_path):
+    normalized_path, current_path, vocabulary_path, targets, _merged, _current = materialization_fixture(tmp_path)
+    originals = {target: target.read_bytes() for target in targets}
+    lock = tmp_path / ".clock-metadata-materialize.lock"
+    lock.write_text("other process\n")
+
+    with pytest.raises(ValueError, match="locked"):
+        materialize(normalized_path, current_path, vocabulary_path, *targets)
+
+    assert {target: target.read_bytes() for target in targets} == originals
+    assert lock.read_text() == "other process\n"
+    assert not [
+        path
+        for path in tmp_path.iterdir()
+        if path.name.startswith(".clock-metadata-") and path != lock
+    ]
+
+
+def test_materialize_rejects_different_output_parents_before_reading_inputs(tmp_path):
+    other = tmp_path / "other"
+    other.mkdir()
+    targets = [tmp_path / "registry.json", other / "ledger.jsonl", tmp_path / "report.md"]
+
+    with pytest.raises(ValueError, match="same parent"):
+        materialize(
+            tmp_path / "missing-normalized.json",
+            tmp_path / "missing-current.json",
+            tmp_path / "missing-vocabulary.json",
+            *targets,
+        )
+
+    assert not any(path.exists() for path in targets)
+
+
+def test_materialize_rejects_evidence_doi_mismatch_before_mutating_existing_targets(tmp_path):
+    normalized_path, current_path, vocabulary_path, targets, _merged, _current = materialization_fixture(tmp_path)
+    normalized = json.loads(normalized_path.read_text())
+    normalized["records"][0]["fields"]["doi"]["value"] = "https://doi.org/10.1000/different"
+    write_json(normalized_path, normalized)
+    originals = {target: target.read_bytes() for target in targets}
+
+    with pytest.raises(ValueError, match=r"alpha\.doi.*record DOI"):
+        materialize(normalized_path, current_path, vocabulary_path, *targets)
+
+    assert {target: target.read_bytes() for target in targets} == originals
+    assert not [path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-")]
+
+
+def test_materialize_cli_replaces_existing_canonical_targets(tmp_path, capsys):
+    normalized_path, current_path, vocabulary_path, targets, _merged, _current = materialization_fixture(
+        tmp_path, current_is_registry=True
+    )
+
+    exit_code = main(
+        [
+            "materialize",
+            "--normalized",
+            str(normalized_path),
+            "--current",
+            str(current_path),
+            "--vocabulary",
+            str(vocabulary_path),
+            "--registry",
+            str(targets[0]),
+            "--ledger",
+            str(targets[1]),
+            "--report",
+            str(targets[2]),
+        ]
+    )
+
+    assert exit_code == 0
+    assert "materialized 2 clocks" in capsys.readouterr().out
+    assert json.loads(targets[0].read_text())["alpha"]["notes"] == "Example note"
 
 
 def test_materialize_blocks_unresolved_and_preflight_errors_write_nothing(tmp_path):

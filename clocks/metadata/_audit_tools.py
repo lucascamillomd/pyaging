@@ -319,12 +319,13 @@ def _validate_evidence_field(clock_name, field, evidence, reviewer, source_types
             raise ValueError(f"{context}: resolved evidence cannot use provisional source_text")
 
 
-def validate_shard(batch_path, shard_path):
-    """Validate one review shard against its generated assignment batch."""
-    batch = load_json(batch_path)
-    shard = load_json(shard_path)
-    batch_id, assignments, paper_count = _load_batch_assignments(batch)
-    _require_exact_keys(shard, {"schema_version", "batch", "reviewer", "records"}, "shard")
+def _validate_shard_objects(batch, shard, batch_path="batch", shard_path="shard"):
+    """Validate already-loaded shard objects so callers consume the checked bytes."""
+    try:
+        batch_id, assignments, paper_count = _load_batch_assignments(batch)
+    except ValueError as error:
+        raise ValueError(f"{batch_path}: {error}") from error
+    _require_exact_keys(shard, {"schema_version", "batch", "reviewer", "records"}, str(shard_path))
     if type(shard["schema_version"]) is not int or shard["schema_version"] != 1:
         raise ValueError("shard.schema_version: expected integer 1")
     if shard["batch"] != batch_id:
@@ -382,6 +383,13 @@ def validate_shard(batch_path, shard_path):
         if type(access_issues) is not list or any(type(issue) is not str for issue in access_issues):
             raise ValueError(f"{clock_name}.access_issues: expected a list of strings")
     return {"batch": batch_id, "paper_count": paper_count, "clock_count": len(assignments)}
+
+
+def validate_shard(batch_path, shard_path):
+    """Validate one review shard against its generated assignment batch."""
+    batch = load_json(batch_path)
+    shard = load_json(shard_path)
+    return _validate_shard_objects(batch, shard, batch_path, shard_path)
 
 
 def _refuse_existing(paths):
@@ -463,6 +471,8 @@ def _validate_record(record):
         raise ValueError(f"{clock_name}.fields: expected the fixed audited field set")
     for field in AUDITED_FIELDS:
         _validate_evidence_field(clock_name, field, fields[field], reviewer, source_types)
+    if type(fields["doi"]["value"]) is not str or fields["doi"]["value"] != record["doi"]:
+        raise ValueError(f"{clock_name}.doi.value: must exactly match record DOI")
     access_issues = record["access_issues"]
     if type(access_issues) is not list or any(type(issue) is not str for issue in access_issues):
         raise ValueError(f"{clock_name}.access_issues: expected a list of strings")
@@ -527,13 +537,14 @@ def merge_shards(manifest_path, shards_dir, output_path):
         batch_id = descriptor["batch"]
         batch_path = shards_dir / descriptor["path"]
         shard_path = shards_dir / f"shard-{batch_id}.json"
-        summary = validate_shard(batch_path, shard_path)
+        batch = load_json(batch_path)
+        shard = load_json(shard_path)
+        summary = _validate_shard_objects(batch, shard, batch_path, shard_path)
         for key in ("paper_count", "clock_count"):
             if summary[key] != descriptor[key]:
                 raise ValueError(
                     f"batch {batch_id} {key}: manifest declares {descriptor[key]}, file has {summary[key]}"
                 )
-        batch = load_json(batch_path)
         if batch["batch"] != batch_id or batch["paper_count"] != descriptor["paper_count"] or batch[
             "clock_count"
         ] != descriptor["clock_count"]:
@@ -544,7 +555,6 @@ def merge_shards(manifest_path, shards_dir, output_path):
                 raise ValueError(
                     f"DOI split across batches: {paper['doi']!r} appears in {prior_batch} and {batch_id}"
                 )
-        shard = load_json(shard_path)
         for record in shard["records"]:
             name = record["clock_name"]
             if name in seen_names:
@@ -797,6 +807,134 @@ def _write_json_new_atomic(path, value):
     _write_bytes_atomic(path, _json_bytes(value))
 
 
+def _fsync_directory(parent):
+    descriptor = os.open(parent, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def _acquire_materialization_lock(parent):
+    lock_path = parent / ".clock-metadata-materialize.lock"
+    try:
+        descriptor = os.open(lock_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError as error:
+        raise ValueError(f"materialization is locked by {lock_path}") from error
+    try:
+        os.write(descriptor, f"pid={os.getpid()}\n".encode())
+        os.fsync(descriptor)
+    except Exception:
+        os.close(descriptor)
+        with suppress(FileNotFoundError):
+            lock_path.unlink()
+        raise
+    os.close(descriptor)
+    return lock_path
+
+
+def _stage_materialization_bytes(parent, target, content, index):
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".clock-metadata-stage-{index}-",
+        dir=parent,
+    )
+    path = Path(temporary_name)
+    try:
+        mode = target.stat().st_mode & 0o7777 if target.exists() else 0o644
+        os.fchmod(descriptor, mode)
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+    except Exception:
+        with suppress(OSError):
+            os.close(descriptor)
+        with suppress(FileNotFoundError):
+            path.unlink()
+        raise
+    return path
+
+
+def _backup_materialization_target(parent, target, index):
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".clock-metadata-backup-{index}-",
+        dir=parent,
+    )
+    os.close(descriptor)
+    backup = Path(temporary_name)
+    backup.unlink()
+    try:
+        os.link(target, backup)
+    except Exception:
+        with suppress(FileNotFoundError):
+            backup.unlink()
+        raise
+    return backup
+
+
+def _publish_replace(source, target):
+    os.replace(source, target)
+
+
+def _post_validate_materialization(targets, expected_bytes):
+    for target, expected in zip(targets, expected_bytes, strict=True):
+        if target.read_bytes() != expected:
+            raise ValueError(f"post-publish validation failed for {target}")
+
+
+def _transactional_install_materialization(parent, targets, contents):
+    stages = []
+    backups = {}
+    originally_missing = set()
+    published = []
+    rollback_failed_backups = set()
+    try:
+        for index, (target, content) in enumerate(zip(targets, contents, strict=True), start=1):
+            stages.append(_stage_materialization_bytes(parent, target, content, index))
+        for index, target in enumerate(targets, start=1):
+            if target.exists():
+                backups[target] = _backup_materialization_target(parent, target, index)
+            else:
+                originally_missing.add(target)
+        for stage, target in zip(stages, targets, strict=True):
+            _publish_replace(stage, target)
+            published.append(target)
+        _fsync_directory(parent)
+        _post_validate_materialization(targets, contents)
+        for backup in backups.values():
+            backup.unlink()
+        _fsync_directory(parent)
+    except Exception as primary_error:
+        rollback_errors = []
+        for target in reversed(published):
+            try:
+                if target in originally_missing:
+                    with suppress(FileNotFoundError):
+                        target.unlink()
+                else:
+                    os.replace(backups[target], target)
+            except Exception as rollback_error:
+                rollback_errors.append(f"{target}: {rollback_error}")
+                if target in backups:
+                    rollback_failed_backups.add(backups[target])
+        try:
+            _fsync_directory(parent)
+        except Exception as rollback_error:
+            rollback_errors.append(f"directory fsync: {rollback_error}")
+        message = f"materialization transaction failed: {primary_error}"
+        if rollback_errors:
+            message += f"; rollback failure: {'; '.join(rollback_errors)}"
+        raise ValueError(message) from primary_error
+    finally:
+        for stage in stages:
+            with suppress(FileNotFoundError):
+                stage.unlink()
+        for backup in backups.values():
+            if backup not in rollback_failed_backups:
+                with suppress(FileNotFoundError):
+                    backup.unlink()
+
+
 def materialize(
     normalized_path,
     current_path,
@@ -806,56 +944,77 @@ def materialize(
     report_path,
 ):
     """Preflight and materialize registry/ledger/report, with report written last."""
-    targets = [Path(registry_path), Path(ledger_path), Path(report_path)]
-    resolved_targets = [path.resolve(strict=False) for path in targets]
-    if len(set(resolved_targets)) != len(resolved_targets):
+    requested_targets = [Path(registry_path), Path(ledger_path), Path(report_path)]
+    targets = [path.resolve(strict=False) for path in requested_targets]
+    if len(set(targets)) != len(targets):
         raise ValueError("registry, ledger, and report output paths must resolve to three distinct paths")
-    _refuse_existing(targets)
-    merged = _load_merged(normalized_path)
-    vocabulary = _load_vocabulary(vocabulary_path)
-    current = load_json(current_path)
-    if type(current) is not dict:
-        raise ValueError("current registry: expected an object")
-    names = [record["clock_name"] for record in merged["records"]]
-    if set(current) != set(names):
-        raise ValueError(
-            f"current clock set mismatch: missing={sorted(set(names) - set(current))}, "
-            f"extra={sorted(set(current) - set(names))}"
-        )
-    unresolved = []
-    registry = {}
-    for record in merged["records"]:
-        name = record["clock_name"]
-        current_record = current[name]
-        if type(current_record) is not dict:
-            raise ValueError(f"{name}: current registry record must be an object")
-        for field, evidence in record["fields"].items():
-            if evidence["status"] == "unresolved":
-                unresolved.append(f"{name}.{field}")
-        rebuilt = copy.deepcopy(current_record)
-        for field in AUDITED_FIELDS:
-            rebuilt[field] = copy.deepcopy(record["fields"][field]["value"])
-        rebuilt["clock_name"] = name
-        registry[name] = rebuilt
-    if unresolved:
-        raise ValueError(f"unresolved evidence: {', '.join(unresolved)}")
-    registry = {name: registry[name] for name in sorted(registry)}
-    validate_registry(registry, vocabulary)
-    registry_bytes = _json_bytes(registry)
-    ledger_bytes = _ledger_bytes(merged["records"])
-    report_bytes = _report_text(merged["records"], current).encode("utf-8")
+    parents = {target.parent for target in targets}
+    if len(parents) != 1:
+        raise ValueError("registry, ledger, and report output paths must share the same parent directory")
+    parent = parents.pop()
+    if not parent.is_dir():
+        raise ValueError(f"materialization output parent is not an existing directory: {parent}")
+    lock_path = _acquire_materialization_lock(parent)
+    transaction_error = None
+    result = None
+    try:
+        merged = _load_merged(normalized_path)
+        vocabulary = _load_vocabulary(vocabulary_path)
+        current = load_json(current_path)
+        if type(current) is not dict:
+            raise ValueError("current registry: expected an object")
+        names = [record["clock_name"] for record in merged["records"]]
+        if set(current) != set(names):
+            raise ValueError(
+                f"current clock set mismatch: missing={sorted(set(names) - set(current))}, "
+                f"extra={sorted(set(current) - set(names))}"
+            )
+        unresolved = []
+        registry = {}
+        for record in merged["records"]:
+            name = record["clock_name"]
+            current_record = current[name]
+            if type(current_record) is not dict:
+                raise ValueError(f"{name}: current registry record must be an object")
+            for field, evidence in record["fields"].items():
+                if evidence["status"] == "unresolved":
+                    unresolved.append(f"{name}.{field}")
+            rebuilt = copy.deepcopy(current_record)
+            for field in AUDITED_FIELDS:
+                rebuilt[field] = copy.deepcopy(record["fields"][field]["value"])
+            rebuilt["clock_name"] = name
+            registry[name] = rebuilt
+        if unresolved:
+            raise ValueError(f"unresolved evidence: {', '.join(unresolved)}")
+        registry = {name: registry[name] for name in sorted(registry)}
+        validate_registry(registry, vocabulary)
+        contents = [
+            _json_bytes(registry),
+            _ledger_bytes(merged["records"]),
+            _report_text(merged["records"], current).encode("utf-8"),
+        ]
 
-    # All validation and byte construction happens before any output is created.
-    _write_bytes_atomic(targets[0], registry_bytes)
-    _write_bytes_atomic(targets[1], ledger_bytes)
-    _write_bytes_atomic(targets[2], report_bytes)
-    return {
-        "paper_count": merged["paper_count"],
-        "clock_count": merged["clock_count"],
-        "registry": str(targets[0]),
-        "ledger": str(targets[1]),
-        "report": str(targets[2]),
-    }
+        # All input reads, validation, and byte construction precede target mutation.
+        _transactional_install_materialization(parent, targets, contents)
+        result = {
+            "paper_count": merged["paper_count"],
+            "clock_count": merged["clock_count"],
+            "registry": str(targets[0]),
+            "ledger": str(targets[1]),
+            "report": str(targets[2]),
+        }
+    except Exception as error:
+        transaction_error = error
+    try:
+        lock_path.unlink()
+        _fsync_directory(parent)
+    except Exception as lock_error:
+        if transaction_error is not None:
+            raise ValueError(f"{transaction_error}; lock cleanup failure: {lock_error}") from transaction_error
+        raise ValueError(f"materialization lock cleanup failed: {lock_error}") from lock_error
+    if transaction_error is not None:
+        raise transaction_error
+    return result
 
 
 def _parser():
