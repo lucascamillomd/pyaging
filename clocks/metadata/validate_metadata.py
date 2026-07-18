@@ -3,6 +3,7 @@ import gc
 import json
 import math
 import re
+import unicodedata
 from datetime import date
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -60,6 +61,14 @@ CURATED_METADATA_FIELDS = (
     "citations",
     "citations_date",
 )
+# These two packaged clocks retain dense candidate arrays in ``features`` while
+# their papers and coefficient artifacts define the final clock by nonzero
+# selected predictors. The policy selects representation, never an expected
+# count; the count is still derived from the serialized linear coefficients.
+EFFECTIVE_FEATURE_POLICIES = {
+    "cellpopage": "nonzero_linear_columns",
+    "ensembleagehumanmouse": "nonzero_linear_columns",
+}
 SOURCE_TYPES = {"paper", "supplement", "code", "author communication"}
 CONFIRMED_SOURCE_TYPES = {
     "paper-confirmed": "paper",
@@ -411,9 +420,9 @@ def _effective_model_feature_count(model):
     """Return one architecture-aware selected/effective predictor count.
 
     Precedence is explicit coefficient vectors, preprocessing-declared ATAC
-    selections, strongly sparse unpreprocessed same-width linear models, then
-    the model's declared feature list. Other preprocessing and dimensionality
-    reduction steps require their full declared input feature set.
+    selections, an explicit representation policy, then the model's declared
+    feature list. Other preprocessing and dimensionality-reduction steps
+    require their full declared input feature set.
     """
     coefficient_vectors = [
         value
@@ -431,16 +440,38 @@ def _effective_model_feature_count(model):
     base_model = getattr(model, "base_model", None)
     linear = getattr(base_model, "linear", None)
     weight = getattr(linear, "weight", None)
-    if (
-        isinstance(weight, torch.Tensor)
-        and weight.ndim == 2
-        and weight.shape[1] == len(model.features)
-        and getattr(model, "preprocess_name", None) is None
-    ):
-        active = int(torch.count_nonzero(torch.any(weight.detach() != 0, dim=0)).item())
-        if active * 10 < len(model.features):
-            return active
+    clock_name = getattr(getattr(model, "metadata", None), "get", lambda _key: None)(
+        "clock_name"
+    )
+    policy = EFFECTIVE_FEATURE_POLICIES.get(clock_name)
+    if policy == "nonzero_linear_columns":
+        if (
+            not isinstance(weight, torch.Tensor)
+            or weight.ndim != 2
+            or weight.shape[1] != len(model.features)
+        ):
+            raise ValueError(
+                f"{clock_name}: nonzero_linear_columns policy requires a "
+                "same-width 2-D linear coefficient matrix"
+            )
+        return int(torch.count_nonzero(torch.any(weight.detach() != 0, dim=0)).item())
     return len(model.features)
+
+
+def _collapse_source_text(value):
+    """Collapse evidence wording exactly as notebook migration does."""
+    if type(value) is not str or not value.strip():
+        raise ValueError("source_text must be a nonempty string")
+    characters = []
+    for character in value:
+        if character.isspace() or unicodedata.category(character).startswith("C"):
+            characters.append(" ")
+        else:
+            characters.append(character)
+    collapsed = re.sub(r" +", " ", "".join(characters)).strip()
+    if not collapsed:
+        raise ValueError("source_text must contain readable characters")
+    return collapsed
 
 
 def validate_artifact_consistency(root):
@@ -450,6 +481,8 @@ def validate_artifact_consistency(root):
     registry = load_json(metadata_dir / "clock_metadata.json")
     vocabulary = load_json(metadata_dir / "controlled_vocabulary.json")
     validate_registry(registry, vocabulary)
+    ledger = load_ledger(metadata_dir / "evidence_ledger.jsonl")
+    validate_evidence(registry, ledger)
     expected = set(registry)
     notebooks = {
         path.stem: path
@@ -475,7 +508,6 @@ def validate_artifact_consistency(root):
     if type(aggregate) is not dict:
         raise ValueError("aggregate must be a dictionary")
 
-    notebook_values = {}
     for name in sorted(expected):
         notebook = load_json(notebooks[name])
         cells = notebook.get("cells") if type(notebook) is dict else None
@@ -539,11 +571,17 @@ def validate_artifact_consistency(root):
                 raise ValueError(
                     f"{name}.{field}: requires a nonempty same-line # Paper: comment"
                 )
+            comment = line.split(marker, 1)[1].strip()
+            expected_comment = _collapse_source_text(
+                ledger[name]["fields"][field]["source_text"]
+            )
+            if comment != expected_comment:
+                raise ValueError(
+                    f"{name}.{field}: notebook # Paper: comment does not match evidence ledger"
+                )
         for field in CURATED_METADATA_FIELDS:
             if not _same_json_value(assignments[field], registry[name][field]):
                 raise ValueError(f"{name}.{field}: notebook value does not match registry")
-        notebook_values[name] = assignments
-
     runtime_by_name = {}
     for name in sorted(expected):
         model = torch.load(weights[name], weights_only=False, map_location="cpu")

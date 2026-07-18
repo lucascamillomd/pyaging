@@ -69,7 +69,7 @@ def test_reedbmi_access_issues_do_not_contradict_corrected_feature_count(ledger)
     )
 
 
-def _write_consistent_artifact_fixture(tmp_path, registry):
+def _write_consistent_artifact_fixture(tmp_path, registry, clock_name="tiny"):
     root = tmp_path
     metadata_dir = root / "clocks" / "metadata"
     notebooks_dir = root / "clocks" / "notebooks"
@@ -80,12 +80,41 @@ def _write_consistent_artifact_fixture(tmp_path, registry):
     record = copy.deepcopy(next(iter(registry.values())))
     for runtime_field in ("version", "preprocess", "postprocess", "reference_values"):
         record.pop(runtime_field, None)
-    record["clock_name"] = "tiny"
+    record["clock_name"] = clock_name
     record["n_features"] = 2
     (metadata_dir / "clock_metadata.json").write_text(
-        json.dumps({"tiny": record}, ensure_ascii=False) + "\n", encoding="utf-8"
+        json.dumps({clock_name: record}, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     (metadata_dir / "controlled_vocabulary.json").write_bytes(VOCABULARY_PATH.read_bytes())
+    evidence_fields = {
+        field: {
+            "value": record[field],
+            "source_text": "exact\nsource\twording",
+            "source_id": "paper",
+            "locator": "Methods",
+            "status": "paper-confirmed",
+            "note": "",
+        }
+        for field in AUDITED_FIELDS
+    }
+    ledger_record = {
+        "clock_name": clock_name,
+        "doi": record["doi"],
+        "reviewer": "test-reviewer",
+        "sources": [
+            {
+                "id": "paper",
+                "type": "paper",
+                "url": record["doi"],
+                "accessed": "2026-07-18",
+            }
+        ],
+        "fields": evidence_fields,
+        "access_issues": [],
+    }
+    (metadata_dir / "evidence_ledger.jsonl").write_text(
+        json.dumps(ledger_record, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     controlled = ARRAY_FIELDS + ("data_type", "species", "model_type", "population")
     lines = []
     for field, value in record.items():
@@ -106,7 +135,7 @@ def _write_consistent_artifact_fixture(tmp_path, registry):
         "nbformat": 4,
         "nbformat_minor": 5,
     }
-    (notebooks_dir / "tiny.ipynb").write_text(
+    (notebooks_dir / f"{clock_name}.ipynb").write_text(
         json.dumps(notebook, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
     )
     model = SimpleNamespace(
@@ -117,12 +146,12 @@ def _write_consistent_artifact_fixture(tmp_path, registry):
         postprocess_name="none",
         reference_values=None,
     )
-    torch.save(model, weights_dir / "tiny.pt")
+    torch.save(model, weights_dir / f"{clock_name}.pt")
     aggregate_record = copy.deepcopy(record)
     aggregate_record.update(
         {"version": "1", "preprocess": "none", "postprocess": "none"}
     )
-    torch.save({"tiny": aggregate_record}, metadata_dir / "all_clock_metadata.pt")
+    torch.save({clock_name: aggregate_record}, metadata_dir / "all_clock_metadata.pt")
     return root
 
 
@@ -162,6 +191,25 @@ def test_validate_artifact_consistency_requires_same_line_paper_comments(tmp_pat
         validate_artifact_consistency(root)
 
 
+def test_validate_artifact_consistency_requires_exact_collapsed_ledger_comment(tmp_path, registry):
+    root = _write_consistent_artifact_fixture(tmp_path, registry)
+    notebook_path = root / "clocks" / "notebooks" / "tiny.ipynb"
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    notebook["cells"][0]["source"] = [
+        line.replace(
+            "# Paper: exact source wording",
+            "# Paper: different but nonempty wording",
+        )
+        if '["tissue"]' in line
+        else line
+        for line in notebook["cells"][0]["source"]
+    ]
+    notebook_path.write_text(json.dumps(notebook) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match=r"tiny\.tissue.*does not match evidence ledger"):
+        validate_artifact_consistency(root)
+
+
 def test_validate_artifact_consistency_checks_weight_feature_count(tmp_path, registry):
     root = _write_consistent_artifact_fixture(tmp_path, registry)
     weight_path = root / "clocks" / "weights" / "tiny.pt"
@@ -174,12 +222,16 @@ def test_validate_artifact_consistency_checks_weight_feature_count(tmp_path, reg
 
 
 def test_validate_artifact_consistency_rejects_raw_pool_for_sparse_selected_model(tmp_path, registry):
-    root = _write_consistent_artifact_fixture(tmp_path, registry)
+    root = _write_consistent_artifact_fixture(tmp_path, registry, clock_name="cellpopage")
     registry_path = root / "clocks" / "metadata" / "clock_metadata.json"
     local_registry = json.loads(registry_path.read_text(encoding="utf-8"))
-    local_registry["tiny"]["n_features"] = 50
+    local_registry["cellpopage"]["n_features"] = 50
     registry_path.write_text(json.dumps(local_registry) + "\n", encoding="utf-8")
-    notebook_path = root / "clocks" / "notebooks" / "tiny.ipynb"
+    ledger_path = root / "clocks" / "metadata" / "evidence_ledger.jsonl"
+    local_ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+    local_ledger["fields"]["n_features"]["value"] = 50
+    ledger_path.write_text(json.dumps(local_ledger) + "\n", encoding="utf-8")
+    notebook_path = root / "clocks" / "notebooks" / "cellpopage.ipynb"
     notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
     notebook["cells"][0]["source"] = [
         'model.metadata["n_features"] = 50\n'
@@ -188,7 +240,7 @@ def test_validate_artifact_consistency_rejects_raw_pool_for_sparse_selected_mode
         for line in notebook["cells"][0]["source"]
     ]
     notebook_path.write_text(json.dumps(notebook) + "\n", encoding="utf-8")
-    weight_path = root / "clocks" / "weights" / "tiny.pt"
+    weight_path = root / "clocks" / "weights" / "cellpopage.pt"
     model = torch.load(weight_path, weights_only=False, map_location="cpu")
     model.metadata["n_features"] = 50
     model.features = [f"feature-{index}" for index in range(50)]
@@ -201,11 +253,11 @@ def test_validate_artifact_consistency_rejects_raw_pool_for_sparse_selected_mode
     torch.save(model, weight_path)
     aggregate_path = root / "clocks" / "metadata" / "all_clock_metadata.pt"
     aggregate = torch.load(aggregate_path, weights_only=False, map_location="cpu")
-    aggregate["tiny"]["n_features"] = 50
-    aggregate["tiny"].pop("preprocess")
+    aggregate["cellpopage"]["n_features"] = 50
+    aggregate["cellpopage"].pop("preprocess")
     torch.save(aggregate, aggregate_path)
 
-    with pytest.raises(ValueError, match=r"tiny\.n_features.*effective feature count 2"):
+    with pytest.raises(ValueError, match=r"cellpopage\.n_features.*effective feature count 2"):
         validate_artifact_consistency(root)
 
 
@@ -218,9 +270,25 @@ def test_effective_model_feature_count_uses_selected_linear_predictors():
         features=[f"feature-{index}" for index in range(50)],
         base_model_features=None,
         base_model=SimpleNamespace(linear=linear),
+        metadata={"clock_name": "cellpopage"},
     )
 
     assert _effective_model_feature_count(model) == 2
+
+
+def test_effective_model_feature_count_has_no_arbitrary_sparsity_boundary():
+    linear = torch.nn.Linear(50, 1)
+    with torch.no_grad():
+        linear.weight.zero_()
+        linear.weight[0, :2] = torch.tensor([1.0, 2.0])
+    model = SimpleNamespace(
+        features=[f"feature-{index}" for index in range(50)],
+        base_model_features=None,
+        base_model=SimpleNamespace(linear=linear),
+        metadata={"clock_name": "ordinary-clock"},
+    )
+
+    assert _effective_model_feature_count(model) == 50
 
 
 def test_effective_model_feature_count_prefers_explicit_base_model_features():
