@@ -408,15 +408,13 @@ def validate_evidence(registry, ledger):
 
 
 def _effective_model_feature_count(model):
-    """Return the number of predictors that can affect a model's output."""
-    base_model_features = getattr(model, "base_model_features", None)
-    if base_model_features is not None:
-        return len(base_model_features)
-    base_model = getattr(model, "base_model", None)
-    linear = getattr(base_model, "linear", None)
-    weight = getattr(linear, "weight", None)
-    if isinstance(weight, torch.Tensor) and weight.ndim == 2:
-        return int(torch.count_nonzero(torch.any(weight.detach() != 0, dim=0)).item())
+    """Return one architecture-aware selected/effective predictor count.
+
+    Precedence is explicit coefficient vectors, preprocessing-declared ATAC
+    selections, strongly sparse unpreprocessed same-width linear models, then
+    the model's declared feature list. Other preprocessing and dimensionality
+    reduction steps require their full declared input feature set.
+    """
     coefficient_vectors = [
         value
         for key, value in vars(model).items()
@@ -424,21 +422,25 @@ def _effective_model_feature_count(model):
     ]
     if len(coefficient_vectors) == 1:
         return len(coefficient_vectors[0])
-    return len(model.features)
-
-
-def _model_feature_count_candidates(model):
-    candidates = {len(model.features), _effective_model_feature_count(model)}
     base_model_features = getattr(model, "base_model_features", None)
-    if base_model_features is not None:
-        candidates.add(len(base_model_features))
-    coefficient_vectors = [
-        value
-        for key, value in vars(model).items()
-        if key.endswith("_coeffs") and isinstance(value, torch.Tensor) and value.ndim == 1
-    ]
-    candidates.update(len(value) for value in coefficient_vectors)
-    return candidates
+    if (
+        base_model_features is not None
+        and getattr(model, "preprocess_name", None) == "tpm_norm_log1p"
+    ):
+        return len(base_model_features)
+    base_model = getattr(model, "base_model", None)
+    linear = getattr(base_model, "linear", None)
+    weight = getattr(linear, "weight", None)
+    if (
+        isinstance(weight, torch.Tensor)
+        and weight.ndim == 2
+        and weight.shape[1] == len(model.features)
+        and getattr(model, "preprocess_name", None) is None
+    ):
+        active = int(torch.count_nonzero(torch.any(weight.detach() != 0, dim=0)).item())
+        if active * 10 < len(model.features):
+            return active
+    return len(model.features)
 
 
 def validate_artifact_consistency(root):
@@ -555,12 +557,12 @@ def validate_artifact_consistency(root):
                 if not _same_json_value(model_metadata[field], registry[name][field]):
                     raise ValueError(f"{name}.{field}: weight metadata does not match registry")
             try:
-                feature_counts = _model_feature_count_candidates(model)
+                feature_count = _effective_model_feature_count(model)
             except (AttributeError, TypeError) as error:
                 raise ValueError(f"{name}.n_features: weight features have no length") from error
-            if registry[name]["n_features"] not in feature_counts:
+            if registry[name]["n_features"] != feature_count:
                 raise ValueError(
-                    f"{name}.n_features: weight feature counts {sorted(feature_counts)} "
+                    f"{name}.n_features: effective feature count {feature_count} "
                     f"does not match registry {registry[name]['n_features']}"
                 )
             runtime = {

@@ -63,6 +63,12 @@ def test_evidence_is_complete_and_resolved(registry, ledger):
             assert record["fields"][field]["status"] != "unresolved", f"{clock_name}.{field}"
 
 
+def test_reedbmi_access_issues_do_not_contradict_corrected_feature_count(ledger):
+    assert not any(
+        "134 CpGs" in issue for issue in ledger["reedbmi"]["access_issues"]
+    )
+
+
 def _write_consistent_artifact_fixture(tmp_path, registry):
     root = tmp_path
     metadata_dir = root / "clocks" / "metadata"
@@ -163,16 +169,53 @@ def test_validate_artifact_consistency_checks_weight_feature_count(tmp_path, reg
     model.features.append("extra")
     torch.save(model, weight_path)
 
-    with pytest.raises(ValueError, match=r"tiny\.n_features.*weight feature count"):
+    with pytest.raises(ValueError, match=r"tiny\.n_features.*effective feature count"):
+        validate_artifact_consistency(root)
+
+
+def test_validate_artifact_consistency_rejects_raw_pool_for_sparse_selected_model(tmp_path, registry):
+    root = _write_consistent_artifact_fixture(tmp_path, registry)
+    registry_path = root / "clocks" / "metadata" / "clock_metadata.json"
+    local_registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    local_registry["tiny"]["n_features"] = 50
+    registry_path.write_text(json.dumps(local_registry) + "\n", encoding="utf-8")
+    notebook_path = root / "clocks" / "notebooks" / "tiny.ipynb"
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    notebook["cells"][0]["source"] = [
+        'model.metadata["n_features"] = 50\n'
+        if '["n_features"]' in line
+        else line
+        for line in notebook["cells"][0]["source"]
+    ]
+    notebook_path.write_text(json.dumps(notebook) + "\n", encoding="utf-8")
+    weight_path = root / "clocks" / "weights" / "tiny.pt"
+    model = torch.load(weight_path, weights_only=False, map_location="cpu")
+    model.metadata["n_features"] = 50
+    model.features = [f"feature-{index}" for index in range(50)]
+    model.preprocess_name = None
+    model.base_model_features = None
+    model.base_model = SimpleNamespace(linear=torch.nn.Linear(50, 1))
+    with torch.no_grad():
+        model.base_model.linear.weight.zero_()
+        model.base_model.linear.weight[0, :2] = torch.tensor([1.0, 2.0])
+    torch.save(model, weight_path)
+    aggregate_path = root / "clocks" / "metadata" / "all_clock_metadata.pt"
+    aggregate = torch.load(aggregate_path, weights_only=False, map_location="cpu")
+    aggregate["tiny"]["n_features"] = 50
+    aggregate["tiny"].pop("preprocess")
+    torch.save(aggregate, aggregate_path)
+
+    with pytest.raises(ValueError, match=r"tiny\.n_features.*effective feature count 2"):
         validate_artifact_consistency(root)
 
 
 def test_effective_model_feature_count_uses_selected_linear_predictors():
-    linear = torch.nn.Linear(5, 1)
+    linear = torch.nn.Linear(50, 1)
     with torch.no_grad():
-        linear.weight.copy_(torch.tensor([[1.0, 0.0, 2.0, 0.0, 0.0]]))
+        linear.weight.zero_()
+        linear.weight[0, :2] = torch.tensor([1.0, 2.0])
     model = SimpleNamespace(
-        features=list("abcde"),
+        features=[f"feature-{index}" for index in range(50)],
         base_model_features=None,
         base_model=SimpleNamespace(linear=linear),
     )
@@ -185,6 +228,7 @@ def test_effective_model_feature_count_prefers_explicit_base_model_features():
         features=list("abcde"),
         base_model_features=["a", "c", "e"],
         base_model=SimpleNamespace(),
+        preprocess_name="tpm_norm_log1p",
     )
 
     assert _effective_model_feature_count(model) == 3
