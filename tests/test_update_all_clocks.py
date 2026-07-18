@@ -1,10 +1,39 @@
 import importlib.util
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
+import torch
+
+REGISTRY_FIELDS = (
+    "clock_name",
+    "data_type",
+    "species",
+    "year",
+    "approved_by_author",
+    "citation",
+    "doi",
+    "notes",
+    "research_only",
+    "tissue",
+    "predicts",
+    "training_target",
+    "unit",
+    "model_type",
+    "platform",
+    "population",
+    "journal",
+    "last_author",
+    "n_features",
+    "citations",
+    "citations_date",
+    "version",
+)
 
 
 def _load_update_all_clocks_module():
@@ -33,28 +62,137 @@ def _clock(clock_name):
     )
 
 
+def _registry_entry(clock_name, **updates):
+    entry = {
+        "clock_name": clock_name,
+        "data_type": "methylation",
+        "species": "human",
+        "year": 2020,
+        "approved_by_author": "no",
+        "citation": "Citation",
+        "doi": "https://doi.org/10.1000/example",
+        "notes": "Curated notes",
+        "research_only": None,
+        "tissue": ["blood"],
+        "predicts": ["chronological age"],
+        "training_target": ["chronological age"],
+        "unit": ["years"],
+        "model_type": "linear regression",
+        "platform": ["Illumina HumanMethylation450 BeadChip"],
+        "population": "adult",
+        "journal": "Journal",
+        "last_author": "Author",
+        "n_features": 1,
+        "citations": 0,
+        "citations_date": "2026-07-18",
+        "version": "stale registry version",
+    }
+    entry.update(updates)
+    return entry
+
+
 def _write_registry(path, registry):
     path.write_text(json.dumps(registry), encoding="utf-8")
+
+
+def _write_inputs(tmp_path, clock_names=("clock",)):
+    weights_dir = tmp_path / "weights"
+    weights_dir.mkdir()
+    for clock_name in clock_names:
+        torch.save(_clock(clock_name), weights_dir / f"{clock_name}.pt")
+    registry_path = tmp_path / "clock_metadata.json"
+    _write_registry(
+        registry_path,
+        {clock_name: _registry_entry(clock_name) for clock_name in sorted(clock_names)},
+    )
+    metadata_path = tmp_path / "all_clock_metadata.pt"
+    metadata_path.write_bytes(b"original aggregate")
+    return weights_dir, registry_path, metadata_path
+
+
+def _snapshot(paths):
+    return {path: (path.read_bytes(), path.stat().st_mode & 0o7777) for path in paths}
+
+
+def _assert_snapshot(snapshot):
+    for path, (content, mode) in snapshot.items():
+        assert path.read_bytes() == content
+        assert path.stat().st_mode & 0o7777 == mode
+
+
+def _transaction_residue(tmp_path):
+    return sorted(
+        path
+        for path in tmp_path.rglob(".*")
+        if ".clock-metadata-stage-" in path.name or ".clock-metadata-backup-" in path.name
+    )
+
+
+def test_runtime_metadata_fields_are_explicitly_ordered():
+    update_all_clocks = _load_update_all_clocks_module()
+
+    assert update_all_clocks.RUNTIME_METADATA_FIELDS == (
+        "version",
+        "preprocess",
+        "postprocess",
+        "reference_values",
+    )
+
+    clock = _clock("clock")
+    clock.preprocess_name = "runtime_preprocess"
+    clock.postprocess_name = "runtime_postprocess"
+    clock.reference_values = {"mean": 1.0}
+    generated_orders = [list(update_all_clocks._generated_metadata_entry(clock)[1]) for _ in range(10)]
+    assert generated_orders == [list(update_all_clocks.RUNTIME_METADATA_FIELDS)] * 10
+
+
+def test_runtime_metadata_serialization_order_is_hash_seed_independent():
+    module_path = Path(__file__).parents[1] / "clocks" / "update_all_clocks.py"
+    script = f"""
+import importlib.util
+import json
+from types import SimpleNamespace
+spec = importlib.util.spec_from_file_location("update_all_clocks", {str(module_path)!r})
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+clock = SimpleNamespace(
+    metadata={{"clock_name": "clock"}},
+    version="0.3.0",
+    preprocess_name="pre",
+    postprocess_name="post",
+    reference_values={{"mean": 1.0}},
+)
+print(json.dumps(module._generated_metadata_entry(clock)[1]))
+"""
+    outputs = []
+    for seed in ("1", "8675309"):
+        environment = os.environ.copy()
+        environment["PYTHONHASHSEED"] = seed
+        outputs.append(
+            subprocess.run(
+                [sys.executable, "-c", script],
+                check=True,
+                capture_output=True,
+                text=True,
+                env=environment,
+            ).stdout.strip()
+        )
+
+    assert outputs == ['{"version": "0.3.0", "preprocess": "pre", "postprocess": "post", "reference_values": true}'] * 2
 
 
 def test_merge_clock_metadata_uses_registry_for_curated_fields_and_generated_runtime():
     update_all_clocks = _load_update_all_clocks_module()
     registry = {
-        "clock": {
-            "clock_name": "clock",
-            "citation": "Curated citation",
-            "notes": "Carefully curated notes",
-            "version": "stale registry version",
-            "preprocess": "stale registry preprocess",
-            "postprocess": "stale registry postprocess",
-            "reference_values": True,
-        }
+        "clock": _registry_entry(
+            "clock",
+            citation="Curated citation",
+            notes="Carefully curated notes",
+            version="stale registry version",
+        )
     }
     generated_metadata = {
         "clock": {
-            "clock_name": "clock",
-            "citation": "Generated citation",
-            "notes": "Generated notes",
             "version": "0.3.0",
             "preprocess": "new_preprocess",
         }
@@ -62,15 +200,15 @@ def test_merge_clock_metadata_uses_registry_for_curated_fields_and_generated_run
 
     merged_metadata = update_all_clocks.merge_clock_metadata(generated_metadata, registry)
 
-    assert merged_metadata == {
-        "clock": {
-            "clock_name": "clock",
-            "citation": "Curated citation",
-            "notes": "Carefully curated notes",
-            "version": "0.3.0",
-            "preprocess": "new_preprocess",
-        }
-    }
+    expected = _registry_entry(
+        "clock",
+        citation="Curated citation",
+        notes="Carefully curated notes",
+    )
+    expected.pop("version")
+    expected.update(version="0.3.0", preprocess="new_preprocess")
+    assert merged_metadata == {"clock": expected}
+    assert list(merged_metadata["clock"])[-2:] == ["version", "preprocess"]
 
 
 def test_generated_metadata_entry_contains_only_runtime_fields():
@@ -91,10 +229,26 @@ def test_generated_metadata_entry_contains_only_runtime_fields():
     }
 
 
-def test_load_curated_metadata_reads_utf8_json_registry(tmp_path):
+def test_load_curated_metadata_reads_canonical_utf8_json_registry(tmp_path):
     update_all_clocks = _load_update_all_clocks_module()
     registry_path = tmp_path / "clock_metadata.json"
-    registry = {"clock": {"clock_name": "clock", "notes": "Café clock"}}
+    registry = {
+        "alpha": _registry_entry("alpha", notes="Café clock"),
+        "beta": _registry_entry("beta"),
+    }
+    _write_registry(registry_path, registry)
+
+    assert update_all_clocks.load_curated_metadata(registry_path) == registry
+
+
+def test_load_curated_metadata_accepts_registry_without_optional_runtime_fields(
+    tmp_path,
+):
+    update_all_clocks = _load_update_all_clocks_module()
+    registry_path = tmp_path / "clock_metadata.json"
+    entry = _registry_entry("clock")
+    entry.pop("version")
+    registry = {"clock": entry}
     _write_registry(registry_path, registry)
 
     assert update_all_clocks.load_curated_metadata(registry_path) == registry
@@ -122,66 +276,74 @@ def test_regeneration_requires_registry_before_loading_weights(tmp_path, monkeyp
     save.assert_not_called()
 
 
-def test_load_curated_metadata_rejects_invalid_json_cleanly(tmp_path):
-    update_all_clocks = _load_update_all_clocks_module()
-    registry_path = tmp_path / "clock_metadata.json"
-    registry_path.write_text('{"clock":', encoding="utf-8")
-
-    with pytest.raises(ValueError, match="Invalid curated metadata JSON"):
-        update_all_clocks.load_curated_metadata(registry_path)
-
-
 @pytest.mark.parametrize(
-    ("invalid_metadata", "message"),
+    ("text", "message"),
     [
-        ([], "top-level dictionary"),
-        ({"UpperClock": {"clock_name": "UpperClock"}}, "lowercase non-empty string"),
-        ({"": {"clock_name": ""}}, "lowercase non-empty string"),
-        ({"clock": []}, "entry for 'clock' must be a dictionary"),
-        (
-            {"clock": {"clock_name": "different"}},
-            "entry clock_name for 'clock' must match its key",
-        ),
+        ('{"clock": {}, "clock": {}}', "duplicate key 'clock'"),
+        ('{"clock": {"clock_name": NaN}}', "non-finite JSON number"),
+        ('{"clock": {"clock_name": Infinity}}', "non-finite JSON number"),
+        ('{"clock":', "Invalid curated metadata JSON"),
     ],
 )
-def test_load_curated_metadata_rejects_invalid_registry(tmp_path, invalid_metadata, message):
+def test_load_curated_metadata_rejects_non_strict_json(tmp_path, text, message):
     update_all_clocks = _load_update_all_clocks_module()
     registry_path = tmp_path / "clock_metadata.json"
-    _write_registry(registry_path, invalid_metadata)
+    registry_path.write_text(text, encoding="utf-8")
 
     with pytest.raises(ValueError, match=message):
         update_all_clocks.load_curated_metadata(registry_path)
 
 
-def test_broken_weight_preflight_prevents_all_weight_and_aggregate_saves(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    ("registry", "message"),
+    [
+        ([], "top-level dictionary"),
+        (
+            {
+                "beta": _registry_entry("beta"),
+                "alpha": _registry_entry("alpha"),
+            },
+            "clock keys must be in alphabetical order",
+        ),
+        (
+            {"UpperClock": _registry_entry("UpperClock")},
+            "lowercase non-empty string",
+        ),
+        ({"": _registry_entry("")}, "lowercase non-empty string"),
+        ({"clock": []}, "entry for 'clock' must be a dictionary"),
+        (
+            {"clock": _registry_entry("different")},
+            "entry clock_name for 'clock' must match its key",
+        ),
+        (
+            {"clock": {key: value for key, value in _registry_entry("clock").items() if key != "notes"}},
+            "canonical field order",
+        ),
+        (
+            {"clock": dict(reversed(list(_registry_entry("clock").items())))},
+            "canonical field order",
+        ),
+        (
+            {"clock": _registry_entry("clock", year="2020")},
+            "clock.year must be an integer",
+        ),
+        (
+            {"clock": _registry_entry("clock", tissue="blood")},
+            "clock.tissue must be a non-empty string array",
+        ),
+        (
+            {"clock": _registry_entry("clock", research_only="no")},
+            "clock.research_only must be a boolean or null",
+        ),
+    ],
+)
+def test_load_curated_metadata_rejects_invalid_registry(tmp_path, registry, message):
     update_all_clocks = _load_update_all_clocks_module()
-    weights_dir = tmp_path / "weights"
-    weights_dir.mkdir()
-    (weights_dir / "a_good.pt").touch()
-    (weights_dir / "b_broken.pt").touch()
     registry_path = tmp_path / "clock_metadata.json"
-    _write_registry(
-        registry_path,
-        {
-            "a_good": {"clock_name": "a_good"},
-            "b_broken": {"clock_name": "b_broken"},
-        },
-    )
-    load = Mock(side_effect=[_clock("a_good"), OSError("broken weight")])
-    save = Mock()
-    monkeypatch.setattr(update_all_clocks.torch, "load", load)
-    monkeypatch.setattr(update_all_clocks.torch, "save", save)
+    _write_registry(registry_path, registry)
 
-    with pytest.raises(OSError, match="broken weight"):
-        update_all_clocks.regenerate_clock_metadata(
-            "0.3.0",
-            weights_dir=weights_dir,
-            registry_path=registry_path,
-            metadata_path=tmp_path / "all_clock_metadata.pt",
-        )
-
-    assert load.call_count == 2
-    save.assert_not_called()
+    with pytest.raises(ValueError, match=message):
+        update_all_clocks.load_curated_metadata(registry_path)
 
 
 @pytest.mark.parametrize("directory_state", ["missing", "empty"])
@@ -191,7 +353,7 @@ def test_regeneration_requires_nonempty_weights_directory(tmp_path, monkeypatch,
     if directory_state == "empty":
         weights_dir.mkdir()
     registry_path = tmp_path / "clock_metadata.json"
-    _write_registry(registry_path, {"clock": {"clock_name": "clock"}})
+    _write_registry(registry_path, {"clock": _registry_entry("clock")})
     load = Mock()
     save = Mock()
     monkeypatch.setattr(update_all_clocks.torch, "load", load)
@@ -209,125 +371,200 @@ def test_regeneration_requires_nonempty_weights_directory(tmp_path, monkeypatch,
     save.assert_not_called()
 
 
-@pytest.mark.parametrize(
-    ("registry", "weight_name", "message"),
-    [
-        (
-            {
-                "clock": {"clock_name": "clock"},
-                "registry_only": {"clock_name": "registry_only"},
-            },
-            "clock",
-            "Registry and weight clock names must match exactly",
-        ),
-        (
-            {"clock": {"clock_name": "clock"}},
-            "weight_only",
-            "Registry and weight clock names must match exactly",
-        ),
-    ],
-)
-def test_registry_and_weight_sets_must_match_before_any_write(tmp_path, monkeypatch, registry, weight_name, message):
+def test_broken_weight_preflight_stages_nothing(tmp_path, monkeypatch):
     update_all_clocks = _load_update_all_clocks_module()
     weights_dir = tmp_path / "weights"
     weights_dir.mkdir()
-    (weights_dir / f"{weight_name}.pt").touch()
-    registry_path = tmp_path / "clock_metadata.json"
-    _write_registry(registry_path, registry)
-    load = Mock(return_value=_clock(weight_name))
-    save = Mock()
-    monkeypatch.setattr(update_all_clocks.torch, "load", load)
-    monkeypatch.setattr(update_all_clocks.torch, "save", save)
-
-    with pytest.raises(ValueError, match=message):
-        update_all_clocks.regenerate_clock_metadata(
-            "0.3.0",
-            weights_dir=weights_dir,
-            registry_path=registry_path,
-            metadata_path=tmp_path / "all_clock_metadata.pt",
-        )
-
-    load.assert_called_once()
-    save.assert_not_called()
-
-
-def test_update_failure_never_writes_aggregate(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
-    weights_dir = tmp_path / "weights"
-    weights_dir.mkdir()
-    weight_path = weights_dir / "clock.pt"
-    weight_path.touch()
-    registry_path = tmp_path / "clock_metadata.json"
-    _write_registry(registry_path, {"clock": {"clock_name": "clock", "notes": "Curated notes"}})
-    load = Mock(side_effect=[_clock("clock"), _clock("clock")])
-    save = Mock(side_effect=OSError("disk full"))
-    monkeypatch.setattr(update_all_clocks.torch, "load", load)
-    monkeypatch.setattr(update_all_clocks.torch, "save", save)
-
-    with pytest.raises(OSError, match="disk full"):
-        update_all_clocks.regenerate_clock_metadata(
-            "0.3.0",
-            weights_dir=weights_dir,
-            registry_path=registry_path,
-            metadata_path=tmp_path / "all_clock_metadata.pt",
-        )
-
-    save.assert_called_once()
-    assert save.call_args.args[1] == weight_path
-
-
-def test_post_preflight_merge_failure_never_writes_aggregate(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
-    weights_dir = tmp_path / "weights"
-    weights_dir.mkdir()
-    weight_path = weights_dir / "clock.pt"
-    weight_path.touch()
-    registry_path = tmp_path / "clock_metadata.json"
-    _write_registry(registry_path, {"clock": {"clock_name": "clock"}})
-    load = Mock(side_effect=[_clock("clock"), _clock("different")])
-    save = Mock()
-    monkeypatch.setattr(update_all_clocks.torch, "load", load)
-    monkeypatch.setattr(update_all_clocks.torch, "save", save)
-
-    with pytest.raises(ValueError, match="Generated clock names changed after preflight"):
-        update_all_clocks.regenerate_clock_metadata(
-            "0.3.0",
-            weights_dir=weights_dir,
-            registry_path=registry_path,
-            metadata_path=tmp_path / "all_clock_metadata.pt",
-        )
-
-    save.assert_called_once()
-    assert save.call_args.args[1] == weight_path
-
-
-def test_successful_regeneration_saves_registry_backed_aggregate_last(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
-    weights_dir = tmp_path / "weights"
-    weights_dir.mkdir()
-    weight_path = weights_dir / "clock.pt"
-    weight_path.touch()
+    (weights_dir / "alpha.pt").touch()
+    (weights_dir / "beta.pt").touch()
     registry_path = tmp_path / "clock_metadata.json"
     _write_registry(
         registry_path,
         {
-            "clock": {
-                "clock_name": "clock",
-                "citation": "Curated citation",
-                "notes": "Curated notes",
-                "version": "stale registry version",
-                "postprocess": "stale registry postprocess",
-            }
+            "alpha": _registry_entry("alpha"),
+            "beta": _registry_entry("beta"),
         },
     )
-    preflight_clock = _clock("clock")
-    updated_clock = _clock("clock")
-    updated_clock.preprocess_name = "runtime_preprocess"
-    load = Mock(side_effect=[preflight_clock, updated_clock])
-    save = Mock()
+    load = Mock(side_effect=[_clock("alpha"), OSError("broken weight")])
+    stage = Mock()
     monkeypatch.setattr(update_all_clocks.torch, "load", load)
-    monkeypatch.setattr(update_all_clocks.torch, "save", save)
-    metadata_path = tmp_path / "all_clock_metadata.pt"
+    monkeypatch.setattr(update_all_clocks, "_stage_torch_object", stage, raising=False)
+
+    with pytest.raises(OSError, match="broken weight"):
+        update_all_clocks.regenerate_clock_metadata(
+            "0.3.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=tmp_path / "all_clock_metadata.pt",
+        )
+
+    assert load.call_count == 2
+    stage.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("registry_names", "weight_names"),
+    [
+        (("alpha", "registry_only"), ("alpha",)),
+        (("alpha",), ("alpha", "weight_only")),
+    ],
+)
+def test_registry_and_weight_sets_must_match_before_staging(tmp_path, monkeypatch, registry_names, weight_names):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir = tmp_path / "weights"
+    weights_dir.mkdir()
+    for clock_name in weight_names:
+        torch.save(_clock(clock_name), weights_dir / f"{clock_name}.pt")
+    registry_path = tmp_path / "clock_metadata.json"
+    _write_registry(
+        registry_path,
+        {clock_name: _registry_entry(clock_name) for clock_name in sorted(registry_names)},
+    )
+    stage = Mock()
+    monkeypatch.setattr(update_all_clocks, "_stage_torch_object", stage, raising=False)
+
+    with pytest.raises(ValueError, match="Registry and weight clock names must match exactly"):
+        update_all_clocks.regenerate_clock_metadata(
+            "0.3.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=tmp_path / "all_clock_metadata.pt",
+        )
+
+    stage.assert_not_called()
+
+
+def test_invalid_updated_clock_name_is_never_staged(tmp_path, monkeypatch):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir, registry_path, metadata_path = _write_inputs(tmp_path)
+    clock_path = weights_dir / "clock.pt"
+    original_load = update_all_clocks.torch.load
+    loaded_clock = original_load(clock_path, weights_only=False)
+    loaded_clock.metadata["clock_name"] = "different"
+    torch.save(loaded_clock, clock_path)
+    original = _snapshot([clock_path, metadata_path])
+    stage = Mock()
+    monkeypatch.setattr(update_all_clocks, "_stage_torch_object", stage, raising=False)
+
+    with pytest.raises(ValueError, match="Generated clock names do not match weight filenames"):
+        update_all_clocks.regenerate_clock_metadata(
+            "0.3.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=metadata_path,
+        )
+
+    stage.assert_not_called()
+    _assert_snapshot(original)
+
+
+def test_later_stage_save_failure_preserves_all_original_bytes_and_modes(tmp_path, monkeypatch):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
+    targets = [weights_dir / "alpha.pt", weights_dir / "beta.pt", metadata_path]
+    os.chmod(targets[0], 0o640)
+    os.chmod(targets[1], 0o600)
+    os.chmod(metadata_path, 0o644)
+    original = _snapshot(targets)
+    original_save = update_all_clocks.torch.save
+    calls = 0
+
+    def fail_second_save(value, destination):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise OSError("injected later stage save")
+        return original_save(value, destination)
+
+    monkeypatch.setattr(update_all_clocks.torch, "save", fail_second_save)
+
+    with pytest.raises(ValueError, match="injected later stage save"):
+        update_all_clocks.regenerate_clock_metadata(
+            "0.3.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=metadata_path,
+        )
+
+    _assert_snapshot(original)
+    assert _transaction_residue(tmp_path) == []
+
+
+@pytest.mark.parametrize("failure_point", [1, 2, 3])
+def test_replace_failure_rolls_back_every_target_without_residue(tmp_path, monkeypatch, failure_point):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
+    targets = [weights_dir / "alpha.pt", weights_dir / "beta.pt", metadata_path]
+    os.chmod(targets[0], 0o640)
+    os.chmod(targets[1], 0o600)
+    original = _snapshot(targets)
+    original_publish = update_all_clocks._publish_replace
+    calls = 0
+
+    def fail_replace(source, target):
+        nonlocal calls
+        calls += 1
+        if calls == failure_point:
+            raise OSError(f"injected replace {failure_point}")
+        original_publish(source, target)
+
+    monkeypatch.setattr(update_all_clocks, "_publish_replace", fail_replace)
+
+    with pytest.raises(ValueError, match=f"injected replace {failure_point}"):
+        update_all_clocks.regenerate_clock_metadata(
+            "0.3.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=metadata_path,
+        )
+
+    _assert_snapshot(original)
+    assert _transaction_residue(tmp_path) == []
+
+
+def test_backup_cleanup_failure_does_not_roll_back_committed_targets(tmp_path, monkeypatch):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir, registry_path, metadata_path = _write_inputs(tmp_path)
+    clock_path = weights_dir / "clock.pt"
+    original_cleanup = update_all_clocks._cleanup_backup
+    calls = 0
+
+    def fail_first_cleanup(backup):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise OSError("injected committed cleanup failure")
+        original_cleanup(backup)
+
+    monkeypatch.setattr(update_all_clocks, "_cleanup_backup", fail_first_cleanup)
+
+    with pytest.raises(
+        update_all_clocks._CommittedRegenerationError,
+        match="targets committed.*recovery artifact",
+    ) as error:
+        update_all_clocks.regenerate_clock_metadata(
+            "0.3.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=metadata_path,
+        )
+
+    assert torch.load(clock_path, weights_only=False).version == "0.3.0"
+    aggregate = torch.load(metadata_path, weights_only=False)
+    assert aggregate["clock"]["version"] == "0.3.0"
+    residue = _transaction_residue(tmp_path)
+    assert len(residue) == 1
+    assert str(residue[0]) in str(error.value)
+
+
+def test_successful_regeneration_publishes_valid_registry_backed_transaction(tmp_path, monkeypatch):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir, registry_path, metadata_path = _write_inputs(tmp_path)
+    clock_path = weights_dir / "clock.pt"
+    old_mode = clock_path.stat().st_mode & 0o7777
+    original_load = update_all_clocks.torch.load
+    load = Mock(side_effect=original_load)
+    monkeypatch.setattr(update_all_clocks.torch, "load", load)
 
     result = update_all_clocks.regenerate_clock_metadata(
         "0.3.0",
@@ -336,15 +573,14 @@ def test_successful_regeneration_saves_registry_backed_aggregate_last(tmp_path, 
         metadata_path=metadata_path,
     )
 
-    assert result == {
-        "clock": {
-            "clock_name": "clock",
-            "citation": "Curated citation",
-            "notes": "Curated notes",
-            "version": "0.3.0",
-            "preprocess": "runtime_preprocess",
-        }
-    }
-    assert save.call_count == 2
-    assert save.call_args_list[0].args[1] == weight_path
-    assert save.call_args_list[1].args == (result, metadata_path)
+    updated_clock = torch.load(clock_path, weights_only=False)
+    assert updated_clock.version == "0.3.0"
+    assert clock_path.stat().st_mode & 0o7777 == old_mode
+    assert torch.load(metadata_path, weights_only=False) == result
+    assert result["clock"]["notes"] == "Curated notes"
+    assert result["clock"]["version"] == "0.3.0"
+    assert load.call_count == 3
+    assert load.call_args_list[0].args[0] == clock_path
+    assert load.call_args_list[1].args[0] == clock_path
+    assert load.call_args_list[2].args[0] == metadata_path
+    assert _transaction_residue(tmp_path) == []
