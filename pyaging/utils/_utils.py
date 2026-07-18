@@ -75,13 +75,13 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     """
     Loads the clock metadata from Hugging Face.
 
-    This function downloads or resolves the metadata file from Hugging Face in the specified
-    directory, then reads and returns the metadata.
+    This function downloads or resolves the metadata file from the standard Hugging Face
+    cache, then reads and returns the metadata.
 
     Parameters
     ----------
     dir : str
-        The directory to deposit the downloaded file.
+        Retained for backward compatibility. Hugging Face files use its standard cache.
     logger : object
         Logger object used for logging information, warnings, and errors.
     indent_level : int, optional
@@ -161,7 +161,7 @@ def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
     search_doi : str
         The DOI to search for in the aging clocks' metadata.
     dir : str
-        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     Returns
     -------
@@ -234,7 +234,7 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
         The name of the aging clock for which citation information is to be retrieved.
         The function is case-insensitive to the clock name.
     dir : str
-        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     Returns
     -------
@@ -311,7 +311,7 @@ def show_all_clocks(dir: str = "pyaging_data") -> None:
     Parameters
     ----------
     dir : str
-        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     Returns
     -------
@@ -369,7 +369,7 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
     clock_name : str
         The name of the aging clock whose metadata is to be retrieved. The name is case-insensitive.
     dir : str
-        The directory to deposit the downloaded file. Defaults to 'pyaging_data'.
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     Returns
     -------

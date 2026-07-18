@@ -19,7 +19,7 @@ from pyaging.utils._hf import (
 )
 
 
-def test_download_hf_file_uses_pinned_repository_and_logs_path(monkeypatch, tmp_path):
+def test_download_hf_file_uses_pinned_repository_standard_cache_and_logs_path(monkeypatch, tmp_path):
     downloaded_path = str(tmp_path / "horvath2013.pt")
     hub_download = Mock(return_value=downloaded_path)
     logger = Mock()
@@ -32,9 +32,17 @@ def test_download_hf_file_uses_pinned_repository_and_logs_path(monkeypatch, tmp_
         repo_id="lucascamillomd/pyaging-data",
         filename="horvath2013.pt",
         revision="main",
-        local_dir=str(tmp_path),
     )
     logger.info.assert_called_once_with(f"Data available at {downloaded_path}", indent_level=3)
+
+
+def test_download_hf_file_keeps_dir_argument_for_backward_compatibility(monkeypatch):
+    hub_download = Mock(return_value="/hf-cache/horvath2013.pt")
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", hub_download)
+
+    download_hf_file("horvath2013.pt", "legacy-local-directory")
+
+    assert "local_dir" not in hub_download.call_args.kwargs
 
 
 def test_download_hf_file_maps_missing_entry_and_preserves_cause(monkeypatch, tmp_path):

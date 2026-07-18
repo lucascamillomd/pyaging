@@ -36,14 +36,16 @@ class PyAgingDownloadError(PyAgingHubError):
     """Raised when a data file cannot be downloaded."""
 
 
-def download_hf_file(filename: str, dir: str, logger=None, indent_level: int = 1) -> str:
-    """Download a pyaging data file and return its resolved local path."""
+def download_hf_file(filename: str, dir: str = "pyaging_data", logger=None, indent_level: int = 1) -> str:
+    """Download a pyaging data file to the standard Hugging Face cache.
+
+    ``dir`` is retained for backward compatibility but is no longer used.
+    """
     try:
         path = hf_hub_download(
             repo_id=REPO_ID,
             filename=filename,
             revision=REVISION,
-            local_dir=str(dir),
         )
     except LocalEntryNotFoundError as exc:
         raise PyAgingDownloadError(f"Could not download data file '{filename}' and no local copy is available") from exc
