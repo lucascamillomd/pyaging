@@ -12,7 +12,7 @@
     data_type: "Data type", species: "Species", platform: "Platform",
     model_type: "Model type", unit: "Unit", tissue: "Tissue",
     last_author: "Last author", journal: "Journal", predicts: "Predicts",
-    population: "Population", approved_by_author: "Verified",
+    training_target: "Training target", population: "Population", approved_by_author: "Verified",
   };
   var COLUMNS = [
     { key: "clock_name", label: "Clock", def: true, cls: "ce-col-clock" },
@@ -32,7 +32,7 @@
     { key: "journal", label: "Journal", def: true, cls: "ce-col-long" },
   ];
   var DETAIL_FIELDS = [
-    ["predicts", "Predicts"], ["unit", "Unit"], ["tissue", "Tissue"],
+    ["predicts", "Predicts"], ["training_target", "Training target"], ["unit", "Unit"], ["tissue", "Tissue"],
     ["platform", "Platform"], ["population", "Population"], ["model_type", "Model type"],
     ["n_features", "N features"], ["year", "Year"], ["citations", "Citations"],
     ["last_author", "Last author"], ["journal", "Journal"], ["species", "Species"],
@@ -66,7 +66,10 @@
     var filtered = core.filterClocks(state.clocks, state.selected, state.search);
     return state.sortKey === "default" ? core.defaultOrder(filtered) : core.sortClocks(filtered, state.sortKey, state.sortDir);
   }
-  function fmt(v) { return v == null || v === "" ? "—" : String(v); }
+  function fmt(v) {
+    var formatted = core.formatValue(v);
+    return formatted === "" ? "—" : formatted;
+  }
   function columnClass(col) { return (col.num ? "ce-num " : "") + (col.cls || ""); }
   function approvalBadge(value) {
     var verified = String(value || "").toLowerCase() === "by authors";
@@ -356,11 +359,14 @@
       if (c.citations != null) head.appendChild(el("span", "ce-card-cites", c.citations + " cites"));
       card.appendChild(head);
       var badges = el("div", "ce-badges");
-      [c.data_type, c.species, c.model_type].filter(Boolean).forEach(function (b) {
-        badges.appendChild(el("span", "ce-badge", b));
+      [c.data_type, c.species, c.model_type].forEach(function (value) {
+        core.valuesOf(value).forEach(function (b) {
+          badges.appendChild(el("span", "ce-badge", String(b)));
+        });
       });
       card.appendChild(badges);
-      card.appendChild(el("p", "ce-card-predicts", fmt(c.predicts) + (c.unit ? " (" + c.unit + ")" : "")));
+      var unit = core.formatValue(c.unit);
+      card.appendChild(el("p", "ce-card-predicts", fmt(c.predicts) + (unit ? " (" + unit + ")" : "")));
       var more = el("button", "ce-btn ce-card-more", state.expanded[c.clock_name] ? "Hide details" : "Details");
       more.type = "button";
       more.addEventListener("click", function () { state.expanded[c.clock_name] = !state.expanded[c.clock_name]; render(); });
