@@ -1,3 +1,4 @@
+import gc
 import importlib.util
 import json
 import os
@@ -125,6 +126,50 @@ def _transaction_residue(tmp_path):
         path
         for path in tmp_path.rglob(".*")
         if ".clock-metadata-stage-" in path.name or ".clock-metadata-backup-" in path.name
+    )
+
+
+def _write_symlink_inputs(tmp_path, clock_names=("clock",)):
+    backing_dir = tmp_path / "backing"
+    backing_dir.mkdir()
+    weights_dir = tmp_path / "weights"
+    weights_dir.mkdir()
+    logical_weights = []
+    backing_weights = []
+    for clock_name in clock_names:
+        backing = backing_dir / f"{clock_name}.pt"
+        torch.save(_clock(clock_name), backing)
+        logical = weights_dir / f"{clock_name}.pt"
+        logical.symlink_to(backing)
+        backing_weights.append(backing)
+        logical_weights.append(logical)
+
+    registry_path = tmp_path / "clock_metadata.json"
+    _write_registry(
+        registry_path,
+        {clock_name: _registry_entry(clock_name) for clock_name in sorted(clock_names)},
+    )
+    backing_metadata = backing_dir / "all_clock_metadata.pt"
+    backing_metadata.write_bytes(b"original aggregate")
+    metadata_path = tmp_path / "all_clock_metadata.pt"
+    metadata_path.symlink_to(backing_metadata)
+    return (
+        weights_dir,
+        registry_path,
+        metadata_path,
+        logical_weights,
+        backing_weights,
+        backing_metadata,
+    )
+
+
+def _symlink_identity(path):
+    stat_result = path.lstat()
+    return (
+        os.readlink(path),
+        stat_result.st_mode,
+        stat_result.st_ino,
+        stat_result.st_dev,
     )
 
 
@@ -371,7 +416,7 @@ def test_regeneration_requires_nonempty_weights_directory(tmp_path, monkeypatch,
     save.assert_not_called()
 
 
-def test_broken_weight_preflight_stages_nothing(tmp_path, monkeypatch):
+def test_broken_later_weight_cleans_earlier_stage_without_publishing(tmp_path, monkeypatch):
     update_all_clocks = _load_update_all_clocks_module()
     weights_dir = tmp_path / "weights"
     weights_dir.mkdir()
@@ -386,11 +431,10 @@ def test_broken_weight_preflight_stages_nothing(tmp_path, monkeypatch):
         },
     )
     load = Mock(side_effect=[_clock("alpha"), OSError("broken weight")])
-    stage = Mock()
     monkeypatch.setattr(update_all_clocks.torch, "load", load)
-    monkeypatch.setattr(update_all_clocks, "_stage_torch_object", stage, raising=False)
+    originals = _snapshot([weights_dir / "alpha.pt", weights_dir / "beta.pt"])
 
-    with pytest.raises(OSError, match="broken weight"):
+    with pytest.raises(ValueError, match="broken weight"):
         update_all_clocks.regenerate_clock_metadata(
             "0.3.0",
             weights_dir=weights_dir,
@@ -399,7 +443,8 @@ def test_broken_weight_preflight_stages_nothing(tmp_path, monkeypatch):
         )
 
     assert load.call_count == 2
-    stage.assert_not_called()
+    _assert_snapshot(originals)
+    assert _transaction_residue(tmp_path) == []
 
 
 @pytest.mark.parametrize(
@@ -555,6 +600,177 @@ def test_backup_cleanup_failure_does_not_roll_back_committed_targets(tmp_path, m
     residue = _transaction_residue(tmp_path)
     assert len(residue) == 1
     assert str(residue[0]) in str(error.value)
+
+
+def test_success_preserves_weight_and_aggregate_symlink_entries(tmp_path):
+    update_all_clocks = _load_update_all_clocks_module()
+    (
+        weights_dir,
+        registry_path,
+        metadata_path,
+        logical_weights,
+        backing_weights,
+        backing_metadata,
+    ) = _write_symlink_inputs(tmp_path)
+    logical_paths = logical_weights + [metadata_path]
+    identities = {path: _symlink_identity(path) for path in logical_paths}
+
+    result = update_all_clocks.regenerate_clock_metadata(
+        "0.3.0",
+        weights_dir=weights_dir,
+        registry_path=registry_path,
+        metadata_path=metadata_path,
+    )
+
+    assert {path: _symlink_identity(path) for path in logical_paths} == identities
+    assert torch.load(backing_weights[0], weights_only=False).version == "0.3.0"
+    assert torch.load(backing_metadata, weights_only=False) == result
+    assert _transaction_residue(tmp_path) == []
+
+
+def test_replace_failure_restores_symlink_backing_targets_without_touching_links(tmp_path, monkeypatch):
+    update_all_clocks = _load_update_all_clocks_module()
+    (
+        weights_dir,
+        registry_path,
+        metadata_path,
+        logical_weights,
+        backing_weights,
+        backing_metadata,
+    ) = _write_symlink_inputs(tmp_path, ("alpha", "beta"))
+    logical_paths = logical_weights + [metadata_path]
+    identities = {path: _symlink_identity(path) for path in logical_paths}
+    backing_paths = backing_weights + [backing_metadata]
+    os.chmod(backing_paths[0], 0o640)
+    os.chmod(backing_paths[1], 0o600)
+    originals = _snapshot(backing_paths)
+    original_publish = update_all_clocks._publish_replace
+    calls = 0
+
+    def fail_second_replace(source, target):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise OSError("injected symlink backing replace")
+        original_publish(source, target)
+
+    monkeypatch.setattr(update_all_clocks, "_publish_replace", fail_second_replace)
+
+    with pytest.raises(ValueError, match="injected symlink backing replace"):
+        update_all_clocks.regenerate_clock_metadata(
+            "0.3.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=metadata_path,
+        )
+
+    assert {path: _symlink_identity(path) for path in logical_paths} == identities
+    _assert_snapshot(originals)
+    assert _transaction_residue(tmp_path) == []
+
+
+def test_rejects_dangling_and_aliased_weight_symlinks_before_loading(tmp_path, monkeypatch):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir = tmp_path / "weights"
+    weights_dir.mkdir()
+    backing = tmp_path / "backing.pt"
+    torch.save(_clock("alpha"), backing)
+    (weights_dir / "alpha.pt").symlink_to(backing)
+    (weights_dir / "beta.pt").symlink_to(backing)
+    registry_path = tmp_path / "clock_metadata.json"
+    _write_registry(
+        registry_path,
+        {
+            "alpha": _registry_entry("alpha"),
+            "beta": _registry_entry("beta"),
+        },
+    )
+    load = Mock()
+    monkeypatch.setattr(update_all_clocks.torch, "load", load)
+
+    with pytest.raises(ValueError, match="resolve to the same backing target"):
+        update_all_clocks.regenerate_clock_metadata(
+            "0.3.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=tmp_path / "metadata.pt",
+        )
+    load.assert_not_called()
+
+    (weights_dir / "beta.pt").unlink()
+    (weights_dir / "beta.pt").symlink_to(tmp_path / "missing.pt")
+    with pytest.raises(ValueError, match="dangling symbolic link"):
+        update_all_clocks.regenerate_clock_metadata(
+            "0.3.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=tmp_path / "metadata.pt",
+        )
+    load.assert_not_called()
+
+
+def test_regeneration_streams_one_clock_at_a_time_without_path_read_bytes(tmp_path, monkeypatch):
+    update_all_clocks = _load_update_all_clocks_module()
+    names = tuple(f"clock_{index:03d}" for index in range(24))
+    weights_dir = tmp_path / "weights"
+    weights_dir.mkdir()
+    for name in names:
+        (weights_dir / f"{name}.pt").write_bytes(b"original")
+    registry_path = tmp_path / "clock_metadata.json"
+    _write_registry(
+        registry_path,
+        {name: _registry_entry(name) for name in names},
+    )
+    metadata_path = tmp_path / "all_clock_metadata.pt"
+    metadata_path.write_bytes(b"original aggregate")
+
+    live = 0
+    maximum_live = 0
+
+    class TrackingClock:
+        def __init__(self, clock_name):
+            nonlocal live, maximum_live
+            live += 1
+            maximum_live = max(maximum_live, live)
+            self.metadata = {"clock_name": clock_name}
+            self.version = "old"
+            self.preprocess_name = None
+            self.postprocess_name = None
+            self.reference_values = None
+
+        def __del__(self):
+            nonlocal live
+            live -= 1
+
+    def fake_load(path, weights_only=False):
+        assert weights_only is False
+        return TrackingClock(Path(path).stem)
+
+    def fake_save(value, stream):
+        if isinstance(value, TrackingClock):
+            stream.write(f"clock:{value.metadata['clock_name']}:{value.version}".encode())
+        else:
+            stream.write(json.dumps(value).encode())
+
+    monkeypatch.setattr(update_all_clocks.torch, "load", fake_load)
+    monkeypatch.setattr(update_all_clocks.torch, "save", fake_save)
+    monkeypatch.setattr(
+        Path,
+        "read_bytes",
+        lambda self: (_ for _ in ()).throw(AssertionError(f"Path.read_bytes is forbidden: {self}")),
+    )
+
+    result = update_all_clocks.regenerate_clock_metadata(
+        "0.3.0",
+        weights_dir=weights_dir,
+        registry_path=registry_path,
+        metadata_path=metadata_path,
+    )
+    gc.collect()
+
+    assert len(result) == len(names)
+    assert maximum_live == 1
+    assert live == 0
 
 
 def test_successful_regeneration_publishes_valid_registry_backed_transaction(tmp_path, monkeypatch):

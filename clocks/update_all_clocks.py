@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import argparse
+import hashlib
 import json
 import os
 import tempfile
+from collections import namedtuple
 from contextlib import suppress
 from pathlib import Path
 
@@ -57,6 +59,14 @@ _REGISTRY_STRING_FIELDS = (
     "journal",
     "last_author",
     "citations_date",
+)
+_TargetRecord = namedtuple(
+    "_TargetRecord",
+    ("logical_path", "target_path", "logical_state", "target_state"),
+)
+_StagedTarget = namedtuple(
+    "_StagedTarget",
+    ("target_record", "stage_path", "sha256", "size"),
 )
 
 
@@ -193,8 +203,61 @@ def _generated_metadata_entry(clock):
     return key, file_data
 
 
-def preflight_weight_files(weights_dir):
-    """Load and validate every weight once before any rewrite."""
+def _logical_path_state(path):
+    try:
+        stat_result = path.lstat()
+    except FileNotFoundError:
+        return None
+    link_target = os.readlink(str(path)) if path.is_symlink() else None
+    return (
+        stat_result.st_dev,
+        stat_result.st_ino,
+        stat_result.st_mode,
+        stat_result.st_size,
+        stat_result.st_mtime_ns,
+        link_target,
+    )
+
+
+def _target_path_state(path):
+    try:
+        stat_result = path.stat()
+    except FileNotFoundError:
+        return None
+    return (
+        stat_result.st_dev,
+        stat_result.st_ino,
+        stat_result.st_mode,
+        stat_result.st_size,
+        stat_result.st_mtime_ns,
+    )
+
+
+def _resolve_target(logical_path, require_existing):
+    if logical_path.is_symlink():
+        try:
+            target_path = logical_path.resolve(strict=True)
+        except FileNotFoundError as error:
+            raise ValueError(f"Refusing dangling symbolic link: {logical_path}") from error
+    elif logical_path.exists():
+        if require_existing and not logical_path.is_file():
+            raise ValueError(f"Weight path must be a file: {logical_path}")
+        target_path = logical_path.resolve(strict=True)
+    elif require_existing:
+        raise ValueError(f"Weight path does not exist: {logical_path}")
+    else:
+        target_path = logical_path.absolute()
+
+    return _TargetRecord(
+        logical_path=logical_path,
+        target_path=target_path,
+        logical_state=_logical_path_state(logical_path),
+        target_state=_target_path_state(target_path),
+    )
+
+
+def preflight_weight_files(weights_dir, registry_clock_names):
+    """Validate registry filenames and resolve backing targets without loading."""
     if not weights_dir.is_dir():
         raise ValueError(f"A non-empty weights directory is required: {weights_dir}")
 
@@ -202,42 +265,32 @@ def preflight_weight_files(weights_dir):
     if not weight_paths:
         raise ValueError(f"A non-empty weights directory is required: {weights_dir}")
 
-    loaded_weights = []
-    clock_names = set()
-    for weight_path in weight_paths:
-        clock = torch.load(weight_path, weights_only=False)
-        clock_name, _ = _generated_metadata_entry(clock)
-        loaded_weights.append((weight_path, clock, clock_name))
-        clock_names.add(clock_name)
-
-    expected_clock_names = {weight_path.stem for weight_path in weight_paths}
-    if len(clock_names) != len(weight_paths) or clock_names != expected_clock_names:
+    weight_clock_names = {weight_path.stem for weight_path in weight_paths}
+    if weight_clock_names != registry_clock_names:
         raise ValueError(
-            "Generated clock names do not match weight filenames: "
-            f"expected {sorted(expected_clock_names)}, "
-            f"generated {sorted(clock_names)}"
+            "Registry and weight clock names must match exactly: "
+            f"registry {sorted(registry_clock_names)}, "
+            f"weights {sorted(weight_clock_names)}"
         )
 
-    return loaded_weights, clock_names
+    records = [_resolve_target(weight_path, require_existing=True) for weight_path in weight_paths]
+    resolved_targets = [record.target_path for record in records]
+    if len(set(resolved_targets)) != len(resolved_targets):
+        raise ValueError("Distinct weight paths must not resolve to the same backing target")
+    return records
 
 
-def _prepare_weight_updates(version, loaded_weights):
-    generated_metadata = {}
-    updated_weights = []
-
-    for weight_path, clock, preflight_name in loaded_weights:
-        clock.version = version
-        clock_name, runtime_metadata = _generated_metadata_entry(clock)
-        if clock_name != preflight_name:
-            raise ValueError(
-                f"Generated clock names changed after preflight: expected {preflight_name!r}, generated {clock_name!r}"
-            )
-        if clock_name in generated_metadata:
-            raise ValueError(f"Generated clock name {clock_name!r} is duplicated")
-        generated_metadata[clock_name] = runtime_metadata
-        updated_weights.append((weight_path, clock))
-
-    return updated_weights, generated_metadata
+def _stream_sha256_and_size(path):
+    digest = hashlib.sha256()
+    size = 0
+    with path.open("rb") as stream:
+        while True:
+            chunk = stream.read(1024 * 1024)
+            if not chunk:
+                break
+            digest.update(chunk)
+            size += len(chunk)
+    return digest.hexdigest(), size
 
 
 def _fsync_directories(paths):
@@ -251,7 +304,6 @@ def _fsync_directories(paths):
 
 
 def _stage_torch_object(target, value, index):
-    target.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary_name = tempfile.mkstemp(
         prefix=f".clock-metadata-stage-{index}-",
         dir=str(target.parent),
@@ -265,11 +317,12 @@ def _stage_torch_object(target, value, index):
             os.fsync(stream.fileno())
         mode = target.stat().st_mode & 0o7777 if target.exists() else 0o644
         os.chmod(stage, mode)
+        digest, size = _stream_sha256_and_size(stage)
     except Exception:
         with suppress(FileNotFoundError):
             stage.unlink()
         raise
-    return stage
+    return stage, digest, size
 
 
 def _backup_target(target, index):
@@ -301,38 +354,43 @@ class _CommittedRegenerationError(ValueError):
     """Cleanup failed after every canonical target crossed the commit boundary."""
 
 
-def _transactional_publish(target_values):
-    targets = [target for target, _value in target_values]
-    if len(set(path.resolve() for path in targets)) != len(targets):
+def _transactional_publish(staged_targets):
+    targets = [staged.target_record.target_path for staged in staged_targets]
+    if len(set(targets)) != len(targets):
         raise ValueError("Regeneration transaction targets must be distinct")
 
-    stages = []
-    expected_bytes = {}
     backups = {}
     originally_missing = set()
     published = []
     rollback_failed_backups = set()
     committed = False
     try:
-        for index, (target, value) in enumerate(target_values, start=1):
-            stage = _stage_torch_object(target, value, index)
-            stages.append(stage)
-            expected_bytes[target] = stage.read_bytes()
+        for staged in staged_targets:
+            record = staged.target_record
+            if _logical_path_state(record.logical_path) != record.logical_state:
+                raise ValueError(f"Logical path changed during staging: {record.logical_path}")
+            if _target_path_state(record.target_path) != record.target_state:
+                raise ValueError(f"Backing target changed during staging: {record.target_path}")
 
-        for index, target in enumerate(targets, start=1):
-            if target.exists():
+        for index, staged in enumerate(staged_targets, start=1):
+            record = staged.target_record
+            target = record.target_path
+            if record.target_state is not None:
                 backups[target] = _backup_target(target, index)
             else:
                 originally_missing.add(target)
         _fsync_directories(targets)
 
-        for stage, target in zip(stages, targets):
-            _publish_replace(stage, target)
+        for staged in staged_targets:
+            target = staged.target_record.target_path
+            _publish_replace(staged.stage_path, target)
             published.append(target)
         _fsync_directories(targets)
 
-        for target in targets:
-            if target.read_bytes() != expected_bytes[target]:
+        for staged in staged_targets:
+            target = staged.target_record.target_path
+            digest, size = _stream_sha256_and_size(target)
+            if digest != staged.sha256 or size != staged.size:
                 raise ValueError(f"Post-publish validation failed for {target}")
         committed = True
 
@@ -382,9 +440,9 @@ def _transactional_publish(target_values):
             message += f"; rollback failure: {'; '.join(rollback_errors)}"
         raise ValueError(message) from primary_error
     finally:
-        for stage in stages:
+        for staged in staged_targets:
             with suppress(FileNotFoundError):
-                stage.unlink()
+                staged.stage_path.unlink()
         if not committed:
             for backup in backups.values():
                 if backup not in rollback_failed_backups:
@@ -403,31 +461,66 @@ def regenerate_clock_metadata(
     registry_path = Path(registry_path)
     metadata_path = Path(metadata_path)
     curated_dictionary = load_curated_metadata(registry_path)
-
-    loaded_weights, validated_clock_names = preflight_weight_files(weights_dir)
     registry_clock_names = set(curated_dictionary)
-    if validated_clock_names != registry_clock_names:
-        raise ValueError(
-            "Registry and weight clock names must match exactly: "
-            f"registry {sorted(registry_clock_names)}, "
-            f"weights {sorted(validated_clock_names)}"
+    weight_records = preflight_weight_files(weights_dir, registry_clock_names)
+    metadata_record = _resolve_target(metadata_path, require_existing=False)
+    all_target_paths = [record.target_path for record in weight_records] + [metadata_record.target_path]
+    if len(set(all_target_paths)) != len(all_target_paths):
+        raise ValueError("Distinct logical paths must not resolve to the same backing target")
+
+    generated_dictionary = {}
+    staged_targets = []
+    try:
+        for index, record in enumerate(weight_records, start=1):
+            clock = torch.load(record.logical_path, weights_only=False)
+            try:
+                clock_name, _ = _generated_metadata_entry(clock)
+                expected_name = record.logical_path.stem
+                if clock_name != expected_name:
+                    raise ValueError(
+                        "Generated clock names do not match weight filenames: "
+                        f"expected {expected_name!r}, generated {clock_name!r}"
+                    )
+                clock.version = version
+                clock_name, runtime_metadata = _generated_metadata_entry(clock)
+                stage_path, digest, size = _stage_torch_object(record.target_path, clock, index)
+            finally:
+                del clock
+            generated_dictionary[clock_name] = runtime_metadata
+            staged_targets.append(_StagedTarget(record, stage_path, digest, size))
+
+        generated_clock_names = set(generated_dictionary)
+        if len(generated_dictionary) != len(weight_records) or generated_clock_names != registry_clock_names:
+            raise ValueError(
+                "Generated clock names changed during staging: "
+                f"expected {sorted(registry_clock_names)}, "
+                f"generated {sorted(generated_clock_names)}"
+            )
+
+        combined_dictionary = merge_clock_metadata(generated_dictionary, curated_dictionary)
+        if set(combined_dictionary) != registry_clock_names:
+            raise ValueError("Merged aggregate clock names do not match registry")
+
+        aggregate_stage, aggregate_digest, aggregate_size = _stage_torch_object(
+            metadata_record.target_path,
+            combined_dictionary,
+            len(weight_records) + 1,
         )
-
-    updated_weights, generated_dictionary = _prepare_weight_updates(version, loaded_weights)
-    generated_clock_names = set(generated_dictionary)
-    if len(generated_dictionary) != len(loaded_weights) or generated_clock_names != validated_clock_names:
-        raise ValueError(
-            "Generated clock names changed after preflight: "
-            f"expected {sorted(validated_clock_names)}, "
-            f"generated {sorted(generated_clock_names)}"
+        staged_targets.append(
+            _StagedTarget(
+                metadata_record,
+                aggregate_stage,
+                aggregate_digest,
+                aggregate_size,
+            )
         )
+    except Exception as error:
+        for staged in staged_targets:
+            with suppress(FileNotFoundError):
+                staged.stage_path.unlink()
+        raise ValueError(f"regeneration staging failed: {error}") from error
 
-    combined_dictionary = merge_clock_metadata(generated_dictionary, curated_dictionary)
-    if set(combined_dictionary) != registry_clock_names:
-        raise ValueError("Merged aggregate clock names do not match registry")
-
-    target_values = updated_weights + [(metadata_path, combined_dictionary)]
-    _transactional_publish(target_values)
+    _transactional_publish(staged_targets)
     return combined_dictionary
 
 
