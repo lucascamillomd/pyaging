@@ -741,6 +741,9 @@ def test_vocabulary_report_classifies_values_and_groups_only_conservative_varian
         ("risk score", "risk scores"),
         ("CD4 + cell", "cd4+ cells"),
         ("blood‐cell", "blood-cell"),
+        ("Elastic net regression", "elastic-net regression"),
+        ("tissue-specific", "tissue specific"),
+        ("β-cell assay", "β cell assays"),
     ],
 )
 def test_candidate_key_groups_only_explicit_domain_safe_plurals(left, right):
@@ -757,6 +760,9 @@ def test_candidate_key_groups_only_explicit_domain_safe_plurals(left, right):
         ("risk (score)", "risk score"),
         ("5% sample", "5 sample"),
         ("cell+cell", "cell-cell"),
+        ("H3K27-ac", "H3K27 ac"),
+        ("age-", "age"),
+        ("-adult", "adult"),
     ],
 )
 def test_candidate_key_preserves_meaningful_punctuation_and_unsafe_plurals(left, right):

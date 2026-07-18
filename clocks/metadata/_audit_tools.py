@@ -626,12 +626,22 @@ def _observations(merged, field):
 
 def _candidate_key(value):
     normalized = unicodedata.normalize("NFKC", value).casefold().strip()
-    normalized = " ".join(normalized.split())
     normalized = re.sub(
         r"[\u00ad\u2010-\u2015\u2212\u2e3a\u2e3b\ufe58\ufe63\uff0d]",
         "-",
         normalized,
     )
+    normalized = "".join(
+        " "
+        if character == "-"
+        and index > 0
+        and index + 1 < len(normalized)
+        and normalized[index - 1].isalpha()
+        and normalized[index + 1].isalpha()
+        else character
+        for index, character in enumerate(normalized)
+    )
+    normalized = " ".join(normalized.split())
     normalized = re.sub(r"\s*([^\w\s])\s*", r"\1", normalized, flags=re.UNICODE)
     safe_plurals = {
         "cells": "cell",
