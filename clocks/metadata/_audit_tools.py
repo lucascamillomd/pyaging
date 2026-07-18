@@ -846,6 +846,12 @@ def _review_snapshot(reconciled, field_decisions):
     return coverage, counts, unmapped_errors
 
 
+def _require_integer(value, context, minimum):
+    if type(value) is not int or value < minimum:
+        qualifier = "positive" if minimum == 1 else "nonnegative"
+        raise ValueError(f"{context}: expected a {qualifier} integer")
+
+
 def _coverage_snapshot(coverage):
     if type(coverage) is not dict:
         raise ValueError("decisions.coverage: expected an object")
@@ -862,6 +868,25 @@ def _coverage_snapshot(coverage):
             },
             f"decisions.coverage.{field}",
         )
+        for count_name, minimum in (
+            ("observed_value_count", 1),
+            ("covered_value_count", 0),
+            ("canonical_value_count", 1),
+        ):
+            _require_integer(
+                descriptor[count_name],
+                f"decisions.coverage.{field}.{count_name}",
+                minimum,
+            )
+        if descriptor["covered_value_count"] > descriptor["observed_value_count"]:
+            raise ValueError(f"decisions.coverage.{field}.covered_value_count: cannot exceed observed_value_count")
+        unmapped_values = descriptor["unmapped_values"]
+        if (
+            type(unmapped_values) is not list
+            or any(type(value) is not str or not value.strip() for value in unmapped_values)
+            or len(unmapped_values) != len(set(unmapped_values))
+        ):
+            raise ValueError(f"decisions.coverage.{field}.unmapped_values: expected unique nonempty strings")
         proof = descriptor["proof"]
         if type(proof) is not list:
             raise ValueError(f"decisions.coverage.{field}.proof: expected a list")
@@ -885,6 +910,24 @@ def _coverage_snapshot(coverage):
                 raise ValueError(f"{context}.source_value: expected a nonempty string")
             if source_value in proof_by_value:
                 raise ValueError(f"{context}.source_value: duplicate value {source_value!r}")
+            for count_name, minimum in (
+                ("clock_count", 1),
+                ("direct_clock_count", 0),
+                ("override_clock_count", 0),
+            ):
+                _require_integer(
+                    item[count_name],
+                    f"{context}.{count_name}",
+                    minimum,
+                )
+            if item["direct_clock_count"] + item["override_clock_count"] != item["clock_count"]:
+                raise ValueError(f"{context}: direct_clock_count plus override_clock_count must equal clock_count")
+            if type(item["mapping"]) is not str or item["mapping"] not in {
+                "canonical",
+                "alias",
+                "per-clock override",
+            }:
+                raise ValueError(f"{context}.mapping: unexpected mapping category")
             canonical_values = item["canonical_values"]
             if (
                 type(canonical_values) is not list
@@ -899,13 +942,48 @@ def _coverage_snapshot(coverage):
         result[field] = {
             **descriptor,
             "proof": proof_by_value,
-            "unmapped_values": (
-                sorted(descriptor["unmapped_values"])
-                if type(descriptor["unmapped_values"]) is list
-                else descriptor["unmapped_values"]
-            ),
+            "unmapped_values": (sorted(descriptor["unmapped_values"])),
         }
     return result
+
+
+def _validate_counts(counts, controlled_fields):
+    _require_exact_keys(
+        counts,
+        {
+            "fields",
+            "observed_values",
+            "canonical_values",
+            "aliases",
+            "per_clock_overrides",
+            "unmapped_values",
+        },
+        "decisions.counts",
+    )
+    _require_integer(counts["fields"], "decisions.counts.fields", 1)
+    _require_integer(
+        counts["unmapped_values"],
+        "decisions.counts.unmapped_values",
+        0,
+    )
+    for group, minimum in (
+        ("observed_values", 1),
+        ("canonical_values", 1),
+        ("aliases", 0),
+        ("per_clock_overrides", 0),
+    ):
+        values = counts[group]
+        _require_exact_keys(
+            values,
+            set(controlled_fields),
+            f"decisions.counts.{group}",
+        )
+        for field, value in values.items():
+            _require_integer(
+                value,
+                f"decisions.counts.{group}.{field}",
+                minimum,
+            )
 
 
 def _validate_vocabulary_decisions(
@@ -1041,6 +1119,7 @@ def _validate_vocabulary_decisions(
         raise ValueError("observed controlled value has no mapping: " + "; ".join(unmapped))
     if _coverage_snapshot(decisions["coverage"]) != _coverage_snapshot(expected_coverage):
         raise ValueError("decisions.coverage: does not match the reconciled review snapshot")
+    _validate_counts(decisions["counts"], field_decisions)
     if decisions["counts"] != expected_counts:
         raise ValueError("decisions.counts: does not match the reconciled review snapshot")
     return validated

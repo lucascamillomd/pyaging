@@ -1147,7 +1147,7 @@ def test_apply_vocabulary_decisions_rejects_same_path_and_count_source_mutation(
         (lambda decisions: decisions["counts"].update({"fields": 8}), r"counts.*does not match"),
         (
             lambda decisions: decisions["coverage"]["tissue"]["proof"][0].update({"clock_count": 999}),
-            r"coverage.*does not match",
+            r"coverage.*(does not match|must equal)",
         ),
         (lambda decisions: decisions.update({"rationale": []}), r"rationale.*nonempty"),
         (
@@ -1175,6 +1175,57 @@ def test_apply_vocabulary_decisions_rejects_tampered_review_snapshots(
             output,
         )
     assert not output.exists()
+
+
+def test_apply_vocabulary_decisions_rejects_bool_for_proof_count_one(tmp_path):
+    reconciled_path, decisions_path, vocabulary_path, vocabulary, decisions = vocabulary_decision_fixture(tmp_path)
+    reconciled = json.loads(reconciled_path.read_text())
+    reconciled["records"][1]["fields"]["tissue"]["value"] = ["skin"]
+    write_json(reconciled_path, reconciled)
+    decisions["source"]["sha256"] = hashlib.sha256(reconciled_path.read_bytes()).hexdigest()
+    decisions["decisions"]["tissue"]["canonical_values"] = ["blood", "skin"]
+    vocabulary["fields"]["tissue"]["values"] = ["blood", "skin"]
+    write_json(vocabulary_path, vocabulary)
+    populate_decision_snapshots(decisions, reconciled)
+    proof = next(item for item in decisions["coverage"]["tissue"]["proof"] if item["source_value"] == "skin")
+    assert proof["clock_count"] == 1
+    proof["clock_count"] = True
+    write_json(decisions_path, decisions)
+
+    with pytest.raises(ValueError, match=r"coverage.*clock_count.*integer"):
+        apply_vocabulary_decisions(
+            reconciled_path,
+            decisions_path,
+            vocabulary_path,
+            tmp_path / "normalized.json",
+        )
+
+
+def test_apply_vocabulary_decisions_rejects_bool_for_override_count_one(tmp_path):
+    reconciled_path, decisions_path, vocabulary_path, _vocabulary, decisions = vocabulary_decision_fixture(tmp_path)
+    reconciled = json.loads(reconciled_path.read_text())
+    current = reconciled["records"][0]["fields"]["tissue"]["value"]
+    decisions["decisions"]["tissue"]["per_clock_overrides"] = {
+        "alpha": {
+            "expected_value": current,
+            "canonical_values": current,
+        }
+    }
+    populate_decision_snapshots(decisions, reconciled)
+    assert decisions["counts"]["per_clock_overrides"]["tissue"] == 1
+    decisions["counts"]["per_clock_overrides"]["tissue"] = True
+    write_json(decisions_path, decisions)
+
+    with pytest.raises(
+        ValueError,
+        match=r"counts.*per_clock_overrides.*tissue.*integer",
+    ):
+        apply_vocabulary_decisions(
+            reconciled_path,
+            decisions_path,
+            vocabulary_path,
+            tmp_path / "normalized.json",
+        )
 
 
 def test_apply_vocabulary_decisions_requires_override_to_match_reviewed_current_value(
