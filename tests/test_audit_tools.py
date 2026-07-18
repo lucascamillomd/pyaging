@@ -7,10 +7,11 @@ import pytest
 from clocks.metadata._audit_tools import (
     assign_families,
     build_manifest,
+    main,
     normalize_doi,
     validate_shard,
 )
-from clocks.metadata.validate_metadata import AUDITED_FIELDS
+from clocks.metadata.validate_metadata import AUDITED_FIELDS, validate_audited_value
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -39,12 +40,12 @@ def test_audit_report_has_exact_fixed_scaffold():
 def registry_record(clock_name, doi):
     return {
         "clock_name": clock_name,
-        "doi": doi,
+        "doi": doi if doi.casefold().startswith("https://doi.org/") else f"https://doi.org/{doi}",
         "data_type": "methylation",
         "species": "Homo sapiens",
         "year": 2020,
         "citation": "Example citation",
-        "notes": "",
+        "notes": "Example note",
         "tissue": ["blood"],
         "predicts": ["age"],
         "training_target": ["age"],
@@ -78,6 +79,20 @@ def test_normalize_doi(value, expected):
     assert normalize_doi(value) == expected
 
 
+def test_normalize_doi_is_lowercase_idempotent_and_merges_case_collisions():
+    normalized = normalize_doi("HTTPS://DOI.ORG/10.1234/AbC")
+    assert normalized == "https://doi.org/10.1234/abc"
+    assert normalize_doi(normalized) == normalized
+    assignments = assign_families(
+        {
+            "a": registry_record("a", "10.1234/ABC"),
+            "b": registry_record("b", "https://doi.org/10.1234/abc"),
+        },
+        1,
+    )
+    assert assignments[0]["families"] == [{"doi": "https://doi.org/10.1234/abc", "clock_names": ["a", "b"]}]
+
+
 @pytest.mark.parametrize(
     "value",
     [
@@ -101,6 +116,7 @@ def test_normalize_doi(value, expected):
         "10.1234/white space",
         "10.123/x",
         "10.1234567890/x",
+        "https://doi.org/10.1234%252Fdouble",
     ],
 )
 def test_normalize_doi_rejects_invalid_values(value):
@@ -200,9 +216,36 @@ def test_build_manifest_writes_exact_deterministic_shapes(tmp_path):
     }
     for path in output_dir.iterdir():
         assert path.read_bytes().endswith(b"\n")
-    before = {path.name: path.read_bytes() for path in output_dir.iterdir()}
-    build_manifest(registry_path, output_dir, batch_count=2)
-    assert {path.name: path.read_bytes() for path in output_dir.iterdir()} == before
+
+
+def test_build_manifest_refuses_nonempty_output_without_changing_bytes(tmp_path):
+    registry_path = tmp_path / "registry.json"
+    output_dir = tmp_path / "out"
+    output_dir.mkdir()
+    existing = output_dir / "keep.bin"
+    existing.write_bytes(b"\x00do not replace\xff")
+    nested = output_dir / "keep-dir"
+    nested.mkdir()
+    write_json(registry_path, {"alpha": registry_record("alpha", "10.1234/a")})
+
+    with pytest.raises(ValueError, match="output.*empty"):
+        build_manifest(registry_path, output_dir, batch_count=1)
+
+    assert existing.read_bytes() == b"\x00do not replace\xff"
+    assert list(nested.iterdir()) == []
+    assert sorted(path.name for path in output_dir.iterdir()) == ["keep-dir", "keep.bin"]
+
+
+def test_build_manifest_accepts_existing_empty_output_directory(tmp_path):
+    registry_path = tmp_path / "registry.json"
+    output_dir = tmp_path / "out"
+    output_dir.mkdir()
+    write_json(registry_path, {"alpha": registry_record("alpha", "10.1234/a")})
+
+    manifest = build_manifest(registry_path, output_dir, batch_count=1)
+
+    assert manifest["clock_count"] == 1
+    assert sorted(path.name for path in output_dir.iterdir()) == ["batch-01.json", "manifest.json"]
 
 
 def test_build_manifest_validates_before_writing_any_output(tmp_path):
@@ -297,6 +340,84 @@ def test_validate_shard_accepts_unresolved_and_resolved_evidence(tmp_path):
     assert summary == {"batch": "01", "paper_count": 2, "clock_count": 2}
 
 
+def test_validate_shard_allows_citation_shape_transitions(tmp_path):
+    batch_path, shard_path, shard = make_batch_and_shard(tmp_path)
+    batch = json.loads(batch_path.read_text())
+    batch["papers"][1]["current_metadata"]["beta"]["citation"] = ["Old citation"]
+    shard["records"][0]["fields"]["citation"]["value"] = ["New citation", "Second citation"]
+    shard["records"][1]["fields"]["citation"]["value"] = "Replacement citation"
+    write_json(batch_path, batch)
+    write_json(shard_path, shard)
+
+    validate_shard(batch_path, shard_path)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("tissue", []),
+        ("tissue", ["blood", "blood"]),
+        ("tissue", [""]),
+        ("tissue", [{}]),
+        ("data_type", ""),
+        ("journal", "  "),
+        ("year", True),
+        ("year", 2020.0),
+        ("n_features", False),
+        ("citation", ""),
+        ("citation", []),
+        ("citation", ["same", "same"]),
+        ("citation", ["valid", ""]),
+        ("citation", {"text": "invalid"}),
+        ("doi", "https://doi.org/not-a-doi"),
+        ("notes", None),
+        ("notes", ""),
+    ],
+)
+def test_validate_audited_value_rejects_invalid_shapes(field, value):
+    with pytest.raises(ValueError, match=f"example.{field}"):
+        validate_audited_value(field, value, f"example.{field}")
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("tissue", ["blood", "saliva"]),
+        ("data_type", "methylation"),
+        ("journal", "Journal"),
+        ("year", 2020),
+        ("n_features", 1),
+        ("citation", "One citation"),
+        ("citation", ["One citation", "Two citations"]),
+        ("doi", "https://doi.org/10.1234/valid"),
+        ("notes", "Canonical note"),
+    ],
+)
+def test_validate_audited_value_accepts_canonical_shapes(field, value):
+    validate_audited_value(field, value, f"example.{field}")
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("tissue", []),
+        ("tissue", ["blood", "blood"]),
+        ("data_type", " "),
+        ("year", True),
+        ("citation", []),
+        ("doi", "bad DOI"),
+        ("notes", None),
+    ],
+)
+def test_validate_shard_uses_shared_audited_value_contract(tmp_path, field, value):
+    batch_path, shard_path, shard = make_batch_and_shard(tmp_path)
+    shard["records"][0]["fields"][field]["value"] = value
+    write_json(shard_path, shard)
+
+    with pytest.raises(ValueError, match=f"alpha.{field}.value"):
+        validate_shard(batch_path, shard_path)
+
+
 def test_validate_shard_rejects_paper_with_no_assigned_clocks(tmp_path):
     batch_path, shard_path, shard = make_batch_and_shard(tmp_path)
     batch = json.loads(batch_path.read_text())
@@ -359,3 +480,51 @@ def test_validate_shard_rejects_representative_invalid_cases(tmp_path, mutation,
 
     with pytest.raises(ValueError, match=message):
         validate_shard(batch_path, shard_path)
+
+
+def test_cli_reports_expected_errors_without_traceback(tmp_path, capsys):
+    registry_path = tmp_path / "invalid.json"
+    write_json(registry_path, {"alpha": {"doi": "invalid"}})
+
+    exit_code = main(
+        [
+            "build-manifest",
+            "--registry",
+            str(registry_path),
+            "--output-dir",
+            str(tmp_path / "out"),
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert captured.out == ""
+    assert captured.err.startswith("error: ")
+    assert "Traceback" not in captured.err
+
+
+def test_real_registry_manifest_is_complete_unique_and_byte_deterministic(tmp_path):
+    registry_path = ROOT / "clocks/metadata/clock_metadata.json"
+    output_one = tmp_path / "one"
+    output_two = tmp_path / "two"
+
+    first = build_manifest(registry_path, output_one, batch_count=12)
+    second = build_manifest(registry_path, output_two, batch_count=12)
+
+    assert first == second
+    assert first["paper_count"] == 71
+    assert first["clock_count"] == 173
+    assert len(first["batches"]) == 12
+    dois = []
+    clocks = []
+    for descriptor in first["batches"]:
+        assert descriptor["paper_count"] > 0
+        assert descriptor["clock_count"] > 0
+        batch = json.loads((output_one / descriptor["path"]).read_text())
+        dois.extend(paper["doi"] for paper in batch["papers"])
+        clocks.extend(clock for paper in batch["papers"] for clock in paper["clock_names"])
+    assert len(dois) == len(set(dois)) == 71
+    assert len(clocks) == len(set(clocks)) == 173
+    assert sorted(path.name for path in output_one.iterdir()) == sorted(path.name for path in output_two.iterdir())
+    for path in output_one.iterdir():
+        assert path.read_bytes() == (output_two / path.name).read_bytes()

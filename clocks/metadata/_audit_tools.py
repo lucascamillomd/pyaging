@@ -3,72 +3,35 @@
 import argparse
 import json
 import os
-import re
+import sys
 import tempfile
 from contextlib import suppress
 from datetime import date
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
+from urllib.parse import urlsplit
 
 try:
     from .validate_metadata import (
-        ARRAY_FIELDS,
         AUDITED_FIELDS,
         CONFIRMED_SOURCE_TYPES,
-        CONTROLLED_SCALAR_FIELDS,
         EVIDENCE_STATUSES,
         PROVISIONAL_SOURCE_TEXT,
         SOURCE_TYPES,
         load_json,
+        normalize_doi,
+        validate_audited_value,
     )
 except ImportError:  # Direct script execution.
     from validate_metadata import (
-        ARRAY_FIELDS,
         AUDITED_FIELDS,
         CONFIRMED_SOURCE_TYPES,
-        CONTROLLED_SCALAR_FIELDS,
         EVIDENCE_STATUSES,
         PROVISIONAL_SOURCE_TEXT,
         SOURCE_TYPES,
         load_json,
+        normalize_doi,
+        validate_audited_value,
     )
-
-
-def normalize_doi(value):
-    """Return a DOI in canonical resolver URL form."""
-    if type(value) is not str or not value.strip():
-        raise ValueError("DOI must be a nonempty string")
-    value = value.strip()
-    prefix = "https://doi.org/"
-    if value.casefold().startswith(prefix):
-        try:
-            parsed = urlsplit(value)
-        except ValueError as error:
-            raise ValueError(f"DOI URL {value!r} is invalid") from error
-        if (
-            parsed.scheme.casefold() != "https"
-            or parsed.netloc.casefold() != "doi.org"
-            or parsed.query
-            or parsed.fragment
-            or not parsed.path.startswith("/")
-        ):
-            raise ValueError(f"DOI URL {value!r} must be an unadorned https://doi.org/ URL")
-        core = parsed.path[1:]
-    else:
-        if "://" in value or value.casefold().startswith("doi.org/"):
-            raise ValueError(f"DOI {value!r} must be bare or use the https://doi.org/ prefix")
-        core = value
-    if re.search(r"%(?![0-9A-Fa-f]{2})", core):
-        raise ValueError(f"DOI {value!r} contains an invalid percent escape")
-    try:
-        core = unquote(core, errors="strict")
-    except UnicodeDecodeError as error:
-        raise ValueError(f"DOI {value!r} contains invalid UTF-8 percent escapes") from error
-    if re.fullmatch(r"10\.[0-9]{4,9}/[^\s?#]+", core) is None:
-        raise ValueError(
-            f"DOI {value!r} must match 10.<4-9 digits>/<nonempty suffix> without whitespace, query, or fragment"
-        )
-    return prefix + core
 
 
 def _validate_batch_count(batch_count):
@@ -189,8 +152,17 @@ def build_manifest(registry_path, output_dir, batch_count=12):
         "clock_count": len(seen_clocks),
         "batches": manifest_batches,
     }
+    for _, payload in batch_payloads:
+        _load_batch_assignments(payload)
+
     output_dir = Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    if output_dir.exists():
+        if not output_dir.is_dir():
+            raise ValueError(f"output directory {output_dir}: expected a directory")
+        if any(output_dir.iterdir()):
+            raise ValueError(f"output directory {output_dir}: must be empty")
+    else:
+        output_dir.mkdir(parents=True)
     for filename, payload in batch_payloads:
         _write_json_atomic(output_dir / filename, payload)
     _write_json_atomic(output_dir / "manifest.json", manifest)
@@ -261,6 +233,11 @@ def _load_batch_assignments(batch):
             for field in AUDITED_FIELDS:
                 if field not in current:
                     raise ValueError(f"{context}.current_metadata.{clock_name}: missing field {field!r}")
+                validate_audited_value(
+                    field,
+                    current[field],
+                    f"{context}.current_metadata.{clock_name}.{field}",
+                )
             assignments[clock_name] = (doi, current)
     if type(batch["paper_count"]) is not int or batch["paper_count"] != len(dois):
         raise ValueError("batch.paper_count: does not match papers")
@@ -294,31 +271,14 @@ def _validate_source(clock_name, source, index, source_types):
     source_types[source_id] = source_type
 
 
-def _validate_evidence_value(clock_name, field, value, current):
-    if field in ARRAY_FIELDS:
-        valid = type(value) is list
-    elif field in ("year", "n_features"):
-        valid = type(value) is int
-    elif field == "notes":
-        valid = value is None or type(value) is str
-    elif field in CONTROLLED_SCALAR_FIELDS:
-        valid = type(value) is str
-    elif type(current) is list:
-        valid = type(value) is list
-    else:
-        valid = type(value) is type(current)
-    if not valid:
-        raise ValueError(f"{clock_name}.{field}.value: wrong value type")
-
-
-def _validate_evidence_field(clock_name, field, evidence, current, reviewer, source_types):
+def _validate_evidence_field(clock_name, field, evidence, reviewer, source_types):
     context = f"{clock_name}.{field}"
     _require_exact_keys(
         evidence,
         {"value", "source_text", "source_id", "locator", "status", "note"},
         context,
     )
-    _validate_evidence_value(clock_name, field, evidence["value"], current)
+    validate_audited_value(field, evidence["value"], f"{context}.value")
     for key in ("source_text", "source_id", "locator"):
         if type(evidence[key]) is not str or not evidence[key].strip():
             raise ValueError(f"{context}.{key}: expected a nonempty string")
@@ -382,7 +342,7 @@ def validate_shard(batch_path, shard_path):
             {"clock_name", "doi", "reviewer", "sources", "fields", "access_issues"},
             clock_name,
         )
-        assigned_doi, current = assignments[clock_name]
+        assigned_doi, _current = assignments[clock_name]
         if record["doi"] != assigned_doi:
             raise ValueError(f"{clock_name}.doi: DOI must exactly match assigned DOI")
         if record["reviewer"] != shard["reviewer"]:
@@ -403,7 +363,6 @@ def validate_shard(batch_path, shard_path):
                 clock_name,
                 field,
                 fields[field],
-                current[field],
                 record["reviewer"],
                 source_types,
             )
@@ -427,17 +386,24 @@ def _parser():
 
 
 def main(argv=None):
-    arguments = _parser().parse_args(argv)
-    if arguments.command == "build-manifest":
-        manifest = build_manifest(arguments.registry, arguments.output_dir, arguments.batches)
-        print(
-            f"built {len(manifest['batches'])} batches for "
-            f"{manifest['paper_count']} papers and {manifest['clock_count']} clocks"
-        )
-    else:
-        summary = validate_shard(arguments.batch, arguments.shard)
-        print(f"validated batch {summary['batch']}: {summary['paper_count']} papers, {summary['clock_count']} clocks")
+    try:
+        arguments = _parser().parse_args(argv)
+        if arguments.command == "build-manifest":
+            manifest = build_manifest(arguments.registry, arguments.output_dir, arguments.batches)
+            print(
+                f"built {len(manifest['batches'])} batches for "
+                f"{manifest['paper_count']} papers and {manifest['clock_count']} clocks"
+            )
+        else:
+            summary = validate_shard(arguments.batch, arguments.shard)
+            print(
+                f"validated batch {summary['batch']}: {summary['paper_count']} papers, {summary['clock_count']} clocks"
+            )
+    except (OSError, ValueError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 2
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

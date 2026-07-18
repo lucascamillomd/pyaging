@@ -1,8 +1,9 @@
 import json
 import math
+import re
 from datetime import date
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 ARRAY_FIELDS = ("tissue", "platform", "predicts", "training_target", "unit")
 CONTROLLED_SCALAR_FIELDS = ("data_type", "species", "model_type", "population")
@@ -33,6 +34,15 @@ CONFIRMED_SOURCE_TYPES = {
     "code-confirmed": "code",
 }
 PROVISIONAL_SOURCE_TEXT = {"pending source audit", "unresolved", "unknown"}
+NONEMPTY_STRING_FIELDS = {
+    "data_type",
+    "species",
+    "model_type",
+    "population",
+    "journal",
+    "last_author",
+    "notes",
+}
 
 
 def _reject_non_finite(value):
@@ -101,6 +111,84 @@ def _same_json_value(left, right):
     return left == right
 
 
+def normalize_doi(value):
+    """Return a strict DOI as a lowercase canonical resolver URL."""
+    if type(value) is not str or not value.strip():
+        raise ValueError("DOI must be a nonempty string")
+    value = value.strip()
+    prefix = "https://doi.org/"
+    if value.casefold().startswith(prefix):
+        try:
+            parsed = urlsplit(value)
+        except ValueError as error:
+            raise ValueError(f"DOI URL {value!r} is invalid") from error
+        if (
+            parsed.scheme.casefold() != "https"
+            or parsed.netloc.casefold() != "doi.org"
+            or parsed.query
+            or parsed.fragment
+            or not parsed.path.startswith("/")
+        ):
+            raise ValueError(f"DOI URL {value!r} must be an unadorned https://doi.org/ URL")
+        core = parsed.path[1:]
+    else:
+        if "://" in value or value.casefold().startswith("doi.org/"):
+            raise ValueError(f"DOI {value!r} must be bare or use the https://doi.org/ prefix")
+        core = value
+    if re.search(r"%(?![0-9A-Fa-f]{2})", core):
+        raise ValueError(f"DOI {value!r} contains an invalid percent escape")
+    try:
+        core = unquote(core, errors="strict")
+    except UnicodeDecodeError as error:
+        raise ValueError(f"DOI {value!r} contains invalid UTF-8 percent escapes") from error
+    if re.search(r"%[0-9A-Fa-f]{2}", core):
+        raise ValueError(f"DOI {value!r} must not contain double-encoded percent escapes")
+    if re.fullmatch(r"10\.[0-9]{4,9}/[^\s?#]+", core) is None:
+        raise ValueError(
+            f"DOI {value!r} must match 10.<4-9 digits>/<nonempty suffix> without whitespace, query, or fragment"
+        )
+    return prefix + core.lower()
+
+
+def validate_audited_value(field, value, context):
+    """Validate canonical audited-value shape without checking vocabulary membership."""
+    if field not in AUDITED_FIELDS:
+        raise ValueError(f"{context}: unknown audited field {field!r}")
+    if field in ARRAY_FIELDS:
+        if type(value) is not list or not value:
+            raise ValueError(f"{context}: expected a nonempty list")
+        if any(type(item) is not str or not item.strip() for item in value):
+            raise ValueError(f"{context}: expected nonempty string values")
+        if len(value) != len(set(value)):
+            raise ValueError(f"{context}: values must be unique")
+    elif field in NONEMPTY_STRING_FIELDS:
+        if type(value) is not str or not value.strip():
+            raise ValueError(f"{context}: expected a nonempty string")
+    elif field in ("year", "n_features"):
+        if type(value) is not int:
+            raise ValueError(f"{context}: expected an integer")
+    elif field == "citation":
+        if type(value) is str:
+            valid = bool(value.strip())
+        elif type(value) is list:
+            valid = (
+                bool(value)
+                and all(type(item) is str and item.strip() for item in value)
+                and len(value) == len(set(value))
+            )
+        else:
+            valid = False
+        if not valid:
+            raise ValueError(f"{context}: expected a nonempty string or unique nonempty string list")
+    elif field == "doi":
+        if type(value) is not str or not value.strip().casefold().startswith("https://doi.org/"):
+            raise ValueError(f"{context}: expected an https://doi.org/ DOI URL")
+        try:
+            normalize_doi(value)
+        except ValueError as error:
+            raise ValueError(f"{context}: {error}") from error
+
+
 def validate_vocabulary(vocabulary):
     if type(vocabulary) is not dict:
         raise ValueError("vocabulary: expected top-level object")
@@ -144,35 +232,12 @@ def validate_vocabulary(vocabulary):
 
 
 def _validate_registry_field_types(clock_name, record):
-    string_fields = (
-        "data_type",
-        "species",
-        "doi",
-        "notes",
-        "model_type",
-        "population",
-        "journal",
-        "last_author",
-        "approved_by_author",
-        "citations_date",
-    )
-    for field in string_fields:
+    for field in ("approved_by_author", "citations_date"):
         if type(record[field]) is not str or not record[field].strip():
             _fail(clock_name, field, "expected a nonempty string")
 
-    citation = record["citation"]
-    if type(citation) is str:
-        valid_citation = bool(citation.strip())
-    elif type(citation) is list:
-        valid_citation = bool(citation) and all(type(item) is str and item.strip() for item in citation)
-    else:
-        valid_citation = False
-    if not valid_citation:
-        _fail(clock_name, "citation", "expected a nonempty string or list of nonempty strings")
-
-    for field in ("year", "n_features", "citations"):
-        if type(record[field]) is not int:
-            _fail(clock_name, field, "expected an integer")
+    if type(record["citations"]) is not int:
+        _fail(clock_name, "citations", "expected an integer")
     if record["research_only"] is not None and type(record["research_only"]) is not bool:
         _fail(clock_name, "research_only", "expected a boolean or null")
 
@@ -196,18 +261,12 @@ def validate_registry(registry, vocabulary):
         for field in (*AUDITED_FIELDS, *ADMIN_FIELDS):
             if field not in record:
                 _fail(clock_name, field, "required curated field is missing")
+        for field in AUDITED_FIELDS:
+            validate_audited_value(field, record[field], f"{clock_name}.{field}")
         _validate_registry_field_types(clock_name, record)
 
         for field in ARRAY_FIELDS:
             value = record[field]
-            if type(value) is not list:
-                _fail(clock_name, field, "expected a list")
-            if not value:
-                _fail(clock_name, field, "must not be empty")
-            if any(type(item) is not str or not item.strip() for item in value):
-                _fail(clock_name, field, "expected nonempty string values")
-            if len(value) != len(set(value)):
-                _fail(clock_name, field, "values must be unique")
             allowed = vocabulary_fields.get(field, {}).get("values", [])
             for item in value:
                 if not any(_same_json_value(item, allowed_item) for allowed_item in allowed):
@@ -218,9 +277,6 @@ def validate_registry(registry, vocabulary):
             allowed = vocabulary_fields.get(field, {}).get("values", [])
             if not any(_same_json_value(value, allowed_item) for allowed_item in allowed):
                 _fail(clock_name, field, f"{value!r} is not in the controlled vocabulary")
-
-        if not record["doi"].startswith("https://doi.org/"):
-            _fail(clock_name, "doi", "must start with https://doi.org/")
 
 
 def validate_evidence(registry, ledger):
