@@ -1,7 +1,6 @@
 # Clock Metadata Source Audit
 
 ## Scope
-
 173 clocks across 71 DOI families.
 
 ## Controlled-vocabulary decisions

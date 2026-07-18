@@ -12,6 +12,29 @@ from clocks.metadata._audit_tools import (
 )
 from clocks.metadata.validate_metadata import AUDITED_FIELDS
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_audit_report_has_exact_fixed_scaffold():
+    expected = """# Clock Metadata Source Audit
+
+## Scope
+173 clocks across 71 DOI families.
+
+## Controlled-vocabulary decisions
+
+## Access issues
+
+## Source contradictions and adjudications
+
+## Changed-value summary
+
+## Validation
+
+## Hugging Face publication
+"""
+    assert (ROOT / "clocks/metadata/audit_report.md").read_text(encoding="utf-8") == expected
+
 
 def registry_record(clock_name, doi):
     return {
