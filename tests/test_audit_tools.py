@@ -85,6 +85,8 @@ def test_audit_report_preserves_fixed_scaffold():
     ):
         assert heading in report
     assert "173 clocks across 71 DOI families." in report
+    assert "aggregate runtime fields are unchanged" in " ".join(report.split())
+    assert "mutation-relevant `lstat` fields" in report
 
 
 def registry_record(clock_name, doi):
@@ -169,16 +171,24 @@ def complete_ledger_record(clock_name="tiny"):
 
 
 def notebook_with_metadata(clock_name="tiny", duplicate=False):
+    record = complete_registry_record(clock_name)
+    legacy_fields = [
+        field for field in audit_tools.CURATED_METADATA_FIELDS
+        if field != "training_target"
+    ]
     cell = {
         "cell_type": "code",
         "execution_count": None,
         "metadata": {},
         "outputs": [],
         "source": [
-            f'model.metadata["clock_name"] = "{clock_name}"\n',
-            'model.metadata["data_type"] = "old"\n',
+            f'model.metadata["{field}"] = {record[field]!r}\n'
+            for field in legacy_fields
         ],
     }
+    cell["source"][legacy_fields.index("data_type")] = (
+        'model.metadata["data_type"] = "old"\n'
+    )
     cells = [copy.deepcopy(cell)]
     if duplicate:
         cells.append(copy.deepcopy(cell))
@@ -223,6 +233,34 @@ def test_discover_metadata_cell_finds_assignment_semantically():
 def test_discover_metadata_cell_rejects_zero_or_multiple_cells(notebook, message):
     with pytest.raises(ValueError, match=message):
         discover_metadata_cell(notebook, "tiny.ipynb")
+
+
+@pytest.mark.parametrize(
+    "extra_statement",
+    [
+        "print('do not discard me')\n",
+        'other["value"] = 1\n',
+        'model.metadata["unexpected"] = "x"\n',
+    ],
+)
+def test_legacy_metadata_cell_rejects_any_non_schema_statement(extra_statement):
+    notebook = notebook_with_metadata()
+    notebook["cells"][0]["source"].append(extra_statement)
+    source = "".join(notebook["cells"][0]["source"])
+
+    with pytest.raises(ValueError, match="exact legacy metadata assignments"):
+        audit_tools._notebook_metadata_values(source, "tiny.ipynb")
+
+
+def test_legacy_metadata_cell_requires_all_20_pre_training_target_fields():
+    notebook = notebook_with_metadata()
+    notebook["cells"][0]["source"] = notebook["cells"][0]["source"][:-1]
+
+    with pytest.raises(ValueError, match="exact legacy metadata assignments"):
+        audit_tools._notebook_metadata_values(
+            "".join(notebook["cells"][0]["source"]),
+            "tiny.ipynb",
+        )
 
 
 def test_render_metadata_lines_renders_every_field_and_controlled_comments():
@@ -308,6 +346,24 @@ def test_migrate_dry_run_reports_changes_and_preserves_all_input_artifacts(tmp_p
     assert report["clock_count"] == 1
     assert report["dry_run"] is True
     assert report["fingerprint_verification"] == {"clock_count": 1, "matches": True}
+    assert report["artifact_preservation"] == {
+        "artifact_count": 3,
+        "sha256_bytes_unchanged": True,
+        "readlink_targets_unchanged": True,
+        "mutation_relevant_lstat_fields_unchanged": True,
+        "lstat_fields_compared": [
+            "st_dev",
+            "st_ino",
+            "st_mode",
+            "st_nlink",
+            "st_uid",
+            "st_gid",
+            "st_size",
+            "st_mtime_ns",
+            "st_ctime_ns",
+            "st_flags",
+        ],
+    }
     assert list(report["clocks"]) == ["tiny"]
     change = report["clocks"]["tiny"]
     assert set(change["curated_fields"]) == set(registry["tiny"])

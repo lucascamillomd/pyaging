@@ -82,6 +82,21 @@ CURATED_METADATA_FIELDS = (
 )
 CONTROLLED_FIELDS = ARRAY_FIELDS + CONTROLLED_SCALAR_FIELDS
 RUNTIME_AGGREGATE_FIELDS = ("version", "preprocess", "postprocess", "reference_values")
+LEGACY_METADATA_FIELDS = tuple(
+    field for field in CURATED_METADATA_FIELDS if field != "training_target"
+)
+MUTATION_RELEVANT_LSTAT_FIELDS = (
+    "st_dev",
+    "st_ino",
+    "st_mode",
+    "st_nlink",
+    "st_uid",
+    "st_gid",
+    "st_size",
+    "st_mtime_ns",
+    "st_ctime_ns",
+    "st_flags",
+)
 
 
 def _validate_batch_count(batch_count):
@@ -399,14 +414,22 @@ def _notebook_metadata_values(source, context):
     values = {}
     for statement in tree.body:
         field = _metadata_assignment_field(statement)
-        if field is None:
-            continue
+        if field is None or field not in LEGACY_METADATA_FIELDS:
+            raise ValueError(
+                f"{context}: metadata cell must contain the exact "
+                "legacy metadata assignments (20 fields)"
+            )
         if field in values:
             raise ValueError(f"{context}: duplicate metadata assignment for {field!r}")
         try:
             values[field] = ast.literal_eval(statement.value)
         except (ValueError, TypeError) as error:
             raise ValueError(f"{context}.{field}: value must be a Python literal") from error
+    if set(values) != set(LEGACY_METADATA_FIELDS) or len(values) != len(LEGACY_METADATA_FIELDS):
+        raise ValueError(
+            f"{context}: metadata cell must contain the exact "
+            "legacy metadata assignments (20 fields)"
+        )
     return values
 
 
@@ -464,13 +487,10 @@ def _artifact_state(path):
     path = Path(path)
     stat_result = path.lstat()
     return {
-        "lstat": (
-            stat_result.st_dev,
-            stat_result.st_ino,
-            stat_result.st_mode,
-            stat_result.st_size,
-            stat_result.st_mtime_ns,
-        ),
+        "mutation_relevant_lstat": {
+            field: getattr(stat_result, field, None)
+            for field in MUTATION_RELEVANT_LSTAT_FIELDS
+        },
         "link_target": os.readlink(str(path)) if path.is_symlink() else None,
         "sha256": _sha256_path(path),
     }
@@ -640,7 +660,10 @@ def migrate_dry_run(
         "fingerprint_verification": {"clock_count": len(clocks), "matches": True},
         "artifact_preservation": {
             "artifact_count": len(artifact_paths),
-            "bytes_and_symlinks_unchanged": True,
+            "sha256_bytes_unchanged": True,
+            "readlink_targets_unchanged": True,
+            "mutation_relevant_lstat_fields_unchanged": True,
+            "lstat_fields_compared": list(MUTATION_RELEVANT_LSTAT_FIELDS),
         },
         "clocks": clocks,
     }
