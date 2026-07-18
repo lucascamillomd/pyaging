@@ -1,6 +1,6 @@
 .PHONY: lint format update build install update-clocks-notebooks update-all-clocks verify-hf-auth verify-hf-data-repo-public create-hf-data-repo upload-clocks-to-hf upload-static-data-to-hf process-tutorials test test-tutorials docs version commit tag release release-slim
 
-VERSION ?= v0.3.0
+VERSION ?= v0.3.1
 HF_REPO_ID ?= lucascamillomd/pyaging-data
 HF_REPO_OWNER ?= lucascamillomd
 HF_STATIC_DIR ?= hf_static_data

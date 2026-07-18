@@ -20,8 +20,8 @@ This public repository contains the model weights and data files used by
 - Root-level example files support the pyaging tutorials.
 - `supporting_files/` contains dependencies used to construct or document clocks.
 
-Files used by the Python package are intentionally stored at the repository root so
-`hf_hub_download(..., local_dir="pyaging_data")` preserves existing flat local paths.
+Files used by the Python package are intentionally stored at the repository root and
+downloaded through the standard Hugging Face cache.
 The `main` branch is the live data release and may change independently of the Python
 package version.
 

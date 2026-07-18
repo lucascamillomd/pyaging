@@ -93,7 +93,7 @@ def test_release_sdist_excludes_ignored_sentinels_and_preserves_catalog_files(tm
 
     package = project / "pyaging"
     package.mkdir()
-    package.joinpath("__init__.py").write_text('__version__ = "0.3.0"\n', encoding="utf-8")
+    package.joinpath("__init__.py").write_text('__version__ = "0.3.1"\n', encoding="utf-8")
     for relative_path in PRESERVED_STATIC_FILES:
         path = project / relative_path
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -111,9 +111,7 @@ def test_release_sdist_excludes_ignored_sentinels_and_preserves_catalog_files(tm
 
     assert members.isdisjoint(FORBIDDEN_SENTINELS)
     assert members >= PRESERVED_STATIC_FILES
-    assert hashlib.sha256(clean_sdist.read_bytes()).digest() == hashlib.sha256(
-        populated_sdist.read_bytes()
-    ).digest()
+    assert hashlib.sha256(clean_sdist.read_bytes()).digest() == hashlib.sha256(populated_sdist.read_bytes()).digest()
 
 
 def _load_workflow(name):
@@ -168,7 +166,7 @@ def test_makefile_uses_only_hf_publish_targets():
 
 
 def test_makefile_has_hf_release_defaults():
-    assert "VERSION ?= v0.3.0" in MAKEFILE
+    assert "VERSION ?= v0.3.1" in MAKEFILE
     assert "HF_REPO_ID ?= lucascamillomd/pyaging-data" in MAKEFILE
     assert "HF_REPO_OWNER ?= lucascamillomd" in MAKEFILE
     assert "HF_STATIC_DIR ?= hf_static_data" in MAKEFILE
@@ -246,7 +244,7 @@ def test_release_runs_steps_sequentially_in_one_recipe():
 
 def test_parallel_release_dry_run_preserves_publish_sequence():
     result = subprocess.run(
-        ["make", "-n", "-j4", "release-slim", "VERSION=v0.3.0"],
+        ["make", "-n", "-j4", "release-slim", "VERSION=v0.3.1"],
         check=True,
         capture_output=True,
         text=True,
@@ -262,7 +260,7 @@ def test_hf_repository_card_documents_layout_updates_and_access():
     text = HF_README.read_text(encoding="utf-8")
     assert "public repository" in text
     assert "repository root" in text
-    assert 'hf_hub_download(..., local_dir="pyaging_data")' in text
+    assert "downloaded through the standard Hugging Face cache" in text
     assert "`main` branch is the live data release" in text
     assert "Weights are uploaded before aggregate metadata" in text
     assert "need no Hugging Face token" in text
@@ -292,15 +290,13 @@ def test_release_workflow_is_tag_gated_and_publishes_after_verify():
 
 def test_release_verifies_version_tests_and_distribution_before_publish():
     workflow = _load_workflow("release.yml")
-    verify_commands = "\n".join(
-        step["run"] for step in workflow["jobs"]["verify"]["steps"] if "run" in step
-    )
+    verify_commands = "\n".join(step["run"] for step in workflow["jobs"]["verify"]["steps"] if "run" in step)
 
     assert "GITHUB_REF_NAME" in verify_commands
     assert "pyaging.__version__" in verify_commands
     assert "git fetch origin main --no-tags" in verify_commands
     assert 'git merge-base --is-ancestor "$GITHUB_SHA" origin/main' in verify_commands
-    assert 'not full_catalog and not online' in verify_commands
+    assert "not full_catalog and not online" in verify_commands
     assert "uv build" in verify_commands
     assert "twine check dist/*" in verify_commands
 
@@ -319,9 +315,7 @@ def test_release_uses_token_auth_without_oidc():
 def test_release_checkout_has_no_persisted_credentials_and_full_history():
     workflow = _load_workflow("release.yml")
     checkout = next(
-        step
-        for step in workflow["jobs"]["verify"]["steps"]
-        if step["uses"].startswith("actions/checkout@")
+        step for step in workflow["jobs"]["verify"]["steps"] if step["uses"].startswith("actions/checkout@")
     )
 
     assert checkout["with"]["persist-credentials"] == "false"
@@ -331,16 +325,14 @@ def test_release_checkout_has_no_persisted_credentials_and_full_history():
 def test_ci_excludes_large_and_online_tests():
     workflow = _load_workflow("ci.yml")
     triggers = workflow["on"]
-    unit_commands = "\n".join(
-        step["run"] for step in workflow["jobs"]["unit"]["steps"] if "run" in step
-    )
+    unit_commands = "\n".join(step["run"] for step in workflow["jobs"]["unit"]["steps"] if "run" in step)
 
     assert set(triggers) == {"push", "pull_request", "workflow_dispatch"}
     assert triggers["push"] == {"branches": ["main"]}
     assert triggers["pull_request"] == ""
     assert triggers["workflow_dispatch"] == ""
     assert workflow["permissions"] == {"contents": "read"}
-    assert 'not full_catalog and not online' in unit_commands
+    assert "not full_catalog and not online" in unit_commands
 
 
 def test_ci_covers_supported_platforms_and_tutorials():

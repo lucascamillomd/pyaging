@@ -330,7 +330,7 @@ def load_ensembl_metadata(dir: str, logger, indent_level: int = 1) -> pd.DataFra
     Parameters
     ----------
     dir : str
-        The directory to deposit the downloaded file.
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     logger : Logger
         A logging object for recording the progress and status of the download and filtering process.

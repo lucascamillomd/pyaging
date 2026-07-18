@@ -32,7 +32,7 @@ def predict_age(
         of clock names, by default "horvath2013".
 
     dir: str
-        The directory to deposit the downloaded file. Defaults to "pyaging_data".
+        Retained for backward compatibility. Hugging Face files use its standard cache.
 
     batch_size: int
         The batch size for age inferece. Defaults to 1024.
