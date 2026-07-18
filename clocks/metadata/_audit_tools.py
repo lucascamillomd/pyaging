@@ -2,8 +2,10 @@
 
 import argparse
 import copy
+import gc
 import hashlib
 import json
+import math
 import os
 import re
 import sys
@@ -14,6 +16,10 @@ from contextlib import suppress
 from datetime import date
 from pathlib import Path
 from urllib.parse import urlsplit
+
+import numpy as np
+import pandas as pd
+import torch
 
 try:
     from .validate_metadata import (
@@ -47,7 +53,6 @@ except ImportError:  # Direct script execution.
         validate_registry,
         validate_vocabulary,
     )
-
 
 def _validate_batch_count(batch_count):
     if type(batch_count) is not int or batch_count <= 0:
@@ -100,6 +105,171 @@ def _write_json_atomic(path, value):
         with suppress(FileNotFoundError):
             os.unlink(temporary_name)
         raise
+
+
+def _normalize_runtime_value(value, encode_nonfinite):
+    if value is None or type(value) in (bool, int, str):
+        return value
+    if type(value) is float:
+        if not math.isfinite(value):
+            if not encode_nonfinite:
+                raise ValueError(f"non-finite runtime float {value!r}")
+            label = "nan" if math.isnan(value) else "+inf" if value > 0 else "-inf"
+            return {"__nonfinite_float__": label}
+        return value
+    if isinstance(value, np.generic):
+        return _normalize_runtime_value(value.item(), encode_nonfinite)
+    if isinstance(value, torch.Tensor):
+        value = value.detach().cpu()
+        return _normalize_runtime_value(value.tolist(), encode_nonfinite)
+    if isinstance(value, np.ndarray):
+        if value.dtype.hasobject:
+            raise ValueError(f"unsafe object NumPy array with dtype {value.dtype}")
+        return _normalize_runtime_value(value.tolist(), encode_nonfinite)
+    if isinstance(value, (pd.Index, pd.Series)):
+        return _normalize_runtime_value(value.tolist(), encode_nonfinite)
+    if type(value) in (list, tuple):
+        return [_normalize_runtime_value(item, encode_nonfinite) for item in value]
+    if type(value) is dict:
+        if any(type(key) is not str for key in value):
+            raise ValueError("runtime dictionaries must have string keys")
+        return {
+            key: _normalize_runtime_value(value[key], encode_nonfinite)
+            for key in sorted(value)
+        }
+    raise ValueError(
+        f"unsupported runtime value type {type(value).__module__}.{type(value).__qualname__}"
+    )
+
+
+def normalize_runtime_value(value):
+    """Convert supported state to JSON; tuples intentionally normalize as lists."""
+    return _normalize_runtime_value(value, encode_nonfinite=False)
+
+
+def _normalize_fingerprint_value(value):
+    """Normalize fingerprint state, preserving non-finite floats as sentinels."""
+    return _normalize_runtime_value(value, encode_nonfinite=True)
+
+
+def tensor_digest(tensor):
+    """Hash a tensor's logical dtype, shape, and contiguous CPU bytes."""
+    if not isinstance(tensor, torch.Tensor):
+        raise ValueError("tensor_digest expects a torch.Tensor")
+    value = tensor.detach().cpu().contiguous()
+    if value.layout != torch.strided or value.is_quantized:
+        raise ValueError(
+            f"unsupported tensor storage: layout={value.layout}, quantized={value.is_quantized}"
+        )
+    raw_bytes = value.reshape(-1).view(torch.uint8).numpy().tobytes()
+    return {
+        "dtype": str(value.dtype),
+        "shape": list(value.shape),
+        "sha256": hashlib.sha256(raw_bytes).hexdigest(),
+    }
+
+
+def model_fingerprint(model):
+    """Return metadata-independent prediction-state identity for one model."""
+    fingerprint = {
+        "class": f"{type(model).__module__}.{type(model).__qualname__}",
+        "state_dict": {},
+    }
+    for key, value in sorted(model.state_dict().items()):
+        try:
+            fingerprint["state_dict"][key] = tensor_digest(value)
+        except (RuntimeError, TypeError, ValueError) as error:
+            raise ValueError(f"state_dict.{key}: {error}") from error
+    for field in (
+        "features",
+        "base_model_features",
+        "reference_values",
+        "preprocess_name",
+        "preprocess_dependencies",
+        "postprocess_name",
+        "postprocess_dependencies",
+        "version",
+    ):
+        try:
+            fingerprint[field] = _normalize_fingerprint_value(getattr(model, field))
+        except (RuntimeError, TypeError, ValueError) as error:
+            raise ValueError(f"{field}: {error}") from error
+    return fingerprint
+
+
+def _clock_paths(directory, suffix, excluded=()):
+    directory = Path(directory)
+    if not directory.is_dir():
+        raise ValueError(f"{directory}: expected a directory")
+    excluded = set(excluded)
+    paths = {
+        path.stem: path
+        for path in directory.glob(f"*{suffix}")
+        if path.stem not in excluded
+    }
+    if len(paths) != len(list(directory.glob(f"*{suffix}"))) - sum(
+        1 for path in directory.glob(f"*{suffix}") if path.stem in excluded
+    ):
+        raise ValueError(f"{directory}: duplicate clock paths")
+    return {name: paths[name] for name in sorted(paths)}
+
+
+def _fingerprints_for_weights(weights_path, expected_count):
+    if type(expected_count) is not int or expected_count <= 0:
+        raise ValueError("expected_count must be a positive integer")
+    paths = _clock_paths(weights_path, ".pt")
+    if len(paths) != expected_count:
+        raise ValueError(
+            f"weight count mismatch: expected {expected_count}, found {len(paths)}"
+        )
+    fingerprints = {}
+    for name, path in paths.items():
+        resolved = path.resolve(strict=True)
+        if not resolved.is_file():
+            raise ValueError(f"{path}: symlink target is not a file")
+        model = torch.load(path, weights_only=False, map_location="cpu")
+        metadata = getattr(model, "metadata", None)
+        if type(metadata) is not dict or metadata.get("clock_name") != name:
+            raise ValueError(f"{name}: weight metadata clock_name mismatch")
+        try:
+            fingerprints[name] = model_fingerprint(model)
+        except (AttributeError, ValueError) as error:
+            raise ValueError(f"{name}.{error}") from error
+        del model
+        gc.collect()
+    return fingerprints
+
+
+def fingerprint_weights(weights_path, output_path, expected_count=173):
+    """Load models sequentially and write immutable deterministic fingerprints."""
+    output_path = Path(output_path)
+    if output_path.exists() or output_path.is_symlink():
+        raise ValueError(f"output already exists: {output_path}")
+    if not output_path.parent.is_dir():
+        raise ValueError(f"output parent does not exist: {output_path.parent}")
+    fingerprints = _fingerprints_for_weights(weights_path, expected_count)
+    _write_json_new_atomic(output_path, fingerprints)
+    return fingerprints
+
+
+def verify_fingerprints(weights_path, baseline_path, expected_count=173):
+    """Compare current logical model state with an immutable baseline, read-only."""
+    baseline = load_json(baseline_path)
+    if type(baseline) is not dict:
+        raise ValueError("fingerprint baseline must be a top-level object")
+    current = _fingerprints_for_weights(weights_path, expected_count)
+    if set(current) != set(baseline):
+        missing = sorted(set(baseline) - set(current))
+        extra = sorted(set(current) - set(baseline))
+        raise ValueError(
+            f"fingerprint clock set mismatch: missing={missing}, extra={extra}"
+        )
+    mismatches = [
+        name for name in sorted(current) if current[name] != baseline[name]
+    ]
+    if mismatches:
+        raise ValueError(f"fingerprint mismatch for clocks: {mismatches}")
+    return {"clock_count": len(current), "matches": True}
 
 
 def build_manifest(registry_path, output_dir, batch_count=12):
@@ -1593,6 +1763,14 @@ def _parser():
     materialization.add_argument("--registry", required=True)
     materialization.add_argument("--ledger", required=True)
     materialization.add_argument("--report", required=True)
+    fingerprint = subparsers.add_parser("fingerprint")
+    fingerprint.add_argument("--weights", required=True)
+    fingerprint.add_argument("--output", required=True)
+    fingerprint.add_argument("--expected-count", type=int, default=173)
+    verification = subparsers.add_parser("verify-fingerprints")
+    verification.add_argument("--weights", required=True)
+    verification.add_argument("--baseline", required=True)
+    verification.add_argument("--expected-count", type=int, default=173)
     return parser
 
 
@@ -1627,7 +1805,7 @@ def main(argv=None):
                 arguments.output,
             )
             print(f"normalized {normalized['clock_count']} clocks from reviewed vocabulary decisions")
-        else:
+        elif arguments.command == "materialize":
             summary = materialize(
                 arguments.normalized,
                 arguments.current,
@@ -1637,6 +1815,20 @@ def main(argv=None):
                 arguments.report,
             )
             print(f"materialized {summary['clock_count']} clocks")
+        elif arguments.command == "fingerprint":
+            fingerprints = fingerprint_weights(
+                arguments.weights,
+                arguments.output,
+                arguments.expected_count,
+            )
+            print(f"fingerprinted {len(fingerprints)} clocks")
+        else:
+            summary = verify_fingerprints(
+                arguments.weights,
+                arguments.baseline,
+                arguments.expected_count,
+            )
+            print(f"verified {summary['clock_count']} clock fingerprints")
     except (OSError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 2

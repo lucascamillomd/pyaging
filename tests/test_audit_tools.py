@@ -2,20 +2,29 @@ import ast
 import copy
 import hashlib
 import json
+import os
+import weakref
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import pytest
+import torch
 
 import clocks.metadata._audit_tools as audit_tools
 from clocks.metadata._audit_tools import (
     apply_vocabulary_decisions,
     assign_families,
     build_manifest,
+    fingerprint_weights,
     main,
     materialize,
     merge_shards,
+    model_fingerprint,
     normalize_doi,
     normalize_merged,
+    normalize_runtime_value,
+    tensor_digest,
     validate_shard,
     vocabulary_report,
 )
@@ -28,6 +37,21 @@ from clocks.metadata.validate_metadata import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class TinyFingerprintModel(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.linear = torch.nn.Linear(2, 1)
+        self.features = ["b", "a"]
+        self.base_model_features = ("x", "y")
+        self.reference_values = np.array([1.0, 2.0])
+        self.preprocess_name = None
+        self.preprocess_dependencies = {"z": pd.Index(["a", "b"])}
+        self.postprocess_name = "identity"
+        self.postprocess_dependencies = pd.Series([3, 4])
+        self.version = "v1"
+        self.metadata = {"clock_name": "tiny", "obsolete": "remove"}
 
 
 def test_audit_tools_do_not_use_python_310_zip_strict_keyword():
@@ -83,6 +107,303 @@ def registry_record(clock_name, doi):
 
 def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (None, None),
+        (True, True),
+        (7, 7),
+        (2.5, 2.5),
+        ("x", "x"),
+        ([1, "x"], [1, "x"]),
+        ((1, "x"), [1, "x"]),
+        ({"z": 1, "a": 2}, {"a": 2, "z": 1}),
+        (np.array([[1, 2], [3, 4]]), [[1, 2], [3, 4]]),
+        (np.int64(4), 4),
+        (np.float32(1.5), 1.5),
+        (pd.Index(["x", "y"]), ["x", "y"]),
+        (pd.Series([1, 2]), [1, 2]),
+        (torch.tensor([1, 2]), [1, 2]),
+    ],
+)
+def test_normalize_runtime_value_supports_safe_runtime_types(value, expected):
+    assert normalize_runtime_value(value) == expected
+
+
+def test_normalize_runtime_value_intentionally_treats_tuples_as_json_lists():
+    assert normalize_runtime_value(("x", 1)) == normalize_runtime_value(["x", 1])
+    assert "tuple" in normalize_runtime_value.__doc__.casefold()
+
+
+def test_fingerprint_normalization_encodes_distinct_nonfinite_float_sentinels():
+    assert audit_tools._normalize_fingerprint_value(float("nan")) == {
+        "__nonfinite_float__": "nan"
+    }
+    assert audit_tools._normalize_fingerprint_value(float("inf")) == {
+        "__nonfinite_float__": "+inf"
+    }
+    assert audit_tools._normalize_fingerprint_value(np.float32("-inf")) == {
+        "__nonfinite_float__": "-inf"
+    }
+
+
+def test_fingerprint_normalization_is_deterministic_for_pasta_like_nan_list():
+    values = [float("nan"), np.float64("nan"), {"z": float("nan")}]
+
+    assert audit_tools._normalize_fingerprint_value(values) == [
+        {"__nonfinite_float__": "nan"},
+        {"__nonfinite_float__": "nan"},
+        {"z": {"__nonfinite_float__": "nan"}},
+    ]
+    with pytest.raises(ValueError, match="non-finite"):
+        normalize_runtime_value(values)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        float("nan"),
+        float("inf"),
+        np.float64("-inf"),
+        np.array([1.0, np.nan]),
+        np.array([{"unsafe": "pickle-capable"}], dtype=object),
+        torch.tensor([float("inf")]),
+        {1: "non-string key"},
+        object(),
+        complex(1, 2),
+    ],
+)
+def test_normalize_runtime_value_rejects_nonfinite_and_unknown_values(value):
+    with pytest.raises(ValueError):
+        normalize_runtime_value(value)
+
+
+def test_tensor_digest_is_deterministic_and_records_logical_tensor_identity():
+    source = torch.tensor([[1.0, 2.0], [3.0, 4.0]], requires_grad=True)
+    view = source.t().t()
+
+    digest = tensor_digest(view)
+
+    assert digest == {
+        "dtype": "torch.float32",
+        "shape": [2, 2],
+        "sha256": hashlib.sha256(source.detach().numpy().tobytes()).hexdigest(),
+    }
+
+
+def test_tensor_digest_hashes_bfloat16_raw_bytes_without_numpy_dtype_conversion():
+    tensor = torch.tensor([1.0, 2.0], dtype=torch.bfloat16)
+
+    digest = tensor_digest(tensor)
+
+    assert digest == {
+        "dtype": "torch.bfloat16",
+        "shape": [2],
+        "sha256": hashlib.sha256(
+            tensor.contiguous().view(torch.uint8).numpy().tobytes()
+        ).hexdigest(),
+    }
+
+
+def test_tensor_digest_hashes_zero_dimensional_multibyte_tensors():
+    tensor = torch.tensor(42, dtype=torch.int64)
+    expected_bytes = tensor.reshape(1).view(torch.uint8).numpy().tobytes()
+
+    assert tensor_digest(tensor) == {
+        "dtype": "torch.int64",
+        "shape": [],
+        "sha256": hashlib.sha256(expected_bytes).hexdigest(),
+    }
+
+
+def test_model_fingerprint_is_deterministic_and_excludes_metadata():
+    model = TinyFingerprintModel()
+    first = model_fingerprint(model)
+    model.metadata["changed"] = "metadata is not prediction state"
+    second = model_fingerprint(model)
+
+    assert first == second
+    assert list(first["state_dict"]) == sorted(first["state_dict"])
+    assert first["class"].endswith(".TinyFingerprintModel")
+    assert first["features"] == ["b", "a"]
+    assert set(first) == {
+        "class",
+        "state_dict",
+        "features",
+        "base_model_features",
+        "reference_values",
+        "preprocess_name",
+        "preprocess_dependencies",
+        "postprocess_name",
+        "postprocess_dependencies",
+        "version",
+    }
+    with torch.no_grad():
+        model.linear.weight.add_(1)
+    assert model_fingerprint(model) != first
+
+
+def test_model_fingerprint_preserves_pasta_like_nonfinite_reference_values():
+    model = TinyFingerprintModel()
+    model.reference_values = [float("nan")] * 3
+
+    assert model_fingerprint(model)["reference_values"] == [
+        {"__nonfinite_float__": "nan"},
+        {"__nonfinite_float__": "nan"},
+        {"__nonfinite_float__": "nan"},
+    ]
+
+
+def test_fingerprint_weights_writes_exact_alphabetical_immutable_entries(tmp_path):
+    weights = tmp_path / "weights"
+    weights.mkdir()
+    for name in ("zeta", "alpha"):
+        model = TinyFingerprintModel()
+        model.metadata["clock_name"] = name
+        torch.save(model, weights / f"{name}.pt")
+    output = tmp_path / "fingerprints.json"
+
+    result = fingerprint_weights(weights, output, expected_count=2)
+
+    assert list(result) == ["alpha", "zeta"]
+    assert json.loads(output.read_text()) == result
+    with pytest.raises(ValueError, match="already exists"):
+        fingerprint_weights(weights, output, expected_count=2)
+
+
+def test_fingerprint_weights_rejects_filename_clock_name_mismatch_without_output(tmp_path):
+    weights = tmp_path / "weights"
+    weights.mkdir()
+    model = TinyFingerprintModel()
+    model.metadata["clock_name"] = "duplicate-logical-name"
+    torch.save(model, weights / "physical-name.pt")
+    output = tmp_path / "fingerprints.json"
+
+    with pytest.raises(ValueError, match="clock_name mismatch"):
+        fingerprint_weights(weights, output, expected_count=1)
+
+    assert not output.exists()
+
+
+def test_fingerprint_weights_reports_clock_and_runtime_field_on_unsafe_value(tmp_path):
+    weights = tmp_path / "weights"
+    weights.mkdir()
+    model = TinyFingerprintModel()
+    model.metadata["clock_name"] = "tiny"
+    model.reference_values = object()
+    torch.save(model, weights / "tiny.pt")
+    output = tmp_path / "fingerprints.json"
+
+    with pytest.raises(ValueError, match=r"tiny\.reference_values: unsupported"):
+        fingerprint_weights(weights, output, expected_count=1)
+
+    assert not output.exists()
+
+
+def test_fingerprint_weights_preserves_symlink_lstat_and_only_keeps_one_model_live(
+    tmp_path, monkeypatch
+):
+    weights = tmp_path / "weights"
+    backing = tmp_path / "backing"
+    weights.mkdir()
+    backing.mkdir()
+    for name in ("alpha", "beta", "gamma"):
+        target = backing / f"{name}.pt"
+        target.write_bytes(b"placeholder")
+        (weights / f"{name}.pt").symlink_to(target)
+    links_before = {
+        path.name: (path.lstat().st_mode, path.lstat().st_size, path.lstat().st_mtime_ns, os.readlink(path))
+        for path in weights.glob("*.pt")
+    }
+    live = []
+    peak_live = 0
+
+    def fake_load(path, **_kwargs):
+        nonlocal peak_live
+        live[:] = [reference for reference in live if reference() is not None]
+        peak_live = max(peak_live, len(live))
+        model = TinyFingerprintModel()
+        model.metadata["clock_name"] = Path(path).stem
+        live.append(weakref.ref(model))
+        peak_live = max(peak_live, sum(reference() is not None for reference in live))
+        return model
+
+    monkeypatch.setattr(audit_tools.torch, "load", fake_load)
+    output = tmp_path / "fingerprints.json"
+
+    fingerprint_weights(weights, output, expected_count=3)
+
+    links_after = {
+        path.name: (path.lstat().st_mode, path.lstat().st_size, path.lstat().st_mtime_ns, os.readlink(path))
+        for path in weights.glob("*.pt")
+    }
+    assert links_after == links_before
+    assert peak_live == 1
+
+
+def test_verify_fingerprints_compares_exact_sets_and_values_read_only(tmp_path):
+    weights = tmp_path / "weights"
+    weights.mkdir()
+    model = TinyFingerprintModel()
+    model.metadata["clock_name"] = "tiny"
+    torch.save(model, weights / "tiny.pt")
+    baseline = tmp_path / "baseline.json"
+    fingerprint_weights(weights, baseline, expected_count=1)
+    before = baseline.read_bytes()
+
+    result = audit_tools.verify_fingerprints(weights, baseline, expected_count=1)
+
+    assert result == {"clock_count": 1, "matches": True}
+    assert baseline.read_bytes() == before
+
+    changed = json.loads(before)
+    changed["tiny"]["version"] = "changed"
+    mismatch = tmp_path / "mismatch.json"
+    write_json(mismatch, changed)
+    with pytest.raises(ValueError, match="fingerprint mismatch.*tiny"):
+        audit_tools.verify_fingerprints(weights, mismatch, expected_count=1)
+
+    changed["extra"] = changed.pop("tiny")
+    set_mismatch = tmp_path / "set-mismatch.json"
+    write_json(set_mismatch, changed)
+    with pytest.raises(ValueError, match="clock set mismatch"):
+        audit_tools.verify_fingerprints(weights, set_mismatch, expected_count=1)
+
+
+def test_cli_fingerprint_and_verify_fingerprints(tmp_path, capsys):
+    weights = tmp_path / "weights"
+    weights.mkdir()
+    model = TinyFingerprintModel()
+    model.metadata["clock_name"] = "tiny"
+    torch.save(model, weights / "tiny.pt")
+    baseline = tmp_path / "baseline.json"
+
+    assert main(
+        [
+            "fingerprint",
+            "--weights",
+            str(weights),
+            "--output",
+            str(baseline),
+            "--expected-count",
+            "1",
+        ]
+    ) == 0
+    assert "fingerprinted 1 clocks" in capsys.readouterr().out
+    assert main(
+        [
+            "verify-fingerprints",
+            "--weights",
+            str(weights),
+            "--baseline",
+            str(baseline),
+            "--expected-count",
+            "1",
+        ]
+    ) == 0
+    assert "verified 1 clock fingerprints" in capsys.readouterr().out
 
 
 def populate_decision_snapshots(decisions, reconciled):
