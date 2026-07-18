@@ -545,16 +545,16 @@ def merge_shards(manifest_path, shards_dir, output_path):
                 raise ValueError(
                     f"batch {batch_id} {key}: manifest declares {descriptor[key]}, file has {summary[key]}"
                 )
-        if batch["batch"] != batch_id or batch["paper_count"] != descriptor["paper_count"] or batch[
-            "clock_count"
-        ] != descriptor["clock_count"]:
+        if (
+            batch["batch"] != batch_id
+            or batch["paper_count"] != descriptor["paper_count"]
+            or batch["clock_count"] != descriptor["clock_count"]
+        ):
             raise ValueError(f"batch {batch_id}: declaration does not match batch file")
         for paper in batch["papers"]:
             prior_batch = doi_batches.setdefault(paper["doi"], batch_id)
             if prior_batch != batch_id:
-                raise ValueError(
-                    f"DOI split across batches: {paper['doi']!r} appears in {prior_batch} and {batch_id}"
-                )
+                raise ValueError(f"DOI split across batches: {paper['doi']!r} appears in {prior_batch} and {batch_id}")
         for record in shard["records"]:
             name = record["clock_name"]
             if name in seen_names:
@@ -697,9 +697,7 @@ def vocabulary_report(merged_path, vocabulary_path, output_path):
         for item in observations:
             groups.setdefault(_candidate_key(item["value"]), []).append(item)
         candidate_groups = [
-            {"normalized_key": key, "values": values}
-            for key, values in sorted(groups.items())
-            if len(values) > 1
+            {"normalized_key": key, "values": values} for key, values in sorted(groups.items()) if len(values) > 1
         ]
         report["fields"][field] = {
             "existing_values": descriptor["values"],
@@ -743,8 +741,7 @@ def normalize_merged(merged_path, vocabulary_path, output_path):
             evidence["value"] = normalized if field in ARRAY_FIELDS else normalized[0]
     if unknown:
         details = "; ".join(
-            f"{field}={value!r}: {', '.join(sorted(names))}"
-            for (field, value), names in sorted(unknown.items())
+            f"{field}={value!r}: {', '.join(sorted(names))}" for (field, value), names in sorted(unknown.items())
         )
         raise ValueError(f"unknown controlled values: {details}")
     if duplicate_errors:
@@ -754,21 +751,163 @@ def normalize_merged(merged_path, vocabulary_path, output_path):
     return merged
 
 
+def _validate_vocabulary_decisions(decisions, reconciled_path, reconciled, vocabulary):
+    controlled_fields = (*ARRAY_FIELDS, *CONTROLLED_SCALAR_FIELDS)
+    _require_exact_keys(
+        decisions,
+        {
+            "schema_version",
+            "source",
+            "rationale",
+            "decisions",
+            "ambiguities",
+            "coverage",
+            "counts",
+        },
+        "decisions",
+    )
+    if type(decisions["schema_version"]) is not int or decisions["schema_version"] != 1:
+        raise ValueError("decisions.schema_version: expected integer 1")
+    if type(decisions["ambiguities"]) is not list:
+        raise ValueError("decisions.ambiguities: expected a list")
+    if decisions["ambiguities"]:
+        raise ValueError("decisions.ambiguities: unresolved ambiguities must be adjudicated first")
+    source = decisions["source"]
+    _require_exact_keys(source, {"reconciled", "paper_count", "clock_count"}, "decisions.source")
+    if type(source["reconciled"]) is not str or not source["reconciled"].strip():
+        raise ValueError("decisions.source.reconciled: expected a nonempty path")
+    if Path(source["reconciled"]).resolve() != Path(reconciled_path).resolve():
+        raise ValueError("decisions.source.reconciled: does not match the reconciled input")
+    for count_name in ("paper_count", "clock_count"):
+        if type(source[count_name]) is not int or source[count_name] != reconciled[count_name]:
+            raise ValueError(f"decisions.source.{count_name}: does not match the reconciled input")
+
+    field_decisions = decisions["decisions"]
+    if type(field_decisions) is not dict or set(field_decisions) != set(controlled_fields):
+        raise ValueError("decisions.decisions: expected exactly the controlled fields")
+    records_by_name = {record["clock_name"]: record for record in reconciled["records"]}
+    validated = {}
+    for field in controlled_fields:
+        context = f"decisions.{field}"
+        descriptor = field_decisions[field]
+        _require_exact_keys(
+            descriptor,
+            {"canonical_values", "aliases", "per_clock_overrides"},
+            context,
+        )
+        canonical_values = descriptor["canonical_values"]
+        if (
+            type(canonical_values) is not list
+            or not canonical_values
+            or any(type(value) is not str or not value.strip() for value in canonical_values)
+            or len(canonical_values) != len(set(canonical_values))
+        ):
+            raise ValueError(f"{context}.canonical_values: expected unique nonempty strings")
+        canonical = set(canonical_values)
+        aliases = descriptor["aliases"]
+        if type(aliases) is not dict:
+            raise ValueError(f"{context}.aliases: expected an object")
+        for alias, target in aliases.items():
+            if type(alias) is not str or not alias.strip():
+                raise ValueError(f"{context}.aliases: expected nonempty alias strings")
+            if alias in canonical:
+                raise ValueError(f"{context}: canonical value {alias!r} has more than exactly one mapping")
+            if type(target) is not str or target not in canonical:
+                raise ValueError(f"{context}.aliases: alias {alias!r} must reference a canonical value")
+
+        vocabulary_descriptor = vocabulary["fields"][field]
+        if vocabulary_descriptor["values"] != canonical_values or vocabulary_descriptor["aliases"] != aliases:
+            raise ValueError(f"vocabulary.{field}: does not match the vocabulary decisions")
+
+        overrides = descriptor["per_clock_overrides"]
+        if type(overrides) is not dict:
+            raise ValueError(f"{context}.per_clock_overrides: expected an object")
+        if overrides and field not in ARRAY_FIELDS:
+            raise ValueError(f"{context}.per_clock_overrides: cannot override a scalar field")
+        for clock_name, targets in overrides.items():
+            override_context = f"{context}.per_clock_overrides.{clock_name}"
+            if clock_name not in records_by_name:
+                raise ValueError(f"{override_context}: references an unknown clock")
+            if (
+                type(targets) is not list
+                or not targets
+                or any(type(target) is not str or not target.strip() for target in targets)
+            ):
+                raise ValueError(f"{override_context}: expected nonempty canonical strings")
+            if len(targets) != len(set(targets)):
+                raise ValueError(f"{override_context}: target values must be unique")
+            unknown_targets = sorted(set(targets) - canonical)
+            if unknown_targets:
+                raise ValueError(f"{override_context}: targets are not canonical: {unknown_targets}")
+            current = records_by_name[clock_name]["fields"][field]["value"]
+            if type(current) is not list or not current:
+                raise ValueError(f"{override_context}: does not reference current array values")
+        validated[field] = {
+            "canonical": canonical,
+            "aliases": aliases,
+            "overrides": overrides,
+        }
+    return validated
+
+
+def apply_vocabulary_decisions(reconciled_path, decisions_path, vocabulary_path, output_path):
+    """Apply an exhaustive reviewed mapping artifact without changing its evidence."""
+    output_path = Path(output_path)
+    _refuse_existing([output_path])
+    reconciled = _load_merged(reconciled_path)
+    decisions = load_json(decisions_path)
+    vocabulary = _load_vocabulary(vocabulary_path)
+    mappings = _validate_vocabulary_decisions(
+        decisions,
+        reconciled_path,
+        reconciled,
+        vocabulary,
+    )
+    normalized = copy.deepcopy(reconciled)
+    unmapped = []
+    for record in normalized["records"]:
+        clock_name = record["clock_name"]
+        for field in (*ARRAY_FIELDS, *CONTROLLED_SCALAR_FIELDS):
+            mapping = mappings[field]
+            evidence = record["fields"][field]
+            if clock_name in mapping["overrides"]:
+                evidence["value"] = list(mapping["overrides"][clock_name])
+                continue
+            proposed = evidence["value"] if field in ARRAY_FIELDS else [evidence["value"]]
+            targets = []
+            for source_value in proposed:
+                direct_mappings = int(source_value in mapping["canonical"]) + int(source_value in mapping["aliases"])
+                if direct_mappings != 1:
+                    unmapped.append(
+                        f"{clock_name}.{field}={source_value!r}: expected exactly one mapping, found {direct_mappings}"
+                    )
+                    continue
+                targets.append(mapping["aliases"].get(source_value, source_value))
+            if field in ARRAY_FIELDS and len(targets) != len(set(targets)):
+                raise ValueError(f"{clock_name}.{field}: mappings produce duplicate canonical values")
+            if field in ARRAY_FIELDS:
+                evidence["value"] = targets
+            elif targets:
+                evidence["value"] = targets[0]
+    if unmapped:
+        raise ValueError("observed controlled value has no mapping: " + "; ".join(unmapped))
+    _load_merged_value(normalized)
+    _write_json_new_atomic(output_path, normalized)
+    return normalized
+
+
 def _json_bytes(value):
     return (json.dumps(value, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
 
 def _ledger_bytes(records):
     return "".join(
-        json.dumps(record, ensure_ascii=False, sort_keys=False, separators=(",", ":")) + "\n"
-        for record in records
+        json.dumps(record, ensure_ascii=False, sort_keys=False, separators=(",", ":")) + "\n" for record in records
     ).encode("utf-8")
 
 
 def _report_text(records, current):
-    statuses = Counter(
-        evidence["status"] for record in records for evidence in record["fields"].values()
-    )
+    statuses = Counter(evidence["status"] for record in records for evidence in record["fields"].values())
     changes = Counter()
     access_issues = []
     for record in records:
@@ -931,10 +1070,7 @@ def _transactional_install_materialization(parent, targets, contents):
         except Exception as cleanup_error:
             cleanup_errors.append(f"directory fsync: {cleanup_error}")
         if cleanup_errors:
-            message = (
-                "materialization targets committed; post-commit cleanup failed: "
-                + "; ".join(cleanup_errors)
-            )
+            message = "materialization targets committed; post-commit cleanup failed: " + "; ".join(cleanup_errors)
             if recovery_artifacts:
                 message += (
                     f"; recovery artifact(s) retained: {', '.join(recovery_artifacts)}; "
@@ -1104,6 +1240,11 @@ def _parser():
     normalize.add_argument("--merged", required=True)
     normalize.add_argument("--vocabulary", required=True)
     normalize.add_argument("--output", required=True)
+    apply_decisions = subparsers.add_parser("apply-vocabulary-decisions")
+    apply_decisions.add_argument("--reconciled", required=True)
+    apply_decisions.add_argument("--decisions", required=True)
+    apply_decisions.add_argument("--vocabulary", required=True)
+    apply_decisions.add_argument("--output", required=True)
     materialization = subparsers.add_parser("materialize")
     materialization.add_argument("--normalized", required=True)
     materialization.add_argument("--current", required=True)
@@ -1137,6 +1278,14 @@ def main(argv=None):
         elif arguments.command == "normalize-merged":
             merged = normalize_merged(arguments.merged, arguments.vocabulary, arguments.output)
             print(f"normalized {merged['clock_count']} clocks")
+        elif arguments.command == "apply-vocabulary-decisions":
+            normalized = apply_vocabulary_decisions(
+                arguments.reconciled,
+                arguments.decisions,
+                arguments.vocabulary,
+                arguments.output,
+            )
+            print(f"normalized {normalized['clock_count']} clocks from reviewed vocabulary decisions")
         else:
             summary = materialize(
                 arguments.normalized,

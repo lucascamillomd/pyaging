@@ -7,6 +7,7 @@ import pytest
 
 import clocks.metadata._audit_tools as audit_tools
 from clocks.metadata._audit_tools import (
+    apply_vocabulary_decisions,
     assign_families,
     build_manifest,
     main,
@@ -562,9 +563,7 @@ def reconciliation_fixture(tmp_path):
         "schema_version": 1,
         "paper_count": 2,
         "clock_count": 2,
-        "batches": [
-            {"batch": "01", "paper_count": 2, "clock_count": 2, "path": "batch-01.json"}
-        ],
+        "batches": [{"batch": "01", "paper_count": 2, "clock_count": 2, "path": "batch-01.json"}],
     }
     manifest_path = tmp_path / "manifest.json"
     write_json(manifest_path, manifest)
@@ -586,6 +585,42 @@ def reconciliation_fixture(tmp_path):
     vocabulary_path = tmp_path / "vocabulary.json"
     write_json(vocabulary_path, vocabulary)
     return manifest_path, batch_path, shard_path, shard, vocabulary_path, vocabulary
+
+
+def vocabulary_decision_fixture(tmp_path):
+    (
+        manifest_path,
+        _batch_path,
+        _shard_path,
+        _shard,
+        vocabulary_path,
+        vocabulary,
+    ) = reconciliation_fixture(tmp_path)
+    reconciled_path = tmp_path / "reconciled.json"
+    reconciled = merge_shards(manifest_path, tmp_path, reconciled_path)
+    decisions = {
+        "schema_version": 1,
+        "source": {
+            "reconciled": str(reconciled_path),
+            "paper_count": reconciled["paper_count"],
+            "clock_count": reconciled["clock_count"],
+        },
+        "rationale": ["Test decision artifact."],
+        "decisions": {
+            field: {
+                "canonical_values": descriptor["values"],
+                "aliases": descriptor["aliases"],
+                "per_clock_overrides": {},
+            }
+            for field, descriptor in vocabulary["fields"].items()
+        },
+        "ambiguities": [],
+        "coverage": {},
+        "counts": {},
+    }
+    decisions_path = tmp_path / "decisions.json"
+    write_json(decisions_path, decisions)
+    return reconciled_path, decisions_path, vocabulary_path, vocabulary, decisions
 
 
 def test_merge_shards_happy_path_preserves_exact_records_and_refuses_existing_output(tmp_path):
@@ -857,6 +892,171 @@ def test_normalize_merged_aggregates_unknowns_and_rejects_alias_duplicates(tmp_p
         normalize_merged(merged_path, vocabulary_path, output)
 
 
+def test_apply_vocabulary_decisions_uses_aliases_and_multivalued_overrides_without_changing_evidence(
+    tmp_path,
+):
+    reconciled_path, decisions_path, vocabulary_path, vocabulary, decisions = vocabulary_decision_fixture(tmp_path)
+    reconciled = json.loads(reconciled_path.read_text())
+    alpha_tissue = reconciled["records"][0]["fields"]["tissue"]
+    beta_tissue = reconciled["records"][1]["fields"]["tissue"]
+    alpha_tissue["value"] = ["Blood"]
+    beta_tissue["value"] = ["blood and cultured cells"]
+    write_json(reconciled_path, reconciled)
+
+    canonical = ["blood", "cultured human cells"]
+    vocabulary["fields"]["tissue"]["values"] = canonical
+    vocabulary["fields"]["tissue"]["aliases"] = {"Blood": "blood"}
+    write_json(vocabulary_path, vocabulary)
+    tissue_decision = decisions["decisions"]["tissue"]
+    tissue_decision["canonical_values"] = canonical
+    tissue_decision["aliases"] = {"Blood": "blood"}
+    tissue_decision["per_clock_overrides"] = {
+        "beta": ["blood", "cultured human cells"],
+    }
+    write_json(decisions_path, decisions)
+
+    before = copy.deepcopy(reconciled)
+    output = tmp_path / "normalized.json"
+    normalized = apply_vocabulary_decisions(
+        reconciled_path,
+        decisions_path,
+        vocabulary_path,
+        output,
+    )
+
+    assert normalized["records"][0]["fields"]["tissue"]["value"] == ["blood"]
+    assert normalized["records"][1]["fields"]["tissue"]["value"] == [
+        "blood",
+        "cultured human cells",
+    ]
+    for before_record, after_record in zip(before["records"], normalized["records"]):
+        assert before_record["clock_name"] == after_record["clock_name"]
+        assert before_record["reviewer"] == after_record["reviewer"]
+        assert before_record["sources"] == after_record["sources"]
+        assert before_record["access_issues"] == after_record["access_issues"]
+        for field, before_evidence in before_record["fields"].items():
+            after_evidence = after_record["fields"][field]
+            if field not in (*ARRAY_FIELDS, *CONTROLLED_SCALAR_FIELDS):
+                assert after_evidence == before_evidence
+            else:
+                assert {key: value for key, value in after_evidence.items() if key != "value"} == {
+                    key: value for key, value in before_evidence.items() if key != "value"
+                }
+    assert output.read_text() == json.dumps(normalized, indent=2, ensure_ascii=False) + "\n"
+    with pytest.raises(ValueError, match="already exists"):
+        apply_vocabulary_decisions(
+            reconciled_path,
+            decisions_path,
+            vocabulary_path,
+            output,
+        )
+
+
+@pytest.mark.parametrize(
+    ("mutate", "message"),
+    [
+        (
+            lambda reconciled, decisions, vocabulary: decisions["source"].update({"reconciled": "/tmp/different.json"}),
+            "source.*reconciled",
+        ),
+        (
+            lambda reconciled, decisions, vocabulary: decisions["source"].update({"clock_count": 99}),
+            "source.*clock_count",
+        ),
+        (
+            lambda reconciled, decisions, vocabulary: reconciled["records"][0]["fields"]["tissue"].update(
+                {"value": ["unmapped tissue"]}
+            ),
+            "no mapping.*unmapped tissue",
+        ),
+        (
+            lambda reconciled, decisions, vocabulary: reconciled["records"][0]["fields"]["population"].update(
+                {"value": "unmapped population"}
+            ),
+            "no mapping.*unmapped population",
+        ),
+        (
+            lambda reconciled, decisions, vocabulary: decisions["ambiguities"].append(
+                {"field": "platform", "clocks": ["alpha"], "reason": "Still under review"}
+            ),
+            "unresolved ambiguities",
+        ),
+        (
+            lambda reconciled, decisions, vocabulary: decisions["decisions"]["tissue"]["aliases"].update(
+                {"blood": "blood"}
+            ),
+            "collide|exactly one mapping",
+        ),
+        (
+            lambda reconciled, decisions, vocabulary: decisions["decisions"]["tissue"]["per_clock_overrides"].update(
+                {"missing-clock": ["blood"]}
+            ),
+            "unknown clock",
+        ),
+        (
+            lambda reconciled, decisions, vocabulary: decisions["decisions"]["population"][
+                "per_clock_overrides"
+            ].update({"alpha": ["adults", "children"]}),
+            "scalar field",
+        ),
+        (
+            lambda reconciled, decisions, vocabulary: decisions["decisions"]["tissue"]["per_clock_overrides"].update(
+                {"alpha": ["blood", "blood"]}
+            ),
+            "unique",
+        ),
+        (
+            lambda reconciled, decisions, vocabulary: vocabulary["fields"]["tissue"].update({"values": ["different"]}),
+            "vocabulary.*does not match",
+        ),
+    ],
+)
+def test_apply_vocabulary_decisions_rejects_invalid_or_incomplete_decisions(
+    tmp_path,
+    mutate,
+    message,
+):
+    reconciled_path, decisions_path, vocabulary_path, vocabulary, decisions = vocabulary_decision_fixture(tmp_path)
+    reconciled = json.loads(reconciled_path.read_text())
+    mutate(reconciled, decisions, vocabulary)
+    write_json(reconciled_path, reconciled)
+    write_json(decisions_path, decisions)
+    write_json(vocabulary_path, vocabulary)
+    output = tmp_path / "normalized.json"
+
+    with pytest.raises(ValueError, match=message):
+        apply_vocabulary_decisions(
+            reconciled_path,
+            decisions_path,
+            vocabulary_path,
+            output,
+        )
+    assert not output.exists()
+
+
+def test_apply_vocabulary_decisions_cli_is_deterministic_and_refuses_overwrite(tmp_path, capsys):
+    reconciled_path, decisions_path, vocabulary_path, _vocabulary, _decisions = vocabulary_decision_fixture(tmp_path)
+    output = tmp_path / "normalized.json"
+
+    arguments = [
+        "apply-vocabulary-decisions",
+        "--reconciled",
+        str(reconciled_path),
+        "--decisions",
+        str(decisions_path),
+        "--vocabulary",
+        str(vocabulary_path),
+        "--output",
+        str(output),
+    ]
+    assert main(arguments) == 0
+    first_bytes = output.read_bytes()
+    assert "normalized 2 clocks" in capsys.readouterr().out
+    assert main(arguments) == 2
+    assert output.read_bytes() == first_bytes
+    assert "already exists" in capsys.readouterr().err
+
+
 def test_merged_record_requires_evidence_doi_to_exactly_match_record_doi(tmp_path):
     manifest_path, _batch, _shard_path, _shard, vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
     merged_path = tmp_path / "merged.json"
@@ -892,10 +1092,7 @@ def materialization_fixture(tmp_path, *, current_is_registry=False):
     current = {}
     for record in merged["records"]:
         name = record["clock_name"]
-        current[name] = {
-            field: copy.deepcopy(evidence["value"])
-            for field, evidence in record["fields"].items()
-        }
+        current[name] = {field: copy.deepcopy(evidence["value"]) for field, evidence in record["fields"].items()}
         current[name].update(
             {
                 "clock_name": name,
@@ -946,9 +1143,7 @@ def test_materialize_replaces_existing_targets_with_current_equal_to_registry(tm
     registry = json.loads(targets[0].read_text())
     assert registry["alpha"]["notes"] == merged["records"][0]["fields"]["notes"]["value"]
     assert registry["alpha"]["runtime_extra"] == {"keep": True}
-    assert {key: registry["alpha"][key] for key in ADMIN_FIELDS} == {
-        key: current["alpha"][key] for key in ADMIN_FIELDS
-    }
+    assert {key: registry["alpha"][key] for key in ADMIN_FIELDS} == {key: current["alpha"][key] for key in ADMIN_FIELDS}
     assert [json.loads(line) for line in targets[1].read_text().splitlines()] == merged["records"]
     assert result["clock_count"] == 2
     report = targets[2].read_text()
@@ -960,9 +1155,7 @@ def test_materialize_replaces_existing_targets_with_current_equal_to_registry(tm
 
 
 @pytest.mark.parametrize("failure_point", [1, 2, 3, "post-validate"])
-def test_materialize_rolls_back_every_target_on_publish_or_validation_failure(
-    tmp_path, monkeypatch, failure_point
-):
+def test_materialize_rolls_back_every_target_on_publish_or_validation_failure(tmp_path, monkeypatch, failure_point):
     normalized_path, current_path, vocabulary_path, targets, _merged, _current = materialization_fixture(tmp_path)
     original_bytes = {target: target.read_bytes() for target in targets}
     original_modes = {target: target.stat().st_mode for target in targets}
@@ -1001,9 +1194,7 @@ def _assert_materialized_targets_are_new_and_consistent(targets, merged):
 
 
 @pytest.mark.parametrize("failure_boundary", [1, 2, 3])
-def test_materialize_backup_cleanup_failure_keeps_fully_committed_targets(
-    tmp_path, monkeypatch, failure_boundary
-):
+def test_materialize_backup_cleanup_failure_keeps_fully_committed_targets(tmp_path, monkeypatch, failure_boundary):
     normalized_path, current_path, vocabulary_path, targets, merged, _current = materialization_fixture(tmp_path)
     original_cleanup = audit_tools._cleanup_materialization_backup
     cleanup_count = 0
@@ -1023,17 +1214,13 @@ def test_materialize_backup_cleanup_failure_keeps_fully_committed_targets(
     assert "targets committed" in str(error.value)
     assert "recovery artifact" in str(error.value)
     _assert_materialized_targets_are_new_and_consistent(targets, merged)
-    leftovers = [
-        path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-backup-")
-    ]
+    leftovers = [path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-backup-")]
     assert len(leftovers) == 1
     assert not (tmp_path / ".clock-metadata-materialize.lock").exists()
 
 
 @pytest.mark.parametrize("failure_kind", ["unlink", "fsync"])
-def test_materialize_lock_cleanup_failure_never_rolls_back_committed_targets(
-    tmp_path, monkeypatch, failure_kind
-):
+def test_materialize_lock_cleanup_failure_never_rolls_back_committed_targets(tmp_path, monkeypatch, failure_kind):
     normalized_path, current_path, vocabulary_path, targets, merged, _current = materialization_fixture(tmp_path)
     lock = tmp_path / ".clock-metadata-materialize.lock"
     if failure_kind == "unlink":
@@ -1125,11 +1312,7 @@ def test_materialize_fails_cleanly_when_transaction_lock_exists(tmp_path):
 
     assert {target: target.read_bytes() for target in targets} == originals
     assert lock.read_text() == "other process\n"
-    assert not [
-        path
-        for path in tmp_path.iterdir()
-        if path.name.startswith(".clock-metadata-") and path != lock
-    ]
+    assert not [path for path in tmp_path.iterdir() if path.name.startswith(".clock-metadata-") and path != lock]
 
 
 def test_materialize_rejects_different_output_parents_before_reading_inputs(tmp_path):
@@ -1196,10 +1379,7 @@ def test_materialize_blocks_unresolved_and_preflight_errors_write_nothing(tmp_pa
     merge_shards(manifest_path, tmp_path, normalized_path)
     current = {
         record["clock_name"]: {
-            **{
-                field: copy.deepcopy(evidence["value"])
-                for field, evidence in record["fields"].items()
-            },
+            **{field: copy.deepcopy(evidence["value"]) for field, evidence in record["fields"].items()},
             "clock_name": record["clock_name"],
             "approved_by_author": "pending",
             "research_only": None,
@@ -1260,19 +1440,23 @@ def test_materialize_rejects_output_paths_that_resolve_to_same_location(tmp_path
 def test_reconciliation_cli_wiring(tmp_path, capsys):
     manifest_path, _batch, _shard_path, _shard, vocabulary_path, _vocabulary = reconciliation_fixture(tmp_path)
     merged = tmp_path / "merged.json"
-    assert main(
-        ["merge-shards", "--manifest", str(manifest_path), "--shards", str(tmp_path), "--output", str(merged)]
-    ) == 0
+    assert (
+        main(["merge-shards", "--manifest", str(manifest_path), "--shards", str(tmp_path), "--output", str(merged)])
+        == 0
+    )
     report = tmp_path / "vocab.json"
-    assert main(
-        [
-            "vocabulary-report",
-            "--merged",
-            str(merged),
-            "--vocabulary",
-            str(vocabulary_path),
-            "--output",
-            str(report),
-        ]
-    ) == 0
+    assert (
+        main(
+            [
+                "vocabulary-report",
+                "--merged",
+                str(merged),
+                "--vocabulary",
+                str(vocabulary_path),
+                "--output",
+                str(report),
+            ]
+        )
+        == 0
+    )
     assert "merged 2 clocks" in capsys.readouterr().out
