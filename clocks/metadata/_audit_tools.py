@@ -2,6 +2,7 @@
 
 import argparse
 import copy
+import hashlib
 import json
 import os
 import re
@@ -23,6 +24,7 @@ try:
         EVIDENCE_STATUSES,
         PROVISIONAL_SOURCE_TEXT,
         SOURCE_TYPES,
+        _parse_json,
         load_json,
         normalize_doi,
         validate_audited_value,
@@ -38,6 +40,7 @@ except ImportError:  # Direct script execution.
         EVIDENCE_STATUSES,
         PROVISIONAL_SOURCE_TEXT,
         SOURCE_TYPES,
+        _parse_json,
         load_json,
         normalize_doi,
         validate_audited_value,
@@ -751,7 +754,167 @@ def normalize_merged(merged_path, vocabulary_path, output_path):
     return merged
 
 
-def _validate_vocabulary_decisions(decisions, reconciled_path, reconciled, vocabulary):
+def _load_merged_snapshot(path):
+    path = Path(path)
+    try:
+        content = path.read_bytes()
+        text = content.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise ValueError(f"{path}: invalid UTF-8") from error
+    merged = _parse_json(text, str(path))
+    _load_merged_value(merged)
+    return merged, hashlib.sha256(content).hexdigest()
+
+
+def _review_snapshot(reconciled, field_decisions):
+    coverage = {}
+    observed_counts = {}
+    canonical_counts = {}
+    alias_counts = {}
+    override_counts = {}
+    unmapped_errors = []
+    for field in (*ARRAY_FIELDS, *CONTROLLED_SCALAR_FIELDS):
+        descriptor = field_decisions[field]
+        canonical = set(descriptor["canonical_values"])
+        aliases = descriptor["aliases"]
+        overrides = descriptor["per_clock_overrides"]
+        observations = {}
+        for record in reconciled["records"]:
+            value = record["fields"][field]["value"]
+            values = value if field in ARRAY_FIELDS else [value]
+            for source_value in values:
+                observations.setdefault(source_value, set()).add(record["clock_name"])
+
+        proof = []
+        unmapped_values = []
+        for source_value in sorted(observations):
+            direct_clocks = []
+            override_clocks = []
+            targets = set()
+            source_unmapped = False
+            for clock_name in sorted(observations[source_value]):
+                if clock_name in overrides:
+                    override_clocks.append(clock_name)
+                    targets.update(overrides[clock_name]["canonical_values"])
+                    continue
+                direct_clocks.append(clock_name)
+                mapping_count = int(source_value in canonical) + int(source_value in aliases)
+                if mapping_count != 1:
+                    source_unmapped = True
+                    unmapped_errors.append(
+                        f"{clock_name}.{field}={source_value!r}: expected exactly one mapping, found {mapping_count}"
+                    )
+                else:
+                    targets.add(aliases.get(source_value, source_value))
+            if source_unmapped:
+                unmapped_values.append(source_value)
+            proof.append(
+                {
+                    "source_value": source_value,
+                    "clock_count": len(observations[source_value]),
+                    "direct_clock_count": len(direct_clocks),
+                    "override_clock_count": len(override_clocks),
+                    "mapping": (
+                        "per-clock override"
+                        if override_clocks
+                        else "canonical"
+                        if source_value in canonical
+                        else "alias"
+                    ),
+                    "canonical_values": sorted(targets),
+                }
+            )
+        coverage[field] = {
+            "observed_value_count": len(observations),
+            "covered_value_count": len(observations) - len(unmapped_values),
+            "unmapped_values": unmapped_values,
+            "canonical_value_count": len(canonical),
+            "proof": proof,
+        }
+        observed_counts[field] = len(observations)
+        canonical_counts[field] = len(canonical)
+        alias_counts[field] = len(aliases)
+        override_counts[field] = len(overrides)
+    counts = {
+        "fields": len(field_decisions),
+        "observed_values": observed_counts,
+        "canonical_values": canonical_counts,
+        "aliases": alias_counts,
+        "per_clock_overrides": override_counts,
+        "unmapped_values": sum(len(descriptor["unmapped_values"]) for descriptor in coverage.values()),
+    }
+    return coverage, counts, unmapped_errors
+
+
+def _coverage_snapshot(coverage):
+    if type(coverage) is not dict:
+        raise ValueError("decisions.coverage: expected an object")
+    result = {}
+    for field, descriptor in coverage.items():
+        _require_exact_keys(
+            descriptor,
+            {
+                "observed_value_count",
+                "covered_value_count",
+                "unmapped_values",
+                "canonical_value_count",
+                "proof",
+            },
+            f"decisions.coverage.{field}",
+        )
+        proof = descriptor["proof"]
+        if type(proof) is not list:
+            raise ValueError(f"decisions.coverage.{field}.proof: expected a list")
+        proof_by_value = {}
+        for index, item in enumerate(proof):
+            context = f"decisions.coverage.{field}.proof[{index}]"
+            _require_exact_keys(
+                item,
+                {
+                    "source_value",
+                    "clock_count",
+                    "direct_clock_count",
+                    "override_clock_count",
+                    "mapping",
+                    "canonical_values",
+                },
+                context,
+            )
+            source_value = item["source_value"]
+            if type(source_value) is not str or not source_value.strip():
+                raise ValueError(f"{context}.source_value: expected a nonempty string")
+            if source_value in proof_by_value:
+                raise ValueError(f"{context}.source_value: duplicate value {source_value!r}")
+            canonical_values = item["canonical_values"]
+            if (
+                type(canonical_values) is not list
+                or any(type(value) is not str or not value.strip() for value in canonical_values)
+                or len(canonical_values) != len(set(canonical_values))
+            ):
+                raise ValueError(f"{context}.canonical_values: expected unique strings")
+            proof_by_value[source_value] = {
+                **item,
+                "canonical_values": sorted(canonical_values),
+            }
+        result[field] = {
+            **descriptor,
+            "proof": proof_by_value,
+            "unmapped_values": (
+                sorted(descriptor["unmapped_values"])
+                if type(descriptor["unmapped_values"]) is list
+                else descriptor["unmapped_values"]
+            ),
+        }
+    return result
+
+
+def _validate_vocabulary_decisions(
+    decisions,
+    reconciled_path,
+    reconciled_sha256,
+    reconciled,
+    vocabulary,
+):
     controlled_fields = (*ARRAY_FIELDS, *CONTROLLED_SCALAR_FIELDS)
     _require_exact_keys(
         decisions,
@@ -768,16 +931,31 @@ def _validate_vocabulary_decisions(decisions, reconciled_path, reconciled, vocab
     )
     if type(decisions["schema_version"]) is not int or decisions["schema_version"] != 1:
         raise ValueError("decisions.schema_version: expected integer 1")
+    rationale = decisions["rationale"]
+    if type(rationale) is not list or not rationale:
+        raise ValueError("decisions.rationale: expected a nonempty list")
+    if any(type(item) is not str or not item.strip() for item in rationale):
+        raise ValueError("decisions.rationale: expected nonempty strings")
+    if len(rationale) != len(set(rationale)):
+        raise ValueError("decisions.rationale: entries must be unique")
     if type(decisions["ambiguities"]) is not list:
         raise ValueError("decisions.ambiguities: expected a list")
     if decisions["ambiguities"]:
         raise ValueError("decisions.ambiguities: unresolved ambiguities must be adjudicated first")
     source = decisions["source"]
-    _require_exact_keys(source, {"reconciled", "paper_count", "clock_count"}, "decisions.source")
+    _require_exact_keys(
+        source,
+        {"reconciled", "sha256", "paper_count", "clock_count"},
+        "decisions.source",
+    )
     if type(source["reconciled"]) is not str or not source["reconciled"].strip():
         raise ValueError("decisions.source.reconciled: expected a nonempty path")
     if Path(source["reconciled"]).resolve() != Path(reconciled_path).resolve():
         raise ValueError("decisions.source.reconciled: does not match the reconciled input")
+    if type(source["sha256"]) is not str or re.fullmatch(r"[0-9a-f]{64}", source["sha256"]) is None:
+        raise ValueError("decisions.source.sha256: expected a lowercase SHA-256 digest")
+    if source["sha256"] != reconciled_sha256:
+        raise ValueError("decisions.source.sha256: does not match the reconciled input")
     for count_name in ("paper_count", "clock_count"):
         if type(source[count_name]) is not int or source[count_name] != reconciled[count_name]:
             raise ValueError(f"decisions.source.{count_name}: does not match the reconciled input")
@@ -824,10 +1002,21 @@ def _validate_vocabulary_decisions(decisions, reconciled_path, reconciled, vocab
             raise ValueError(f"{context}.per_clock_overrides: expected an object")
         if overrides and field not in ARRAY_FIELDS:
             raise ValueError(f"{context}.per_clock_overrides: cannot override a scalar field")
-        for clock_name, targets in overrides.items():
+        for clock_name, override in overrides.items():
             override_context = f"{context}.per_clock_overrides.{clock_name}"
             if clock_name not in records_by_name:
                 raise ValueError(f"{override_context}: references an unknown clock")
+            _require_exact_keys(
+                override,
+                {"expected_value", "canonical_values"},
+                override_context,
+            )
+            expected_value = override["expected_value"]
+            validate_audited_value(field, expected_value, f"{override_context}.expected_value")
+            current = records_by_name[clock_name]["fields"][field]["value"]
+            if expected_value != current:
+                raise ValueError(f"{override_context}.expected_value: does not match the current reviewed value")
+            targets = override["canonical_values"]
             if (
                 type(targets) is not list
                 or not targets
@@ -839,14 +1028,21 @@ def _validate_vocabulary_decisions(decisions, reconciled_path, reconciled, vocab
             unknown_targets = sorted(set(targets) - canonical)
             if unknown_targets:
                 raise ValueError(f"{override_context}: targets are not canonical: {unknown_targets}")
-            current = records_by_name[clock_name]["fields"][field]["value"]
-            if type(current) is not list or not current:
-                raise ValueError(f"{override_context}: does not reference current array values")
         validated[field] = {
             "canonical": canonical,
             "aliases": aliases,
-            "overrides": overrides,
+            "overrides": {clock_name: override["canonical_values"] for clock_name, override in overrides.items()},
         }
+    expected_coverage, expected_counts, unmapped = _review_snapshot(
+        reconciled,
+        field_decisions,
+    )
+    if unmapped:
+        raise ValueError("observed controlled value has no mapping: " + "; ".join(unmapped))
+    if _coverage_snapshot(decisions["coverage"]) != _coverage_snapshot(expected_coverage):
+        raise ValueError("decisions.coverage: does not match the reconciled review snapshot")
+    if decisions["counts"] != expected_counts:
+        raise ValueError("decisions.counts: does not match the reconciled review snapshot")
     return validated
 
 
@@ -854,12 +1050,13 @@ def apply_vocabulary_decisions(reconciled_path, decisions_path, vocabulary_path,
     """Apply an exhaustive reviewed mapping artifact without changing its evidence."""
     output_path = Path(output_path)
     _refuse_existing([output_path])
-    reconciled = _load_merged(reconciled_path)
+    reconciled, reconciled_sha256 = _load_merged_snapshot(reconciled_path)
     decisions = load_json(decisions_path)
     vocabulary = _load_vocabulary(vocabulary_path)
     mappings = _validate_vocabulary_decisions(
         decisions,
         reconciled_path,
+        reconciled_sha256,
         reconciled,
         vocabulary,
     )

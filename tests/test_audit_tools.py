@@ -1,5 +1,6 @@
 import ast
 import copy
+import hashlib
 import json
 from pathlib import Path
 
@@ -87,6 +88,72 @@ def registry_record(clock_name, doi):
 
 def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+
+
+def populate_decision_snapshots(decisions, reconciled):
+    coverage = {}
+    observed_counts = {}
+    canonical_counts = {}
+    alias_counts = {}
+    override_counts = {}
+    for field, descriptor in decisions["decisions"].items():
+        canonical = set(descriptor["canonical_values"])
+        aliases = descriptor["aliases"]
+        overrides = descriptor["per_clock_overrides"]
+        observations = {}
+        for record in reconciled["records"]:
+            value = record["fields"][field]["value"]
+            values = value if field in ARRAY_FIELDS else [value]
+            for source_value in values:
+                observations.setdefault(source_value, set()).add(record["clock_name"])
+        proof = []
+        for source_value in sorted(observations):
+            direct_clocks = []
+            override_clocks = []
+            targets = set()
+            for clock_name in sorted(observations[source_value]):
+                if clock_name in overrides:
+                    override_clocks.append(clock_name)
+                    targets.update(overrides[clock_name]["canonical_values"])
+                else:
+                    direct_clocks.append(clock_name)
+                    targets.add(aliases.get(source_value, source_value))
+            proof.append(
+                {
+                    "source_value": source_value,
+                    "clock_count": len(observations[source_value]),
+                    "direct_clock_count": len(direct_clocks),
+                    "override_clock_count": len(override_clocks),
+                    "mapping": (
+                        "per-clock override"
+                        if override_clocks
+                        else "canonical"
+                        if source_value in canonical
+                        else "alias"
+                    ),
+                    "canonical_values": sorted(targets),
+                }
+            )
+        coverage[field] = {
+            "observed_value_count": len(observations),
+            "covered_value_count": len(observations),
+            "unmapped_values": [],
+            "canonical_value_count": len(canonical),
+            "proof": proof,
+        }
+        observed_counts[field] = len(observations)
+        canonical_counts[field] = len(canonical)
+        alias_counts[field] = len(aliases)
+        override_counts[field] = len(overrides)
+    decisions["coverage"] = coverage
+    decisions["counts"] = {
+        "fields": len(decisions["decisions"]),
+        "observed_values": observed_counts,
+        "canonical_values": canonical_counts,
+        "aliases": alias_counts,
+        "per_clock_overrides": override_counts,
+        "unmapped_values": 0,
+    }
 
 
 @pytest.mark.parametrize(
@@ -602,6 +669,7 @@ def vocabulary_decision_fixture(tmp_path):
         "schema_version": 1,
         "source": {
             "reconciled": str(reconciled_path),
+            "sha256": hashlib.sha256(reconciled_path.read_bytes()).hexdigest(),
             "paper_count": reconciled["paper_count"],
             "clock_count": reconciled["clock_count"],
         },
@@ -618,6 +686,7 @@ def vocabulary_decision_fixture(tmp_path):
         "coverage": {},
         "counts": {},
     }
+    populate_decision_snapshots(decisions, reconciled)
     decisions_path = tmp_path / "decisions.json"
     write_json(decisions_path, decisions)
     return reconciled_path, decisions_path, vocabulary_path, vocabulary, decisions
@@ -902,6 +971,7 @@ def test_apply_vocabulary_decisions_uses_aliases_and_multivalued_overrides_witho
     alpha_tissue["value"] = ["Blood"]
     beta_tissue["value"] = ["blood and cultured cells"]
     write_json(reconciled_path, reconciled)
+    decisions["source"]["sha256"] = hashlib.sha256(reconciled_path.read_bytes()).hexdigest()
 
     canonical = ["blood", "cultured human cells"]
     vocabulary["fields"]["tissue"]["values"] = canonical
@@ -911,8 +981,12 @@ def test_apply_vocabulary_decisions_uses_aliases_and_multivalued_overrides_witho
     tissue_decision["canonical_values"] = canonical
     tissue_decision["aliases"] = {"Blood": "blood"}
     tissue_decision["per_clock_overrides"] = {
-        "beta": ["blood", "cultured human cells"],
+        "beta": {
+            "expected_value": ["blood and cultured cells"],
+            "canonical_values": ["blood", "cultured human cells"],
+        },
     }
+    populate_decision_snapshots(decisions, reconciled)
     write_json(decisions_path, decisions)
 
     before = copy.deepcopy(reconciled)
@@ -989,19 +1063,36 @@ def test_apply_vocabulary_decisions_uses_aliases_and_multivalued_overrides_witho
         ),
         (
             lambda reconciled, decisions, vocabulary: decisions["decisions"]["tissue"]["per_clock_overrides"].update(
-                {"missing-clock": ["blood"]}
+                {
+                    "missing-clock": {
+                        "expected_value": ["blood"],
+                        "canonical_values": ["blood"],
+                    }
+                }
             ),
             "unknown clock",
         ),
         (
             lambda reconciled, decisions, vocabulary: decisions["decisions"]["population"][
                 "per_clock_overrides"
-            ].update({"alpha": ["adults", "children"]}),
+            ].update(
+                {
+                    "alpha": {
+                        "expected_value": "adults",
+                        "canonical_values": ["adults", "children"],
+                    }
+                }
+            ),
             "scalar field",
         ),
         (
             lambda reconciled, decisions, vocabulary: decisions["decisions"]["tissue"]["per_clock_overrides"].update(
-                {"alpha": ["blood", "blood"]}
+                {
+                    "alpha": {
+                        "expected_value": ["blood"],
+                        "canonical_values": ["blood", "blood"],
+                    }
+                }
             ),
             "unique",
         ),
@@ -1020,6 +1111,7 @@ def test_apply_vocabulary_decisions_rejects_invalid_or_incomplete_decisions(
     reconciled = json.loads(reconciled_path.read_text())
     mutate(reconciled, decisions, vocabulary)
     write_json(reconciled_path, reconciled)
+    decisions["source"]["sha256"] = hashlib.sha256(reconciled_path.read_bytes()).hexdigest()
     write_json(decisions_path, decisions)
     write_json(vocabulary_path, vocabulary)
     output = tmp_path / "normalized.json"
@@ -1032,6 +1124,80 @@ def test_apply_vocabulary_decisions_rejects_invalid_or_incomplete_decisions(
             output,
         )
     assert not output.exists()
+
+
+def test_apply_vocabulary_decisions_rejects_same_path_and_count_source_mutation(tmp_path):
+    reconciled_path, decisions_path, vocabulary_path, _vocabulary, _decisions = vocabulary_decision_fixture(tmp_path)
+    reconciled = json.loads(reconciled_path.read_text())
+    reconciled["records"][0]["fields"]["tissue"]["value"] = ["skin"]
+    write_json(reconciled_path, reconciled)
+
+    with pytest.raises(ValueError, match=r"source\.sha256.*does not match"):
+        apply_vocabulary_decisions(
+            reconciled_path,
+            decisions_path,
+            vocabulary_path,
+            tmp_path / "normalized.json",
+        )
+
+
+@pytest.mark.parametrize(
+    ("mutate", "message"),
+    [
+        (lambda decisions: decisions["counts"].update({"fields": 8}), r"counts.*does not match"),
+        (
+            lambda decisions: decisions["coverage"]["tissue"]["proof"][0].update({"clock_count": 999}),
+            r"coverage.*does not match",
+        ),
+        (lambda decisions: decisions.update({"rationale": []}), r"rationale.*nonempty"),
+        (
+            lambda decisions: decisions.update({"rationale": ["Repeated.", "Repeated."]}),
+            r"rationale.*unique",
+        ),
+        (lambda decisions: decisions.update({"rationale": [3]}), r"rationale.*strings"),
+    ],
+)
+def test_apply_vocabulary_decisions_rejects_tampered_review_snapshots(
+    tmp_path,
+    mutate,
+    message,
+):
+    reconciled_path, decisions_path, vocabulary_path, _vocabulary, decisions = vocabulary_decision_fixture(tmp_path)
+    mutate(decisions)
+    write_json(decisions_path, decisions)
+    output = tmp_path / "normalized.json"
+
+    with pytest.raises(ValueError, match=message):
+        apply_vocabulary_decisions(
+            reconciled_path,
+            decisions_path,
+            vocabulary_path,
+            output,
+        )
+    assert not output.exists()
+
+
+def test_apply_vocabulary_decisions_requires_override_to_match_reviewed_current_value(
+    tmp_path,
+):
+    reconciled_path, decisions_path, vocabulary_path, _vocabulary, decisions = vocabulary_decision_fixture(tmp_path)
+    reconciled = json.loads(reconciled_path.read_text())
+    decisions["decisions"]["tissue"]["per_clock_overrides"] = {
+        "alpha": {
+            "expected_value": ["skin"],
+            "canonical_values": ["blood"],
+        }
+    }
+    populate_decision_snapshots(decisions, reconciled)
+    write_json(decisions_path, decisions)
+
+    with pytest.raises(ValueError, match=r"expected_value.*current reviewed value"):
+        apply_vocabulary_decisions(
+            reconciled_path,
+            decisions_path,
+            vocabulary_path,
+            tmp_path / "normalized.json",
+        )
 
 
 def test_apply_vocabulary_decisions_cli_is_deterministic_and_refuses_overwrite(tmp_path, capsys):
