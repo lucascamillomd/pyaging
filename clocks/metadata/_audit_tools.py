@@ -3,11 +3,12 @@
 import argparse
 import json
 import os
+import re
 import tempfile
 from contextlib import suppress
 from datetime import date
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 try:
     from .validate_metadata import (
@@ -39,21 +40,35 @@ def normalize_doi(value):
         raise ValueError("DOI must be a nonempty string")
     value = value.strip()
     prefix = "https://doi.org/"
-    is_resolver_url = value.casefold().startswith(prefix)
-    if is_resolver_url:
-        suffix = value[len(prefix) :]
+    if value.casefold().startswith(prefix):
+        try:
+            parsed = urlsplit(value)
+        except ValueError as error:
+            raise ValueError(f"DOI URL {value!r} is invalid") from error
+        if (
+            parsed.scheme.casefold() != "https"
+            or parsed.netloc.casefold() != "doi.org"
+            or parsed.query
+            or parsed.fragment
+            or not parsed.path.startswith("/")
+        ):
+            raise ValueError(f"DOI URL {value!r} must be an unadorned https://doi.org/ URL")
+        core = parsed.path[1:]
     else:
         if "://" in value or value.casefold().startswith("doi.org/"):
             raise ValueError(f"DOI {value!r} must be bare or use the https://doi.org/ prefix")
-        suffix = value
-    if (
-        ("/" not in suffix and (not is_resolver_url or "%2f" not in suffix.casefold()))
-        or suffix.startswith("/")
-        or suffix.endswith("/")
-        or any(character.isspace() for character in suffix)
-    ):
-        raise ValueError(f"DOI {value!r} must contain a nonempty prefix and suffix separated by '/'")
-    return prefix + suffix
+        core = value
+    if re.search(r"%(?![0-9A-Fa-f]{2})", core):
+        raise ValueError(f"DOI {value!r} contains an invalid percent escape")
+    try:
+        core = unquote(core, errors="strict")
+    except UnicodeDecodeError as error:
+        raise ValueError(f"DOI {value!r} contains invalid UTF-8 percent escapes") from error
+    if re.fullmatch(r"10\.[0-9]{4,9}/[^\s?#]+", core) is None:
+        raise ValueError(
+            f"DOI {value!r} must match 10.<4-9 digits>/<nonempty suffix> without whitespace, query, or fragment"
+        )
+    return prefix + core
 
 
 def _validate_batch_count(batch_count):
@@ -223,8 +238,12 @@ def _load_batch_assignments(batch):
         dois.add(doi)
         clock_names = paper["clock_names"]
         metadata = paper["current_metadata"]
-        if type(clock_names) is not list or any(type(name) is not str or not name for name in clock_names):
-            raise ValueError(f"{context}.clock_names: expected nonempty string values")
+        if (
+            type(clock_names) is not list
+            or not clock_names
+            or any(type(name) is not str or not name for name in clock_names)
+        ):
+            raise ValueError(f"{context}.clock_names: expected a nonempty list of nonempty strings")
         if clock_names != sorted(clock_names) or len(clock_names) != len(set(clock_names)):
             raise ValueError(f"{context}.clock_names: expected unique alphabetical names")
         if type(metadata) is not dict or set(metadata) != set(clock_names):

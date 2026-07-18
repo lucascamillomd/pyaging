@@ -46,8 +46,9 @@ def write_json(path, value):
         (" https://doi.org/10.1000/example ", "https://doi.org/10.1000/example"),
         (
             "https://doi.org/10.18632%2Faging.101414",
-            "https://doi.org/10.18632%2Faging.101414",
+            "https://doi.org/10.18632/aging.101414",
         ),
+        ("https://DOI.org/10.1234%2Fencoded", "https://doi.org/10.1234/encoded"),
     ],
 )
 def test_normalize_doi(value, expected):
@@ -56,7 +57,28 @@ def test_normalize_doi(value, expected):
 
 @pytest.mark.parametrize(
     "value",
-    [None, True, 10, "", "   ", "not-a-doi", "http://doi.org/10.1/x", "https://example.com/10.1/x"],
+    [
+        None,
+        True,
+        10,
+        "",
+        "   ",
+        "not-a-doi",
+        "foo/bar",
+        "10.x/foo",
+        "doi:10.1234/x",
+        "http://doi.org/10.1234/x",
+        "https://example.com/10.1234/x",
+        "https://doi.org/foo%2Fbar",
+        "https://doi.org/%2F",
+        "https://doi.org/10.1234/",
+        "https://doi.org/10.1234/x?download=1",
+        "https://doi.org/10.1234/x#section",
+        "https://doi.org/10.1234%2Fx%3Fdownload",
+        "10.1234/white space",
+        "10.123/x",
+        "10.1234567890/x",
+    ],
 )
 def test_normalize_doi_rejects_invalid_values(value):
     with pytest.raises(ValueError, match="DOI"):
@@ -65,12 +87,12 @@ def test_normalize_doi_rejects_invalid_values(value):
 
 def test_assign_families_is_deterministic_greedy_and_never_splits_doi():
     registry = {
-        "f": registry_record("f", "10.1/d"),
-        "e": registry_record("e", "10.1/c"),
-        "d": registry_record("d", "10.1/b"),
-        "c": registry_record("c", "10.1/b"),
-        "b": registry_record("b", "10.1/a"),
-        "a": registry_record("a", "10.1/a"),
+        "f": registry_record("f", "10.1000/d"),
+        "e": registry_record("e", "10.1000/c"),
+        "d": registry_record("d", "10.1000/b"),
+        "c": registry_record("c", "10.1000/b"),
+        "b": registry_record("b", "10.1000/a"),
+        "a": registry_record("a", "10.1000/a"),
     }
 
     assignments = assign_families(registry, 3)
@@ -80,29 +102,29 @@ def test_assign_families_is_deterministic_greedy_and_never_splits_doi():
             "batch": "01",
             "clock_count": 2,
             "paper_count": 1,
-            "families": [{"doi": "https://doi.org/10.1/a", "clock_names": ["a", "b"]}],
+            "families": [{"doi": "https://doi.org/10.1000/a", "clock_names": ["a", "b"]}],
         },
         {
             "batch": "02",
             "clock_count": 2,
             "paper_count": 1,
-            "families": [{"doi": "https://doi.org/10.1/b", "clock_names": ["c", "d"]}],
+            "families": [{"doi": "https://doi.org/10.1000/b", "clock_names": ["c", "d"]}],
         },
         {
             "batch": "03",
             "clock_count": 2,
             "paper_count": 2,
             "families": [
-                {"doi": "https://doi.org/10.1/c", "clock_names": ["e"]},
-                {"doi": "https://doi.org/10.1/d", "clock_names": ["f"]},
+                {"doi": "https://doi.org/10.1000/c", "clock_names": ["e"]},
+                {"doi": "https://doi.org/10.1000/d", "clock_names": ["f"]},
             ],
         },
     ]
     assert {family["doi"] for batch in assignments for family in batch["families"]} == {
-        "https://doi.org/10.1/a",
-        "https://doi.org/10.1/b",
-        "https://doi.org/10.1/c",
-        "https://doi.org/10.1/d",
+        "https://doi.org/10.1000/a",
+        "https://doi.org/10.1000/b",
+        "https://doi.org/10.1000/c",
+        "https://doi.org/10.1000/d",
     }
 
 
@@ -114,9 +136,9 @@ def test_assign_families_rejects_invalid_batch_count(batch_count):
 
 def test_build_manifest_writes_exact_deterministic_shapes(tmp_path):
     registry = {
-        "alpha": registry_record("alpha", "10.1/shared"),
-        "beta": registry_record("beta", "https://doi.org/10.1/shared"),
-        "gamma": registry_record("gamma", "10.1/solo"),
+        "alpha": registry_record("alpha", "10.1000/shared"),
+        "beta": registry_record("beta", "https://doi.org/10.1000/shared"),
+        "gamma": registry_record("gamma", "10.1000/solo"),
     }
     registry_path = tmp_path / "registry.json"
     output_dir = tmp_path / "out"
@@ -143,7 +165,7 @@ def test_build_manifest_writes_exact_deterministic_shapes(tmp_path):
         "clock_count": 2,
         "papers": [
             {
-                "doi": "https://doi.org/10.1/shared",
+                "doi": "https://doi.org/10.1000/shared",
                 "clock_names": ["alpha", "beta"],
                 "current_metadata": {
                     "alpha": registry["alpha"],
@@ -172,8 +194,8 @@ def test_build_manifest_validates_before_writing_any_output(tmp_path):
 
 
 def make_batch_and_shard(tmp_path):
-    alpha = registry_record("alpha", "https://doi.org/10.1/a")
-    beta = registry_record("beta", "https://doi.org/10.1/b")
+    alpha = registry_record("alpha", "https://doi.org/10.1000/a")
+    beta = registry_record("beta", "https://doi.org/10.1000/b")
     batch = {
         "schema_version": 1,
         "batch": "01",
@@ -252,6 +274,27 @@ def test_validate_shard_accepts_unresolved_and_resolved_evidence(tmp_path):
     assert summary == {"batch": "01", "paper_count": 2, "clock_count": 2}
 
 
+def test_validate_shard_rejects_paper_with_no_assigned_clocks(tmp_path):
+    batch_path, shard_path, shard = make_batch_and_shard(tmp_path)
+    batch = json.loads(batch_path.read_text())
+    batch["papers"] = [
+        {
+            "doi": "https://doi.org/10.1234/empty",
+            "clock_names": [],
+            "current_metadata": {},
+            "audited_fields": list(AUDITED_FIELDS),
+        }
+    ]
+    batch["paper_count"] = 1
+    batch["clock_count"] = 0
+    shard["records"] = []
+    write_json(batch_path, batch)
+    write_json(shard_path, shard)
+
+    with pytest.raises(ValueError, match="clock_names.*nonempty"):
+        validate_shard(batch_path, shard_path)
+
+
 @pytest.mark.parametrize(
     ("mutation", "message"),
     [
@@ -283,7 +326,7 @@ def test_validate_shard_accepts_unresolved_and_resolved_evidence(tmp_path):
             ),
             "requires source type",
         ),
-        (lambda s: s["records"][0].__setitem__("doi", "https://doi.org/10.1/wrong"), "DOI"),
+        (lambda s: s["records"][0].__setitem__("doi", "https://doi.org/10.1000/wrong"), "DOI"),
     ],
 )
 def test_validate_shard_rejects_representative_invalid_cases(tmp_path, mutation, message):
