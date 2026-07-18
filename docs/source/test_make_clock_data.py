@@ -181,11 +181,16 @@ def test_committed_clocks_json_is_valid():
     rows = _load_rows()
     assert isinstance(rows, list)
     assert len(rows) == 173, f"expected 173 clocks, got {len(rows)}"
+    array_fields = ("tissue", "platform", "predicts", "training_target", "unit")
 
     # required keys present on every row
     for row in rows:
         missing = REQUIRED - set(row)
         assert not missing, f"{row.get('clock_name')} missing {missing}"
+        for field in array_fields:
+            assert isinstance(row[field], list), (
+                f"{row.get('clock_name')}.{field} must be a controlled-term array"
+            )
         # notebook link points into the gallery
         assert row["notebook"].startswith("clock_notebooks/")
 
