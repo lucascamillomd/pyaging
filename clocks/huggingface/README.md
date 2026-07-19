@@ -25,6 +25,28 @@ downloaded through the standard Hugging Face cache.
 The `main` branch is the live data release and may change independently of the Python
 package version.
 
+## Harmonized clock metadata
+
+The clock catalogue uses controlled, multi-valued metadata so clocks can be
+filtered consistently:
+
+- `tissue` records the biological material used to develop or train the model.
+- `platform` records the measurement platform used for model development.
+- `predicts` describes how to interpret the value returned by the packaged
+  model.
+- `training_target` records the outcome used to fit or derive the model.
+- `unit` records the physical or statistical unit of the returned,
+  postprocessed value.
+
+Each of these fields is an array of controlled terms, even when a clock has only
+one value. Precise wording from the paper, supplement, implementation, or author
+communication is retained in the notebooks' same-line metadata comments and in
+the field-level evidence ledger. The canonical
+[`clock_metadata.json`](https://github.com/lucascamillomd/pyaging/blob/main/clocks/metadata/clock_metadata.json)
+registry and
+[`evidence_ledger.jsonl`](https://github.com/lucascamillomd/pyaging/blob/main/clocks/metadata/evidence_ledger.jsonl)
+are maintained in the pyaging repository.
+
 ## Licensing and provenance
 
 This is a mixed-provenance research collection, so the repository license is `other`.

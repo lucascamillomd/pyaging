@@ -30,3 +30,7 @@ hf_static_data/
 # build-time regeneration (docs/source/make_clock_data.py) can't reach S3.
 # Overrides the blanket "*.json" ignore above; the .pt binary stays ignored.
 !docs/_static/clocks.json
+
+# Audited clock metadata registries override only the blanket "*.json" ignore.
+!clocks/metadata/controlled_vocabulary.json
+!clocks/metadata/clock_metadata.json

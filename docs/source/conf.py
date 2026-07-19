@@ -94,6 +94,7 @@ html_js_files = ["clock_explorer_core.js", "clock_explorer.js"]
 # https://nbsphinx.readthedocs.io/en/0.8.0/configure.html
 
 nbsphinx_execute = "never"
+suppress_warnings = ["nbsphinx.ipywidgets"]
 
 # -- Additional configurations from the provided conf.py ----------------------
 
@@ -109,7 +110,17 @@ def _generate_clock_data(app):
     try:
         from make_clock_data import generate
 
-        n = generate()
+        local_metadata = (
+            Path(__file__).resolve().parents[2]
+            / "clocks"
+            / "metadata"
+            / "all_clock_metadata.pt"
+        )
+        n = (
+            generate(metadata_path=local_metadata)
+            if local_metadata.is_file()
+            else generate()
+        )
         print("[clocks] regenerated clocks.json with {} clocks".format(n))
     except Exception as exc:  # noqa: BLE001 — never break the build
         print("[clocks] WARNING: using committed clocks.json ({})".format(exc))

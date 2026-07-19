@@ -35,7 +35,7 @@ Lastly, it can be installed from source:
     The histone mark clocks can only be used when the optional dependency pyBigWig is also installed. Currently, pyBigWig is not supported on Windows.
 
 Installation with histone mark clock support
--------------------------------------------
+--------------------------------------------
 
 To use histone mark clocks, you need to install pyaging with the optional pyBigWig dependency:
 
