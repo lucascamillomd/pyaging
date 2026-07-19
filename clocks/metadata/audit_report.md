@@ -62,42 +62,6 @@
 - sencultureage: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper does not state a user-facing unit; inspection of the no-postprocess Pyaging linear model makes the returned scale a log-odds score.
 - senmortalityage: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper/supplement and methylCIPHER README report 89 CpGs, but the official author-lab coefficient object and packaged Pyaging model both contain 91 methylation inputs. n_features records the executable-model count.
 - senmortalityage: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper does not label a user-facing unit; the no-postprocess Pyaging model returns the Cox linear predictor (log-hazard score), not a hazard ratio.
-- twelvecelldeconvolutebloodepicbas: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepicbas: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepicbas: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepicbmem: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepicbmem: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepicbmem: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepicbnv: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepicbnv: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepicbnv: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepiccd4mem: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepiccd4mem: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepiccd4mem: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepiccd4nv: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepiccd4nv: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepiccd4nv: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepiccd8mem: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepiccd8mem: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepiccd8mem: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepiccd8nv: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepiccd8nv: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepiccd8nv: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepiceos: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepiceos: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepiceos: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepicmono: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepicmono: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepicmono: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepicneu: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepicneu: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepicneu: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepicnk: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepicnk: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepicnk: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
-- twelvecelldeconvolutebloodepictreg: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the open bioRxiv manuscript and author repository were inspected instead.
-- twelvecelldeconvolutebloodepictreg: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned 2025 unified-framework paper does not describe the twelve-cell model’s feature-selection optimization or reference-donor age range; those details were established from the originating 2022 paper and pinned reference-matrix code.
-- twelvecelldeconvolutebloodepictreg: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or twelve-cell construction details.
 - yingadaptage: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper reports AdaptAge as 1,000 sites, whereas the packaged coefficient model has 999 CpG inputs. The reason for the discrepancy is unresolved; n_features records actual packaged methylation inputs.
 - yingcausage: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper reports CausAge as 586 sites, whereas the packaged coefficient model has 585 CpG inputs. The reason for the discrepancy is unresolved; n_features records actual packaged methylation inputs.
 - yingdamage: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper reports DamAge as 1,090 sites, whereas the packaged coefficient model has 1,089 CpG inputs. The reason for the discrepancy is unresolved; n_features records actual packaged methylation inputs.
@@ -136,6 +100,20 @@ also corrected OcampoATAC2 from the 228 predictors used by OcampoATAC1 to the
 corrected ReedBMI from 134 to the 135 CpG coefficient rows confirmed by both the
 paper and parsed coefficient table.
 
+The final evidence-sample review also updated MammalianLifeSpan from the 2023
+preprint to the 2024 *Science Advances* version of record and identified its
+training assay as Horvath MammalMethylChip40; corrected the Neu-Sin citation to
+pages 13452–13504 and confirmed its 672 non-intercept CpGs from the official
+coefficient object; and documented that IntrinClock's paper reports 381 CpGs
+while both the official `lambda.min` model and pyaging use an identical
+380-probe set. For all 12 TwelveCell outputs, the training target is now the
+paper-supported known artificial-mixture cell-type proportions. The separate
+10-positive/10-negative contrast pattern is explicitly limited to Biolearn's
+undocumented 240-row replacement artifact, rather than being presented as the
+published 1,200-CpG IDOL optimization target. The open 2022 primary paper and
+official coefficient/code artifacts supplied the necessary evidence; these
+final sample corrections have no remaining paper-access issue.
+
 ## Field change counts
 
 - data_type: 169
@@ -169,6 +147,9 @@ paper and parsed coefficient table.
 - All controlled values passed the canonical vocabulary and resolved-evidence
   checks; all 1,557 paper comments are single physical lines (maximum rendered
   assignment length: 277 characters).
+- The final evidence-sample correction chain was revalidated across the
+  vocabulary, registry, evidence ledger, source notebooks, serialized model
+  metadata, aggregate catalogue, and generated documentation artifacts.
 
 ## Hugging Face publication
 

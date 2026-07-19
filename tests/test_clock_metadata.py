@@ -677,3 +677,110 @@ def test_resolved_evidence_rejects_provisional_source_text(registry, ledger):
 
     with pytest.raises(ValueError, match=rf"{clock_name}\.year.*source_text"):
         validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
+
+
+def test_final_evidence_sample_corrections_are_synchronized(registry, ledger):
+    mammalian = registry["mammalianlifespan"]
+    mammalian_evidence = ledger["mammalianlifespan"]
+    assert mammalian["year"] == 2024
+    assert mammalian["doi"] == "https://doi.org/10.1126/sciadv.adm7273"
+    assert mammalian["journal"] == "Science Advances"
+    assert mammalian["platform"] == ["Horvath MammalMethylChip40"]
+    assert mammalian_evidence["fields"]["platform"]["source_text"] == (
+        "All data were generated using the mammalian methylation array "
+        "(HorvathMammalMethylChip40), which provides high sequencing depth of "
+        "highly conserved CpGs in mammals."
+    )
+
+    neusin = registry["neusin"]
+    neusin_evidence = ledger["neusin"]
+    assert neusin["citation"].endswith("Aging 16 (2024): 13452–13504.")
+    assert neusin_evidence["fields"]["n_features"]["source_text"] == (
+        "The official Neu-SinCoef.rda object contains 673 rows: one (Intercept) "
+        "row and 672 non-intercept CpG coefficient rows."
+    )
+
+    intrin = registry["intrinclock"]
+    intrin_evidence = ledger["intrinclock"]
+    assert intrin["n_features"] == 380
+    assert "article reports 381 CpGs" in intrin["notes"]
+    assert intrin_evidence["fields"]["n_features"]["source_id"] == "intrin-official-code"
+    assert intrin_evidence["fields"]["n_features"]["note"].startswith(
+        "The article repeatedly reports 381 CpGs"
+    )
+
+    twelve_names = sorted(
+        name
+        for name in registry
+        if name.startswith("twelvecelldeconvolutebloodepic")
+    )
+    assert len(twelve_names) == 12
+    for clock_name in twelve_names:
+        entry = registry[clock_name]
+        evidence = ledger[clock_name]
+        assert entry["training_target"] == ["cell-type proportions"]
+        assert evidence["fields"]["training_target"]["source_text"].startswith(
+            "IDOL used artificial-mixture ground truth"
+        )
+        assert evidence["fields"]["population"]["source_text"].startswith(
+            "Reference cells were isolated from 41 male and 15 female"
+        )
+        assert evidence["access_issues"] == []
+        assert not {
+            "nature-paper",
+            "biorxiv-v6",
+            "reporting-summary",
+        } & {source["id"] for source in evidence["sources"]}
+
+    six_cell_names = [
+        name for name in registry if "sixcell" in name
+    ]
+    assert all(
+        registry[name]["training_target"] != ["cell-type proportions"]
+        for name in six_cell_names
+    )
+
+    exact_training_comment = (
+        'model.metadata["training_target"] = ["cell-type proportions"]  '
+        "# Paper: IDOL used artificial-mixture ground truth with known, "
+        "prespecified proportions of the 12 cell types and optimized libraries "
+        "by comparing deconvolution estimates with those known proportions."
+    )
+    exact_population_comment = (
+        'model.metadata["population"] = "adults"  # Paper: Reference cells were '
+        "isolated from 41 male and 15 female anonymous healthy donors with mean "
+        "age 32.2 years and range 19–58 years, spanning multiple self-identified "
+        "ancestries."
+    )
+    for clock_name in twelve_names:
+        source_notebook = json.loads(
+            (ROOT / "clocks" / "notebooks" / f"{clock_name}.ipynb").read_text(
+                encoding="utf-8"
+            )
+        )
+        docs_notebook = json.loads(
+            (
+                ROOT
+                / "docs"
+                / "source"
+                / "clock_notebooks"
+                / f"{clock_name}.ipynb"
+            ).read_text(encoding="utf-8")
+        )
+        source_lines = [
+            line.rstrip("\n")
+            for cell in source_notebook["cells"]
+            for line in cell.get("source", [])
+        ]
+        assert exact_training_comment in source_lines
+        assert exact_population_comment in source_lines
+        assert docs_notebook == source_notebook
+
+    intrin_source = (
+        ROOT / "clocks" / "notebooks" / "intrinclock.ipynb"
+    ).read_text(encoding="utf-8")
+    assert (
+        "At lambda.min, the official serialized cv.glmnet model contains 380 "
+        "non-zero CpG coefficients, and pyaging contains the identical "
+        "380-probe set."
+    ) in intrin_source
