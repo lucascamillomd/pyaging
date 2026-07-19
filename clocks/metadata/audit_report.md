@@ -2,7 +2,8 @@
 
 ## Scope
 
-173 clocks across 71 DOI families.
+173 clocks across 71 originally assigned DOI families; 72 canonical DOI families
+after correcting MammalianLifeSpan to the version-of-record DOI.
 
 ## Controlled-vocabulary decisions
 
@@ -12,8 +13,8 @@
 ## Evidence status counts
 
 - author-confirmed: 6
-- code-confirmed: 325
-- paper-confirmed: 2378
+- code-confirmed: 313
+- paper-confirmed: 2390
 - supplement-confirmed: 59
 - unresolved: 0
 
@@ -29,22 +30,16 @@
 - cpgptpcgrimage3: First-pass source limitation (retained for provenance; final metadata evidence resolved): The names CpGPTGrimAge3 and CpGPTPCGrimAge3 and their compact feature formulas are documented in author-maintained implementation code/tutorials but not described by name in the assigned manuscript.
 - cvdwesterman: First-pass source limitation (retained for provenance; final metadata evidence resolved): Paper final cross-study learner uses a 1,305-CpG union, whereas the packaged pyaging score has 235 coefficients and a sigmoid; the mapping provenance is not documented by the paper.
 - deconvolutebloodepicbcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the complete open bioRxiv manuscript and author repository were inspected instead.
-- deconvolutebloodepicbcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned paper does not report the age range of purified EPIC reference-panel donors; population remains age-unspecified.
 - deconvolutebloodepicbcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or reference-donor age details.
 - deconvolutebloodepiccd4tcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the complete open bioRxiv manuscript and author repository were inspected instead.
-- deconvolutebloodepiccd4tcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned paper does not report the age range of purified EPIC reference-panel donors; population remains age-unspecified.
 - deconvolutebloodepiccd4tcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or reference-donor age details.
 - deconvolutebloodepiccd8tcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the complete open bioRxiv manuscript and author repository were inspected instead.
-- deconvolutebloodepiccd8tcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned paper does not report the age range of purified EPIC reference-panel donors; population remains age-unspecified.
 - deconvolutebloodepiccd8tcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or reference-donor age details.
 - deconvolutebloodepicmonocyte: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the complete open bioRxiv manuscript and author repository were inspected instead.
-- deconvolutebloodepicmonocyte: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned paper does not report the age range of purified EPIC reference-panel donors; population remains age-unspecified.
 - deconvolutebloodepicmonocyte: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or reference-donor age details.
 - deconvolutebloodepicneutrophil: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the complete open bioRxiv manuscript and author repository were inspected instead.
-- deconvolutebloodepicneutrophil: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned paper does not report the age range of purified EPIC reference-panel donors; population remains age-unspecified.
 - deconvolutebloodepicneutrophil: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or reference-donor age details.
 - deconvolutebloodepicnkcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): Publisher version-of-record methods required subscription; the complete open bioRxiv manuscript and author repository were inspected instead.
-- deconvolutebloodepicnkcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): The assigned paper does not report the age range of purified EPIC reference-panel donors; population remains age-unspecified.
 - deconvolutebloodepicnkcell: First-pass source limitation (retained for provenance; final metadata evidence resolved): The reporting-summary supplement contains no model coefficients or reference-donor age details.
 - downsyndrome: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper reports an EWAS, not a trained prediction clock; pyaging derives a zero-intercept weighted sum from Supplementary Data 2 beta_overall estimates.
 - dunedinpoam38: First-pass source limitation (retained for provenance; final metadata evidence resolved): The paper's scientific unit is a rate (years of biological aging per calendar year), correcting the current generic “years” label.

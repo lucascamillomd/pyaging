@@ -585,6 +585,21 @@ def test_validate_evidence_rejects_resolved_field_called_unresolved(
         validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
 
 
+def test_validate_evidence_rejects_resolved_population_called_age_unspecified(
+    registry, ledger
+):
+    registry_record = copy.deepcopy(next(iter(registry.values())))
+    clock_name = registry_record["clock_name"]
+    ledger_record = copy.deepcopy(ledger[clock_name])
+    ledger_record["access_issues"] = ["The population remains age-unspecified."]
+    assert ledger_record["fields"]["population"]["status"] != "unresolved"
+
+    with pytest.raises(
+        ValueError, match=rf"{clock_name}\.access_issues.*population.*resolved"
+    ):
+        validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
+
+
 @pytest.mark.parametrize(
     ("status", "source_type"),
     [

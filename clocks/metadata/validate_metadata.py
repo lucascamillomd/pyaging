@@ -477,6 +477,12 @@ def validate_evidence(registry, ledger):
                 if re.search(
                     rf"\b{field_pattern}\b[^.;]{{0,160}}\bremains? unresolved\b",
                     normalized_issue,
+                ) or (
+                    field == "population"
+                    and re.search(
+                        r"\bpopulation\b[^.;]{0,160}\bremains? age-unspecified\b",
+                        normalized_issue,
+                    )
                 ):
                     _fail(
                         clock_name,
