@@ -53,6 +53,8 @@ def _clock(clock_name):
             "clock_name": clock_name,
             "citation": "Generated citation",
             "notes": "Generated notes",
+            "tissue": ["stale controlled tissue"],
+            "legacy_field": "must be removed",
             "version": "stale metadata version",
             "preprocess": "stale metadata preprocess",
         },
@@ -791,6 +793,10 @@ def test_successful_regeneration_publishes_valid_registry_backed_transaction(tmp
 
     updated_clock = torch.load(clock_path, weights_only=False)
     assert updated_clock.version == "0.3.0"
+    assert updated_clock.metadata == result["clock"]
+    assert updated_clock.metadata["tissue"] == ["blood"]
+    assert "legacy_field" not in updated_clock.metadata
+    assert set(updated_clock.metadata) == set(result["clock"])
     assert clock_path.stat().st_mode & 0o7777 == old_mode
     assert torch.load(metadata_path, weights_only=False) == result
     assert result["clock"]["notes"] == "Curated notes"

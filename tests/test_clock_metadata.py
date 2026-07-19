@@ -392,6 +392,15 @@ def test_validate_registry_rejects_representative_invalid_values(registry, vocab
         validate_registry(invalid_registry, vocabulary)
 
 
+def test_validate_registry_rejects_unknown_fields(registry, vocabulary):
+    invalid_registry = {"example": copy.deepcopy(next(iter(registry.values())))}
+    invalid_registry["example"]["clock_name"] = "example"
+    invalid_registry["example"]["typo_field"] = "unexpected"
+
+    with pytest.raises(ValueError, match=r"example\.record.*unknown.*typo_field"):
+        validate_registry(invalid_registry, vocabulary)
+
+
 @pytest.mark.parametrize(
     ("mutation", "context"),
     [
@@ -507,6 +516,73 @@ def test_validate_evidence_rejects_representative_invalid_values(registry, ledge
 
     with pytest.raises(ValueError, match=context):
         validate_evidence(invalid_registry, invalid_ledger)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "context"),
+    [
+        (
+            lambda record: record.__setitem__("typo_field", "unexpected"),
+            r"example\.record.*unknown.*typo_field",
+        ),
+        (
+            lambda record: record["fields"].__setitem__(
+                "typo_field", copy.deepcopy(record["fields"]["year"])
+            ),
+            r"example\.fields.*unknown.*typo_field",
+        ),
+        (
+            lambda record: record["fields"]["year"].__setitem__("typo_field", "unexpected"),
+            r"example\.year.*unknown.*typo_field",
+        ),
+    ],
+)
+def test_validate_evidence_rejects_unknown_schema_fields(
+    registry, ledger, mutation, context
+):
+    registry_record = copy.deepcopy(next(iter(registry.values())))
+    ledger_record = copy.deepcopy(ledger[registry_record["clock_name"]])
+    registry_record["clock_name"] = "example"
+    ledger_record["clock_name"] = "example"
+    mutation(ledger_record)
+
+    with pytest.raises(ValueError, match=context):
+        validate_evidence({"example": registry_record}, {"example": ledger_record})
+
+
+@pytest.mark.parametrize(
+    "access_issues",
+    [
+        "not a list",
+        [""],
+        [3],
+    ],
+)
+def test_validate_evidence_rejects_invalid_access_issue_shape(
+    registry, ledger, access_issues
+):
+    registry_record = copy.deepcopy(next(iter(registry.values())))
+    clock_name = registry_record["clock_name"]
+    ledger_record = copy.deepcopy(ledger[clock_name])
+    ledger_record["access_issues"] = access_issues
+
+    with pytest.raises(ValueError, match=rf"{clock_name}\.access_issues"):
+        validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
+
+
+def test_validate_evidence_rejects_resolved_field_called_unresolved(
+    registry, ledger
+):
+    registry_record = copy.deepcopy(next(iter(registry.values())))
+    clock_name = registry_record["clock_name"]
+    ledger_record = copy.deepcopy(ledger[clock_name])
+    ledger_record["access_issues"] = ["The training_target remains unresolved."]
+    assert ledger_record["fields"]["training_target"]["status"] != "unresolved"
+
+    with pytest.raises(
+        ValueError, match=rf"{clock_name}\.access_issues.*training_target.*resolved"
+    ):
+        validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
 
 
 @pytest.mark.parametrize(

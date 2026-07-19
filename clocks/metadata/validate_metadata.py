@@ -61,6 +61,24 @@ CURATED_METADATA_FIELDS = (
     "citations",
     "citations_date",
 )
+RUNTIME_METADATA_FIELDS = ("version", "preprocess", "postprocess", "reference_values")
+LEDGER_RECORD_FIELDS = {
+    "clock_name",
+    "doi",
+    "reviewer",
+    "sources",
+    "fields",
+    "access_issues",
+}
+LEDGER_SOURCE_FIELDS = {"id", "type", "url", "accessed"}
+EVIDENCE_RECORD_FIELDS = {
+    "value",
+    "source_text",
+    "source_id",
+    "locator",
+    "status",
+    "note",
+}
 # These two packaged clocks retain dense candidate arrays in ``features`` while
 # their papers and coefficient artifacts define the final clock by nonzero
 # selected predictors. The policy selects representation, never an expected
@@ -298,6 +316,14 @@ def validate_registry(registry, vocabulary):
             _fail(clock_name, "clock_name", "key must be nonempty lowercase text")
         if type(record) is not dict:
             _fail(clock_name, "record", "expected object")
+        required_fields = set(CURATED_METADATA_FIELDS)
+        allowed_fields = required_fields | set(RUNTIME_METADATA_FIELDS)
+        missing_fields = sorted(required_fields - set(record))
+        unknown_fields = sorted(set(record) - allowed_fields)
+        if missing_fields:
+            _fail(clock_name, missing_fields[0], "required curated field is missing")
+        if unknown_fields:
+            _fail(clock_name, "record", f"unknown fields {unknown_fields}")
         if record.get("clock_name") != clock_name:
             _fail(clock_name, "clock_name", "must exactly match registry key")
 
@@ -332,6 +358,12 @@ def validate_evidence(registry, ledger):
         ledger_record = ledger[clock_name]
         if type(ledger_record) is not dict:
             _fail(clock_name, "record", "expected an object")
+        missing_record_fields = sorted(LEDGER_RECORD_FIELDS - set(ledger_record))
+        unknown_record_fields = sorted(set(ledger_record) - LEDGER_RECORD_FIELDS)
+        if missing_record_fields:
+            _fail(clock_name, "record", f"missing fields {missing_record_fields}")
+        if unknown_record_fields:
+            _fail(clock_name, "record", f"unknown fields {unknown_record_fields}")
         if ledger_record.get("clock_name") != clock_name:
             _fail(clock_name, "clock_name", "must exactly match registry key")
         if not _same_json_value(ledger_record.get("doi"), registry_record["doi"]):
@@ -348,6 +380,12 @@ def validate_evidence(registry, ledger):
             source_field = f"sources[{index}]"
             if type(source) is not dict:
                 _fail(clock_name, source_field, "expected an object")
+            missing_source_fields = sorted(LEDGER_SOURCE_FIELDS - set(source))
+            unknown_source_fields = sorted(set(source) - LEDGER_SOURCE_FIELDS)
+            if missing_source_fields:
+                _fail(clock_name, source_field, f"missing fields {missing_source_fields}")
+            if unknown_source_fields:
+                _fail(clock_name, source_field, f"unknown fields {unknown_source_fields}")
             source_id = source.get("id")
             if type(source_id) is not str or not source_id.strip():
                 _fail(clock_name, f"{source_field}.id", "must be a nonempty string")
@@ -372,13 +410,23 @@ def validate_evidence(registry, ledger):
         fields = ledger_record.get("fields")
         if type(fields) is not dict:
             _fail(clock_name, "fields", "expected an object")
+        missing_evidence_fields = sorted(set(AUDITED_FIELDS) - set(fields))
+        unknown_evidence_fields = sorted(set(fields) - set(AUDITED_FIELDS))
+        if missing_evidence_fields:
+            _fail(clock_name, "fields", f"missing fields {missing_evidence_fields}")
+        if unknown_evidence_fields:
+            _fail(clock_name, "fields", f"unknown fields {unknown_evidence_fields}")
 
         for field in AUDITED_FIELDS:
-            if field not in fields:
-                _fail(clock_name, field, "evidence is missing")
             evidence = fields[field]
             if type(evidence) is not dict:
                 _fail(clock_name, field, "evidence must be an object")
+            missing_keys = sorted(EVIDENCE_RECORD_FIELDS - set(evidence))
+            unknown_keys = sorted(set(evidence) - EVIDENCE_RECORD_FIELDS)
+            if missing_keys:
+                _fail(clock_name, field, f"missing fields {missing_keys}")
+            if unknown_keys:
+                _fail(clock_name, field, f"unknown fields {unknown_keys}")
             status = evidence.get("status")
             if type(status) is not str or not status.strip():
                 _fail(clock_name, field, "status must be a nonempty string")
@@ -414,6 +462,27 @@ def validate_evidence(registry, ledger):
                     normalized_source_text.startswith("no current ") and normalized_source_text.endswith(" recorded.")
                 ):
                     _fail(clock_name, field, "resolved evidence cannot use provisional source_text")
+
+        access_issues = ledger_record["access_issues"]
+        if type(access_issues) is not list or any(
+            type(issue) is not str or not issue.strip() for issue in access_issues
+        ):
+            _fail(clock_name, "access_issues", "expected a list of nonempty strings")
+        for issue in access_issues:
+            normalized_issue = issue.casefold()
+            for field in AUDITED_FIELDS:
+                if fields[field]["status"] == "unresolved":
+                    continue
+                field_pattern = re.escape(field.casefold())
+                if re.search(
+                    rf"\b{field_pattern}\b[^.;]{{0,160}}\bremains? unresolved\b",
+                    normalized_issue,
+                ):
+                    _fail(
+                        clock_name,
+                        "access_issues",
+                        f"{field} is described as unresolved but its evidence status is resolved",
+                    )
 
 
 def _effective_model_feature_count(model):

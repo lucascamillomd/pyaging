@@ -483,6 +483,11 @@ def regenerate_clock_metadata(
                     )
                 clock.version = version
                 clock_name, runtime_metadata = _generated_metadata_entry(clock)
+                synchronized_metadata = merge_clock_metadata(
+                    {clock_name: runtime_metadata},
+                    {clock_name: curated_dictionary[clock_name]},
+                )[clock_name]
+                clock.metadata = synchronized_metadata
                 stage_path, digest, size = _stage_torch_object(record.target_path, clock, index)
             finally:
                 del clock
