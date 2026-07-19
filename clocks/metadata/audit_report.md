@@ -9,6 +9,10 @@ after correcting MammalianLifeSpan to the version-of-record DOI.
 
 - Tissue, platform, prediction target, training target, and unit use multi-valued controlled terms.
 - Source-specific detail remains in the evidence ledger.
+- Vocabulary cardinalities changed from the pre-audit documentation catalogue
+  to the canonical vocabulary as follows: tissue 94 → 30, platform 11 → 15,
+  predicts 124 → 83, training target 0 → 57, unit 19 → 27, data type 5 → 5,
+  species 4 → 5, model type 17 → 35, and population 138 → 17.
 
 ## Evidence status counts
 
@@ -145,6 +149,23 @@ final sample corrections have no remaining paper-access issue.
 - The final evidence-sample correction chain was revalidated across the
   vocabulary, registry, evidence ledger, source notebooks, serialized model
   metadata, aggregate catalogue, and generated documentation artifacts.
+- The deterministic 10% review covered 18 clocks across 15 DOI families:
+  288/288 audited values matched the evidence ledger, registry, and notebook,
+  and 126/126 sampled controlled-field comments matched their exact collapsed
+  evidence wording.
+- Final local verification passed 217 offline tests with 3 intentional
+  deselections, the separate 173-clock full-catalog consistency test, the
+  Clock Explorer Node interaction suite, Ruff and JavaScript syntax checks,
+  and a Sphinx 9.1.0 warnings-as-errors build with zero warnings. The generated
+  documentation catalogue contains 173 clocks.
+- The gold-standard all-clock prediction test passed during migration
+  verification (1 test in 240.12 seconds). After the final evidence-only
+  corrections, all 173 logical prediction-state fingerprints again matched
+  the immutable baseline.
+- Twenty-eight records retain 41 nonblocking source-access or
+  publication-versus-implementation caveats. All audited fields are resolved;
+  stale first-pass claims for the TwelveCell and six-cell EPIC donor
+  populations were removed.
 
 ## Hugging Face publication
 
