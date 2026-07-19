@@ -169,4 +169,24 @@ final sample corrections have no remaining paper-access issue.
 
 ## Hugging Face publication
 
-- Not performed by this one-off materialization step.
+- Published to the public
+  [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data)
+  model repository on 2026-07-19.
+- The 173 model objects were published first in revision
+  `2ad778154d33a5db429fdb0177be3a283cfb638c`. All 173 remote LFS SHA-256
+  digests exactly matched the synchronized local files; 130 files were also
+  independently streamed back and checked for canonical metadata and immutable
+  prediction fingerprints before exact-byte verification replaced the
+  redundant multi-gigabyte downloads.
+- The harmonized metadata README was published in revision
+  `73f7f056006d8013ce784eec09eb259b9937703a`.
+- The aggregate was published last. Final repository revision:
+  `18d637d2d6e58b65fa6b30f3743edd8b70253783`.
+- A forced download of the final `all_clock_metadata.pt` matched the local file
+  byte for byte at SHA-256
+  `cbb195444191653c9d74be41fd2949a75b21085120a5480c98964e47f0e3f13c`,
+  and all 173 aggregate records matched the canonical registry.
+- Regeneration from the published default aggregate produced 173 clocks and
+  was byte-identical to the committed JSON and CSV documentation artefacts;
+  the post-publication documentation/metadata suite passed 85 tests with one
+  intentional deselection.
