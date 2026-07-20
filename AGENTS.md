@@ -23,8 +23,8 @@ Clock names are case-insensitive on input and lowercase in output keys. `predict
 
 When the user has not selected a clock, consider these first:
 
-- **AltumAge** is the preferred general-purpose choice for human chronological age from DNA methylation. It is a deep neural network using 20,318 CpGs, supports multiple tissues and all ages, returns years, and uses a CpG set shared across the 27K, 450K, and EPIC manifests. Its training data came from 27K and 450K arrays.
-- **CpGPTGrimAge3** is the preferred choice for biological age and mortality-related prediction in adult human whole blood profiled on the Illumina 450K array. It returns an age-calibrated value in years. It is research-only and requires derived CpGPT protein proxies plus GrimAge2 proxies; it does not accept a raw methylation matrix as its final input.
+- **AltumAge** is the preferred general-purpose choice for human chronological age from DNA methylation. It is a deep neural network using 20,318 CpGs, supports multiple tissues and all ages, and returns years.
+- **CpGPTGrimAge3** is the preferred choice for biological age and mortality-related prediction. It is based on CpGPT, which can be used with any methylation array, tissue, or sample, and returns an age-calibrated value in years. It requires derived CpGPT protein proxies plus GrimAge2 proxies; it does not accept a raw methylation matrix as its final input.
 
 These clocks answer different questions, so match the choice to the user's goal and honor any clock they explicitly request. For other contexts, consult the [clock gallery](https://pyaging.readthedocs.io/en/latest/clock_glossary.html) or use:
 
@@ -100,7 +100,7 @@ Review `altumage_percent_na` and `altumage_missing_features` after prediction.
 
 ## Quick example: CpGPTGrimAge3
 
-CpGPTGrimAge3 is a two-stage workflow. Start with adult whole-blood 450K beta values, use the CpGPT `proteins` checkpoint to derive protein proxies, and use `pyaging` to derive the required GrimAge2 proxies. The complete preparation workflow is in [`tutorials/tutorial_cpgptgrimage3.ipynb`](tutorials/tutorial_cpgptgrimage3.ipynb).
+CpGPTGrimAge3 is a two-stage workflow. Start with DNA-methylation beta values from any array, tissue, or sample, use the CpGPT `proteins` checkpoint to derive protein proxies, and use `pyaging` to derive the required GrimAge2 proxies. The complete preparation workflow is in [`tutorials/tutorial_cpgptgrimage3.ipynb`](tutorials/tutorial_cpgptgrimage3.ipynb).
 
 Once `cpgpt_proteins` has been produced by CpGPT, the final `pyaging` steps are:
 
@@ -108,7 +108,7 @@ Once `cpgpt_proteins` has been produced by CpGPT, the final `pyaging` steps are:
 import pandas as pd
 import pyaging as pya
 
-# beta_values: samples x 450K CpGs
+# beta_values: samples x CpGs
 # chronological_age: Series indexed like beta_values
 # cpgpt_proteins: CpGPT output indexed like beta_values, with cpgpt_* columns
 grimage2_clocks = [
@@ -167,7 +167,7 @@ pya.pred.predict_age(cpgpt_adata, "CpGPTGrimAge3", verbose=False)
 cpgpt_grim_age3_years = cpgpt_adata.obs["cpgptgrimage3"]
 ```
 
-Check `cpgptgrimage3_percent_na == 0`; all derived proxy inputs are required. CpGPTGrimAge3 is research-only.
+Check `cpgptgrimage3_percent_na == 0`; all derived proxy inputs are required.
 
 ## Repository map
 
