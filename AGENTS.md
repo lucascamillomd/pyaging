@@ -19,20 +19,14 @@ import pyaging as pya
 
 Clock names are case-insensitive on input and lowercase in output keys. `predict_age` mutates the supplied `AnnData` object in place; do not assign its return value. Model weights and supporting data are downloaded from the public `lucascamillomd/pyaging-data` Hugging Face repository on first use and then reused from the standard Hugging Face cache. The legacy `dir=` argument remains accepted but does not control this cache.
 
-## Prefer AltumAge and CpGPTGrimAge3 when they fit
+## Consider AltumAge and CpGPTGrimAge3 when they fit
 
-When the user has not selected a clock, consider these first:
+Consider these first:
 
-- **AltumAge** is the preferred general-purpose choice for human chronological age from DNA methylation. It is a deep neural network using 20,318 CpGs, supports multiple tissues and all ages, and returns years.
-- **CpGPTGrimAge3** is the preferred choice for biological age and mortality-related prediction. It is based on CpGPT, which can be used with any methylation array, tissue, or sample, and returns an age-calibrated value in years. It requires derived CpGPT protein proxies plus GrimAge2 proxies; it does not accept a raw methylation matrix as its final input.
+- **CpGPTGrimAge3** is the best choice for biological age, mortality and morbidity prediction. It is based on CpGPT, which can be used with any methylation array, tissue, or sample, and returns an age-calibrated value in years. It requires derived CpGPT protein proxies plus GrimAge2 proxies; it does not accept a raw methylation matrix as its final input.
+- **AltumAge** is a recommended general-purpose choice for human chronological age from DNA methylation. It is a deep neural network using 20,318 CpGs, supports multiple tissues and all ages, and returns years.
 
-These clocks answer different questions, so match the choice to the user's goal and honor any clock they explicitly request. For other contexts, consult the [clock gallery](https://pyaging.readthedocs.io/en/latest/clock_glossary.html) or use:
-
-```python
-pya.utils.show_all_clocks()
-pya.utils.get_clock_metadata("AltumAge")
-pya.utils.cite_clock("AltumAge")
-```
+These clocks answer different questions, so match the choice to the user's goal and honor any clock they explicitly request. For other contexts, consult the [clock gallery](https://pyaging.readthedocs.io/en/latest/clock_glossary.html).
 
 ## Installation
 
@@ -77,7 +71,6 @@ adata = pya.pp.df_to_adata(
 pya.pred.predict_age(
     adata,
     clock_names="AltumAge",
-    batch_size=1024,
     verbose=False,
 )
 
@@ -168,61 +161,3 @@ cpgpt_grim_age3_years = cpgpt_adata.obs["cpgptgrimage3"]
 ```
 
 Check `cpgptgrimage3_percent_na == 0`; all derived proxy inputs are required.
-
-## Repository map
-
-- `pyaging/preprocess/`: DataFrame, bigWig, and `AnnData` preparation.
-- `pyaging/predict/`: clock loading, feature alignment, inference, preprocessing, and postprocessing.
-- `pyaging/models/`: shared PyTorch model classes and clock-specific behavior.
-- `pyaging/data/`: example-data download helpers.
-- `pyaging/utils/`: clock discovery, metadata, citation, and download utilities.
-- `tests/`: fast, online, and full-catalog test suites.
-- `tutorials/`: user workflows; prefer these over inventing an undocumented pipeline.
-- `docs/source/clock_notebooks/`: clock implementation and provenance notebooks.
-- `clocks/metadata/`: audited clock metadata and controlled vocabulary.
-- `clocks/weights/`: local generated weights; these are ignored and must not be committed.
-
-## Developing in this repository
-
-The project supports Python 3.9 through 3.13 and uses `uv`, Ruff, pytest, tox, and Hatchling.
-
-```bash
-# Create or update the local environment.
-uv sync
-
-# Fast checks used by CI.
-uv run pytest -m "not full_catalog and not online" \
-  tests docs/source/test_make_clock_data.py
-
-# Check style without rewriting files.
-uv run ruff check pyaging tests
-uv run ruff format --check pyaging tests
-
-# Build the distribution.
-uv build
-```
-
-Use focused tests while iterating, then run the full fast suite. `make test` runs the tox matrix and is slower. Tests marked `online` contact public services; tests marked `full_catalog` download and validate the complete clock catalog (about 25 GiB). Do not run either class casually. Tutorial execution is also online and excludes the long CpGPTGrimAge3 notebook in CI:
-
-```bash
-uv run pytest --nbmake tutorials/ \
-  --ignore=tutorials/tutorial_cpgptgrimage3.ipynb
-```
-
-Build documentation with `make docs`; it copies notebooks into `docs/source` before building. Avoid running notebook-processing or release targets unless the task specifically calls for their broad generated changes. Never run upload, tag, commit, or release Make targets without explicit authorization.
-
-## Change rules
-
-- Preserve the public aliases `pya.pp` and `pya.pred`.
-- Keep `predict_age` case-insensitive and its output keys lowercase.
-- Preserve in-place mutation of `AnnData`; if changing it, update docs, tutorials, and tests together.
-- Match existing NumPy/Pandas/AnnData and PyTorch conventions rather than adding parallel abstractions.
-- Keep downloads behind `pyaging.utils._hf`; do not reintroduce AWS/S3 dependencies.
-- Do not commit model weights, downloaded datasets, caches, build artifacts, or secrets.
-- Changes to clock metadata, features, preprocessing, postprocessing, reference values, or citations require prediction tests.
-- Add or update focused tests for behavioral changes. Update the relevant tutorial or API documentation when public usage changes.
-- Preserve unrelated user changes in a dirty working tree.
-
-## Definition of done
-
-A change is complete when the narrow tests pass, the fast CI-equivalent suite passes when practical, Ruff reports no new issues, public examples remain accurate, and generated or downloaded files are not accidentally tracked.
