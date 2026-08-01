@@ -23,7 +23,7 @@ Clock names are case-insensitive on input and lowercase in output keys. `predict
 
 Consider these first:
 
-- **CpGPTGrimAge3** is the best choice for biological age, mortality and morbidity prediction. It is based on CpGPT, which can be used with any methylation array, tissue, or sample, and returns an age-calibrated value in years. It requires derived CpGPT protein proxies plus GrimAge2 proxies; it does not accept a raw methylation matrix as its final input.
+- **CpGPTGrimAge3** is a recommended choice for biological age, mortality and morbidity prediction. It is based on CpGPT, which can be used with any methylation array, tissue, or sample, and returns an age-calibrated value in years. It requires derived CpGPT protein proxies plus GrimAge2 proxies; it does not accept a raw methylation matrix as its final input.
 - **AltumAge** is a recommended general-purpose choice for human chronological age from DNA methylation. It is a deep neural network using 20,318 CpGs, supports multiple tissues and all ages, and returns years.
 
 These clocks answer different questions, so match the choice to the user's goal and honor any clock they explicitly request. For other contexts, consult the [clock gallery](https://pyaging.readthedocs.io/en/latest/clock_glossary.html).
