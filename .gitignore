@@ -25,6 +25,7 @@ docs/_templates
 .envrc
 .worktrees/
 hf_static_data/
+.cursor/
 
 # Clock Explorer data: committed build artifact used as the fallback when the
 # build-time regeneration (docs/source/make_clock_data.py) can't reach S3.
