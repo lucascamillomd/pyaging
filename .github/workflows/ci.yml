@@ -46,7 +46,7 @@ jobs:
           enable-cache: true
           python-version: ${{ matrix.python-version }}
       - run: uv sync --locked --no-default-groups --group test
-      - run: uv run pytest -m "not full_catalog and not online"
+      - run: uv run --no-sync pytest -m "not full_catalog and not online"
 
   docs:
     name: Docs build
@@ -59,8 +59,9 @@ jobs:
         with:
           enable-cache: true
           python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y pandoc
       - run: uv sync --locked --no-default-groups --group docs
-      - run: uv run sphinx-build -b html docs/source docs/_build/html
+      - run: uv run --no-sync sphinx-build -b html docs/source docs/_build/html
 
   tutorials:
     name: Online tutorials
@@ -75,7 +76,7 @@ jobs:
           enable-cache: true
           python-version: "3.11"
       - run: uv sync --locked
-      - run: uv run pytest --nbmake tutorials/ --ignore=tutorials/tutorial_cpgptgrimage3.ipynb
+      - run: uv run --no-sync pytest --nbmake tutorials/ --ignore=tutorials/tutorial_cpgptgrimage3.ipynb
 
   workflow-security:
     name: Workflow security

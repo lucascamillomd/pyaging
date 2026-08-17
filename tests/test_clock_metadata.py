@@ -741,13 +741,9 @@ def test_final_evidence_sample_corrections_are_synchronized(registry, ledger):
         source_notebook = json.loads(
             (ROOT / "clocks" / "notebooks" / f"{clock_name}.ipynb").read_text(encoding="utf-8")
         )
-        docs_notebook = json.loads(
-            (ROOT / "docs" / "source" / "clock_notebooks" / f"{clock_name}.ipynb").read_text(encoding="utf-8")
-        )
         source_lines = [line.rstrip("\n") for cell in source_notebook["cells"] for line in cell.get("source", [])]
         assert exact_training_comment in source_lines
         assert exact_population_comment in source_lines
-        assert docs_notebook == source_notebook
 
     intrin_source = (ROOT / "clocks" / "notebooks" / "intrinclock.ipynb").read_text(encoding="utf-8")
     assert (

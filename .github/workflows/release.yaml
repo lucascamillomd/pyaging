@@ -34,7 +34,7 @@ jobs:
         run: |
           version="$(grep -E '^__version__' src/pyaging/__init__.py | cut -d'"' -f2)"
           test "${GITHUB_REF_NAME}" = "v${version}"
-      - run: uv run pytest -m "not full_catalog and not online"
+      - run: uv run --no-sync pytest -m "not full_catalog and not online"
       - run: uv build
       - run: uvx twine check dist/*
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

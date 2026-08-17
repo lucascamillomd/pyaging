@@ -343,7 +343,7 @@ def test_ci_covers_supported_platforms_and_tutorials():
         "python-version": ["3.11", "3.12", "3.13", "3.14"],
     }
     assert tutorials["if"] == "github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'"
-    assert "uv run pytest --nbmake tutorials/" in tutorial_commands
+    assert "uv run --no-sync pytest --nbmake tutorials/" in tutorial_commands
     assert "--ignore=tutorials/tutorial_cpgptgrimage3.ipynb" in tutorial_commands
 
 
