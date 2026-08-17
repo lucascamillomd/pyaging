@@ -1,9 +1,6 @@
-import gc
-
 import numpy as np
 import pandas as pd
 import pytest
-import torch
 
 import pyaging as pya
 
@@ -196,37 +193,25 @@ def test_all_clocks():
     indent_level = 1
     tolerance = 0.01
     for clock_name in all_clocks:
-        clock = pya.pred.load_clock(
-            clock_name, device, dir, logger, indent_level=indent_level
-        )
+        clock = pya.pred.load_clock(clock_name, device, dir, logger, indent_level=indent_level)
         partial_clock_features = clock.features[
             0 : max(1, len(clock.features) * 2 // 3)
         ]  # 1/3 dropout to simulate missing features (keep >=1 for tiny clocks)
         np.random.seed(42)
         random_df = pd.DataFrame(
-            np.abs(
-                np.random.normal(
-                    loc=0.5, scale=1, size=(1, len(partial_clock_features))
-                )
-            ),
+            np.abs(np.random.normal(loc=0.5, scale=1, size=(1, len(partial_clock_features)))),
             columns=partial_clock_features,
         )
-        random_adata = pya.pp.df_to_adata(
-            random_df, imputer_strategy="constant", verbose=False
-        )
+        random_adata = pya.pp.df_to_adata(random_df, imputer_strategy="constant", verbose=False)
         pya.pred.predict_age(random_adata, clock_name, verbose=False)
         pred = random_adata.obs.iloc[0, 0]
         gold_pred = gold_standard_dict[clock_name]
 
-        assert (
-            abs(pred - gold_pred) <= tolerance
-        ), f"Items {pred} and {gold_pred} differ by more than {tolerance} for clock {clock_name}"
+        assert abs(pred - gold_pred) <= tolerance, (
+            f"Items {pred} and {gold_pred} differ by more than {tolerance} for clock {clock_name}"
+        )
 
         # Explicit memory and disk cleanup after each clock test
         pya.pred._pred_utils.cleanup_clock_memory(
-            model=clock, 
-            clock_name=clock_name, 
-            dir=dir,
-            random_adata=random_adata, 
-            random_df=random_df
+            model=clock, clock_name=clock_name, dir=dir, random_adata=random_adata, random_df=random_df
         )

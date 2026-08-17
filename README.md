@@ -5,7 +5,7 @@
 ##
 
 [![CI](https://github.com/lucascamillomd/pyaging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/lucascamillomd/pyaging/actions/workflows/ci.yml)
-[![Release](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yml)
+[![Release](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yaml/badge.svg)](https://github.com/lucascamillomd/pyaging/actions/workflows/release.yaml)
 [![Documentation](https://readthedocs.org/projects/pyaging/badge/?version=latest)](https://pyaging.readthedocs.io/en/latest/)
 [![DOI](https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtae200-blue.svg)](https://doi.org/10.1093/bioinformatics/btae200)
 [![PyPI](https://img.shields.io/pypi/v/pyaging?logo=pypi)](https://pypi.org/project/pyaging/)
@@ -16,9 +16,39 @@
 
 `pyaging` is a cutting-edge Python package designed for the longevity research community, offering a comprehensive suite of GPU-optimized biological aging clocks.
 
-[Installation](https://pyaging.readthedocs.io/en/latest/installation.html) - [Clock gallery](https://pyaging.readthedocs.io/en/latest/clock_glossary.html) - [Search, cite, get metadata and clock parameters](https://pyaging.readthedocs.io/en/latest/tutorial_utils.html) - [Illumina Human Methylation Arrays](https://pyaging.readthedocs.io/en/latest/tutorial_dnam_illumina_human_array.html) - [Illumina Mammalian Methylation Arrays](https://pyaging.readthedocs.io/en/latest/tutorial_dnam_illumina_mammalian_array.html) - [RRBS DNA methylation](https://pyaging.readthedocs.io/en/latest/tutorial_dnam_rrbs.html) - [Bulk histone mark ChIP-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_histonemarkchipseq.html) - [Bulk ATAC-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_atacseq.html) - [Bulk RNA-Seq](https://pyaging.readthedocs.io/en/latest/tutorial_rnaseq.html) - [Blood chemistry](https://pyaging.readthedocs.io/en/latest/tutorial_bloodchemistry.html) - [CpGPTGrimAge3](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_cpgptgrimage3.html) - [API Reference](https://pyaging.readthedocs.io/en/latest/pyaging.html)
+[Installation](https://pyaging.readthedocs.io/en/latest/installation.html) - [Clock gallery](https://pyaging.readthedocs.io/en/latest/clock_glossary.html) - [Search, cite, get metadata and clock parameters](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_utils.html) - [Illumina Human Methylation Arrays](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_dnam_illumina_human_array.html) - [Illumina Mammalian Methylation Arrays](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_dnam_illumina_mammalian_array.html) - [RRBS DNA methylation](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_dnam_rrbs.html) - [Bulk histone mark ChIP-Seq](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_histonemarkchipseq.html) - [Bulk ATAC-Seq](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_atacseq.html) - [Bulk RNA-Seq](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_rnaseq.html) - [Blood chemistry](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_bloodchemistry.html) - [CpGPTGrimAge3](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_cpgptgrimage3.html) - [API Reference](https://pyaging.readthedocs.io/en/latest/pyaging.html)
 
 With a growing number of aging clocks and biomarkers of aging, comparing and analyzing them can be challenging. `pyaging` simplifies this process, allowing researchers to input various molecular layers (DNA methylation, histone ChIP-Seq, ATAC-seq, transcriptomics, etc.) and quickly analyze them using multiple aging clocks, thanks to its GPU-backed infrastructure. This makes it an ideal tool for large datasets and multi-layered analysis.
+
+## 📦 Installation
+
+`pyaging` requires Python 3.11 or newer and is available on PyPI:
+
+```bash
+pip install pyaging
+```
+
+To use the histone mark clocks, install the optional `pyBigWig` dependency as well (not supported on Windows):
+
+```bash
+pip install pyaging[histone]
+```
+
+## 🚀 Quickstart
+
+```python
+import pandas as pd
+import pyaging as pya
+
+pya.data.download_example_data("GSE139307")
+df = pd.read_pickle("pyaging_data/GSE139307.pkl")
+
+adata = pya.pp.df_to_adata(df)
+pya.pred.predict_age(adata, ["Horvath2013", "AltumAge", "DunedinPACE"])
+adata.obs.head()
+```
+
+Clock weights and example data are downloaded on demand from the [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data) Hugging Face repository. Set the `PYAGING_DATA_REVISION` environment variable to a release tag (e.g. `v0.3.1`) to pin downloads to a specific data revision for reproducibility; it defaults to `main`, the live data release.
 
 ## ❓ Can't find an aging clock?
 
@@ -26,6 +56,9 @@ If you have recently developed an aging clock and would like it to be integrated
 
 ## 💬 Community Discussion
 For coding-related queries, feedback, and discussions, please visit our [GitHub Issues](https://github.com/lucascamillomd/pyaging/issues) page.
+
+## 📝 Changelog
+Release notes for each version are available on the [GitHub Releases](https://github.com/lucascamillomd/pyaging/releases) page.
 
 ## 📖 Citation
 

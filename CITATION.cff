@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the preferred-citation article."
+type: software
+title: pyaging
+authors:
+  - family-names: de Lima Camillo
+    given-names: Lucas Paulo
+license: BSD-3-Clause
+repository-code: "https://github.com/lucascamillomd/pyaging"
+url: "https://pyaging.readthedocs.io"
+preferred-citation:
+  type: article
+  title: "pyaging: a Python-based compendium of GPU-optimized aging clocks"
+  authors:
+    - family-names: de Lima Camillo
+      given-names: Lucas Paulo
+  journal: Bioinformatics
+  year: 2024
+  month: 4
+  start: btae200
+  issn: 1367-4811
+  doi: 10.1093/bioinformatics/btae200
+  url: "https://doi.org/10.1093/bioinformatics/btae200"

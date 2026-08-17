@@ -1,9 +1,7 @@
 import re
 from pathlib import Path
 
-S3_HOST_PATTERN = re.compile(
-    r"https://pyaging\.s3(?:[.-][a-z0-9-]+)*\.amazonaws\.com"
-)
+S3_HOST_PATTERN = re.compile(r"https://pyaging\.s3(?:[.-][a-z0-9-]+)*\.amazonaws\.com")
 NOTEBOOK_ROOTS = (
     Path("clocks/notebooks"),
     Path("docs/source/clock_notebooks"),

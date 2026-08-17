@@ -25,6 +25,21 @@ downloaded through the standard Hugging Face cache.
 The `main` branch is the live data release and may change independently of the Python
 package version.
 
+## Versioning and reproducibility
+
+Each pyaging release tags this repository with the matching package version (e.g.
+`v0.3.1`), so a release tag captures the exact data files that shipped with that
+version of the package. By default pyaging downloads from `main`; set the
+`PYAGING_DATA_REVISION` environment variable to a release tag (or any commit) to pin
+downloads to that revision:
+
+```bash
+PYAGING_DATA_REVISION=v0.3.1 python my_analysis.py
+```
+
+Release tags only exist for pyaging versions published after the tagging scheme was
+introduced.
+
 ## Harmonized clock metadata
 
 The clock catalogue uses controlled, multi-valued metadata so clocks can be

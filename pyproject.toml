@@ -1,29 +1,40 @@
 [project]
 name = "pyaging"
-version = "0.3.1"
 description = "A Python-based compendium of GPU-optimized aging clocks."
 authors = [
     {name = "Lucas Paulo de Lima Camillo", email = "lucas_camillo@alumni.brown.edu"}
 ]
-license = {text = "BSD"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 readme = "README.md"
-requires-python = ">=3.9,<3.14"
+requires-python = ">=3.11"
+dynamic = ["version"]
+keywords = [
+    "aging",
+    "epigenetics",
+    "aging-clocks",
+    "methylation",
+    "biomarkers",
+    "bioinformatics",
+    "pytorch",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
 dependencies = [
     "scikit-learn>=1.3.2",
     "pandas>=2.2.0",
     "torch>=2.2.0",
     "numpy>=2.0.0",
     "anndata>=0.10.3",
-    "ipykernel>=6.29.0",
-    "ruff>=0.14.6",
-    "tox>=4.30.3",
-    "marimo[recommended]>=0.17.6",
-    "matplotlib>=3.9.4",
-    "polars>=1.35.2",
-    "openai>=2.8.1",
-    "pyarrow>=21.0.0",
-    "plotly>=6.5.0",
-    "pre-commit>=4.3.0",
     "huggingface-hub>=1.3,<2",
 ]
 
@@ -31,50 +42,70 @@ dependencies = [
 homepage = "https://github.com/lucascamillomd/pyaging"
 repository = "https://github.com/lucascamillomd/pyaging"
 
-[project.scripts]
-pyaging = "pyaging:main"
-
 [project.optional-dependencies]
-docs = [
-    "sphinx>=7.1.2",
-    "pydata-sphinx-theme>=0.15.4",
-    "sphinx-autodoc-typehints>=1.12.0",
-    "ipykernel>=6.29.0",
-    "nbsphinx>=0.8.11",
-    "pygments>=2.6.1"
-]
 histone = ["pyBigWig>=0.3.23"]
 
 [dependency-groups]
-dev = [
-    "sphinx>=7.1.2",
-    "sphinx-rtd-theme>=1.3.0rc1",
-    "sphinx-autodoc-typehints>=1.12.0",
-    "sphinx-copybutton>=0.5.2",
-    "pydata-sphinx-theme>=0.15.4",
-    "sphinx-issues>=3.0.1",
-    "sphinx-design>=0.5.0",
-    "scanpydoc>=0.10.0",
-    "myst-parser>=2.0.0",
-    "nbsphinx>=0.8.11",
-    "pygments>=2.6.1",
+test = [
     "pytest>=7.2.0",
     "nbmake>=1.4.6",
+    "pytest-cov",
+    "pyyaml",
     "pyBigWig>=0.3.23",
-    "tox>=4.25.0",
-    "hatchling>=1.27,<2",
-    "tomli>=2.0.1; python_version < '3.11'",
+    "hatchling>=1.27",
 ]
+docs = [
+    "sphinx>=7.1.2",
+    "pydata-sphinx-theme>=0.15.4",
+    "sphinx-autodoc-typehints",
+    "sphinx-copybutton",
+    "sphinx-issues",
+    "sphinx-design",
+    "scanpydoc",
+    "myst-parser",
+    "nbsphinx",
+    "ipython",
+    "pygments",
+]
+notebooks = [
+    "ipykernel",
+    "marimo[recommended]",
+    "matplotlib",
+    "polars",
+    "openai",
+    "pyarrow",
+    "plotly",
+]
+lint = [
+    "ruff>=0.14.6",
+    "pre-commit>=4.3.0",
+]
+dev = [
+    {include-group = "test"},
+    {include-group = "docs"},
+    {include-group = "notebooks"},
+    {include-group = "lint"},
+]
+
+[tool.hatch.version]
+path = "src/pyaging/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pyaging"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src/pyaging", "tests", "README.md", "LICENSE", "pyproject.toml"]
 
 [tool.ruff]
 line-length = 120
+extend-exclude = ["*.ipynb", "dev"]
 
 [tool.ruff.lint]
 select = [
     # pycodestyle
     "E",
     # Pyflakes
-    #"F",
+    "F",
     # pyupgrade
     "UP",
     # flake8-bugbear
@@ -85,57 +116,29 @@ select = [
     "I",
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
+
 [tool.ruff.format]
 docstring-code-format = true
 
 [tool.pytest.ini_options]
-addopts = "-m 'not full_catalog and not online'"
+minversion = "7"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config --import-mode=importlib -m 'not full_catalog and not online'"
+xfail_strict = true
 markers = [
     "full_catalog: downloads and validates the complete clock catalog (~25 GiB)",
     "online: accesses public remote services",
 ]
 
-[tool.hatch.build]
-exclude = [
-    "/.venv",
-    "/.worktrees",
-    "/hf_static_data",
-    "/pyaging_data",
-    "/clocks/weights",
-    "/clocks/metadata",
-    "/docs/_build",
-    "/docs/_static/.cache",
-    "/docs/_static/all_clock_metadata.pt",
-    "/.pytest_cache",
-    "/.ruff_cache",
-    "/dist",
-    "/build",
-]
+[tool.coverage.run]
+source = ["pyaging"]
 
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-envlist = py{39,310,311,312,313}
-skip_missing_interpreters = true
-
-[testenv]
-description = run tests
-deps =
-    pytest
-    nbmake
-    hatchling>=1.27,<2
-    tomli>=2.0.1; python_version < "3.11"
-    zarr
-    scikit-learn>=1.3.2
-    pandas>=2.2.0
-    torch>=2.2.0
-    numpy>=2.0.0
-    anndata>=0.10.3
-    ipykernel>=6.29.0
-    huggingface_hub>=1.3,<2
-commands = pytest -m "not full_catalog and not online" tests/
-"""
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"

@@ -1,4 +1,4 @@
-.PHONY: lint format update build install update-clocks-notebooks update-all-clocks verify-hf-auth verify-hf-data-repo-public create-hf-data-repo upload-clocks-to-hf upload-static-data-to-hf process-tutorials test test-tutorials docs version commit tag release release-slim
+.PHONY: lint format update build install update-clocks-notebooks update-all-clocks verify-hf-auth verify-hf-data-repo-public create-hf-data-repo upload-clocks-to-hf upload-static-data-to-hf tag-hf-data-repo process-tutorials test test-all test-tutorials docs version commit tag release release-slim clean
 
 VERSION ?= v0.3.1
 HF_REPO_ID ?= lucascamillomd/pyaging-data
@@ -9,11 +9,11 @@ RELEASE_MSG ?= "Release $(VERSION)"
 
 lint:
 	@echo "Running ruff for linting..."
-	uv run ruff check pyaging --fix
+	uv run ruff check src/pyaging --fix
 
 format:
 	@echo "Running ruff for code formatting..."
-	uv run ruff format pyaging
+	uv run ruff format src/pyaging
 
 update:
 	@echo "Running uv sync..."
@@ -76,6 +76,10 @@ upload-clocks-to-hf: verify-hf-data-repo-public
 	uv run hf upload "$(HF_REPO_ID)" clocks/metadata/all_clock_metadata.pt all_clock_metadata.pt --type model --commit-message "Update aggregate clock metadata"
 	@uv run hf models info "$(HF_REPO_ID)" --format json | uv run python -c 'import json, sys; print("HF revision:", json.load(sys.stdin)["sha"])'
 
+tag-hf-data-repo: verify-hf-auth
+	@echo "Tagging HF data repo $(HF_REPO_ID) with $(VERSION)..."
+	uv run python -c "from huggingface_hub import create_tag; create_tag('$(HF_REPO_ID)', tag='$(VERSION)', exist_ok=True)" || { echo "Tagging HF data repo failed"; exit 1; }
+
 upload-static-data-to-hf: verify-hf-data-repo-public
 	@test -d "$(HF_STATIC_DIR)/repo" || { echo "Missing $(HF_STATIC_DIR)/repo staging directory"; exit 1; }
 	uv run hf upload "$(HF_REPO_ID)" "$(HF_STATIC_DIR)/repo" . --type model --commit-message "Add current pyaging static data dependencies"
@@ -90,8 +94,14 @@ process-tutorials:
 
 test:
 	@echo "Running gold standard tests..."
-	uv sync --quiet || { echo "Failed to sync dependencies"; exit 1; }
-	uv run tox || { echo "Gold standard tests failed"; exit 1; }
+	uv run pytest || { echo "Gold standard tests failed"; exit 1; }
+
+test-all:
+	@echo "Running gold standard tests across supported Python versions..."
+	@for py in 3.11 3.12 3.13 3.14; do \
+		echo "Testing with Python $$py..."; \
+		uv run --python $$py pytest || { echo "Tests failed on Python $$py"; exit 1; }; \
+	done
 
 test-tutorials:
 	@echo "Running tutorial tests..."
@@ -99,19 +109,15 @@ test-tutorials:
 
 docs:
 	@echo "Building documentation..."
-	cp tutorials/*.ipynb docs/source/tutorials
-	cp clocks/notebooks/*.ipynb docs/source/clock_notebooks
 	uv run make -C docs html
 
 version:
-	@echo "Updating version in pyproject.toml to $(VERSION)..."
-	sed -i '' "s/^version = \".*\"/version = \"$(patsubst v%,%,$(VERSION))\"/" pyproject.toml || { echo "Error updating version in pyproject.toml"; exit 1; }
-	@echo "Updating version in pyaging/__init__.py to $(VERSION)..."
-	sed -i '' "s/^__version__ = \".*\"/__version__ = \"$(patsubst v%,%,$(VERSION))\"/" pyaging/__init__.py || { echo "Error updating version in pyaging/__init__.py"; exit 1; }
+	@echo "Updating version in src/pyaging/__init__.py to $(VERSION)..."
+	sed -i '' "s/^__version__ = \".*\"/__version__ = \"$(patsubst v%,%,$(VERSION))\"/" src/pyaging/__init__.py || { echo "Error updating version in src/pyaging/__init__.py"; exit 1; }
 
 commit:
 	@echo "Committing and pushing changes..."
-	git add .
+	git add src/pyaging/__init__.py uv.lock clocks/notebooks clocks/metadata tutorials docs/source README.md
 	git commit -m $(COMMIT_MSG) || { echo "Git commit failed"; exit 1; }
 	git push || { echo "Git push failed"; exit 1; }
 
@@ -134,6 +140,7 @@ release:
 	$(MAKE) test-tutorials
 	$(MAKE) docs
 	$(MAKE) upload-clocks-to-hf
+	$(MAKE) tag-hf-data-repo
 	$(MAKE) commit
 	$(MAKE) tag
 	@echo "Release $(VERSION) completed successfully"
@@ -149,6 +156,11 @@ release-slim:
 	$(MAKE) test
 	$(MAKE) docs
 	$(MAKE) upload-clocks-to-hf
+	$(MAKE) tag-hf-data-repo
 	$(MAKE) commit
 	$(MAKE) tag
 	@echo "Release $(VERSION) (slim) completed successfully"
+
+clean:
+	@echo "Removing build and cache directories..."
+	rm -rf .pytest_cache .ruff_cache build dist docs/_build
