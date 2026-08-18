@@ -53,8 +53,10 @@ h2, h3 { font-weight: 700; }
 html[data-theme="dark"] .bd-article h1::after {
   background: linear-gradient(90deg, #6ea4d8 0 34%, #35b0c0 34% 67%, var(--pya-sand) 67% 100%);
 }
-/* Landing page: the rule centers under the hero title. */
+/* Landing page: the rule centers under the hero title; the headerlink "#"
+   occupies layout space and would push the centered text off the logo axis. */
 #pyaging > h1::after { margin-left: auto; margin-right: auto; }
+#pyaging > h1 a.headerlink { display: none; }
 
 /* Logo sizing */
 .navbar-brand img, .sidebar-logo { max-height: 40px; width: auto; }

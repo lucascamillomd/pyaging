@@ -3,11 +3,16 @@
 Clock Catalogue
 ===============
 
-Browse and filter every aging clock available in ``pyaging``. Filter by any
-categorical column — data type, species, platform, model type, unit, tissue,
-last author, journal, and more; search by name, author, or notes; sort any
-column; toggle between table and card views; and click a clock to expand its
-full details.
+All 173 clocks currently implemented in ``pyaging``. Search by name or author,
+filter any column, and click a row for the full metadata, the reference, and
+the notebook that constructed the clock. Citation counts come from the
+original publications; download counts come from each clock's repository on
+Hugging Face.
+
+.. toctree::
+   :hidden:
+
+   clock_implementation
 
 .. raw:: html
 

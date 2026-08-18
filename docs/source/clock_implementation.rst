@@ -1,7 +1,10 @@
 Clock implementation
 ====================
 
-The following collection of Jupyter Notebooks provides a comprehensive guide to the implementation of various biological clocks. Each notebook is dedicated to a specific analysis.
+Each clock in pyaging is built by a Jupyter notebook that downloads the
+published coefficients, reconstructs the model, and checks it against the
+original implementation. The notebooks below are the full construction record,
+one per clock.
 
 .. toctree::
    :maxdepth: 1
@@ -180,4 +183,3 @@ The following collection of Jupyter Notebooks provides a comprehensive guide to 
    clock_notebooks/zhangen
    clock_notebooks/zhangmortality
    clock_notebooks/template
-

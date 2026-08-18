@@ -53,3 +53,6 @@ docs/_static/all_clock_metadata.pt
 docs/source/_static/all_clock_metadata.pt
 docs/source/tutorials/*.ipynb
 docs/source/clock_notebooks/
+
+# Playwright MCP scratch output
+.playwright-mcp/

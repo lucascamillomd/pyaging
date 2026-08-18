@@ -16,21 +16,21 @@
   };
   var COLUMNS = [
     { key: "clock_name", label: "Clock", def: true, cls: "ce-col-clock" },
+    { key: "citations", label: "Citations", def: true, num: true, cls: "ce-col-num" },
+    { key: "downloads", label: "Downloads", def: true, num: true, cls: "ce-col-num" },
     { key: "approved_by_author", label: "Verified", def: true, cls: "ce-col-approval" },
     { key: "data_type", label: "Data type", def: true, cls: "ce-col-short" },
     { key: "species", label: "Species", def: true, cls: "ce-col-short" },
     { key: "year", label: "Year", def: true, num: true, cls: "ce-col-num" },
-    { key: "citations", label: "Citations", def: true, num: true, cls: "ce-col-num" },
-    { key: "downloads", label: "Downloads", def: true, num: true, cls: "ce-col-num" },
-    { key: "n_features", label: "N features", def: true, num: true, cls: "ce-col-num" },
-    { key: "unit", label: "Unit", def: true, cls: "ce-col-short" },
-    { key: "model_type", label: "Model", def: true, cls: "ce-col-long" },
-    { key: "platform", label: "Platform", def: true, cls: "ce-col-long" },
+    { key: "n_features", label: "N features", def: false, num: true, cls: "ce-col-num" },
+    { key: "unit", label: "Unit", def: false, cls: "ce-col-short" },
+    { key: "model_type", label: "Model", def: false, cls: "ce-col-long" },
+    { key: "platform", label: "Platform", def: false, cls: "ce-col-long" },
     { key: "predicts", label: "Predicts", def: true, cls: "ce-col-long" },
     { key: "tissue", label: "Tissue", def: true, cls: "ce-col-long" },
-    { key: "population", label: "Population", def: true, cls: "ce-col-long" },
-    { key: "last_author", label: "Last author", def: true, cls: "ce-col-long" },
-    { key: "journal", label: "Journal", def: true, cls: "ce-col-long" },
+    { key: "population", label: "Population", def: false, cls: "ce-col-long" },
+    { key: "last_author", label: "Last author", def: false, cls: "ce-col-long" },
+    { key: "journal", label: "Journal", def: false, cls: "ce-col-long" },
   ];
   var DETAIL_FIELDS = [
     ["predicts", "Predicts"], ["training_target", "Training target"], ["unit", "Unit"], ["tissue", "Tissue"],
@@ -48,9 +48,9 @@
 
   var state = {
     clocks: [], selected: {}, search: "", sortKey: "default", sortDir: "asc",
-    view: "table", cols: null, expanded: {},
+    cols: null, expanded: {},
   };
-  var mount, body, sortSelEl, sortDirBtn, viewToggleBtns;
+  var mount, body, sortSelEl, sortDirBtn;
   var filterBtns, activeChipsEl, checkboxIndex, openPopover = null;
 
   function el(tag, cls, txt) {
@@ -216,6 +216,38 @@
     activeChipsEl.style.display = activeChipsEl.childNodes.length ? "flex" : "none";
   }
 
+  // ---------- popular strip ----------
+  // Top clocks by Hub downloads once counters accumulate; by paper citations
+  // until then. Clicking a chip filters the table to that clock.
+  function buildPopular() {
+    var hasDownloads = state.clocks.some(function (c) { return (c.downloads || 0) > 0; });
+    var metric = hasDownloads ? "downloads" : "citations";
+    var top = state.clocks
+      .filter(function (c) { return c[metric] != null; })
+      .slice()
+      .sort(function (a, b) { return (b[metric] || 0) - (a[metric] || 0); })
+      .slice(0, 8);
+    if (!top.length) return el("span");
+    var wrap = el("div", "ce-popular");
+    wrap.appendChild(el("span", "ce-popular-label", hasDownloads ? "Most downloaded" : "Most cited"));
+    top.forEach(function (c, i) {
+      var chip = el("button", "ce-popular-chip");
+      chip.type = "button";
+      chip.title = "Show " + c.clock_name + " in the table";
+      chip.appendChild(el("span", "ce-popular-rank", String(i + 1)));
+      chip.appendChild(el("span", "ce-popular-name", c.clock_name));
+      chip.appendChild(el("span", "ce-popular-metric", core.formatValue(c[metric])));
+      chip.addEventListener("click", function () {
+        state.search = c.clock_name;
+        state.expanded = {};
+        state.expanded[c.clock_name] = true;
+        buildAll();
+      });
+      wrap.appendChild(chip);
+    });
+    return wrap;
+  }
+
   // ---------- toolbar ----------
   function buildToolbar() {
     var bar = el("div", "ce-toolbar");
@@ -241,16 +273,6 @@
     sortDirBtn.addEventListener("click", function () {
       state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
       render();
-    });
-
-    var toggle = el("div", "ce-viewtoggle");
-    viewToggleBtns = [];
-    ["table", "cards"].forEach(function (v) {
-      var b = el("button", "ce-btn" + (state.view === v ? " active" : ""), v === "table" ? "Table" : "Cards");
-      b.type = "button";
-      b.addEventListener("click", function () { state.view = v; render(); });
-      viewToggleBtns.push({ view: v, btn: b });
-      toggle.appendChild(b);
     });
 
     var dl = el("button", "ce-btn", "Download CSV");
@@ -279,7 +301,7 @@
     var count = el("span", "ce-count");
     count.id = "ce-count";
 
-    [sortSelEl, sortDirBtn, toggle, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
+    [sortSelEl, sortDirBtn, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
     return bar;
   }
 
@@ -350,37 +372,6 @@
     return scroller;
   }
 
-  // ---------- cards ----------
-  function buildCards(rows) {
-    var grid = el("div", "ce-cards");
-    rows.forEach(function (c) {
-      var card = el("div", "ce-card");
-      var head = el("div", "ce-card-head");
-      head.appendChild(el("h3", "ce-card-title", c.clock_name));
-      if (c.citations != null) head.appendChild(el("span", "ce-card-cites", c.citations + " cites"));
-      if (c.downloads != null) head.appendChild(el("span", "ce-card-cites", c.downloads + " dl"));
-      card.appendChild(head);
-      var badges = el("div", "ce-badges");
-      [c.data_type, c.species, c.model_type].forEach(function (value) {
-        core.valuesOf(value).forEach(function (b) {
-          badges.appendChild(el("span", "ce-badge", String(b)));
-        });
-      });
-      card.appendChild(badges);
-      var unit = core.formatValue(c.unit);
-      card.appendChild(el("p", "ce-card-predicts", fmt(c.predicts) + (unit ? " (" + unit + ")" : "")));
-      var more = el("button", "ce-btn ce-card-more", state.expanded[c.clock_name] ? "Hide details" : "Details");
-      more.type = "button";
-      more.addEventListener("click", function () { state.expanded[c.clock_name] = !state.expanded[c.clock_name]; render(); });
-      card.appendChild(more);
-      if (state.expanded[c.clock_name]) {
-        card.appendChild(buildDetailBox(c));
-      }
-      grid.appendChild(card);
-    });
-    return grid;
-  }
-
   // ---------- render ----------
   function render() {
     var rows = visible();
@@ -397,14 +388,8 @@
       SORT_OPTIONS.forEach(function (o) { if (o.key === state.sortKey) hasKey = true; });
       if (hasKey) sortSelEl.value = state.sortKey;
     }
-    if (viewToggleBtns) {
-      viewToggleBtns.forEach(function (t) {
-        if (t.view === state.view) t.btn.classList.add("active");
-        else t.btn.classList.remove("active");
-      });
-    }
     body.innerHTML = "";
-    body.appendChild(state.view === "cards" ? buildCards(rows) : buildTable(rows));
+    body.appendChild(buildTable(rows));
   }
 
   function buildAll() {
@@ -417,6 +402,7 @@
     // chips into one block above the bounded, self-scrolling table (.ce-scroll),
     // so they stay reachable while the 170+ rows scroll inside their box.
     var controls = el("div", "ce-controls");
+    controls.appendChild(buildPopular());
     controls.appendChild(buildToolbar());
     controls.appendChild(buildFilterBar());
     controls.appendChild(buildActiveChips());
@@ -473,7 +459,7 @@
               var n = counts[String(c.clock_name || "").toLowerCase()];
               if (n != null) c.downloads = n;
             });
-            render();
+            buildAll();
           })
           .catch(function () { /* counts stay blank; the catalogue is fully usable without them */ });
       })

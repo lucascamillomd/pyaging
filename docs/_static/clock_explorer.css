@@ -8,6 +8,20 @@
    and the page barely scrolls — no page-level sticky needed (and a theme
    ancestor's overflow would trap it anyway). */
 .ce-controls { padding-bottom: 4px; }
+
+/* Popular-clocks strip: rank in sand, compact chips, one row above the tools. */
+.ce-popular { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 12px; }
+.ce-popular-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--ce-muted); margin-right: 3px; }
+.ce-popular-chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 10px 4px 6px;
+  border: 1px solid var(--ce-border); border-radius: 999px; background: var(--pst-color-background, #fff);
+  cursor: pointer; font-size: 0.8rem; color: inherit; }
+.ce-popular-chip:hover { border-color: var(--ce-primary); }
+.ce-popular-rank { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
+  height: 18px; border-radius: 50%; background: #efc53f; color: #132238; font-weight: 700;
+  font-size: 0.68rem; align-self: center; }
+.ce-popular-name { font-weight: 600; }
+.ce-popular-metric { color: var(--ce-muted); font-variant-numeric: tabular-nums; font-size: 0.72rem; }
 /* Signature tri-color rule closes the controls block, echoing the page titles. */
 .ce-controls::after {
   content: ""; display: block; height: 3px; border-radius: 2px; margin-bottom: 10px;
@@ -23,9 +37,6 @@ html[data-theme="dark"] .ce-controls::after {
   color: inherit; cursor: pointer; line-height: 1; }
 .ce-btn:hover { border-color: var(--ce-primary); }
 .ce-btn.active { background: var(--ce-primary); color: #fff; border-color: var(--ce-primary); }
-.ce-viewtoggle { display: inline-flex; }
-.ce-viewtoggle .ce-btn:first-child { border-radius: 8px 0 0 8px; }
-.ce-viewtoggle .ce-btn:last-child { border-radius: 0 8px 8px 0; margin-left: -1px; }
 .ce-sort { padding: 7px 10px; border: 1px solid var(--ce-border); border-radius: 8px; background: var(--ce-surface); color: inherit; }
 .ce-count { margin-left: auto; color: var(--ce-muted); font-size: 0.85rem; }
 
@@ -63,9 +74,10 @@ html[data-theme="dark"] .ce-controls::after {
 /* Bounded scroll box: the 170+ rows scroll here, not the page, so the sticky
    <thead> pins against this container and the controls above stay visible. */
 .ce-scroll { max-height: 72vh; overflow: auto; border: 1px solid var(--ce-border); border-radius: 10px; }
-.ce-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-.ce-table th, .ce-table td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--ce-border); }
-.ce-table .ce-col-clock { min-width: 15rem; font-weight: 600; }
+.ce-table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 0.85rem; }
+.ce-table th, .ce-table td { padding: 5px 10px; text-align: left; border-bottom: 1px solid var(--ce-border); }
+.ce-table thead th { padding-top: 8px; padding-bottom: 8px; }
+.ce-table .ce-col-clock { min-width: 12rem; font-weight: 600; }
 .ce-table .ce-col-approval, .ce-table .ce-col-num, .ce-table .ce-col-short { width: 1%; }
 .ce-table .ce-col-long { min-width: 11rem; }
 .ce-table thead th { position: sticky; top: 0; background: var(--ce-surface); cursor: pointer; user-select: none;
@@ -94,16 +106,6 @@ html[data-theme="dark"] .ce-approval.is-approved { color: #bbf7d0; background: #
 .ce-link { color: var(--ce-primary); font-weight: 600; text-decoration: none; }
 .ce-link:hover { text-decoration: underline; }
 
-.ce-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-.ce-card { border: 1px solid var(--ce-border); border-radius: 12px; padding: 14px; background: var(--pst-color-background, #fff);
-  transition: box-shadow 0.15s ease, border-color 0.15s ease; }
-.ce-card:hover { box-shadow: 0 4px 18px rgba(11, 27, 43, 0.08); border-color: var(--ce-primary); }
-.ce-card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.ce-card-title { margin: 0; font-size: 1rem; word-break: break-word; }
-.ce-card-cites { color: var(--ce-muted); font-size: 0.8rem; white-space: nowrap; }
-.ce-badges { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
-.ce-badge { padding: 2px 8px; border-radius: 999px; background: var(--ce-surface); font-size: 0.72rem; }
-.ce-card-predicts { margin: 6px 0 10px; color: var(--ce-muted); }
 .ce-error { padding: 12px; border: 1px solid var(--ce-border); border-radius: 8px; }
 
 @media (max-width: 820px) {
