@@ -3,7 +3,6 @@ import os
 import anndata
 import numpy as np
 import torch
-from anndata.experimental.pytorch import AnnLoader
 
 try:
     import cupy as cp
@@ -244,7 +243,7 @@ def predict_ages_with_model(
         Device to move AnnData to during inference. Eithe 'cpu' or 'cuda'.
 
     batch_size : int
-        Batch size for the AnnLoader object to predict age.
+        Number of samples per prediction batch.
 
     logger : Logger
         A logger object for logging the progress or any relevant information during the prediction process.
@@ -292,16 +291,14 @@ def predict_ages_with_model(
     else:
         logger.info("There is no postprocessing necessary", indent_level=indent_level + 1)
 
-    # Create an AnnLoader
-    use_cuda = torch.cuda.is_available()
-    dataloader = AnnLoader(adata, batch_size=batch_size, use_cuda=use_cuda)
-
-    # Use the AnnLoader for batched prediction
+    # Batched prediction over the clock's feature matrix on the model's device
+    matrix = adata.obsm[f"X_{model.metadata['clock_name']}"]
+    starts = range(0, matrix.shape[0], batch_size)
     predictions = []
     with torch.inference_mode():
-        for batch in main_tqdm(dataloader, indent_level=indent_level + 1, logger=logger):
-            batch_pred = model(batch.obsm[f"X_{model.metadata['clock_name']}"].to(torch.float64))
-            predictions.append(batch_pred)
+        for start in main_tqdm(starts, indent_level=indent_level + 1, logger=logger):
+            batch = torch.as_tensor(matrix[start : start + batch_size], dtype=torch.float64, device=device)
+            predictions.append(model(batch))
     # Concatenate all batch predictions
     predictions = torch.cat(predictions)
 
