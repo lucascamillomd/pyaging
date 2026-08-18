@@ -16,7 +16,7 @@ import gc
 
 from ..logger import main_tqdm
 from ..models import pyagingModel
-from ..utils._hf import PyAgingResourceNotFoundError, download_hf_file
+from ..utils._hf import PyAgingResourceNotFoundError, download_clock_weights
 from ..utils._utils import progress
 
 
@@ -67,7 +67,7 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
     """
     clock_name = clock_name.lower()
     try:
-        weights_path = download_hf_file(f"{clock_name}.pt", dir, logger, indent_level=indent_level)
+        weights_path = download_clock_weights(clock_name, dir, logger, indent_level=indent_level)
     except PyAgingResourceNotFoundError as exc:
         message = (
             f"Clock {clock_name} is not available on pyaging. "

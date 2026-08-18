@@ -88,15 +88,17 @@ create-hf-data-repo: verify-hf-auth
 	uv run hf upload "$(HF_REPO_ID)" clocks/huggingface/README.md README.md --type model --commit-message "Document pyaging data repository"
 
 upload-clocks-to-hf: verify-hf-data-repo-public
-	@echo "Uploading changed clock weights to Hugging Face..."
-	uv run hf upload "$(HF_REPO_ID)" clocks/weights . --type model --commit-message "Update pyaging clock weights"
-	@echo "Publishing aggregate metadata after weights..."
+	@echo "Syncing per-clock repos under the pyaging org..."
+	uv run python clocks/hf_repo_sync.py || { echo "Per-clock repo sync failed"; exit 1; }
+	@echo "Publishing aggregate metadata..."
 	uv run hf upload "$(HF_REPO_ID)" clocks/metadata/all_clock_metadata.pt all_clock_metadata.pt --type model --commit-message "Update aggregate clock metadata"
 	@uv run hf models info "$(HF_REPO_ID)" --format json | uv run python -c 'import json, sys; print("HF revision:", json.load(sys.stdin)["sha"])'
 
 tag-hf-data-repo: verify-hf-auth
 	@echo "Tagging HF data repo $(HF_REPO_ID) with $(VERSION)..."
 	TAG_HF_REPO_ID='$(HF_REPO_ID)' TAG_HF_TAG='$(VERSION)' uv run python -c "$$TAG_HF_DATA_REPO_SCRIPT" || { echo "Tagging HF data repo failed"; exit 1; }
+	@echo "Tagging per-clock repos with $(VERSION)..."
+	uv run python clocks/hf_repo_sync.py --tag "$(VERSION)" --tag-only || { echo "Tagging per-clock repos failed"; exit 1; }
 
 upload-static-data-to-hf: verify-hf-data-repo-public
 	@test -d "$(HF_STATIC_DIR)/repo" || { echo "Missing $(HF_STATIC_DIR)/repo staging directory"; exit 1; }

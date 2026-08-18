@@ -15,7 +15,11 @@ This public repository contains the model weights and data files used by
 
 ## Contents
 
-- Root-level `*.pt` files are the current pyaging clock models.
+- Clock model weights live in one repository per clock under the
+  [`pyaging` organization](https://huggingface.co/pyaging) (e.g.
+  `pyaging/horvath2013`); each repo carries the weight file, the audited clock
+  metadata as `config.json`, and a model card. Root-level `*.pt` files here are
+  the legacy copies kept for pyaging versions <= 0.3.1.
 - `all_clock_metadata.pt` is the live aggregate clock catalog.
 - Root-level example files support the pyaging tutorials.
 - `supporting_files/` contains dependencies used to construct or document clocks.

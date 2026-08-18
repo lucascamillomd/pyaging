@@ -3,7 +3,7 @@
   "use strict";
 
   var FACET_FIELDS = ["data_type", "species", "platform", "model_type", "unit", "tissue", "last_author", "journal", "predicts", "training_target", "population", "approved_by_author"];
-  var NUMERIC = { n_features: true, year: true, citations: true };
+  var NUMERIC = { n_features: true, year: true, citations: true, downloads: true };
   // Search scans every metadata value on a clock except these keys (notebook is
   // an internal link path, not user-facing text worth matching on).
   var SEARCH_EXCLUDE = { notebook: true };

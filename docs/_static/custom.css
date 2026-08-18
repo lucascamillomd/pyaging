@@ -1,58 +1,103 @@
-/* pyaging docs — logo-derived palette + polish (light + dark). */
+/* pyaging docs — visual language derived from the logo: navy ink outlines,
+   steel-blue field, snake teal, and the hourglass' sand yellow used only as
+   punctuation. Signature device: the tri-color rule (ink → teal → sand), the
+   snake's own segments, under page titles and the catalogue controls. */
+
 :root {
-  --pst-color-primary: #3a7ca5;
-  --pst-color-secondary: #10a0b0;
-  --pst-color-accent: #e0b000;
-  --pst-color-link: #2f6f96;
-  --pst-color-link-hover: #10a0b0;
-  --pst-color-inline-code: #2f6f96;
-  --pst-color-surface: #f6f8fa;
-  --pst-color-text-muted: #5b6b7c;
-  --pst-heading-color: #0b1b2b;
+  --pya-ink: #132238;
+  --pya-steel: #3e74ae;
+  --pya-teal: #178fa0;
+  --pya-sand: #efc53f;
+  --pya-cream: #fbf6e8;
+
+  --pst-color-primary: var(--pya-steel);
+  --pst-color-secondary: var(--pya-teal);
+  --pst-color-accent: var(--pya-sand);
+  --pst-color-link: #2f6394;
+  --pst-color-link-hover: var(--pya-teal);
+  --pst-color-inline-code: #2f6394;
+  --pst-color-surface: #f5f8fb;
+  --pst-color-text-muted: #55677c;
+  --pst-heading-color: var(--pya-ink);
   --pst-font-family-base: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --pst-font-family-heading: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
 }
 html[data-theme="dark"] {
-  --pst-color-primary: #5fa8d3;
-  --pst-color-secondary: #2bc4d4;
-  --pst-color-accent: #f0d030;
-  --pst-color-link: #5fa8d3;
-  --pst-color-link-hover: #2bc4d4;
-  --pst-color-surface: #14202e;
+  --pya-ink: #e8eef5;
+  --pst-color-primary: #6ea4d8;
+  --pst-color-secondary: #35b0c0;
+  --pst-color-accent: var(--pya-sand);
+  --pst-color-link: #7fb0e8;
+  --pst-color-link-hover: #35b0c0;
+  --pst-color-surface: #16222f;
   --pst-color-text-muted: #9fb0c0;
-  --pst-heading-color: #e8eef4;
+  --pst-heading-color: #e8eef5;
   --pst-color-background: #0e1826;
 }
+
+/* Headings: Bricolage Grotesque carries the mascot's rounded confidence. */
+h1, h2, h3, h4 { font-family: var(--pst-font-family-heading); letter-spacing: -0.015em; }
+h1 { font-weight: 800; }
+h2, h3 { font-weight: 700; }
+
+/* Signature tri-color rule under every article title. */
+.bd-article h1::after {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 4px;
+  margin-top: 0.55rem;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #132238 0 34%, var(--pya-teal) 34% 67%, var(--pya-sand) 67% 100%);
+}
+html[data-theme="dark"] .bd-article h1::after {
+  background: linear-gradient(90deg, #6ea4d8 0 34%, #35b0c0 34% 67%, var(--pya-sand) 67% 100%);
+}
+/* Landing page: the rule centers under the hero title. */
+#pyaging > h1::after { margin-left: auto; margin-right: auto; }
 
 /* Logo sizing */
 .navbar-brand img, .sidebar-logo { max-height: 40px; width: auto; }
 
-/* Sleeker cards/buttons from sphinx_design */
-.sd-card { border-radius: 12px; border: 1px solid var(--pst-color-border, #e2e8f0);
-  transition: box-shadow 0.15s ease, transform 0.15s ease; }
-.sd-card:hover { box-shadow: 0 6px 22px rgba(11, 27, 43, 0.10); transform: translateY(-2px); }
+/* Calmer sphinx-design cards: a border that answers hover with teal, no lift. */
+.sd-card {
+  border-radius: 10px;
+  border: 1px solid var(--pst-color-border, #dfe7ef);
+  box-shadow: none;
+  transition: border-color 0.15s ease;
+}
+.sd-card:hover { border-color: var(--pya-teal); box-shadow: none; transform: none; }
 .bd-content .sd-btn-primary { background: var(--pst-color-primary); border-color: var(--pst-color-primary); }
 
-/* Hero logo sits above the page title on the landing page. */
+/* Landing hero */
 .pyaging-hero-logo-wrap { text-align: center; }
-.pyaging-hero-logo { display: block; margin: 1.6rem auto 0.4rem; width: 108px; height: 108px;
-  border-radius: 50%; object-fit: cover; }
+.pyaging-hero-logo {
+  display: block; margin: 2rem auto 0.4rem; width: 104px; height: 104px;
+  border-radius: 50%; object-fit: cover;
+}
+#pyaging > h1 { text-align: center; font-size: 2.7rem; margin: 1.2rem 0 0.4rem; color: var(--pst-heading-color); }
+.pyaging-hero { text-align: center; padding: 0.4rem 1rem 1.4rem; }
+.pyaging-hero .tagline {
+  font-size: 1.12rem; color: var(--pst-color-text-muted);
+  max-width: 62ch; margin: 0.9rem auto 0;
+}
+.pyaging-install {
+  display: inline-block; margin: 1.3rem auto 0; padding: 0.55rem 1.15rem;
+  border: 1px solid var(--pst-color-border, #dfe7ef); border-radius: 8px;
+  background: var(--pya-cream); font-size: 1rem;
+}
+html[data-theme="dark"] .pyaging-install { background: #16222f; }
+.pyaging-install code { background: none; border: none; padding: 0; color: var(--pst-heading-color); }
+.pyaging-specline {
+  margin: 1rem auto 0; font-size: 0.8rem; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--pst-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.pyaging-specline a { color: inherit; text-decoration: underline; text-decoration-color: var(--pya-sand); text-underline-offset: 3px; }
+.pyaging-specline a:hover { color: var(--pst-color-link-hover); }
 
-/* Landing hero. The real docutils page title (landing section id "pyaging")
-   doubles as the hero heading, so there is exactly one visible "pyaging" and no
-   reliance on CSS :has() to hide a duplicate. */
-#pyaging > h1 { text-align: center; font-size: 2.6rem; margin: 2.2rem 0 0.4rem; color: var(--pst-heading-color); }
-.pyaging-hero { text-align: center; padding: 0 1rem 1rem; }
-.pyaging-hero .tagline { font-size: 1.15rem; color: var(--pst-color-text-muted); max-width: 60ch; margin: 0 auto 1.2rem; }
-
-/* Graphical abstract: the artwork has a white background, so present it on a
-   light card in BOTH themes (default_mode="auto") rather than hiding it in dark
-   mode via .only-light. */
-.pyaging-abstract { background: #ffffff; padding: 1rem 1.25rem; border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(11, 27, 43, 0.08); max-width: 100%; }
-.pyaging-stats { display: flex; justify-content: center; gap: 2.2rem; flex-wrap: wrap; margin: 1.4rem 0; }
-.pyaging-stat { text-align: center; }
-.pyaging-stat .num { font-size: 1.8rem; font-weight: 700; color: var(--pst-color-primary); display: block; }
-.pyaging-stat .lbl { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--pst-color-text-muted); }
-
-/* Tighten default heading weights for a cleaner look */
-h1, h2, h3 { letter-spacing: -0.01em; }
+/* Graphical abstract: white artwork stays on a light card in both themes. */
+.pyaging-abstract {
+  background: #ffffff; padding: 1rem 1.25rem; border-radius: 10px;
+  border: 1px solid var(--pst-color-border, #dfe7ef); max-width: 100%;
+}

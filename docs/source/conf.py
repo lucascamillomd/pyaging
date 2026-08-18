@@ -109,7 +109,11 @@ html_context = {
 # The Clock Catalogue owns the full width — drop its left section-nav sidebar.
 html_sidebars = {"clock_glossary": []}
 html_logo = "../_static/logo.png"
-html_css_files = ["custom.css", "clock_explorer.css"]
+html_css_files = [
+    "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap",
+    "custom.css",
+    "clock_explorer.css",
+]
 html_js_files = ["clock_explorer_core.js", "clock_explorer.js"]
 
 # -- Options for nbshpinx ----------------------------------------------------

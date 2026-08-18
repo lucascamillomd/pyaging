@@ -15,8 +15,46 @@ from pyaging.utils._hf import (
     PyAgingRateLimitError,
     PyAgingRepositoryError,
     PyAgingResourceNotFoundError,
+    download_clock_weights,
     download_hf_file,
 )
+
+
+def test_download_clock_weights_prefers_per_clock_repo_and_touches_config(monkeypatch, tmp_path):
+    weights_path = str(tmp_path / "horvath2013.pt")
+    hub_download = Mock(side_effect=[weights_path, str(tmp_path / "config.json")])
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", hub_download)
+    monkeypatch.delenv("PYAGING_DATA_REVISION", raising=False)
+
+    result = download_clock_weights("horvath2013")
+
+    assert result == weights_path
+    first, second = hub_download.call_args_list
+    assert first.kwargs["repo_id"] == "pyaging/horvath2013"
+    assert first.kwargs["filename"] == "horvath2013.pt"
+    assert second.kwargs["repo_id"] == "pyaging/horvath2013"
+    assert second.kwargs["filename"] == "config.json"
+
+
+def test_download_clock_weights_falls_back_to_legacy_repo(monkeypatch, tmp_path):
+    weights_path = str(tmp_path / "horvath2013.pt")
+    missing_repo = RepositoryNotFoundError("no per-clock repo", response=Mock(status_code=404))
+    hub_download = Mock(side_effect=[missing_repo, weights_path])
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", hub_download)
+
+    result = download_clock_weights("horvath2013")
+
+    assert result == weights_path
+    assert hub_download.call_args_list[0].kwargs["repo_id"] == "pyaging/horvath2013"
+    assert hub_download.call_args_list[1].kwargs["repo_id"] == "lucascamillomd/pyaging-data"
+
+
+def test_download_clock_weights_ignores_config_download_failure(monkeypatch, tmp_path):
+    weights_path = str(tmp_path / "horvath2013.pt")
+    hub_download = Mock(side_effect=[weights_path, EntryNotFoundError("no config")])
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", hub_download)
+
+    assert download_clock_weights("horvath2013") == weights_path
 
 
 def test_download_hf_file_uses_pinned_repository_standard_cache_and_logs_path(monkeypatch, tmp_path):

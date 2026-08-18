@@ -171,9 +171,9 @@ def test_hf_targets_guard_creation_and_upload_order():
     assert 'hf upload "$(HF_REPO_ID)" clocks/huggingface/README.md README.md --type model' in MAKEFILE
     assert 'hf upload "$(HF_REPO_ID)" "$(HF_STATIC_DIR)/repo" . --type model' in MAKEFILE
 
-    weights = 'hf upload "$(HF_REPO_ID)" clocks/weights . --type model'
+    clock_sync = "uv run python clocks/hf_repo_sync.py"
     metadata = 'hf upload "$(HF_REPO_ID)" clocks/metadata/all_clock_metadata.pt all_clock_metadata.pt --type model'
-    assert MAKEFILE.index(weights) < MAKEFILE.index(metadata)
+    assert MAKEFILE.index(clock_sync) < MAKEFILE.index(metadata)
     assert 'hf models info "$(HF_REPO_ID)" --format json' in MAKEFILE
 
 
@@ -242,9 +242,10 @@ def test_parallel_release_dry_run_preserves_publish_sequence():
         text=True,
     )
     output = result.stdout
-    assert output.index("Running gold standard tests") < output.index("Uploading changed clock weights")
-    assert output.index("Building documentation") < output.index("Uploading changed clock weights")
-    assert output.index("Uploading changed clock weights") < output.index("Committing and pushing changes")
+    assert output.index("Running gold standard tests") < output.index("Syncing per-clock repos under the pyaging org")
+    assert output.index("Building documentation") < output.index("Syncing per-clock repos under the pyaging org")
+    clock_sync_at = output.index("Syncing per-clock repos under the pyaging org")
+    assert clock_sync_at < output.index("Committing and pushing changes")
     assert output.index("Committing and pushing changes") < output.index("Creating and pushing tag")
 
 

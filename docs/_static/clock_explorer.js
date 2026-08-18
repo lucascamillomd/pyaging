@@ -21,6 +21,7 @@
     { key: "species", label: "Species", def: true, cls: "ce-col-short" },
     { key: "year", label: "Year", def: true, num: true, cls: "ce-col-num" },
     { key: "citations", label: "Citations", def: true, num: true, cls: "ce-col-num" },
+    { key: "downloads", label: "Downloads", def: true, num: true, cls: "ce-col-num" },
     { key: "n_features", label: "N features", def: true, num: true, cls: "ce-col-num" },
     { key: "unit", label: "Unit", def: true, cls: "ce-col-short" },
     { key: "model_type", label: "Model", def: true, cls: "ce-col-long" },
@@ -34,7 +35,7 @@
   var DETAIL_FIELDS = [
     ["predicts", "Predicts"], ["training_target", "Training target"], ["unit", "Unit"], ["tissue", "Tissue"],
     ["platform", "Platform"], ["population", "Population"], ["model_type", "Model type"],
-    ["n_features", "N features"], ["year", "Year"], ["citations", "Citations"],
+    ["n_features", "N features"], ["year", "Year"], ["citations", "Citations"], ["downloads", "Downloads"],
     ["last_author", "Last author"], ["journal", "Journal"], ["species", "Species"],
     ["data_type", "Data type"], ["approved_by_author", "Verified"],
   ];
@@ -357,6 +358,7 @@
       var head = el("div", "ce-card-head");
       head.appendChild(el("h3", "ce-card-title", c.clock_name));
       if (c.citations != null) head.appendChild(el("span", "ce-card-cites", c.citations + " cites"));
+      if (c.downloads != null) head.appendChild(el("span", "ce-card-cites", c.downloads + " dl"));
       card.appendChild(head);
       var badges = el("div", "ce-badges");
       [c.data_type, c.species, c.model_type].forEach(function (value) {
@@ -431,6 +433,30 @@
     render();
   }
 
+  // Per-clock download counts come live from the Hub API: each clock has its
+  // own model repo under the pyaging org, so its repo download counter IS the
+  // per-clock metric. Fetched client-side, merged in when it arrives; the
+  // catalogue works unchanged if the request fails (cells show an em dash).
+  function fetchDownloads() {
+    var counts = {};
+    function page(url) {
+      return fetch(url).then(function (r) {
+        if (!r.ok) throw new Error("HF API " + r.status);
+        var link = r.headers.get("Link");
+        return r.json().then(function (models) {
+          models.forEach(function (m) {
+            var name = String(m.id || "").split("/")[1];
+            var n = m.downloadsAllTime != null ? m.downloadsAllTime : m.downloads;
+            if (name && n != null) counts[name] = n;
+          });
+          var next = link && /<([^>]+)>;\s*rel="next"/.exec(link);
+          return next ? page(next[1]) : counts;
+        });
+      });
+    }
+    return page("https://huggingface.co/api/models?author=pyaging&expand[]=downloadsAllTime&limit=100");
+  }
+
   function init() {
     mount = document.getElementById("clock-explorer");
     if (!mount || !core) return;
@@ -438,7 +464,19 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closePopover(); });
     fetch(staticBase() + "clocks.json")
       .then(function (r) { return r.json(); })
-      .then(function (data) { state.clocks = data; buildAll(); })
+      .then(function (data) {
+        state.clocks = data;
+        buildAll();
+        fetchDownloads()
+          .then(function (counts) {
+            state.clocks.forEach(function (c) {
+              var n = counts[String(c.clock_name || "").toLowerCase()];
+              if (n != null) c.downloads = n;
+            });
+            render();
+          })
+          .catch(function () { /* counts stay blank; the catalogue is fully usable without them */ });
+      })
       .catch(function (e) {
         mount.appendChild(el("p", "ce-error", "Could not load clock data. See the table below or the GitHub repository. (" + e + ")"));
       });
