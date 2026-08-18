@@ -23,7 +23,7 @@ def test_clock_run_display_full_lifecycle_collapses_to_summary():
         display.stage("horvath2013", "predicting")
         display.finish_clock("horvath2013")
         display.start_clock("altumage")
-        display.note("altumage", "research use only")
+        display.warn("altumage", "research use only")
         display.finish_clock("altumage")
         display.finish(n_samples=32)
     output = buffer.getvalue()
@@ -59,36 +59,35 @@ def test_simple_step_prints_summary_line():
     assert "example data at pyaging_data/data.pkl" in buffer.getvalue()
 
 
-def test_verbosity_levels_map_bools_and_ints():
-    from pyaging.logger._live import verbosity
-
-    assert verbosity(False) == 0
-    assert verbosity(True) == 1
-    assert verbosity(0) == 0
-    assert verbosity(2) == 2
-    assert verbosity(5) == 2
-
-
-def test_levels_one_and_two_enable_live_display_when_interactive():
+def test_live_display_enabled_when_interactive_and_verbose():
     interactive = Console(file=io.StringIO(), force_terminal=True)
-    assert live_display_enabled(0, console=interactive) is False
-    assert live_display_enabled(1, console=interactive) is True
-    assert live_display_enabled(2, console=interactive) is True
+    assert live_display_enabled(False, console=interactive) is False
+    assert live_display_enabled(True, console=interactive) is True
 
 
-def test_detailed_display_keeps_pipeline_log_lines():
+def test_display_logger_routes_warnings_and_drops_info():
+    from pyaging.logger._live import DisplayLogger
+
+    captured = []
+    shim = DisplayLogger(captured.append)
+    shim.info("The preprocessing method is scale", indent_level=2)
+    shim.start_progress("Check features started")
+    shim.log_time()
+    shim.warning("⚠️ 12% of features missing and imputed with defaults", indent_level=2)
+
+    assert captured == ["12% of features missing and imputed with defaults"]
+
+
+def test_pipeline_warnings_persist_in_the_summary():
     buffer = io.StringIO()
-    display = ClockRunDisplay(["horvath2013"], "cpu", console=_forced_console(buffer), detailed=True)
+    display = ClockRunDisplay(["horvath2013"], "cpu", console=_forced_console(buffer))
     with display:
         display.start_clock("horvath2013")
-        display.detail("horvath2013", "The preprocessing method is scale")
-        display.detail("horvath2013", "All features are present in adata.var_names")
+        display.warn("horvath2013", "12% of features missing and imputed with defaults")
         display.finish_clock("horvath2013")
         display.finish(n_samples=32)
 
-    output = buffer.getvalue()
-    assert "The preprocessing method is scale" in output
-    assert "All features are present in adata.var_names" in output
+    assert "12% of features missing and imputed with defaults" in buffer.getvalue()
 
 
 def test_running_clock_shows_batch_progress():

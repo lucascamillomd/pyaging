@@ -19,7 +19,7 @@ except Exception:
     CUPY_AVAILABLE = False
 
 from ..logger import LoggerManager, main_tqdm, silence_logger
-from ..logger._live import DisplayLogger, SimpleStep, live_display_enabled, verbosity
+from ..logger._live import DisplayLogger, SimpleStep, live_display_enabled
 from ._preprocess_utils import (
     add_metadata_to_anndata,
     add_unstructured_data,
@@ -30,7 +30,7 @@ from ._preprocess_utils import (
 )
 
 
-def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: bool | int = True) -> pd.DataFrame:
+def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: bool = True) -> pd.DataFrame:
     """
     Convert bigWig files to a DataFrame, extracting signal data for genomic regions.
 
@@ -48,10 +48,9 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
     verbose: int or bool
-        Output level: 0 (or False) is silent, 1 (or True) shows a compact live
-        display with progress, 2 keeps every pipeline log message as detail
-        lines on the live display. Non-interactive runs fall back to text
-        logs. Defaults to True.
+        Whether to show progress and warnings. True shows a live display with
+        progress bars in interactive runs (classic text logs otherwise);
+        False is silent. Defaults to True.
 
     Returns
     -------
@@ -138,7 +137,7 @@ def df_to_adata(
     df: pd.DataFrame,
     metadata_cols: list[str] | None = None,
     imputer_strategy: str = "knn",
-    verbose: bool | int = True,
+    verbose: bool = True,
 ) -> anndata.AnnData:
     """
     Converts a pandas DataFrame to an AnnData object.
@@ -162,10 +161,9 @@ def df_to_adata(
         'median', 'constant' (0 values), and 'knn'. Defaults to 'knn'.
 
     verbose: int or bool
-        Output level: 0 (or False) is silent, 1 (or True) shows a compact live
-        display with progress, 2 keeps every pipeline log message as detail
-        lines on the live display. Non-interactive runs fall back to text
-        logs. Defaults to True.
+        Whether to show progress and warnings. True shows a live display with
+        progress bars in interactive runs (classic text logs otherwise);
+        False is silent. Defaults to True.
 
     Returns
     -------
@@ -200,9 +198,8 @@ def df_to_adata(
     if not isinstance(df, pd.DataFrame):
         raise TypeError("Input df must be a pandas DataFrame.")
 
-    detailed = verbosity(verbose) == 2
-    step = SimpleStep("building AnnData object", detailed=detailed) if live else contextlib.nullcontext()
-    pipeline_logger = DisplayLogger(step.detail) if live and detailed else logger
+    step = SimpleStep("building AnnData object") if live else contextlib.nullcontext()
+    pipeline_logger = DisplayLogger(step.warn) if live else logger
     with step:
         # Split data and metadata
         if metadata_cols is None:
@@ -243,7 +240,7 @@ def df_to_adata(
     return adata
 
 
-def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool | int = True):
+def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
     """
     Aggregates probes targeting the same CpG site in a DataFrame from the Illumina Methylation EPIC array v2.
 
@@ -258,10 +255,9 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool | int = True):
         expected to follow the format "cgXXXXXXX_YYYY".
 
     verbose: int or bool
-        Output level: 0 (or False) is silent, 1 (or True) shows a compact live
-        display with progress, 2 keeps every pipeline log message as detail
-        lines on the live display. Non-interactive runs fall back to text
-        logs. Defaults to True.
+        Whether to show progress and warnings. True shows a live display with
+        progress bars in interactive runs (classic text logs otherwise);
+        False is silent. Defaults to True.
 
     Returns
     -------

@@ -1,14 +1,12 @@
 """Rich-based live progress display for interactive terminals and notebooks.
 
-pyaging's user-facing functions take a ``verbose`` level (bools keep working
-since ``True == 1``):
-
-- ``0`` - silent.
-- ``1`` - compact live display: an animated step tree with progress bars that
-  collapses into a summary. Falls back to the classic text logs when output
-  is not interactive (pipes, CI).
-- ``2`` - the live display plus every pipeline log message as persistent
-  detail lines under the step that produced it.
+When ``verbose=True`` and the run is interactive (Jupyter or a TTY), pyaging
+shows a live step display instead of plain log lines: pending steps as hollow
+circles, the active step as a spinner with its current stage and progress
+bars, finished steps as check marks with timings, and a compact summary once
+the run completes. Pipeline warnings (missing features, research-only clocks,
+...) surface on the display and persist in the summary. Non-interactive runs
+keep the classic text logs, and ``verbose=False`` stays silent.
 
 In notebooks the animation is pushed through an IPython display handle that
 updates one regular output in place - not an ipywidgets container, whose
@@ -41,18 +39,13 @@ TRACK = "#3a4351"
 _console = Console()
 
 
-def verbosity(verbose) -> int:
-    """Normalize the verbose argument (bool or int) to a 0-2 level."""
-    return max(0, min(2, int(verbose)))
-
-
 def live_display_enabled(verbose, console: Console | None = None) -> bool:
     """Whether the live display should replace plain text logs."""
     active = console or _console
-    return bool(verbosity(verbose) >= 1 and (active.is_jupyter or active.is_interactive))
+    return bool(verbose and (active.is_jupyter or active.is_interactive))
 
 
-def _bar(completed: float, total: float | None, width: int = 24, pulse: bool = False, uniform: bool = False):
+def _bar(completed: float, total: float | None, width: int = 24, pulse: bool = False):
     return ProgressBar(
         total=total,
         completed=completed,
@@ -60,7 +53,7 @@ def _bar(completed: float, total: float | None, width: int = 24, pulse: bool = F
         pulse=pulse,
         style=TRACK,
         complete_style=TEAL,
-        finished_style=TEAL if uniform else GREEN,
+        finished_style=TEAL,
         pulse_style=TEAL,
     )
 
@@ -68,19 +61,16 @@ def _bar(completed: float, total: float | None, width: int = 24, pulse: bool = F
 class DisplayLogger:
     """Duck-typed stand-in for pyaging's Logger that feeds a live display.
 
-    At verbose level 2 the pipeline functions log through this shim, so every
-    message the classic logs would print becomes a detail line under the step
-    that produced it.
+    While the live display is active the pipeline functions log through this
+    shim: warnings and errors surface on the display, info-level messages are
+    dropped (the display already narrates the stages).
     """
 
-    def __init__(self, sink):
-        self._sink = sink
+    def __init__(self, warn_sink):
+        self._warn = warn_sink
 
     def _record(self, message):
-        self._sink(str(message).strip())
-
-    def info(self, message, *args, **kwargs):
-        self._record(message)
+        self._warn(str(message).replace("⚠️", "").strip())
 
     def warning(self, message, *args, **kwargs):
         self._record(message)
@@ -88,11 +78,8 @@ class DisplayLogger:
     def error(self, message, *args, **kwargs):
         self._record(message)
 
-    def start_progress(self, message, *args, **kwargs):
-        self._record(message)
-
     def __getattr__(self, name):
-        # Any other Logger method (log_time, report_progress, done, ...) is a no-op
+        # Every other Logger method (info, start_progress, log_time, ...) is a no-op
         def _noop(*args, **kwargs):
             return None
 
@@ -161,21 +148,12 @@ def _make_region(console: Console, renderable):
 class ClockRunDisplay:
     """Live step tree for a predict_age run: one row per clock."""
 
-    def __init__(self, clock_names, device: str, console: Console | None = None, detailed: bool = False):
+    def __init__(self, clock_names, device: str, console: Console | None = None):
         self.console = console or _console
         self.device = device
-        self.detailed = detailed
         self.order = list(clock_names)
         self.rows = {
-            name: {
-                "status": "pending",
-                "stage": "",
-                "seconds": None,
-                "note": None,
-                "t0": None,
-                "progress": None,
-                "details": [],
-            }
+            name: {"status": "pending", "stage": "", "seconds": None, "t0": None, "progress": None, "warnings": []}
             for name in self.order
         }
         self.started = time.perf_counter()
@@ -214,12 +192,9 @@ class ClockRunDisplay:
     def progress(self, name: str, completed: int, total: int):
         self.rows[name]["progress"] = (completed, total)
 
-    def note(self, name: str, note: str):
-        self.rows[name]["note"] = note
-
-    def detail(self, name: str, message: str):
+    def warn(self, name: str, message: str):
         if message:
-            self.rows[name]["details"].append(message)
+            self.rows[name]["warnings"].append(message)
 
     def finish_clock(self, name: str):
         row = self.rows[name]
@@ -232,7 +207,13 @@ class ClockRunDisplay:
         """Compose the summary that replaces the animation on completion."""
         elapsed = time.perf_counter() - self.started
         done = [n for n in self.order if self.rows[n]["status"] == "done"]
-        slowest = max((self.rows[n]["seconds"] or 0) for n in done) if done else 0
+        timing = Table.grid(padding=(0, 2))
+        for name in done:
+            seconds = self.rows[name]["seconds"]
+            timing.add_row(
+                Text(name, style="bold"),
+                Text(f"{seconds:.1f}s" if seconds is not None else "", style=MUTED, justify="right"),
+            )
         lines = [
             Text.assemble(
                 ("✓ ", f"bold {GREEN}"),
@@ -240,35 +221,13 @@ class ClockRunDisplay:
                 (f" · {n_samples} samples · {elapsed:.1f}s · {self.device}", MUTED),
             ),
             Text(),
+            timing,
+            Text(),
+            Text("results in adata.obs · clock metadata in adata.uns", style=MUTED),
         ]
-        if self.detailed:
-            for name in done:
-                seconds = self.rows[name]["seconds"]
-                lines.append(
-                    Text.assemble(
-                        ("✓ ", f"bold {GREEN}"),
-                        (name, "bold"),
-                        (f" {seconds:.1f}s" if seconds is not None else "", MUTED),
-                    )
-                )
-                for message in self.rows[name]["details"]:
-                    lines.append(Text(f"  · {message}", style=MUTED))
-        else:
-            timing = Table.grid(padding=(0, 2))
-            for name in done:
-                seconds = self.rows[name]["seconds"]
-                share = (seconds or 0) / slowest if slowest else 0
-                timing.add_row(
-                    Text(name, style="bold"),
-                    Text(f"{seconds:.1f}s" if seconds is not None else "", style=MUTED, justify="right"),
-                    _bar(share, 1.0, width=14, uniform=True),
-                )
-            lines.append(timing)
-        lines.append(Text())
-        lines.append(Text("results in adata.obs · clock metadata in adata.uns", style=MUTED))
         for name in self.order:
-            if self.rows[name]["note"]:
-                lines.append(Text.assemble(("⚠ ", SAND), (f"{name}: {self.rows[name]['note']}", MUTED)))
+            for message in self.rows[name]["warnings"]:
+                lines.append(Text.assemble(("⚠ ", SAND), (f"{name}: ", "bold"), (message, MUTED)))
         self._summary = Panel(
             Group(*lines),
             title=Text("pyaging · predict_age", style=f"bold {TEAL}"),
@@ -303,33 +262,29 @@ class ClockRunDisplay:
                     cells.append(Text(f"{completed}/{total}", style=MUTED))
                 grid.add_row(*cells)
                 yield grid
-                if self.detailed:
-                    for message in row["details"][-4:]:
-                        yield Text(f"      · {message}", style=MUTED)
             elif row["status"] == "failed":
                 yield Text.assemble(("  ✗ ", f"bold {RED}"), (name, "bold"), (" failed", RED))
             else:
                 seconds = f" {row['seconds']:.1f}s" if row["seconds"] is not None else ""
-                note = f"  ⚠ {row['note']}" if row["note"] else ""
-                yield Text.assemble(("  ✓ ", f"bold {GREEN}"), (name, "bold"), (seconds, MUTED), (note, SAND))
-                if self.detailed:
-                    for message in row["details"]:
-                        yield Text(f"      · {message}", style=MUTED)
+                warning = f"  ⚠ {row['warnings'][0]}" if row["warnings"] else ""
+                yield Text.assemble(("  ✓ ", f"bold {GREEN}"), (name, "bold"), (seconds, MUTED), (warning, SAND))
+            for message in row["warnings"] if row["status"] == "running" else []:
+                yield Text.assemble(("      ⚠ ", SAND), (message, MUTED))
 
 
 class SimpleStep:
     """Animated pulse bar while working; a summary line replaces it after.
 
     ``update(label)`` changes the stage text mid-run. ``done(message)`` inside
-    the ``with`` block sets the completion line. Used without entering the
+    the ``with`` block sets the completion line. ``warn(message)`` keeps a
+    pipeline warning visible under the final line. Used without entering the
     context (e.g. cache hits), ``done`` prints directly.
     """
 
-    def __init__(self, label: str, console: Console | None = None, detailed: bool = False):
+    def __init__(self, label: str, console: Console | None = None):
         self.console = console or _console
         self.label = label
-        self.detailed = detailed
-        self.details = []
+        self.warnings = []
         self.started = time.perf_counter()
         self._spinner = Spinner("dots", style=TEAL)
         self._region = None
@@ -352,14 +307,14 @@ class SimpleStep:
     def update(self, label: str):
         self.label = label
 
-    def detail(self, message: str):
+    def warn(self, message: str):
         if message:
-            self.details.append(str(message).strip())
+            self.warnings.append(str(message).strip())
 
     def done(self, message: str):
         text = Text.assemble(("✓ ", f"bold {GREEN}"), (message, ""))
-        if self.detailed and self.details:
-            text = Group(text, *(Text(f"  · {m}", style=MUTED) for m in self.details))
+        if self.warnings:
+            text = Group(text, *(Text.assemble(("  ⚠ ", SAND), (m, MUTED)) for m in self.warnings))
         if self._region is not None:
             self._final = text
         else:
@@ -375,6 +330,5 @@ class SimpleStep:
             Text(f"{elapsed:.0f}s", style=MUTED),
         )
         yield grid
-        if self.detailed:
-            for message in self.details[-4:]:
-                yield Text(f"  · {message}", style=MUTED)
+        for message in self.warnings:
+            yield Text.assemble(("  ⚠ ", SAND), (message, MUTED))

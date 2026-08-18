@@ -6,7 +6,7 @@ import torch
 from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
 
 from ..logger import LoggerManager, silence_logger
-from ..logger._live import ClockRunDisplay, DisplayLogger, live_display_enabled, verbosity
+from ..logger._live import ClockRunDisplay, DisplayLogger, live_display_enabled
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
     check_features_in_adata,
@@ -22,7 +22,7 @@ def predict_age(
     dir: str = "pyaging_data",
     batch_size: int = 1024,
     clean: bool = True,
-    verbose: bool | int = True,
+    verbose: bool = True,
 ) -> anndata.AnnData:
     """
     Predicts biological age using specified aging clocks.
@@ -52,10 +52,9 @@ def predict_age(
         Whether to delete the matrix data create for each clock in adata.obsm[X_clock]. Defaults to True.
 
     verbose: int or bool
-        Output level: 0 (or False) is silent, 1 (or True) shows a compact live
-        display with progress, 2 keeps every pipeline log message as detail
-        lines on the live display. Non-interactive runs fall back to text
-        logs. Defaults to True.
+        Whether to show progress and warnings. True shows a live display with
+        progress bars in interactive runs (classic text logs otherwise);
+        False is silent. Defaults to True.
 
     Returns
     -------
@@ -85,7 +84,7 @@ def predict_age(
     """
     logger = LoggerManager.gen_logger("predict_age")
     live = live_display_enabled(verbose)
-    if verbosity(verbose) == 0 or live:
+    if not verbose or live:
         silence_logger("predict_age")
     logger.first_info("Starting predict_age function")
 
@@ -101,19 +100,16 @@ def predict_age(
     hf_bars_were_enabled = live and not are_progress_bars_disabled()
     if hf_bars_were_enabled:
         disable_progress_bars()
-    detailed = verbosity(verbose) == 2
-    display = ClockRunDisplay(clock_names, str(device), detailed=detailed) if live else None
+    display = ClockRunDisplay(clock_names, str(device)) if live else None
     try:
         with display if display else contextlib.nullcontext():
             for clock_name in clock_names:
                 logger.info(f"🕒 Processing clock: {clock_name}", indent_level=1)
                 if display:
                     display.start_clock(clock_name, "loading weights")
-                # At level 2 the pipeline logs become detail lines on the display
-                if display and detailed:
-                    pipeline_logger = DisplayLogger(lambda m, name=clock_name: display.detail(name, m))
-                else:
-                    pipeline_logger = logger
+                # Pipeline warnings surface on the display instead of vanishing
+                warn = DisplayLogger(lambda m, name=clock_name: display.warn(name, m)) if display else None
+                pipeline_logger = warn if warn is not None else logger
 
                 # Load and prepare the clock
                 model = load_clock(clock_name, device, dir, pipeline_logger, indent_level=2)
@@ -121,7 +117,7 @@ def predict_age(
                 # Disclaimer for commercial clocks
                 if model.metadata.get("research_only", False):
                     if display:
-                        display.note(clock_name, "research use only")
+                        display.warn(clock_name, "research use only")
                     logger.warning(
                         f"⚠️ Clock '{clock_name}' is for research purposes only. Please check the clock's "
                         f"documentation or notes for more information.",
