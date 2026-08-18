@@ -17,6 +17,7 @@ rich's native Live with a transient region and a printed summary.
 """
 
 import contextlib
+import sys
 import threading
 import time
 
@@ -25,18 +26,70 @@ from rich.jupyter import _render_segments
 from rich.live import Live
 from rich.panel import Panel
 from rich.progress_bar import ProgressBar
-from rich.spinner import Spinner
 from rich.table import Table
 from rich.text import Text
 
 TEAL = "#178fa0"
+TEAL_BRIGHT = "#7adfec"
 SAND = "#efc53f"
 GREEN = "#2fbf71"
 RED = "#e5484d"
 MUTED = "#8a93a1"
 TRACK = "#3a4351"
 
+# Claude Code's spinner: ping-pong sparkle frames at 120 ms per frame, and
+# the black-circle glyph for completed items with an elbow for sub-lines.
+_SPARKLE_BASE = ["·", "✢", "✳", "✶", "✻", "✽"] if sys.platform == "darwin" else ["·", "✢", "*", "✶", "✻", "✽"]
+SPARKLE_FRAMES = _SPARKLE_BASE + _SPARKLE_BASE[::-1]
+DOT = "⏺" if sys.platform == "darwin" else "●"
+ELBOW = "⎿"
+
 _console = Console()
+
+
+class Sparkle:
+    """Claude-Code-style sparkle spinner: time-based ping-pong frames."""
+
+    def __init__(self, style: str = SAND):
+        self.style = style
+
+    def __rich_console__(self, console, options):
+        frame = int(time.perf_counter() * 1000 / 120) % len(SPARKLE_FRAMES)
+        yield Text(SPARKLE_FRAMES[frame], style=self.style)
+
+    def __rich_measure__(self, console, options):
+        from rich.measure import Measurement
+
+        return Measurement(1, 1)
+
+
+class Shimmer:
+    """Status text with a highlight sweeping across it, one char per 200 ms.
+
+    The glimmer position runs right-to-left over the text width plus a
+    20-column overshoot, so the highlight periodically leaves the text and
+    the message rests between sweeps - same cycle Claude Code uses.
+    """
+
+    def __init__(self, message: str, base: str = TEAL, glow: str = f"bold {TEAL_BRIGHT}"):
+        self.message = message
+        self.base = base
+        self.glow = glow
+
+    def __rich_console__(self, console, options):
+        width = len(self.message)
+        cycle = width + 20
+        position = width + 10 - (int(time.perf_counter() * 1000 / 200) % cycle)
+        text = Text()
+        for index, char in enumerate(self.message):
+            text.append(char, style=self.glow if abs(index - position) <= 1 else self.base)
+        yield text
+
+    def __rich_measure__(self, console, options):
+        from rich.measure import Measurement
+
+        width = len(self.message)
+        return Measurement(width, width)
 
 
 def live_display_enabled(verbose, console: Console | None = None) -> bool:
@@ -158,7 +211,7 @@ class ClockRunDisplay:
         }
         self.started = time.perf_counter()
         self._summary = None
-        self._spinner = Spinner("dots", style=TEAL)
+        self._spinner = Sparkle()
         self._region = _make_region(self.console, self)
 
     # -- lifecycle ----------------------------------------------------------
@@ -172,7 +225,7 @@ class ClockRunDisplay:
             for name in failed:
                 self.rows[name]["status"] = "failed"
             label = failed[0] if failed else "run"
-            final = Text.assemble(("✗ ", f"bold {RED}"), (f"predict_age failed at {label}", RED))
+            final = Text.assemble((f"{DOT} ", f"bold {RED}"), (f"predict_age failed at {label}", RED))
         else:
             final = self._summary
         self._region.close(final)
@@ -216,18 +269,18 @@ class ClockRunDisplay:
             )
         lines = [
             Text.assemble(
-                ("✓ ", f"bold {GREEN}"),
+                (f"{DOT} ", GREEN),
                 (f"{len(done)} clock{'s' if len(done) != 1 else ''}", "bold"),
                 (f" · {n_samples} samples · {elapsed:.1f}s · {self.device}", MUTED),
             ),
             Text(),
             timing,
             Text(),
-            Text("results in adata.obs · clock metadata in adata.uns", style=MUTED),
+            Text.assemble((f"{ELBOW} ", MUTED), ("results in adata.obs · clock metadata in adata.uns", MUTED)),
         ]
         for name in self.order:
             for message in self.rows[name]["warnings"]:
-                lines.append(Text.assemble(("⚠ ", SAND), (f"{name}: ", "bold"), (message, MUTED)))
+                lines.append(Text.assemble((f"{ELBOW} ", MUTED), ("⚠ ", SAND), (f"{name}: ", "bold"), (message, MUTED)))
         self._summary = Panel(
             Group(*lines),
             title=Text("pyaging · predict_age", style=f"bold {TEAL}"),
@@ -255,7 +308,7 @@ class ClockRunDisplay:
                 yield Text.assemble(("  ○ ", MUTED), (name, MUTED))
             elif row["status"] == "running":
                 grid = Table.grid(padding=(0, 1))
-                cells = [Text("  "), self._spinner, Text(name, style="bold"), Text(row["stage"], style=TEAL)]
+                cells = [Text("  "), self._spinner, Text(name, style="bold"), Shimmer(row["stage"])]
                 if row["progress"] and row["progress"][1] > 1:
                     completed, total = row["progress"]
                     cells.append(_bar(completed, total, width=16))
@@ -263,13 +316,15 @@ class ClockRunDisplay:
                 grid.add_row(*cells)
                 yield grid
             elif row["status"] == "failed":
-                yield Text.assemble(("  ✗ ", f"bold {RED}"), (name, "bold"), (" failed", RED))
+                yield Text.assemble((f"  {DOT} ", f"bold {RED}"), (name, "bold"), (" failed", RED))
             else:
-                seconds = f" {row['seconds']:.1f}s" if row["seconds"] is not None else ""
-                warning = f"  ⚠ {row['warnings'][0]}" if row["warnings"] else ""
-                yield Text.assemble(("  ✓ ", f"bold {GREEN}"), (name, "bold"), (seconds, MUTED), (warning, SAND))
-            for message in row["warnings"] if row["status"] == "running" else []:
-                yield Text.assemble(("      ⚠ ", SAND), (message, MUTED))
+                seconds = f" ({row['seconds']:.1f}s)" if row["seconds"] is not None else ""
+                yield Text.assemble((f"  {DOT} ", GREEN), (name, "bold"), (seconds, MUTED))
+                for message in row["warnings"]:
+                    yield Text.assemble((f"    {ELBOW} ", MUTED), ("⚠ ", SAND), (message, MUTED))
+            if row["status"] == "running":
+                for message in row["warnings"]:
+                    yield Text.assemble((f"    {ELBOW} ", MUTED), ("⚠ ", SAND), (message, MUTED))
 
 
 class SimpleStep:
@@ -286,7 +341,7 @@ class SimpleStep:
         self.label = label
         self.warnings = []
         self.started = time.perf_counter()
-        self._spinner = Spinner("dots", style=TEAL)
+        self._spinner = Sparkle()
         self._region = None
         self._final = None
 
@@ -297,7 +352,7 @@ class SimpleStep:
 
     def __exit__(self, exc_type, exc, tb):
         if exc_type is not None:
-            final = Text.assemble(("✗ ", f"bold {RED}"), (f"{self.label} failed", RED))
+            final = Text.assemble((f"{DOT} ", f"bold {RED}"), (f"{self.label} failed", RED))
         else:
             final = self._final
         self._region.close(final)
@@ -312,9 +367,10 @@ class SimpleStep:
             self.warnings.append(str(message).strip())
 
     def done(self, message: str):
-        text = Text.assemble(("✓ ", f"bold {GREEN}"), (message, ""))
+        text = Text.assemble((f"{DOT} ", GREEN), (message, ""))
         if self.warnings:
-            text = Group(text, *(Text.assemble(("  ⚠ ", SAND), (m, MUTED)) for m in self.warnings))
+            elbows = (Text.assemble((f"  {ELBOW} ", MUTED), ("⚠ ", SAND), (m, MUTED)) for m in self.warnings)
+            text = Group(text, *elbows)
         if self._region is not None:
             self._final = text
         else:
@@ -325,10 +381,10 @@ class SimpleStep:
         grid = Table.grid(padding=(0, 1))
         grid.add_row(
             self._spinner,
-            Text(self.label, style="bold"),
+            Shimmer(self.label, base="default", glow=f"bold {TEAL_BRIGHT}"),
             _bar(0, None, width=18, pulse=True),
             Text(f"{elapsed:.0f}s", style=MUTED),
         )
         yield grid
         for message in self.warnings:
-            yield Text.assemble(("  ⚠ ", SAND), (message, MUTED))
+            yield Text.assemble((f"  {ELBOW} ", MUTED), ("⚠ ", SAND), (message, MUTED))
