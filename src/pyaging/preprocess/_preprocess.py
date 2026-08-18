@@ -19,7 +19,7 @@ except Exception:
     CUPY_AVAILABLE = False
 
 from ..logger import LoggerManager, main_tqdm, silence_logger
-from ..logger._live import SimpleStep, live_display_enabled
+from ..logger._live import DisplayLogger, SimpleStep, live_display_enabled, verbosity
 from ._preprocess_utils import (
     add_metadata_to_anndata,
     add_unstructured_data,
@@ -49,7 +49,8 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
 
     verbose: int or bool
         Output level: 0 (or False) is silent, 1 (or True) shows a compact live
-        display with progress in interactive runs, 2 shows the detailed text
+        display with progress, 2 keeps every pipeline log message as detail
+        lines on the live display. Non-interactive runs fall back to text
         logs. Defaults to True.
 
     Returns
@@ -162,7 +163,8 @@ def df_to_adata(
 
     verbose: int or bool
         Output level: 0 (or False) is silent, 1 (or True) shows a compact live
-        display with progress in interactive runs, 2 shows the detailed text
+        display with progress, 2 keeps every pipeline log message as detail
+        lines on the live display. Non-interactive runs fall back to text
         logs. Defaults to True.
 
     Returns
@@ -198,7 +200,9 @@ def df_to_adata(
     if not isinstance(df, pd.DataFrame):
         raise TypeError("Input df must be a pandas DataFrame.")
 
-    step = SimpleStep("building AnnData object") if live else contextlib.nullcontext()
+    detailed = verbosity(verbose) == 2
+    step = SimpleStep("building AnnData object", detailed=detailed) if live else contextlib.nullcontext()
+    pipeline_logger = DisplayLogger(step.detail) if live and detailed else logger
     with step:
         # Split data and metadata
         if metadata_cols is None:
@@ -210,22 +214,22 @@ def df_to_adata(
             metadata = None
 
         # Create an AnnData object
-        adata = create_anndata_object(df, logger)
+        adata = create_anndata_object(df, pipeline_logger)
 
         # Add metadata
-        add_metadata_to_anndata(adata, metadata, logger)
+        add_metadata_to_anndata(adata, metadata, pipeline_logger)
 
         # Log statistics
-        log_data_statistics(adata.X, logger)
+        log_data_statistics(adata.X, pipeline_logger)
 
         # Impute missing values
         if live:
             step.update(f"imputing missing values ({imputer_strategy})")
-        impute_missing_values(adata, imputer_strategy, logger)
+        impute_missing_values(adata, imputer_strategy, pipeline_logger)
 
         # Add unstructured data
         if "X_imputed" in adata.layers:
-            add_unstructured_data(adata, imputer_strategy, logger)
+            add_unstructured_data(adata, imputer_strategy, pipeline_logger)
 
         # Move adata.X to GPU if possible
         adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
@@ -255,7 +259,8 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool | int = True):
 
     verbose: int or bool
         Output level: 0 (or False) is silent, 1 (or True) shows a compact live
-        display with progress in interactive runs, 2 shows the detailed text
+        display with progress, 2 keeps every pipeline log message as detail
+        lines on the live display. Non-interactive runs fall back to text
         logs. Defaults to True.
 
     Returns

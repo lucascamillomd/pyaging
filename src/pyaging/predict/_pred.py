@@ -6,7 +6,7 @@ import torch
 from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
 
 from ..logger import LoggerManager, silence_logger
-from ..logger._live import ClockRunDisplay, live_display_enabled, verbosity
+from ..logger._live import ClockRunDisplay, DisplayLogger, live_display_enabled, verbosity
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
     check_features_in_adata,
@@ -53,7 +53,8 @@ def predict_age(
 
     verbose: int or bool
         Output level: 0 (or False) is silent, 1 (or True) shows a compact live
-        display with progress in interactive runs, 2 shows the detailed text
+        display with progress, 2 keeps every pipeline log message as detail
+        lines on the live display. Non-interactive runs fall back to text
         logs. Defaults to True.
 
     Returns
@@ -100,16 +101,22 @@ def predict_age(
     hf_bars_were_enabled = live and not are_progress_bars_disabled()
     if hf_bars_were_enabled:
         disable_progress_bars()
-    display = ClockRunDisplay(clock_names, str(device)) if live else None
+    detailed = verbosity(verbose) == 2
+    display = ClockRunDisplay(clock_names, str(device), detailed=detailed) if live else None
     try:
         with display if display else contextlib.nullcontext():
             for clock_name in clock_names:
                 logger.info(f"🕒 Processing clock: {clock_name}", indent_level=1)
                 if display:
                     display.start_clock(clock_name, "loading weights")
+                # At level 2 the pipeline logs become detail lines on the display
+                if display and detailed:
+                    pipeline_logger = DisplayLogger(lambda m, name=clock_name: display.detail(name, m))
+                else:
+                    pipeline_logger = logger
 
                 # Load and prepare the clock
-                model = load_clock(clock_name, device, dir, logger, indent_level=2)
+                model = load_clock(clock_name, device, dir, pipeline_logger, indent_level=2)
 
                 # Disclaimer for commercial clocks
                 if model.metadata.get("research_only", False):
@@ -127,7 +134,7 @@ def predict_age(
                 check_features_in_adata(
                     adata,
                     model,
-                    logger,
+                    pipeline_logger,
                     indent_level=2,
                 )
 
@@ -140,13 +147,21 @@ def predict_age(
                         display.progress(name, completed, total)
 
                 predicted_ages_tensor = predict_ages_with_model(
-                    adata, model, device, batch_size, logger, indent_level=2, progress_callback=progress_callback
+                    adata,
+                    model,
+                    device,
+                    batch_size,
+                    pipeline_logger,
+                    indent_level=2,
+                    progress_callback=progress_callback,
                 )
 
                 # Add predicted ages and clock metadata to adata
                 if display:
                     display.stage(clock_name, "writing results")
-                add_pred_ages_and_clock_metadata_adata(adata, model, predicted_ages_tensor, dir, logger, indent_level=2)
+                add_pred_ages_and_clock_metadata_adata(
+                    adata, model, predicted_ages_tensor, dir, pipeline_logger, indent_level=2
+                )
 
                 # Delete the clock matrix object
                 if clean:

@@ -4,7 +4,7 @@ from pathlib import Path
 from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
 
 from ..logger import LoggerManager, silence_logger
-from ..logger._live import SimpleStep, live_display_enabled
+from ..logger._live import DisplayLogger, SimpleStep, live_display_enabled, verbosity
 from ..utils._hf import download_hf_file
 
 _EXAMPLE_DATA_FILENAMES = {
@@ -38,7 +38,8 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
 
     verbose : int or bool
         Output level: 0 (or False) is silent, 1 (or True) shows a compact live
-        display with progress in interactive runs, 2 shows the detailed text
+        display with progress, 2 keeps every pipeline log message as detail
+        lines on the live display. Non-interactive runs fall back to text
         logs. Defaults to True.
 
     Raises
@@ -87,8 +88,10 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         disable_progress_bars()
     try:
         if live:
-            with SimpleStep(f"downloading {filename}") as step:
-                cache_path = download_hf_file(filename, dir, logger, indent_level=1)
+            detailed = verbosity(verbose) == 2
+            with SimpleStep(f"downloading {filename}", detailed=detailed) as step:
+                pipeline_logger = DisplayLogger(step.detail) if detailed else logger
+                cache_path = download_hf_file(filename, dir, pipeline_logger, indent_level=1)
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(cache_path, destination)
                 step.done(f"example data at {destination}")

@@ -69,10 +69,26 @@ def test_verbosity_levels_map_bools_and_ints():
     assert verbosity(5) == 2
 
 
-def test_level_two_disables_live_display_even_when_interactive():
+def test_levels_one_and_two_enable_live_display_when_interactive():
     interactive = Console(file=io.StringIO(), force_terminal=True)
-    assert live_display_enabled(2, console=interactive) is False
+    assert live_display_enabled(0, console=interactive) is False
     assert live_display_enabled(1, console=interactive) is True
+    assert live_display_enabled(2, console=interactive) is True
+
+
+def test_detailed_display_keeps_pipeline_log_lines():
+    buffer = io.StringIO()
+    display = ClockRunDisplay(["horvath2013"], "cpu", console=_forced_console(buffer), detailed=True)
+    with display:
+        display.start_clock("horvath2013")
+        display.detail("horvath2013", "The preprocessing method is scale")
+        display.detail("horvath2013", "All features are present in adata.var_names")
+        display.finish_clock("horvath2013")
+        display.finish(n_samples=32)
+
+    output = buffer.getvalue()
+    assert "The preprocessing method is scale" in output
+    assert "All features are present in adata.var_names" in output
 
 
 def test_running_clock_shows_batch_progress():
