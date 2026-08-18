@@ -24,7 +24,6 @@ import time
 from rich.console import Console, Group
 from rich.jupyter import _render_segments
 from rich.live import Live
-from rich.panel import Panel
 from rich.progress_bar import ProgressBar
 from rich.table import Table
 from rich.text import Text
@@ -260,35 +259,29 @@ class ClockRunDisplay:
         """Compose the summary that replaces the animation on completion."""
         elapsed = time.perf_counter() - self.started
         done = [n for n in self.order if self.rows[n]["status"] == "done"]
-        timing = Table.grid(padding=(0, 2))
-        for name in done:
-            seconds = self.rows[name]["seconds"]
-            timing.add_row(
-                Text(name, style="bold"),
-                Text(f"{seconds:.1f}s" if seconds is not None else "", style=MUTED, justify="right"),
-            )
         lines = [
             Text.assemble(
                 (f"{DOT} ", GREEN),
-                (f"{len(done)} clock{'s' if len(done) != 1 else ''}", "bold"),
-                (f" · {n_samples} samples · {elapsed:.1f}s · {self.device}", MUTED),
-            ),
-            Text(),
-            timing,
-            Text(),
-            Text.assemble((f"{ELBOW} ", MUTED), ("results in adata.obs · clock metadata in adata.uns", MUTED)),
+                ("predict_age", "bold"),
+                (
+                    f" · {len(done)} clock{'s' if len(done) != 1 else ''}"
+                    f" · {n_samples} samples · {elapsed:.1f}s · {self.device}",
+                    MUTED,
+                ),
+            )
         ]
         for name in self.order:
-            for message in self.rows[name]["warnings"]:
-                lines.append(Text.assemble((f"{ELBOW} ", MUTED), ("⚠ ", SAND), (f"{name}: ", "bold"), (message, MUTED)))
-        self._summary = Panel(
-            Group(*lines),
-            title=Text("pyaging · predict_age", style=f"bold {TEAL}"),
-            title_align="left",
-            border_style=TEAL,
-            padding=(0, 2),
-            expand=False,
+            row = self.rows[name]
+            if row["status"] != "done":
+                continue
+            seconds = f" ({row['seconds']:.1f}s)" if row["seconds"] is not None else ""
+            lines.append(Text.assemble((f"  {DOT} ", GREEN), (name, "bold"), (seconds, MUTED)))
+            for message in row["warnings"]:
+                lines.append(Text.assemble((f"    {ELBOW} ", MUTED), ("⚠ ", SAND), (message, MUTED)))
+        lines.append(
+            Text.assemble((f"  {ELBOW} ", MUTED), ("results in adata.obs · clock metadata in adata.uns", MUTED))
         )
+        self._summary = Group(*lines)
 
     # -- rendering ----------------------------------------------------------
     def __rich_console__(self, console, options):
