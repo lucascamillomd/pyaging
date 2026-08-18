@@ -83,35 +83,39 @@ source_suffix = [".rst", ".md"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "pydata_sphinx_theme"
+html_theme = "furo"
 html_theme_options = {
-    "github_url": "https://github.com/lucascamillomd/pyaging",
-    "icon_links": [
-        {"name": "PyPI", "url": "https://pypi.org/project/pyaging/", "icon": "fa-brands fa-python"},
-        {"name": "Paper", "url": "https://doi.org/10.1093/bioinformatics/btae200", "icon": "fa-solid fa-book-open"},
+    "source_repository": "https://github.com/lucascamillomd/pyaging",
+    "source_branch": "main",
+    "source_directory": "docs/source",
+    "light_css_variables": {
+        "color-brand-primary": "#2f6394",
+        "color-brand-content": "#2f6394",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#7fb0e8",
+        "color-brand-content": "#7fb0e8",
+    },
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/lucascamillomd/pyaging",
+            "html": "",
+            "class": "fa-brands fa-solid fa-github fa-2x",
+        },
     ],
-    "navbar_start": ["navbar-logo"],
-    "navbar_center": ["navbar-nav"],
-    "navbar_end": ["theme-switcher", "navbar-icon-links"],
-    "navbar_align": "left",
-    "show_prev_next": False,
-    "navigation_with_keys": False,
-    "pygments_light_style": "friendly",
-    "pygments_dark_style": "monokai",
-    "header_links_before_dropdown": 6,
 }
+# scanpydoc.rtd_github_links resolves source links from these
 html_context = {
-    "default_mode": "auto",
     "github_user": "lucascamillomd",
     "github_repo": "pyaging",
     "github_version": "main",
 }
-# The Clock Catalogue owns the full width — drop its left section-nav sidebar.
-html_sidebars = {"clock_glossary": []}
 html_logo = "../_static/logo.png"
 html_favicon = "../_static/logo.png"
 html_css_files = [
     "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap",
+    "https://use.fontawesome.com/releases/v6.5.2/css/all.css",
     "custom.css",
     "clock_explorer.css",
 ]

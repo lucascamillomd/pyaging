@@ -57,7 +57,7 @@ test = [
 ]
 docs = [
     "sphinx>=7.1.2",
-    "pydata-sphinx-theme>=0.15.4",
+    "furo>=2024.8.6",
     "sphinx-autodoc-typehints",
     "sphinx-copybutton",
     "sphinx-issues",

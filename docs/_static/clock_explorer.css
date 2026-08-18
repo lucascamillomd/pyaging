@@ -1,6 +1,8 @@
-/* Clock Explorer styling. Reads palette vars (custom.css) with fallbacks. */
-.ce-root { --ce-primary: var(--pst-color-primary, #3a7ca5); --ce-border: var(--pst-color-border, #e2e8f0);
-  --ce-surface: var(--pst-color-surface, #f6f8fa); --ce-muted: var(--pst-color-text-muted, #6b7a8d);
+/* Clock Explorer styling. Reads Furo's theme variables, which flip in dark
+   mode on their own, so the app needs no per-theme overrides beyond the
+   approval badge. */
+.ce-root { --ce-primary: var(--color-brand-primary, #3a7ca5); --ce-border: var(--color-background-border, #e2e8f0);
+  --ce-surface: var(--color-background-secondary, #f6f8fa); --ce-muted: var(--color-foreground-muted, #6b7a8d);
   font-size: 0.9rem; }
 
 /* Controls block: search/sort/view + filter bar + active chips. The table
@@ -14,7 +16,7 @@
 .ce-popular-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
   color: var(--ce-muted); margin-right: 3px; }
 .ce-popular-chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 10px 4px 6px;
-  border: 1px solid var(--ce-border); border-radius: 999px; background: var(--pst-color-background, #fff);
+  border: 1px solid var(--ce-border); border-radius: 999px; background: var(--color-background-primary, #fff);
   cursor: pointer; font-size: 0.8rem; color: inherit; }
 .ce-popular-chip:hover { border-color: var(--ce-primary); }
 .ce-popular-rank { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
@@ -32,7 +34,7 @@ html[data-theme="dark"] .ce-controls::after {
 }
 .ce-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
 .ce-search { flex: 1 1 240px; min-width: 200px; padding: 8px 12px; border: 1px solid var(--ce-border);
-  border-radius: 8px; background: var(--pst-color-background, #fff); color: inherit; }
+  border-radius: 8px; background: var(--color-background-primary, #fff); color: inherit; }
 .ce-btn { padding: 7px 12px; border: 1px solid var(--ce-border); border-radius: 8px; background: var(--ce-surface);
   color: inherit; cursor: pointer; line-height: 1; }
 .ce-btn:hover { border-color: var(--ce-primary); }
@@ -51,10 +53,10 @@ html[data-theme="dark"] .ce-controls::after {
   justify-content: center; border-radius: 999px; background: var(--ce-primary); color: #fff; font-size: 0.7rem;
   font-variant-numeric: tabular-nums; }
 .ce-filter-pop { position: absolute; z-index: 30; top: calc(100% + 4px); left: 0; width: 260px; max-width: 80vw;
-  background: var(--pst-color-background, #fff); border: 1px solid var(--ce-border); border-radius: 10px;
+  background: var(--color-background-primary, #fff); border: 1px solid var(--ce-border); border-radius: 10px;
   box-shadow: 0 6px 24px rgba(11, 27, 43, 0.16); padding: 8px; }
 .ce-filter-search { width: 100%; box-sizing: border-box; padding: 6px 9px; border: 1px solid var(--ce-border);
-  border-radius: 7px; background: var(--pst-color-background, #fff); color: inherit; margin-bottom: 6px; }
+  border-radius: 7px; background: var(--color-background-primary, #fff); color: inherit; margin-bottom: 6px; }
 .ce-filter-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
 .ce-filter-opt { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
 .ce-filter-opt:hover { background: var(--ce-surface); }
@@ -91,7 +93,10 @@ html[data-theme="dark"] .ce-controls::after {
   font-size: 0.72rem; font-weight: 600; }
 .ce-approval.is-approved { color: #166534; background: #dcfce7; }
 .ce-approval.is-pending { color: var(--ce-muted); background: var(--ce-surface); border: 1px solid var(--ce-border); }
-html[data-theme="dark"] .ce-approval.is-approved { color: #bbf7d0; background: #14532d; }
+body[data-theme="dark"] .ce-approval.is-approved { color: #bbf7d0; background: #14532d; }
+@media (prefers-color-scheme: dark) {
+  body[data-theme="auto"] .ce-approval.is-approved { color: #bbf7d0; background: #14532d; }
+}
 .ce-expander-col { width: 26px; }
 .ce-caret { display: inline-block; transition: transform 0.15s ease; color: var(--ce-muted); }
 .ce-caret.open { transform: rotate(90deg); color: var(--ce-primary); }
@@ -121,10 +126,8 @@ html[data-theme="dark"] .ce-approval.is-approved { color: #bbf7d0; background: #
 #clock-explorer:has(.ce-root) ~ * { display: none; }
 
 /* Full-width Catalogue. buildAll() adds .ce-fullwidth to <body> when the app
-   mounts, so this is scoped to the Catalogue page only (no-JS fallback keeps the
-   normal width). The secondary-sidebar hide is belt-and-suspenders alongside the
-   page's :html_theme.sidebar_secondary.remove metadata. */
-.ce-fullwidth .bd-sidebar-secondary { display: none; }
-.ce-fullwidth .bd-main .bd-content { max-width: 100%; }
-.ce-fullwidth .bd-article-container { max-width: 100%; }
-.ce-fullwidth .bd-article { max-width: 100%; }
+   mounts, so this is scoped to the Catalogue page only (no-JS fallback keeps
+   the normal width). Furo's right toc is already off via the page's
+   :hide-toc: metadata; widen Furo's content column for the table. */
+.ce-fullwidth .content { width: 100%; max-width: none; }
+.ce-fullwidth article[role="main"] { max-width: none; }

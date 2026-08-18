@@ -1,47 +1,22 @@
-/* pyaging docs — visual language derived from the logo: navy ink outlines,
-   steel-blue field, snake teal, and the hourglass' sand yellow used only as
-   punctuation. Signature device: the tri-color rule (ink → teal → sand), the
-   snake's own segments, under page titles and the catalogue controls. */
+/* pyaging docs on Furo — visual language derived from the logo: navy ink,
+   steel-blue field, snake teal, and the hourglass' sand yellow as
+   punctuation. Brand colors are set through Furo's css-variable theme
+   options in conf.py; this layer adds the type, the tri-color rule, and the
+   landing hero. Furo's own variables flip in dark mode, so anything defined
+   in terms of them needs no dark overrides. */
 
 :root {
-  --pya-ink: #132238;
-  --pya-steel: #3e74ae;
   --pya-teal: #178fa0;
   --pya-sand: #efc53f;
-  --pya-cream: #fbf6e8;
-
-  --pst-color-primary: var(--pya-steel);
-  --pst-color-secondary: var(--pya-teal);
-  --pst-color-accent: var(--pya-sand);
-  --pst-color-link: #2f6394;
-  --pst-color-link-hover: var(--pya-teal);
-  --pst-color-inline-code: #2f6394;
-  --pst-color-surface: #f5f8fb;
-  --pst-color-text-muted: #55677c;
-  --pst-heading-color: var(--pya-ink);
-  --pst-font-family-base: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --pst-font-family-heading: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
-}
-html[data-theme="dark"] {
-  --pya-ink: #e8eef5;
-  --pst-color-primary: #6ea4d8;
-  --pst-color-secondary: #35b0c0;
-  --pst-color-accent: var(--pya-sand);
-  --pst-color-link: #7fb0e8;
-  --pst-color-link-hover: #35b0c0;
-  --pst-color-surface: #16222f;
-  --pst-color-text-muted: #9fb0c0;
-  --pst-heading-color: #e8eef5;
-  --pst-color-background: #0e1826;
 }
 
 /* Headings: Bricolage Grotesque carries the mascot's rounded confidence. */
-h1, h2, h3, h4 { font-family: var(--pst-font-family-heading); letter-spacing: -0.015em; }
+h1, h2, h3, h4 { font-family: "Bricolage Grotesque", var(--font-stack, sans-serif); letter-spacing: -0.015em; }
 h1 { font-weight: 800; }
 h2, h3 { font-weight: 700; }
 
-/* Signature tri-color rule under every article title. */
-.bd-article h1::after {
+/* Signature tri-color rule (ink → teal → sand) under every article title. */
+article h1::after {
   content: "";
   display: block;
   width: 72px;
@@ -50,56 +25,64 @@ h2, h3 { font-weight: 700; }
   border-radius: 2px;
   background: linear-gradient(90deg, #132238 0 34%, var(--pya-teal) 34% 67%, var(--pya-sand) 67% 100%);
 }
-html[data-theme="dark"] .bd-article h1::after {
-  background: linear-gradient(90deg, #6ea4d8 0 34%, #35b0c0 34% 67%, var(--pya-sand) 67% 100%);
+body[data-theme="dark"] article h1::after {
+  background: linear-gradient(90deg, #7fb0e8 0 34%, #35b0c0 34% 67%, var(--pya-sand) 67% 100%);
 }
-/* Landing page: the rule centers under the hero title; the headerlink "#"
-   occupies layout space and would push the centered text off the logo axis. */
-#pyaging > h1::after { margin-left: auto; margin-right: auto; }
-#pyaging > h1 a.headerlink { display: none; }
-
-/* Logo sizing */
-.navbar-brand img, .sidebar-logo { max-height: 40px; width: auto; }
-
-/* Calmer sphinx-design cards: a border that answers hover with teal, no lift. */
-.sd-card {
-  border-radius: 10px;
-  border: 1px solid var(--pst-color-border, #dfe7ef);
-  box-shadow: none;
-  transition: border-color 0.15s ease;
+@media (prefers-color-scheme: dark) {
+  body[data-theme="auto"] article h1::after {
+    background: linear-gradient(90deg, #7fb0e8 0 34%, #35b0c0 34% 67%, var(--pya-sand) 67% 100%);
+  }
 }
-.sd-card:hover { border-color: var(--pya-teal); box-shadow: none; transform: none; }
-.bd-content .sd-btn-primary { background: var(--pst-color-primary); border-color: var(--pst-color-primary); }
+
+/* Sidebar logo: keep the round mark modest. */
+.sidebar-logo { max-width: 96px; border-radius: 50%; }
 
 /* Landing hero */
 .pyaging-hero-logo-wrap { text-align: center; }
 .pyaging-hero-logo {
-  display: block; margin: 2rem auto 0.4rem; width: 104px; height: 104px;
+  display: block; margin: 1.6rem auto 0.4rem; width: 104px; height: 104px;
   border-radius: 50%; object-fit: cover;
 }
-#pyaging > h1 { text-align: center; font-size: 2.7rem; margin: 1.2rem 0 0.4rem; color: var(--pst-heading-color); }
+#pyaging > h1 { text-align: center; font-size: 2.7rem; margin: 1.2rem 0 0.4rem; }
+#pyaging > h1::after { margin-left: auto; margin-right: auto; }
+#pyaging > h1 a.headerlink { display: none; }
 .pyaging-hero { text-align: center; padding: 0.4rem 1rem 1.4rem; }
 .pyaging-hero .tagline {
-  font-size: 1.12rem; color: var(--pst-color-text-muted);
+  font-size: 1.12rem; color: var(--color-foreground-muted);
   max-width: 62ch; margin: 0.9rem auto 0;
 }
 .pyaging-install {
   display: inline-block; margin: 1.3rem auto 0; padding: 0.55rem 1.15rem;
-  border: 1px solid var(--pst-color-border, #dfe7ef); border-radius: 8px;
-  background: var(--pya-cream); font-size: 1rem;
+  border: 1px solid var(--color-background-border); border-radius: 8px;
+  background: var(--color-background-secondary); font-size: 1rem;
 }
-html[data-theme="dark"] .pyaging-install { background: #16222f; }
-.pyaging-install code { background: none; border: none; padding: 0; color: var(--pst-heading-color); }
+.pyaging-install code {
+  background: none; border: none; padding: 0;
+  color: var(--color-foreground-primary); font-size: 1rem;
+}
 .pyaging-specline {
   margin: 1rem auto 0; font-size: 0.8rem; letter-spacing: 0.05em;
-  text-transform: uppercase; color: var(--pst-color-text-muted);
+  text-transform: uppercase; color: var(--color-foreground-muted);
   font-variant-numeric: tabular-nums;
 }
-.pyaging-specline a { color: inherit; text-decoration: underline; text-decoration-color: var(--pya-sand); text-underline-offset: 3px; }
-.pyaging-specline a:hover { color: var(--pst-color-link-hover); }
+.pyaging-specline a {
+  color: inherit; text-decoration: underline;
+  text-decoration-color: var(--pya-sand); text-underline-offset: 3px;
+}
+.pyaging-specline a:hover { color: var(--color-brand-content); }
+
+/* Calmer sphinx-design cards: border answers hover with teal, no lift. */
+.sd-card {
+  border-radius: 10px;
+  border: 1px solid var(--color-background-border);
+  background: var(--color-background-primary);
+  box-shadow: none;
+  transition: border-color 0.15s ease;
+}
+.sd-card:hover { border-color: var(--pya-teal); box-shadow: none; transform: none; }
 
 /* Graphical abstract: white artwork stays on a light card in both themes. */
 .pyaging-abstract {
   background: #ffffff; padding: 1rem 1.25rem; border-radius: 10px;
-  border: 1px solid var(--pst-color-border, #dfe7ef); max-width: 100%;
+  border: 1px solid var(--color-background-border); max-width: 100%;
 }

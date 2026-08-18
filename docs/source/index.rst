@@ -2,7 +2,7 @@
    sphinx-quickstart on Sun Nov 19 17:35:20 2023.
    This file is the entry point to the pyaging package documentation.
 
-:html_theme.sidebar_secondary.remove: true
+:hide-toc: true
 
 .. raw:: html
 

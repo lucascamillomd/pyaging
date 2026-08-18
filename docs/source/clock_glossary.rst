@@ -1,4 +1,4 @@
-:html_theme.sidebar_secondary.remove: true
+:hide-toc: true
 
 Clock Catalogue
 ===============
