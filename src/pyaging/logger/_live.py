@@ -3,9 +3,11 @@
 When a run is interactive (Jupyter or a TTY), pyaging shows a live step
 display instead of plain log lines: pending steps as hollow circles, the
 active step as a spinner with its current stage, finished steps as check
-marks with timings. On completion the whole region collapses into a compact
-summary panel, so only the result stays in the output. Non-interactive runs
-(pipes, CI, pytest) keep the classic text logger.
+marks with timings. The animation runs in a transient region that removes
+itself on completion (in notebooks it lives in a widget whose background is
+frontend-controlled, so nothing themed lingers), and the final summary is
+printed as a regular, theme-aware output. Non-interactive runs (pipes, CI,
+pytest) keep the classic text logger.
 """
 
 import time
@@ -17,10 +19,11 @@ from rich.spinner import Spinner
 from rich.table import Table
 from rich.text import Text
 
-INK = "#132238"
 TEAL = "#178fa0"
 SAND = "#efc53f"
-MUTED = "grey58"
+GREEN = "#2fbf71"
+RED = "#e5484d"
+MUTED = "#8a93a1"
 
 _console = Console()
 
@@ -42,8 +45,9 @@ class ClockRunDisplay:
             name: {"status": "pending", "stage": "", "seconds": None, "note": None, "t0": None} for name in self.order
         }
         self.started = time.perf_counter()
+        self._summary = None
         self._spinner = Spinner("dots", style=TEAL)
-        self._live = Live(self, console=self.console, refresh_per_second=12, transient=False)
+        self._live = Live(self, console=self.console, refresh_per_second=12, transient=True)
 
     # -- lifecycle ----------------------------------------------------------
     def __enter__(self):
@@ -51,12 +55,15 @@ class ClockRunDisplay:
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        if exc_type is not None:
-            for row in self.rows.values():
-                if row["status"] == "running":
-                    row["status"] = "failed"
-            self._live.update(self, refresh=True)
         self._live.stop()
+        if exc_type is not None:
+            failed = [n for n in self.order if self.rows[n]["status"] == "running"]
+            for name in failed:
+                self.rows[name]["status"] = "failed"
+            label = failed[0] if failed else "run"
+            self.console.print(Text.assemble(("✗ ", f"bold {RED}"), (f"predict_age failed at {label}", RED)))
+        elif self._summary is not None:
+            self.console.print(self._summary)
         return False
 
     def start_clock(self, name: str, stage: str = "loading weights"):
@@ -78,31 +85,36 @@ class ClockRunDisplay:
         row["stage"] = ""
 
     def finish(self, n_samples: int):
-        """Collapse the live region into the final summary panel."""
+        """Compose the summary panel printed once the live region clears."""
         elapsed = time.perf_counter() - self.started
         done = [n for n in self.order if self.rows[n]["status"] == "done"]
-        timing = Text()
-        for i, name in enumerate(done):
-            if i:
-                timing.append(" · ", style=MUTED)
-            timing.append(name, style="bold")
+        timing = Table.grid(padding=(0, 2))
+        for name in done:
             seconds = self.rows[name]["seconds"]
-            if seconds is not None:
-                timing.append(f" {seconds:.1f}s", style=MUTED)
+            timing.add_row(
+                Text(name, style="bold"),
+                Text(f"{seconds:.1f}s" if seconds is not None else "", style=MUTED, justify="right"),
+            )
         lines = [
             Text.assemble(
-                ("✓ ", "bold green"),
+                ("✓ ", f"bold {GREEN}"),
                 (f"{len(done)} clock{'s' if len(done) != 1 else ''}", "bold"),
                 (f" · {n_samples} samples · {elapsed:.1f}s · {self.device}", MUTED),
             ),
             timing,
             Text("results in adata.obs · clock metadata in adata.uns", style=MUTED),
         ]
-        notes = [(n, self.rows[n]["note"]) for n in self.order if self.rows[n]["note"]]
-        for name, note in notes:
-            lines.append(Text.assemble(("⚠ ", SAND), (f"{name}: {note}", MUTED)))
-        panel = Panel(Group(*lines), title="pyaging · predict_age", title_align="left", border_style=TEAL, expand=False)
-        self._live.update(panel, refresh=True)
+        for name in self.order:
+            if self.rows[name]["note"]:
+                lines.append(Text.assemble(("⚠ ", SAND), (f"{name}: {self.rows[name]['note']}", MUTED)))
+        self._summary = Panel(
+            Group(*lines),
+            title=Text("pyaging · predict_age", style=TEAL),
+            title_align="left",
+            border_style=TEAL,
+            padding=(0, 2),
+            expand=False,
+        )
 
     # -- rendering ----------------------------------------------------------
     def __rich_console__(self, console, options):
@@ -124,29 +136,32 @@ class ClockRunDisplay:
                 grid.add_row(Text("  "), self._spinner, Text(name, style="bold"), Text(row["stage"], style=TEAL))
                 yield grid
             elif row["status"] == "failed":
-                yield Text.assemble(("  ✗ ", "bold red"), (name, "bold"), (" failed", "red"))
+                yield Text.assemble(("  ✗ ", f"bold {RED}"), (name, "bold"), (" failed", RED))
             else:
                 seconds = f" {row['seconds']:.1f}s" if row["seconds"] is not None else ""
                 note = f"  ⚠ {row['note']}" if row["note"] else ""
-                yield Text.assemble(("  ✓ ", "bold green"), (name, "bold"), (seconds, MUTED), (note, SAND))
+                yield Text.assemble(("  ✓ ", f"bold {GREEN}"), (name, "bold"), (seconds, MUTED), (note, SAND))
 
 
 class SimpleStep:
-    """Spinner-while-working, one-line summary after, for small operations."""
+    """Transient spinner while working, one theme-aware line after."""
 
     def __init__(self, label: str, console: Console | None = None):
         self.console = console or _console
         self.label = label
-        self._status = None
+        self._live = None
 
     def __enter__(self):
-        self._status = self.console.status(Text(self.label, style=TEAL), spinner="dots", spinner_style=TEAL)
-        self._status.start()
+        spinner = Spinner("dots", text=Text(self.label, style=TEAL), style=TEAL)
+        self._live = Live(spinner, console=self.console, refresh_per_second=12, transient=True)
+        self._live.start()
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        self._status.stop()
+        self._live.stop()
+        if exc_type is not None:
+            self.console.print(Text.assemble(("✗ ", f"bold {RED}"), (f"{self.label} failed", RED)))
         return False
 
     def done(self, message: str):
-        self.console.print(Text.assemble(("✓ ", "bold green"), (message, "")))
+        self.console.print(Text.assemble(("✓ ", f"bold {GREEN}"), (message, "")))
