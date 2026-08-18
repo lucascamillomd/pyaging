@@ -1,8 +1,7 @@
 import shutil
 from pathlib import Path
 
-from ..logger import LoggerManager, silence_logger
-from ..logger._live import SimpleStep, live_display_enabled, live_step, quiet_hf_bars
+from ..logger._live import SimpleStep, display_enabled, live_step, quiet_hf_bars
 from ..utils._hf import download_hf_file
 
 _EXAMPLE_DATA_FILENAMES = {
@@ -58,32 +57,19 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     >>> # This will download the example methylation dataset to the local system.
 
     """
-    logger = LoggerManager.gen_logger("download_example_data")
-    live = live_display_enabled(verbose)
-    if not verbose or live:
-        silence_logger("download_example_data")
-    logger.first_info("Starting download_example_data function")
-
     if data_type not in _EXAMPLE_DATA_FILENAMES:
-        message = f"Example data {data_type} has not yet been implemented in pyaging."
-        logger.error(message, indent_level=2)
-        raise ValueError(message)
+        raise ValueError(f"Example data {data_type} has not yet been implemented in pyaging.")
 
+    enabled = display_enabled(verbose)
     filename = _EXAMPLE_DATA_FILENAMES[data_type]
     destination = Path(dir) / filename
     if destination.exists():
-        if live:
-            SimpleStep(filename).done(f"example data already at {destination}")
-        logger.info(f"Example data already exists at {destination}", indent_level=2)
-        logger.done()
+        SimpleStep(filename, enabled=enabled).done(f"example data already at {destination}")
         return str(destination)
 
-    with quiet_hf_bars(live), live_step(f"downloading {filename}", verbose, logger) as (step, pipeline_logger):
+    with quiet_hf_bars(enabled), live_step(f"downloading {filename}", verbose) as (step, pipeline_logger):
         cache_path = download_hf_file(filename, dir, pipeline_logger, indent_level=1)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(cache_path, destination)
-        if step:
-            step.done(f"example data at {destination}")
-    logger.info(f"Example data available at {destination}", indent_level=2)
-    logger.done()
+        step.done(f"example data at {destination}")
     return str(destination)

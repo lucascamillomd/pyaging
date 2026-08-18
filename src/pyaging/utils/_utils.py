@@ -5,7 +5,7 @@ from urllib.request import urlretrieve
 
 import torch
 
-from ..logger import LoggerManager, main_tqdm
+from ..logger._live import display_enabled, get_console, live_step
 from ._hf import download_hf_file
 
 
@@ -59,7 +59,9 @@ def progress(message: str) -> None:
             # Extract indent_level from kwargs, default to 1 if not provided
             indent_level = kwargs.get("indent_level", 1)
 
-            logger = args[-1]  # Assumes logger is the last positional argument
+            logger = args[-1] if args else kwargs.get("logger")
+            if logger is None:
+                return func(*args, **kwargs)
             logger.start_progress(f"{message} started", indent_level=indent_level)
             result = func(*args, **kwargs)
             logger.finish_progress(f"{message} finished", indent_level=indent_level)
@@ -147,7 +149,7 @@ def download(url: str, dir: str, logger, indent_level: int = 1) -> None:
     urlretrieve(url, file_path, reporthook=logger.request_report_hook)
 
 
-def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
+def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Searches for aging clocks in the metadata by a specified DOI (Digital Object Identifier).
 
@@ -189,37 +191,17 @@ def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
     No files found with DOI 10.1000/xyz123
 
     """
-    logger = LoggerManager.gen_logger("find_clock_by_doi")
-    logger.first_info("Starting find_clock_by_doi function")
-
-    # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
-
-    # Message to indicate the start of the search process
-    message = "Searching for clock based on DOI"
-    logger.start_progress(f"{message} started")
-    matching_clocks = []
-
-    # Loop through clocks in the dictionary
-    for clock_name in main_tqdm(list(all_clock_metadata.keys()), indent_level=2):
-        clock_dict = all_clock_metadata[clock_name]
-        if "doi" in clock_dict and clock_dict["doi"] == search_doi:
-            matching_clocks.append(clock_name)
-
-    # Logging the results
-    if matching_clocks:
-        logger.info(
-            f"Clocks with DOI {search_doi}: {', '.join(matching_clocks)}",
-            indent_level=2,
-        )
-    else:
-        logger.warning(f"No files found with DOI {search_doi}", indent_level=2)
-    logger.finish_progress(f"{message} finished")
-
-    logger.done()
+    with live_step("searching clocks by DOI", verbose) as (step, pipeline_logger):
+        all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
+        matching_clocks = [name for name, meta in all_clock_metadata.items() if meta.get("doi") == search_doi]
+        if matching_clocks:
+            step.done(f"clocks with DOI {search_doi}: {', '.join(matching_clocks)}")
+        else:
+            step.warn(f"no clocks found with DOI {search_doi}")
+            step.done(f"searched {len(all_clock_metadata)} clocks")
 
 
-def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
+def cite_clock(clock_name: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Retrieves and logs the citation information for a specified aging clock.
 
@@ -267,40 +249,32 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
     UnknownClock is not currently available in pyaging
 
     """
-    logger = LoggerManager.gen_logger("cite_clock")
-    logger.first_info("Starting cite_clock function")
-
     clock_name = clock_name.lower()
+    pyaging_citation = (
+        'de Lima Camillo, Lucas Paulo. "pyaging: a Python-based compendium of '
+        'GPU-optimized aging clocks." bioRxiv (2023): 2023-11.'
+    )
 
-    # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
-
-    message = f"Searching for citation of clock {clock_name}"
-    logger.start_progress(f"{message} started")
-    citation = ""
-
-    if clock_name in list(all_clock_metadata.keys()):
-        clock_dict = all_clock_metadata[clock_name]
-        if "citation" in clock_dict:
-            citation = clock_dict["citation"]
-            logger.info(f"Citation for {clock_name}:", indent_level=2)
-            logger.info(citation, indent_level=2)
-            logger.info("Please also consider citing pyaging :)", indent_level=2)
-            logger.info(
-                'de Lima Camillo, Lucas Paulo. "pyaging: a Python-based compendium of '
-                'GPU-optimized aging clocks." bioRxiv (2023): 2023-11.',
-                indent_level=2,
-            )
+    with live_step(f"looking up citation for {clock_name}", verbose) as (step, pipeline_logger):
+        all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
+        clock_dict = all_clock_metadata.get(clock_name)
+        citation = clock_dict.get("citation") if clock_dict else None
+        if citation:
+            step.done(f"citation for {clock_name}")
+        elif clock_dict:
+            step.warn(f"citation not found in {clock_name}")
+            step.done(clock_name)
         else:
-            logger.warning(f"Citation not found in {clock_name}", indent_level=2)
-    else:
-        logger.warning(f"{clock_name} is not currently available in pyaging", indent_level=2)
+            step.warn(f"{clock_name} is not currently available in pyaging")
+            step.done("clock not found")
 
-    logger.finish_progress(f"{message} finished")
-    logger.done()
+    if display_enabled(verbose) and citation:
+        console = get_console()
+        console.print(f"  {citation}")
+        console.print(f"  Please also consider citing pyaging: {pyaging_citation}", style="#8a93a1")
 
 
-def show_all_clocks(dir: str = "pyaging_data") -> None:
+def show_all_clocks(dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Displays the names of all aging clocks available in the metadata.
 
@@ -338,24 +312,18 @@ def show_all_clocks(dir: str = "pyaging_data") -> None:
     ...
 
     """
-    logger = LoggerManager.gen_logger("show_all_clocks")
-    logger.first_info("Starting show_all_clocks function")
+    with live_step("loading clock metadata", verbose) as (step, pipeline_logger):
+        all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
+        all_clocks = sorted(all_clock_metadata.keys())
+        step.done(f"{len(all_clocks)} clocks available")
 
-    # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
+    if display_enabled(verbose):
+        from rich.columns import Columns
 
-    # Message to indicate the start of the search process
-    message = "Showing all available clock names"
-    logger.start_progress(f"{message} started")
-    all_clocks = sorted(all_clock_metadata.keys())
-    for clock_name in all_clocks:
-        logger.info(clock_name, indent_level=2)
-    logger.finish_progress(f"{message} finished")
-
-    logger.done()
+        get_console().print(Columns(all_clocks, padding=(0, 2)))
 
 
-def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
+def get_clock_metadata(clock_name: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Retrieves and logs the metadata of a specified aging clock.
 
@@ -397,24 +365,19 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
     ...
 
     """
-    logger = LoggerManager.gen_logger("get_clock_metadata")
-    logger.first_info("Starting get_clock_metadata function")
-
-    # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
-
-    # Lowercase clock name
     clock_name = clock_name.lower()
-    clock_dict = all_clock_metadata[clock_name]
+    with live_step(f"loading {clock_name} metadata", verbose) as (step, pipeline_logger):
+        all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
+        clock_dict = all_clock_metadata[clock_name]
+        step.done(f"{clock_name} metadata")
 
-    # Message to indicate the start of the search process
-    message = f"Showing {clock_name} metadata"
-    logger.start_progress(f"{message} started")
-    for key in list(clock_dict.keys()):
-        logger.info(f"{key}: {clock_dict[key]}", indent_level=2)
-    logger.finish_progress(f"{message} finished")
+    if display_enabled(verbose):
+        from rich.table import Table
 
-    logger.done()
+        grid = Table.grid(padding=(0, 2))
+        for key, value in clock_dict.items():
+            grid.add_row(f"[#8a93a1]{key}[/]", str(value))
+        get_console().print(grid)
 
 
 def print_model_details(model, max_list_length=30, max_tensor_elements=30):

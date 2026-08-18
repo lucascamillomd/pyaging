@@ -98,12 +98,14 @@ class Shimmer:
         return Measurement(width, width)
 
 
-def live_display_enabled(verbose, console: Console | None = None) -> bool:
-    """Whether the live display should replace plain text logs."""
-    active = console or _console
-    if active.is_jupyter and _render_segments is None:
-        return False
-    return bool(verbose and (active.is_jupyter or active.is_interactive))
+def get_console() -> Console:
+    """The console the live display prints to (theme-aware in notebooks)."""
+    return _console
+
+
+def display_enabled(verbose) -> bool:
+    """Whether the display should render at all (False means fully silent)."""
+    return bool(verbose)
 
 
 @contextlib.contextmanager
@@ -135,17 +137,14 @@ def _bar(completed: float, total: float | None, width: int = 24, pulse: bool = F
 
 
 @contextlib.contextmanager
-def live_step(label: str, verbose, logger):
+def live_step(label: str, verbose):
     """Yield (step, pipeline_logger) for one pipeline entry point.
 
-    Live runs get a SimpleStep plus a warning-routing logger; plain runs get
-    (None, logger), so pipeline bodies keep a single code path.
+    The step renders animated when interactive, prints final lines when
+    piped, and is fully silent at verbose=False - callers keep one code path.
     """
-    if live_display_enabled(verbose):
-        with SimpleStep(label) as step:
-            yield step, DisplayLogger(step.warn)
-    else:
-        yield None, logger
+    with SimpleStep(label, enabled=display_enabled(verbose)) as step:
+        yield step, DisplayLogger(step.warn)
 
 
 class DisplayLogger:
@@ -232,16 +231,50 @@ class _TerminalRegion:
             self.console.print(final)
 
 
-def _make_region(console: Console, renderable):
-    return _JupyterRegion(console, renderable) if console.is_jupyter else _TerminalRegion(console, renderable)
+class _PlainRegion:
+    """Non-interactive output (pipes, CI): no animation, final lines only."""
+
+    def __init__(self, console: Console, renderable):
+        self.console = console
+
+    def start(self):
+        pass
+
+    def close(self, final=None):
+        if final is not None:
+            self.console.print(final)
+
+
+class _NullRegion:
+    """verbose=False: nothing is ever rendered."""
+
+    def __init__(self, console: Console, renderable):
+        pass
+
+    def start(self):
+        pass
+
+    def close(self, final=None):
+        pass
+
+
+def _make_region(console: Console, renderable, enabled: bool = True):
+    if not enabled:
+        return _NullRegion(console, renderable)
+    if console.is_jupyter and _render_segments is not None:
+        return _JupyterRegion(console, renderable)
+    if console.is_interactive:
+        return _TerminalRegion(console, renderable)
+    return _PlainRegion(console, renderable)
 
 
 class ClockRunDisplay:
     """Live step tree for a predict_age run: one row per clock."""
 
-    def __init__(self, clock_names, device: str, console: Console | None = None):
+    def __init__(self, clock_names, device: str, console: Console | None = None, enabled: bool = True):
         self.console = console or _console
         self.device = device
+        self.enabled = enabled
         self.order = list(clock_names)
         self.rows = {
             name: {"status": "pending", "stage": "", "seconds": None, "t0": None, "progress": None, "warnings": []}
@@ -250,7 +283,7 @@ class ClockRunDisplay:
         self.started = time.perf_counter()
         self._summary = None
         self._spinner = Sparkle()
-        self._region = _make_region(self.console, self)
+        self._region = _make_region(self.console, self, enabled=enabled)
 
     # -- lifecycle ----------------------------------------------------------
     def __enter__(self):
@@ -373,9 +406,10 @@ class SimpleStep:
     context (e.g. cache hits), ``done`` prints directly.
     """
 
-    def __init__(self, label: str, console: Console | None = None):
+    def __init__(self, label: str, console: Console | None = None, enabled: bool = True):
         self.console = console or _console
         self.label = label
+        self.enabled = enabled
         self.warnings = []
         self.started = time.perf_counter()
         self._spinner = Sparkle()
@@ -383,7 +417,7 @@ class SimpleStep:
         self._final = None
 
     def __enter__(self):
-        self._region = _make_region(self.console, self)
+        self._region = _make_region(self.console, self, enabled=self.enabled)
         self._region.start()
         return self
 
@@ -417,7 +451,7 @@ class SimpleStep:
             text = Group(text, *elbows)
         if self._region is not None:
             self._final = text
-        else:
+        elif self.enabled:
             self.console.print(text)
 
     def __rich_console__(self, console, options):

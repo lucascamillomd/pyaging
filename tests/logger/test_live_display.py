@@ -2,17 +2,17 @@ import io
 
 from rich.console import Console
 
-from pyaging.logger._live import ClockRunDisplay, SimpleStep, live_display_enabled
+from pyaging.logger._live import ClockRunDisplay, SimpleStep, display_enabled
 
 
 def _forced_console(buffer):
     return Console(file=buffer, force_terminal=True, width=100, color_system=None)
 
 
-def test_live_display_disabled_when_output_is_not_interactive():
-    plain = Console(file=io.StringIO(), force_terminal=False, force_jupyter=False)
-    assert live_display_enabled(True, console=plain) is False
-    assert live_display_enabled(False, console=plain) is False
+def test_display_enabled_tracks_verbose():
+    assert display_enabled(True) is True
+    assert display_enabled(False) is False
+    assert display_enabled(0) is False
 
 
 def test_clock_run_display_full_lifecycle_collapses_to_summary():
@@ -59,10 +59,19 @@ def test_simple_step_prints_summary_line():
     assert "example data at pyaging_data/data.pkl" in buffer.getvalue()
 
 
-def test_live_display_enabled_when_interactive_and_verbose():
-    interactive = Console(file=io.StringIO(), force_terminal=True)
-    assert live_display_enabled(False, console=interactive) is False
-    assert live_display_enabled(True, console=interactive) is True
+def test_disabled_display_renders_nothing():
+    buffer = io.StringIO()
+    console = _forced_console(buffer)
+    display = ClockRunDisplay(["horvath2013"], "cpu", console=console, enabled=False)
+    with display:
+        display.start_clock("horvath2013")
+        display.finish_clock("horvath2013")
+        display.finish(n_samples=5)
+    step = SimpleStep("quiet work", console=console, enabled=False)
+    with step:
+        step.done("should not appear")
+
+    assert buffer.getvalue() == ""
 
 
 def test_display_logger_routes_warnings_and_drops_info():

@@ -19,8 +19,14 @@ from ..utils._hf import PyAgingResourceNotFoundError, download_clock_weights
 from ..utils._utils import progress
 
 
-@progress("Load clock")
-def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int = 2) -> tuple:
+def load_clock(
+    clock_name: str,
+    device: str = "cpu",
+    dir: str = "pyaging_data",
+    logger=None,
+    indent_level: int = 2,
+    verbose: bool = True,
+) -> "pyagingModel":
     """
     Loads the specified aging clock from Hugging Face and returns its components.
 
@@ -65,6 +71,18 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
 
     """
     clock_name = clock_name.lower()
+    if logger is None:
+        # Direct user call: run under the display instead of a plumbed logger
+        from ..logger._live import live_step, quiet_hf_bars
+
+        with (
+            quiet_hf_bars(bool(verbose)),
+            live_step(f"loading {clock_name}", verbose) as (step, pipeline_logger),
+        ):
+            model = load_clock(clock_name, device, dir, pipeline_logger, indent_level=indent_level)
+            step.done(f"{clock_name} ready on {device}")
+        return model
+
     try:
         weights_path = download_clock_weights(clock_name, dir, logger, indent_level=indent_level)
     except PyAgingResourceNotFoundError as exc:
@@ -388,7 +406,7 @@ def add_pred_ages_and_clock_metadata_adata(
 
 
 @progress("Set PyTorch device")
-def set_torch_device(logger, indent_level: int = 1) -> torch.device:
+def set_torch_device(logger=None, indent_level: int = 1) -> torch.device:
     """
     Set and return the PyTorch device based on the availability of CUDA.
 
@@ -428,7 +446,8 @@ def set_torch_device(logger, indent_level: int = 1) -> torch.device:
 
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    logger.info(f"Using device: {device}", indent_level=2)
+    if logger is not None:
+        logger.info(f"Using device: {device}", indent_level=2)
     return device
 
 

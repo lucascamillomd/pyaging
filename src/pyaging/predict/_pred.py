@@ -1,11 +1,9 @@
-import contextlib
 import gc
 
 import anndata
 import torch
 
-from ..logger import LoggerManager, silence_logger
-from ..logger._live import ClockRunDisplay, DisplayLogger, live_display_enabled, quiet_hf_bars
+from ..logger._live import ClockRunDisplay, DisplayLogger, display_enabled, quiet_hf_bars
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
     check_features_in_adata,
@@ -51,9 +49,9 @@ def predict_age(
         Whether to delete the matrix data create for each clock in adata.obsm[X_clock]. Defaults to True.
 
     verbose: bool
-        Whether to show progress and warnings. True shows a live display with
-        progress bars in interactive runs (classic text logs otherwise);
-        False is silent. Defaults to True.
+        Whether to show the progress display and warnings. Animated in
+        notebooks and terminals, a plain summary when output is captured,
+        and fully silent when False. Defaults to True.
 
     Returns
     -------
@@ -81,90 +79,54 @@ def predict_age(
     >>> adata.obs["horvath2013"]  # Access predicted ages by clock name
 
     """
-    logger = LoggerManager.gen_logger("predict_age")
-    live = live_display_enabled(verbose)
-    if not verbose or live:
-        silence_logger("predict_age")
-    logger.first_info("Starting predict_age function")
-
     # Ensure clock_names is a list with lowercase names
     if isinstance(clock_names, str):
         clock_names = [clock_names]
     clock_names = [clock_name.lower() for clock_name in clock_names]
 
     # Set device for PyTorch operations
-    device = set_torch_device(logger)
+    device = set_torch_device()
 
-    display = ClockRunDisplay(clock_names, str(device)) if live else None
-    with quiet_hf_bars(live):  # noqa: SIM117 - the display context is conditional
-        with display if display else contextlib.nullcontext():
-            for clock_name in clock_names:
-                logger.info(f"🕒 Processing clock: {clock_name}", indent_level=1)
-                if display:
-                    display.start_clock(clock_name, "loading weights")
-                # Pipeline warnings surface on the display instead of vanishing
-                warn = DisplayLogger(lambda m, name=clock_name: display.warn(name, m)) if display else None
-                pipeline_logger = warn if warn is not None else logger
+    enabled = display_enabled(verbose)
+    display = ClockRunDisplay(clock_names, str(device), enabled=enabled)
+    with quiet_hf_bars(enabled), display:
+        for clock_name in clock_names:
+            display.start_clock(clock_name, "loading weights")
+            # Pipeline warnings surface on the display
+            pipeline_logger = DisplayLogger(lambda m, name=clock_name: display.warn(name, m))
 
-                # Load and prepare the clock
-                model = load_clock(clock_name, device, dir, pipeline_logger, indent_level=2)
+            # Load and prepare the clock
+            model = load_clock(clock_name, device, dir, pipeline_logger)
 
-                # Disclaimer for commercial clocks
-                if model.metadata.get("research_only", False):
-                    if display:
-                        display.warn(clock_name, "research use only")
-                    logger.warning(
-                        f"⚠️ Clock '{clock_name}' is for research purposes only. Please check the clock's "
-                        f"documentation or notes for more information.",
-                        indent_level=2,
-                    )
+            # Disclaimer for commercial clocks
+            if model.metadata.get("research_only", False):
+                display.warn(clock_name, "research use only")
 
-                # Check and update adata for missing features
-                if display:
-                    display.stage(clock_name, "matching features")
-                check_features_in_adata(
-                    adata,
-                    model,
-                    pipeline_logger,
-                    indent_level=2,
-                )
+            # Check and update adata for missing features
+            display.stage(clock_name, "matching features")
+            check_features_in_adata(adata, model, pipeline_logger)
 
-                # Perform age prediction using the model applying preprocessing and postprocessing steps
-                progress_callback = None
-                if display:
-                    display.stage(clock_name, "predicting")
+            # Perform age prediction applying preprocessing and postprocessing steps
+            display.stage(clock_name, "predicting")
 
-                    def progress_callback(completed, total, name=clock_name):
-                        display.progress(name, completed, total)
+            def progress_callback(completed, total, name=clock_name):
+                display.progress(name, completed, total)
 
-                predicted_ages_tensor = predict_ages_with_model(
-                    adata,
-                    model,
-                    device,
-                    batch_size,
-                    pipeline_logger,
-                    indent_level=2,
-                    progress_callback=progress_callback,
-                )
+            predicted_ages_tensor = predict_ages_with_model(
+                adata, model, device, batch_size, pipeline_logger, progress_callback=progress_callback
+            )
 
-                # Add predicted ages and clock metadata to adata
-                if display:
-                    display.stage(clock_name, "writing results")
-                add_pred_ages_and_clock_metadata_adata(
-                    adata, model, predicted_ages_tensor, dir, pipeline_logger, indent_level=2
-                )
+            # Add predicted ages and clock metadata to adata
+            display.stage(clock_name, "writing results")
+            add_pred_ages_and_clock_metadata_adata(adata, model, predicted_ages_tensor, dir, pipeline_logger)
 
-                # Delete the clock matrix object
-                if clean:
-                    del adata.obsm[f"X_{clock_name}"]
+            # Delete the clock matrix object
+            if clean:
+                del adata.obsm[f"X_{clock_name}"]
 
-                # Flush memory
-                gc.collect()
-                torch.cuda.empty_cache()
+            # Flush memory
+            gc.collect()
+            torch.cuda.empty_cache()
 
-                if display:
-                    display.finish_clock(clock_name)
-            if display:
-                display.finish(n_samples=adata.n_obs)
-
-    logger.done()
+            display.finish_clock(clock_name)
+        display.finish(n_samples=adata.n_obs)
