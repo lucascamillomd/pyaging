@@ -75,7 +75,7 @@ html[data-theme="dark"] .ce-controls::after {
 
 /* Bounded scroll box: the 170+ rows scroll here, not the page, so the sticky
    <thead> pins against this container and the controls above stay visible. */
-.ce-scroll { max-height: 72vh; overflow: auto; border: 1px solid var(--ce-border); border-radius: 10px; }
+.ce-scroll { max-height: 72vh; max-width: 100%; overflow: auto; border: 1px solid var(--ce-border); border-radius: 10px; }
 .ce-table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 0.85rem; }
 .ce-table th, .ce-table td { padding: 5px 10px; text-align: left; border-bottom: 1px solid var(--ce-border); }
 .ce-table thead th { padding-top: 8px; padding-bottom: 8px; }
@@ -129,5 +129,11 @@ body[data-theme="dark"] .ce-approval.is-approved { color: #bbf7d0; background: #
    mounts, so this is scoped to the Catalogue page only (no-JS fallback keeps
    the normal width). Furo's right toc is already off via the page's
    :hide-toc: metadata; widen Furo's content column for the table. */
-.ce-fullwidth .content { width: 100%; max-width: none; }
-.ce-fullwidth article[role="main"] { max-width: none; }
+/* Furo's .content is a flex item with a fixed 46em width; grow it and, more
+   importantly, drop the implicit min-width:auto - otherwise the nowrap table
+   sets a huge minimum content width and the column overflows the viewport
+   instead of letting .ce-scroll scroll horizontally. */
+.ce-fullwidth .main { min-width: 0; }
+.ce-fullwidth .content { width: auto; max-width: none; flex: 1 1 auto; min-width: 0; }
+.ce-fullwidth .article-container { max-width: none; min-width: 0; }
+.ce-fullwidth article[role="main"] { max-width: none; min-width: 0; }

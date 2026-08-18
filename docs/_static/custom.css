@@ -37,7 +37,10 @@ body[data-theme="dark"] article h1::after {
 /* Sidebar logo: keep the round mark modest. */
 .sidebar-logo { max-width: 96px; border-radius: 50%; }
 
-/* Landing hero */
+/* Landing hero. Furo floats its view-source icon container top-right, which
+   narrows the centering space for the first element and pushed the logo off
+   the page axis; the landing page has no use for those icons. */
+.content:has(#pyaging) .content-icon-container { display: none; }
 .pyaging-hero-logo-wrap { text-align: center; }
 .pyaging-hero-logo {
   display: block; margin: 1.6rem auto 0.4rem; width: 104px; height: 104px;
