@@ -3,10 +3,9 @@ import gc
 
 import anndata
 import torch
-from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
 
 from ..logger import LoggerManager, silence_logger
-from ..logger._live import ClockRunDisplay, DisplayLogger, live_display_enabled
+from ..logger._live import ClockRunDisplay, DisplayLogger, live_display_enabled, quiet_hf_bars
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
     check_features_in_adata,
@@ -51,7 +50,7 @@ def predict_age(
     clean: bool
         Whether to delete the matrix data create for each clock in adata.obsm[X_clock]. Defaults to True.
 
-    verbose: int or bool
+    verbose: bool
         Whether to show progress and warnings. True shows a live display with
         progress bars in interactive runs (classic text logs otherwise);
         False is silent. Defaults to True.
@@ -96,12 +95,8 @@ def predict_age(
     # Set device for PyTorch operations
     device = set_torch_device(logger)
 
-    # The Hub's own download bars would interleave with the live region
-    hf_bars_were_enabled = live and not are_progress_bars_disabled()
-    if hf_bars_were_enabled:
-        disable_progress_bars()
     display = ClockRunDisplay(clock_names, str(device)) if live else None
-    try:
+    with quiet_hf_bars(live):  # noqa: SIM117 - the display context is conditional
         with display if display else contextlib.nullcontext():
             for clock_name in clock_names:
                 logger.info(f"🕒 Processing clock: {clock_name}", indent_level=1)
@@ -171,8 +166,5 @@ def predict_age(
                     display.finish_clock(clock_name)
             if display:
                 display.finish(n_samples=adata.n_obs)
-    finally:
-        if hf_bars_were_enabled:
-            enable_progress_bars()
 
     logger.done()

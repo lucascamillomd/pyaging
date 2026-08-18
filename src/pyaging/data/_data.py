@@ -1,10 +1,8 @@
 import shutil
 from pathlib import Path
 
-from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
-
 from ..logger import LoggerManager, silence_logger
-from ..logger._live import DisplayLogger, SimpleStep, live_display_enabled
+from ..logger._live import DisplayLogger, SimpleStep, live_display_enabled, quiet_hf_bars
 from ..utils._hf import download_hf_file
 
 _EXAMPLE_DATA_FILENAMES = {
@@ -36,7 +34,7 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         Directory where the example file is placed (default "pyaging_data"). The download
         itself goes through the standard Hugging Face cache and is then copied here.
 
-    verbose : int or bool
+    verbose : bool
         Whether to show progress and warnings. True shows a live display with
         progress bars in interactive runs (classic text logs otherwise);
         False is silent. Defaults to True.
@@ -67,11 +65,9 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     logger.first_info("Starting download_example_data function")
 
     if data_type not in _EXAMPLE_DATA_FILENAMES:
-        logger.error(
-            f"Example data {data_type} has not yet been implemented in pyaging.",
-            indent_level=2,
-        )
-        raise ValueError
+        message = f"Example data {data_type} has not yet been implemented in pyaging."
+        logger.error(message, indent_level=2)
+        raise ValueError(message)
 
     filename = _EXAMPLE_DATA_FILENAMES[data_type]
     destination = Path(dir) / filename
@@ -82,10 +78,7 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         logger.done()
         return str(destination)
 
-    hf_bars_were_enabled = live and not are_progress_bars_disabled()
-    if hf_bars_were_enabled:
-        disable_progress_bars()
-    try:
+    with quiet_hf_bars(live):
         if live:
             with SimpleStep(f"downloading {filename}") as step:
                 pipeline_logger = DisplayLogger(step.warn)
@@ -97,9 +90,6 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
             cache_path = download_hf_file(filename, dir, logger, indent_level=1)
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(cache_path, destination)
-    finally:
-        if hf_bars_were_enabled:
-            enable_progress_bars()
     logger.info(f"Example data available at {destination}", indent_level=2)
     logger.done()
     return str(destination)

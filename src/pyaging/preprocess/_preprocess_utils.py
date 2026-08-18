@@ -204,7 +204,7 @@ def create_anndata_object(
     # Check for duplicate features
     if len(np.unique(var_names)) != len(var_names):
         logger.error("There are duplicate feature names!")
-        raise ValueError
+        raise ValueError("There are duplicate feature names!")
 
     obs = pd.DataFrame(index=obs_names)
     var = pd.DataFrame(index=var_names)

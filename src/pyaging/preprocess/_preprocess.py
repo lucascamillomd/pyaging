@@ -47,10 +47,8 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
-    verbose: int or bool
-        Whether to show progress and warnings. True shows a live display with
-        progress bars in interactive runs (classic text logs otherwise);
-        False is silent. Defaults to True.
+    verbose: bool
+        Whether to log the output to console with the logger. Defaults to True.
 
     Returns
     -------
@@ -160,7 +158,7 @@ def df_to_adata(
         The strategy for imputing missing values in 'df'. Supported strategies include 'mean',
         'median', 'constant' (0 values), and 'knn'. Defaults to 'knn'.
 
-    verbose: int or bool
+    verbose: bool
         Whether to show progress and warnings. True shows a live display with
         progress bars in interactive runs (classic text logs otherwise);
         False is silent. Defaults to True.
@@ -218,7 +216,9 @@ def df_to_adata(
 
         # Log statistics
         log_data_statistics(adata.X, pipeline_logger)
-        missing_pct = float(np.isnan(np.asarray(adata.X, dtype=float)).mean() * 100)
+        if live:
+            x = adata.X
+            missing_pct = float(np.isnan(x).mean() * 100) if np.issubdtype(x.dtype, np.floating) else 0.0
 
         # Impute missing values
         if live:
@@ -259,10 +259,8 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
         The input DataFrame containing probe data. Each column represents a probe, and the column names are
         expected to follow the format "cgXXXXXXX_YYYY".
 
-    verbose: int or bool
-        Whether to show progress and warnings. True shows a live display with
-        progress bars in interactive runs (classic text logs otherwise);
-        False is silent. Defaults to True.
+    verbose: bool
+        Whether to log the output to console with the logger. Defaults to True.
 
     Returns
     -------

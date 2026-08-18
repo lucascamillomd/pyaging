@@ -3023,7 +3023,6 @@ dependencies = [
     { name = "anndata", version = "0.12.19", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "anndata", version = "0.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "huggingface-hub" },
-    { name = "ipywidgets" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -3043,6 +3042,7 @@ dev = [
     { name = "hatchling" },
     { name = "ipykernel" },
     { name = "ipython" },
+    { name = "ipywidgets" },
     { name = "marimo", extra = ["recommended"] },
     { name = "matplotlib" },
     { name = "myst-parser" },
@@ -3092,6 +3092,7 @@ lint = [
 ]
 notebooks = [
     { name = "ipykernel" },
+    { name = "ipywidgets" },
     { name = "marimo", extra = ["recommended"] },
     { name = "matplotlib" },
     { name = "openai" },
@@ -3112,7 +3113,6 @@ test = [
 requires-dist = [
     { name = "anndata", specifier = ">=0.10.3" },
     { name = "huggingface-hub", specifier = ">=1.3,<2" },
-    { name = "ipywidgets", specifier = ">=8.1.9" },
     { name = "numpy", specifier = ">=2.0.0" },
     { name = "pandas", specifier = ">=2.2.0" },
     { name = "pybigwig", marker = "extra == 'histone'", specifier = ">=0.3.23" },
@@ -3127,6 +3127,7 @@ dev = [
     { name = "hatchling", specifier = ">=1.27" },
     { name = "ipykernel" },
     { name = "ipython" },
+    { name = "ipywidgets", specifier = ">=8.1" },
     { name = "marimo", extras = ["recommended"] },
     { name = "matplotlib" },
     { name = "myst-parser" },
@@ -3170,6 +3171,7 @@ lint = [
 ]
 notebooks = [
     { name = "ipykernel" },
+    { name = "ipywidgets", specifier = ">=8.1" },
     { name = "marimo", extras = ["recommended"] },
     { name = "matplotlib" },
     { name = "openai" },

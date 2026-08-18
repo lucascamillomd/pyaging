@@ -179,14 +179,14 @@ def check_features_in_adata(
 
     # Raises error if there are no features in the data
     if percent_missing == 100:
-        logger.error(
+        message = (
             f"Every single feature out of {len(model.features)} features "
             f"is missing. Please double check the features in the adata object"
             f" actually contain the clock features such as "
-            f"{missing_features[: np.min([3, num_missing_features])]}, etc.",
-            indent_level=3,
+            f"{missing_features[: np.min([3, num_missing_features])]}, etc."
         )
-        raise NameError
+        logger.error(message, indent_level=3)
+        raise NameError(message)
 
     # Log and add missing features if any
     if len(missing_features) > 0:

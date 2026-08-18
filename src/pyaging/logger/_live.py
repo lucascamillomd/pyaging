@@ -22,7 +22,13 @@ import threading
 import time
 
 from rich.console import Console, Group
-from rich.jupyter import _render_segments
+
+try:
+    # Private rich helper; guarded so a future rich release degrades pyaging
+    # to plain text logs instead of breaking `import pyaging`.
+    from rich.jupyter import _render_segments
+except ImportError:  # pragma: no cover
+    _render_segments = None
 from rich.live import Live
 from rich.progress_bar import ProgressBar
 from rich.table import Table
@@ -95,7 +101,24 @@ class Shimmer:
 def live_display_enabled(verbose, console: Console | None = None) -> bool:
     """Whether the live display should replace plain text logs."""
     active = console or _console
+    if active.is_jupyter and _render_segments is None:
+        return False
     return bool(verbose and (active.is_jupyter or active.is_interactive))
+
+
+@contextlib.contextmanager
+def quiet_hf_bars(live: bool):
+    """Suppress the Hub's own download bars while a live region is active."""
+    from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
+
+    were_enabled = live and not are_progress_bars_disabled()
+    if were_enabled:
+        disable_progress_bars()
+    try:
+        yield
+    finally:
+        if were_enabled:
+            enable_progress_bars()
 
 
 def _bar(completed: float, total: float | None, width: int = 24, pulse: bool = False):
@@ -175,7 +198,8 @@ class _JupyterRegion:
         if self._handle is not None:
             from IPython.display import HTML
 
-            self._handle.update(HTML(self._html(final) if final is not None else ""))
+            with contextlib.suppress(Exception):
+                self._handle.update(HTML(self._html(final) if final is not None else ""))
 
 
 class _TerminalRegion:
@@ -225,7 +249,13 @@ class ClockRunDisplay:
             for name in failed:
                 self.rows[name]["status"] = "failed"
             label = failed[0] if failed else "run"
-            final = Text.assemble((f"{DOT} ", f"bold {RED}"), (f"predict_age failed at {label}", RED))
+            lines = [Text.assemble((f"{DOT} ", f"bold {RED}"), (f"predict_age failed at {label}", RED))]
+            for name in failed:
+                for message in self.rows[name]["warnings"]:
+                    lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (message, MUTED)))
+            if exc is not None and str(exc):
+                lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (str(exc), RED)))
+            final = Group(*lines)
         else:
             final = self._summary
         self._region.close(final)
@@ -301,8 +331,9 @@ class ClockRunDisplay:
             elif row["status"] == "running":
                 grid = Table.grid(padding=(0, 1))
                 cells = [Text("  "), self._spinner, Text(name, style="bold"), Shimmer(row["stage"])]
-                if row["progress"] and row["progress"][1] > 1:
-                    completed, total = row["progress"]
+                progress = row["progress"]
+                if progress and progress[1] > 1:
+                    completed, total = progress
                     cells.append(_bar(completed, total, width=16))
                     cells.append(Text(f"{completed}/{total}", style=MUTED))
                 grid.add_row(*cells)
@@ -344,7 +375,12 @@ class SimpleStep:
 
     def __exit__(self, exc_type, exc, tb):
         if exc_type is not None:
-            final = Text.assemble((f"{DOT} ", f"bold {RED}"), (f"{self.label} failed", RED))
+            lines = [Text.assemble((f"{DOT} ", f"bold {RED}"), (f"{self.label} failed", RED))]
+            for message in self.warnings:
+                lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (message, MUTED)))
+            if exc is not None and str(exc):
+                lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (str(exc), RED)))
+            final = Group(*lines)
         else:
             final = self._final
         self._region.close(final)
