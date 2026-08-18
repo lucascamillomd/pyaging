@@ -1,12 +1,13 @@
 """Rich-based live progress display for interactive terminals and notebooks.
 
-When ``verbose=True`` and the run is interactive (Jupyter or a TTY), pyaging
-shows a live step display instead of plain log lines: pending steps as hollow
-circles, the active step as a spinner with its current stage and progress
-bars, finished steps as check marks with timings, and a compact summary once
-the run completes. Pipeline warnings (missing features, research-only clocks,
-...) surface on the display and persist in the summary. Non-interactive runs
-keep the classic text logs, and ``verbose=False`` stays silent.
+pyaging's step display is the package's only output channel. At
+``verbose=True`` interactive runs (Jupyter or a TTY) get the animated
+version: pending steps as hollow circles, the active step as a spinner with
+its current stage and progress bars, finished steps as check marks with
+timings, and a summary once the run completes. Non-interactive output
+(pipes, CI) skips the animation and prints only the final summary lines.
+Pipeline warnings (missing features, research-only clocks, ...) surface on
+the display and persist in the summary. ``verbose=False`` is fully silent.
 
 In notebooks the animation is pushed through an IPython display handle that
 updates one regular output in place - not an ipywidgets container, whose
@@ -109,11 +110,12 @@ def display_enabled(verbose) -> bool:
 
 
 @contextlib.contextmanager
-def quiet_hf_bars(live: bool):
-    """Suppress the Hub's own download bars while a live region is active."""
+def quiet_hf_bars():
+    """Suppress the Hub's own download bars: the display owns all output
+    (and verbose=False must be fully silent)."""
     from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
 
-    were_enabled = live and not are_progress_bars_disabled()
+    were_enabled = not are_progress_bars_disabled()
     if were_enabled:
         disable_progress_bars()
     try:

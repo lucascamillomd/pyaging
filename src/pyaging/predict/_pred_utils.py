@@ -37,20 +37,23 @@ def load_clock(
     ----------
     clock_name : str
         The name of the aging clock to be loaded. This name identifies the clock's weights
-        and configuration on Hugging Face.
+        and configuration on Hugging Face. Case-insensitive.
 
-    device : str
-        Device to move clock to. Eithe 'cpu' or 'cuda'.
+    device : str, optional
+        Device to move the clock to, 'cpu' or 'cuda'. Defaults to 'cpu'.
 
-    dir : str
+    dir : str, optional
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
-    logger : Logger
-        A logger object used for logging information during the function execution.
+    logger : optional
+        Internal pipeline logger. Leave as None when calling directly; the
+        progress display handles output.
 
     indent_level : int, optional
-        The indentation level for the logger, by default 2. It controls the formatting
-        of the log messages.
+        Indentation level for internal pipeline logging, by default 2.
+
+    verbose : bool, optional
+        Whether to show the progress display for direct calls. Defaults to True.
 
     Returns
     -------
@@ -67,7 +70,7 @@ def load_clock(
 
     Examples
     --------
-    >>> clock = load_clock("clock1", "pyaging_data", logger)
+    >>> clock = load_clock("horvath2013")
 
     """
     clock_name = clock_name.lower()
@@ -76,7 +79,7 @@ def load_clock(
         from ..logger._live import live_step, quiet_hf_bars
 
         with (
-            quiet_hf_bars(bool(verbose)),
+            quiet_hf_bars(),
             live_step(f"loading {clock_name}", verbose) as (step, pipeline_logger),
         ):
             model = load_clock(clock_name, device, dir, pipeline_logger, indent_level=indent_level)
@@ -405,7 +408,6 @@ def add_pred_ages_and_clock_metadata_adata(
     adata.uns[f"{model.metadata['clock_name']}_metadata"] = model.metadata
 
 
-@progress("Set PyTorch device")
 def set_torch_device(logger=None, indent_level: int = 1) -> torch.device:
     """
     Set and return the PyTorch device based on the availability of CUDA.

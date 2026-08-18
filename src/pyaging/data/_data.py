@@ -67,7 +67,7 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         SimpleStep(filename, enabled=enabled).done(f"example data already at {destination}")
         return str(destination)
 
-    with quiet_hf_bars(enabled), live_step(f"downloading {filename}", verbose) as (step, pipeline_logger):
+    with quiet_hf_bars(), live_step(f"downloading {filename}", verbose) as (step, pipeline_logger):
         cache_path = download_hf_file(filename, dir, pipeline_logger, indent_level=1)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(cache_path, destination)

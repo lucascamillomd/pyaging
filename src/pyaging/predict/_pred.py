@@ -89,7 +89,7 @@ def predict_age(
 
     enabled = display_enabled(verbose)
     display = ClockRunDisplay(clock_names, str(device), enabled=enabled)
-    with quiet_hf_bars(enabled), display:
+    with quiet_hf_bars(), display:
         for clock_name in clock_names:
             display.start_clock(clock_name, "loading weights")
             # Pipeline warnings surface on the display

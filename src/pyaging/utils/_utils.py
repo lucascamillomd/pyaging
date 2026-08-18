@@ -5,7 +5,7 @@ from urllib.request import urlretrieve
 
 import torch
 
-from ..logger._live import display_enabled, get_console, live_step
+from ..logger._live import MUTED, display_enabled, get_console, live_step
 from ._hf import download_hf_file
 
 
@@ -59,9 +59,7 @@ def progress(message: str) -> None:
             # Extract indent_level from kwargs, default to 1 if not provided
             indent_level = kwargs.get("indent_level", 1)
 
-            logger = args[-1] if args else kwargs.get("logger")
-            if logger is None:
-                return func(*args, **kwargs)
+            logger = args[-1]  # Assumes logger is the last positional argument
             logger.start_progress(f"{message} started", indent_level=indent_level)
             result = func(*args, **kwargs)
             logger.finish_progress(f"{message} finished", indent_level=indent_level)
@@ -271,7 +269,7 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data", verbose: bool = True)
     if display_enabled(verbose) and citation:
         console = get_console()
         console.print(f"  {citation}")
-        console.print(f"  Please also consider citing pyaging: {pyaging_citation}", style="#8a93a1")
+        console.print(f"  Please also consider citing pyaging: {pyaging_citation}", style=MUTED)
 
 
 def show_all_clocks(dir: str = "pyaging_data", verbose: bool = True) -> None:
@@ -376,7 +374,7 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data", verbose: bool
 
         grid = Table.grid(padding=(0, 2))
         for key, value in clock_dict.items():
-            grid.add_row(f"[#8a93a1]{key}[/]", str(value))
+            grid.add_row(f"[{MUTED}]{key}[/]", str(value))
         get_console().print(grid)
 
 

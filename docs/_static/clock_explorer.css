@@ -29,8 +29,13 @@
   content: ""; display: block; height: 3px; border-radius: 2px; margin-bottom: 10px;
   background: linear-gradient(90deg, #132238 0 34%, #178fa0 34% 67%, #efc53f 67% 100%);
 }
-html[data-theme="dark"] .ce-controls::after {
-  background: linear-gradient(90deg, #6ea4d8 0 34%, #35b0c0 34% 67%, #efc53f 67% 100%);
+body[data-theme="dark"] .ce-controls::after {
+  background: linear-gradient(90deg, #7fb0e8 0 34%, #35b0c0 34% 67%, #efc53f 67% 100%);
+}
+@media (prefers-color-scheme: dark) {
+  body[data-theme="auto"] .ce-controls::after {
+    background: linear-gradient(90deg, #7fb0e8 0 34%, #35b0c0 34% 67%, #efc53f 67% 100%);
+  }
 }
 .ce-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
 .ce-search { flex: 1 1 240px; min-width: 200px; padding: 8px 12px; border: 1px solid var(--ce-border);
