@@ -103,7 +103,11 @@ def download_clock_weights(clock_name: str, dir: str = "pyaging_data", logger=No
     filename = f"{clock_name}.pt"
     try:
         path = download_hf_file(filename, dir, logger, indent_level=indent_level, repo_id=clock_repo)
-    except (PyAgingRepositoryError, PyAgingResourceNotFoundError):
+    except (PyAgingRepositoryError, PyAgingResourceNotFoundError, PyAgingAuthenticationError):
+        # The Hub answers 401 (not 404) for nonexistent repos when the caller
+        # has no token, which maps to the authentication error - for anonymous
+        # users a typoed clock name must still reach the legacy fallback and
+        # its clock-not-available message.
         return download_hf_file(filename, dir, logger, indent_level=indent_level)
     with suppress(PyAgingHubError):
         download_hf_file("config.json", dir, repo_id=clock_repo)

@@ -93,7 +93,7 @@ def check_features_in_adata(
     model: pyagingModel,
     logger,
     indent_level: int = 2,
-) -> anndata.AnnData:
+) -> None:
     """
     Verifies if all required features are present in an AnnData object and adds missing features.
 
@@ -122,8 +122,8 @@ def check_features_in_adata(
 
     Returns
     -------
-    anndata.AnnData
-        The updated AnnData object, which includes any missing features added with a default
+    None
+        The AnnData object is updated in place; missing features are added with a default
         value of 0 (or reference value if provided).
 
     Notes
@@ -388,7 +388,7 @@ def add_pred_ages_and_clock_metadata_adata(
 
 
 @progress("Set PyTorch device")
-def set_torch_device(logger, indent_level: int = 1) -> None:
+def set_torch_device(logger, indent_level: int = 1) -> torch.device:
     """
     Set and return the PyTorch device based on the availability of CUDA.
 

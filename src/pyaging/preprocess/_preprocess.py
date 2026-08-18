@@ -1,5 +1,3 @@
-import contextlib
-
 import anndata
 import numpy as np
 import pandas as pd
@@ -19,7 +17,7 @@ except Exception:
     CUPY_AVAILABLE = False
 
 from ..logger import LoggerManager, main_tqdm, silence_logger
-from ..logger._live import DisplayLogger, SimpleStep, live_display_enabled
+from ..logger._live import live_display_enabled, live_step
 from ._preprocess_utils import (
     add_metadata_to_anndata,
     add_unstructured_data,
@@ -196,9 +194,7 @@ def df_to_adata(
     if not isinstance(df, pd.DataFrame):
         raise TypeError("Input df must be a pandas DataFrame.")
 
-    step = SimpleStep("building AnnData object") if live else contextlib.nullcontext()
-    pipeline_logger = DisplayLogger(step.warn) if live else logger
-    with step:
+    with live_step("building AnnData object", verbose, logger) as (step, pipeline_logger):
         # Split data and metadata
         if metadata_cols is None:
             metadata_cols = []
@@ -215,13 +211,10 @@ def df_to_adata(
         add_metadata_to_anndata(adata, metadata, pipeline_logger)
 
         # Log statistics
-        log_data_statistics(adata.X, pipeline_logger)
-        if live:
-            x = adata.X
-            missing_pct = float(np.isnan(x).mean() * 100) if np.issubdtype(x.dtype, np.floating) else 0.0
+        missing_pct = log_data_statistics(adata.X, pipeline_logger)
 
         # Impute missing values
-        if live:
+        if step:
             step.update(f"imputing missing values ({imputer_strategy})")
         impute_missing_values(adata, imputer_strategy, pipeline_logger)
 
@@ -232,7 +225,7 @@ def df_to_adata(
         # Move adata.X to GPU if possible
         adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
 
-        if live:
+        if step:
             if missing_pct == 0:
                 missing = " · no missing values"
             else:

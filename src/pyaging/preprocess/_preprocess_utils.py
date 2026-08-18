@@ -79,7 +79,7 @@ def impute_missing_values(adata: anndata.AnnData, strategy: str, logger, indent_
 
 
 @progress("Log data statistics")
-def log_data_statistics(X: np.ndarray, logger, indent_level: int = 1) -> None:
+def log_data_statistics(X: np.ndarray, logger, indent_level: int = 1) -> float:
     """
     Logs various statistical properties of a given dataset.
 
@@ -125,6 +125,8 @@ def log_data_statistics(X: np.ndarray, logger, indent_level: int = 1) -> None:
     logger.info(f"There are {n_features} features", indent_level=2)
     logger.info(f"Total missing values: {total_nas}", indent_level=2)
     logger.info(f"Percentage of missing values: {percent_nas:.2f}%", indent_level=2)
+
+    return float(percent_nas)
 
 
 @progress("Create anndata object")

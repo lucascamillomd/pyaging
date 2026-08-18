@@ -22,7 +22,7 @@ def predict_age(
     batch_size: int = 1024,
     clean: bool = True,
     verbose: bool = True,
-) -> anndata.AnnData:
+) -> None:
     """
     Predicts biological age using specified aging clocks.
 
@@ -57,9 +57,9 @@ def predict_age(
 
     Returns
     -------
-    AnnData
-        The input AnnData object enriched with the predicted ages and clock metadata in the .obs and
-        .uns attributes, respectively.
+    None
+        The input AnnData object is modified in place: predicted ages are added to .obs and
+        clock metadata to .uns. Do not assign the return value.
 
     Notes
     -----
@@ -77,7 +77,7 @@ def predict_age(
     Examples
     --------
     >>> adata = anndata.read_h5ad("sample_data.h5ad")
-    >>> adata = predict_age(adata, clock_names=["horvath2013", "hannum"])
+    >>> predict_age(adata, clock_names=["horvath2013", "hannum"])
     >>> adata.obs["horvath2013"]  # Access predicted ages by clock name
 
     """

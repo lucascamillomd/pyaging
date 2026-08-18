@@ -134,6 +134,20 @@ def _bar(completed: float, total: float | None, width: int = 24, pulse: bool = F
     )
 
 
+@contextlib.contextmanager
+def live_step(label: str, verbose, logger):
+    """Yield (step, pipeline_logger) for one pipeline entry point.
+
+    Live runs get a SimpleStep plus a warning-routing logger; plain runs get
+    (None, logger), so pipeline bodies keep a single code path.
+    """
+    if live_display_enabled(verbose):
+        with SimpleStep(label) as step:
+            yield step, DisplayLogger(step.warn)
+    else:
+        yield None, logger
+
+
 class DisplayLogger:
     """Duck-typed stand-in for pyaging's Logger that feeds a live display.
 
@@ -249,12 +263,14 @@ class ClockRunDisplay:
             for name in failed:
                 self.rows[name]["status"] = "failed"
             label = failed[0] if failed else "run"
+            exc_text = str(exc).strip() if exc is not None else ""
             lines = [Text.assemble((f"{DOT} ", f"bold {RED}"), (f"predict_age failed at {label}", RED))]
             for name in failed:
                 for message in self.rows[name]["warnings"]:
-                    lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (message, MUTED)))
-            if exc is not None and str(exc):
-                lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (str(exc), RED)))
+                    if message.strip() != exc_text:
+                        lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (message, MUTED)))
+            if exc_text:
+                lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (exc_text, RED)))
             final = Group(*lines)
         else:
             final = self._summary
@@ -343,9 +359,7 @@ class ClockRunDisplay:
             else:
                 seconds = f" ({row['seconds']:.1f}s)" if row["seconds"] is not None else ""
                 yield Text.assemble((f"  {DOT} ", GREEN), (name, "bold"), (seconds, MUTED))
-                for message in row["warnings"]:
-                    yield Text.assemble((f"    {ELBOW} ", MUTED), ("⚠ ", SAND), (message, MUTED))
-            if row["status"] == "running":
+            if row["status"] in ("running", "done"):
                 for message in row["warnings"]:
                     yield Text.assemble((f"    {ELBOW} ", MUTED), ("⚠ ", SAND), (message, MUTED))
 
@@ -375,11 +389,13 @@ class SimpleStep:
 
     def __exit__(self, exc_type, exc, tb):
         if exc_type is not None:
+            exc_text = str(exc).strip() if exc is not None else ""
             lines = [Text.assemble((f"{DOT} ", f"bold {RED}"), (f"{self.label} failed", RED))]
             for message in self.warnings:
-                lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (message, MUTED)))
-            if exc is not None and str(exc):
-                lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (str(exc), RED)))
+                if message.strip() != exc_text:
+                    lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (message, MUTED)))
+            if exc_text:
+                lines.append(Text.assemble((f"  {ELBOW} ", MUTED), (exc_text, RED)))
             final = Group(*lines)
         else:
             final = self._final

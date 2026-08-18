@@ -164,3 +164,15 @@ def test_download_hf_file_maps_local_failures_and_preserves_cause(monkeypatch, t
         download_hf_file("horvath2013.pt", str(tmp_path))
 
     assert error.value.__cause__ is source_error
+
+
+def test_download_clock_weights_falls_back_when_hub_answers_401_anonymously(monkeypatch, tmp_path):
+    weights_path = str(tmp_path / "horvath2013.pt")
+    anonymous_missing_repo = RepositoryNotFoundError("missing repo", response=Mock(status_code=401))
+    hub_download = Mock(side_effect=[anonymous_missing_repo, weights_path])
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", hub_download)
+
+    result = download_clock_weights("horvath2013")
+
+    assert result == weights_path
+    assert hub_download.call_args_list[1].kwargs["repo_id"] == "lucascamillomd/pyaging-data"

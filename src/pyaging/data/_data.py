@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 from ..logger import LoggerManager, silence_logger
-from ..logger._live import DisplayLogger, SimpleStep, live_display_enabled, quiet_hf_bars
+from ..logger._live import SimpleStep, live_display_enabled, live_step, quiet_hf_bars
 from ..utils._hf import download_hf_file
 
 _EXAMPLE_DATA_FILENAMES = {
@@ -78,18 +78,12 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         logger.done()
         return str(destination)
 
-    with quiet_hf_bars(live):
-        if live:
-            with SimpleStep(f"downloading {filename}") as step:
-                pipeline_logger = DisplayLogger(step.warn)
-                cache_path = download_hf_file(filename, dir, pipeline_logger, indent_level=1)
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy(cache_path, destination)
-                step.done(f"example data at {destination}")
-        else:
-            cache_path = download_hf_file(filename, dir, logger, indent_level=1)
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy(cache_path, destination)
+    with quiet_hf_bars(live), live_step(f"downloading {filename}", verbose, logger) as (step, pipeline_logger):
+        cache_path = download_hf_file(filename, dir, pipeline_logger, indent_level=1)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(cache_path, destination)
+        if step:
+            step.done(f"example data at {destination}")
     logger.info(f"Example data available at {destination}", indent_level=2)
     logger.done()
     return str(destination)
