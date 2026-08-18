@@ -57,3 +57,30 @@ def test_simple_step_prints_summary_line():
     step.done("example data at pyaging_data/data.pkl")
 
     assert "example data at pyaging_data/data.pkl" in buffer.getvalue()
+
+
+def test_verbosity_levels_map_bools_and_ints():
+    from pyaging.logger._live import verbosity
+
+    assert verbosity(False) == 0
+    assert verbosity(True) == 1
+    assert verbosity(0) == 0
+    assert verbosity(2) == 2
+    assert verbosity(5) == 2
+
+
+def test_level_two_disables_live_display_even_when_interactive():
+    interactive = Console(file=io.StringIO(), force_terminal=True)
+    assert live_display_enabled(2, console=interactive) is False
+    assert live_display_enabled(1, console=interactive) is True
+
+
+def test_running_clock_shows_batch_progress():
+    buffer = io.StringIO()
+    console = _forced_console(buffer)
+    display = ClockRunDisplay(["horvath2013"], "cpu", console=console)
+    display.start_clock("horvath2013", "predicting")
+    display.progress("horvath2013", 3, 10)
+    console.print(display)
+
+    assert "3/10" in buffer.getvalue()

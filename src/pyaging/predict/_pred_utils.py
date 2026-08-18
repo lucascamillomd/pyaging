@@ -221,6 +221,7 @@ def predict_ages_with_model(
     batch_size: int,
     logger,
     indent_level: int = 2,
+    progress_callback=None,
 ) -> torch.Tensor:
     """
     Predict biological ages using a trained model and input data.
@@ -293,12 +294,14 @@ def predict_ages_with_model(
 
     # Batched prediction over the clock's feature matrix on the model's device
     matrix = adata.obsm[f"X_{model.metadata['clock_name']}"]
-    starts = range(0, matrix.shape[0], batch_size)
+    starts = list(range(0, matrix.shape[0], batch_size))
     predictions = []
     with torch.inference_mode():
-        for start in main_tqdm(starts, indent_level=indent_level + 1, logger=logger):
+        for index, start in enumerate(main_tqdm(starts, indent_level=indent_level + 1, logger=logger)):
             batch = torch.as_tensor(matrix[start : start + batch_size], dtype=torch.float64, device=device)
             predictions.append(model(batch))
+            if progress_callback is not None:
+                progress_callback(index + 1, len(starts))
     # Concatenate all batch predictions
     predictions = torch.cat(predictions)
 

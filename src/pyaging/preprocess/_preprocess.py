@@ -30,7 +30,7 @@ from ._preprocess_utils import (
 )
 
 
-def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: bool = True) -> pd.DataFrame:
+def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: bool | int = True) -> pd.DataFrame:
     """
     Convert bigWig files to a DataFrame, extracting signal data for genomic regions.
 
@@ -47,8 +47,10 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
-    verbose: bool
-        Whether to log the output to console with the logger. Defaults to True.
+    verbose: int or bool
+        Output level: 0 (or False) is silent, 1 (or True) shows a compact live
+        display with progress in interactive runs, 2 shows the detailed text
+        logs. Defaults to True.
 
     Returns
     -------
@@ -135,7 +137,7 @@ def df_to_adata(
     df: pd.DataFrame,
     metadata_cols: list[str] | None = None,
     imputer_strategy: str = "knn",
-    verbose: bool = True,
+    verbose: bool | int = True,
 ) -> anndata.AnnData:
     """
     Converts a pandas DataFrame to an AnnData object.
@@ -158,8 +160,10 @@ def df_to_adata(
         The strategy for imputing missing values in 'df'. Supported strategies include 'mean',
         'median', 'constant' (0 values), and 'knn'. Defaults to 'knn'.
 
-    verbose: bool
-        Whether to log the output to console with the logger. Defaults to True.
+    verbose: int or bool
+        Output level: 0 (or False) is silent, 1 (or True) shows a compact live
+        display with progress in interactive runs, 2 shows the detailed text
+        logs. Defaults to True.
 
     Returns
     -------
@@ -215,6 +219,8 @@ def df_to_adata(
         log_data_statistics(adata.X, logger)
 
         # Impute missing values
+        if live:
+            step.update(f"imputing missing values ({imputer_strategy})")
         impute_missing_values(adata, imputer_strategy, logger)
 
         # Add unstructured data
@@ -233,7 +239,7 @@ def df_to_adata(
     return adata
 
 
-def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
+def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool | int = True):
     """
     Aggregates probes targeting the same CpG site in a DataFrame from the Illumina Methylation EPIC array v2.
 
@@ -247,8 +253,10 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
         The input DataFrame containing probe data. Each column represents a probe, and the column names are
         expected to follow the format "cgXXXXXXX_YYYY".
 
-    verbose: bool
-        Whether to log the output to console with the logger. Defaults to True.
+    verbose: int or bool
+        Output level: 0 (or False) is silent, 1 (or True) shows a compact live
+        display with progress in interactive runs, 2 shows the detailed text
+        logs. Defaults to True.
 
     Returns
     -------

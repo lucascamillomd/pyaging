@@ -1,9 +1,13 @@
 """Rich-based live progress display for interactive terminals and notebooks.
 
-When a run is interactive, pyaging shows a live step display instead of plain
-log lines: pending steps as hollow circles, the active step as a spinner with
-its current stage, finished steps as check marks with timings, and a compact
-summary once the run completes.
+pyaging's user-facing functions take a ``verbose`` level (bools keep working
+since ``True == 1``):
+
+- ``0`` - silent.
+- ``1`` - compact live display: an animated step tree with progress bars that
+  collapses into a summary. Falls back to the classic text logs when output
+  is not interactive (pipes, CI).
+- ``2`` - the classic detailed text logs.
 
 In notebooks the animation is pushed through an IPython display handle that
 updates one regular output in place - not an ipywidgets container, whose
@@ -11,7 +15,6 @@ background is frontend-controlled (white in VS Code dark mode) and which
 leaves an empty output slot behind. The summary replaces the animation in the
 same output, so a finished cell holds exactly one themed block. Terminals use
 rich's native Live with a transient region and a printed summary.
-Non-interactive runs (pipes, CI, pytest) keep the classic text logger.
 """
 
 import contextlib
@@ -22,6 +25,7 @@ from rich.console import Console, Group
 from rich.jupyter import _render_segments
 from rich.live import Live
 from rich.panel import Panel
+from rich.progress_bar import ProgressBar
 from rich.spinner import Spinner
 from rich.table import Table
 from rich.text import Text
@@ -31,14 +35,33 @@ SAND = "#efc53f"
 GREEN = "#2fbf71"
 RED = "#e5484d"
 MUTED = "#8a93a1"
+TRACK = "#3a4351"
 
 _console = Console()
 
 
-def live_display_enabled(verbose: bool, console: Console | None = None) -> bool:
+def verbosity(verbose) -> int:
+    """Normalize the verbose argument (bool or int) to a 0-2 level."""
+    return max(0, min(2, int(verbose)))
+
+
+def live_display_enabled(verbose, console: Console | None = None) -> bool:
     """Whether the live display should replace plain text logs."""
     active = console or _console
-    return bool(verbose and (active.is_jupyter or active.is_interactive))
+    return bool(verbosity(verbose) == 1 and (active.is_jupyter or active.is_interactive))
+
+
+def _bar(completed: float, total: float | None, width: int = 24, pulse: bool = False) -> ProgressBar:
+    return ProgressBar(
+        total=total,
+        completed=completed,
+        width=width,
+        pulse=pulse,
+        style=TRACK,
+        complete_style=TEAL,
+        finished_style=GREEN,
+        pulse_style=TEAL,
+    )
 
 
 class _JupyterRegion:
@@ -65,7 +88,7 @@ class _JupyterRegion:
     def _refresh_loop(self):
         from IPython.display import HTML
 
-        while not self._stop.wait(0.1):
+        while not self._stop.wait(0.08):
             # a failed frame must never kill the run
             with contextlib.suppress(Exception):
                 self._handle.update(HTML(self._html(self.renderable)))
@@ -108,7 +131,8 @@ class ClockRunDisplay:
         self.device = device
         self.order = list(clock_names)
         self.rows = {
-            name: {"status": "pending", "stage": "", "seconds": None, "note": None, "t0": None} for name in self.order
+            name: {"status": "pending", "stage": "", "seconds": None, "note": None, "t0": None, "progress": None}
+            for name in self.order
         }
         self.started = time.perf_counter()
         self._summary = None
@@ -139,7 +163,12 @@ class ClockRunDisplay:
         row["t0"] = time.perf_counter()
 
     def stage(self, name: str, stage: str):
-        self.rows[name]["stage"] = stage
+        row = self.rows[name]
+        row["stage"] = stage
+        row["progress"] = None
+
+    def progress(self, name: str, completed: int, total: int):
+        self.rows[name]["progress"] = (completed, total)
 
     def note(self, name: str, note: str):
         self.rows[name]["note"] = note
@@ -149,17 +178,21 @@ class ClockRunDisplay:
         row["status"] = "done"
         row["seconds"] = time.perf_counter() - row["t0"] if row["t0"] else None
         row["stage"] = ""
+        row["progress"] = None
 
     def finish(self, n_samples: int):
         """Compose the summary that replaces the animation on completion."""
         elapsed = time.perf_counter() - self.started
         done = [n for n in self.order if self.rows[n]["status"] == "done"]
+        slowest = max((self.rows[n]["seconds"] or 0) for n in done) if done else 0
         timing = Table.grid(padding=(0, 2))
         for name in done:
             seconds = self.rows[name]["seconds"]
+            share = (seconds or 0) / slowest if slowest else 0
             timing.add_row(
                 Text(name, style="bold"),
                 Text(f"{seconds:.1f}s" if seconds is not None else "", style=MUTED, justify="right"),
+                _bar(share, 1.0, width=14),
             )
         lines = [
             Text.assemble(
@@ -167,7 +200,9 @@ class ClockRunDisplay:
                 (f"{len(done)} clock{'s' if len(done) != 1 else ''}", "bold"),
                 (f" · {n_samples} samples · {elapsed:.1f}s · {self.device}", MUTED),
             ),
+            Text(),
             timing,
+            Text(),
             Text("results in adata.obs · clock metadata in adata.uns", style=MUTED),
         ]
         for name in self.order:
@@ -175,7 +210,7 @@ class ClockRunDisplay:
                 lines.append(Text.assemble(("⚠ ", SAND), (f"{name}: {self.rows[name]['note']}", MUTED)))
         self._summary = Panel(
             Group(*lines),
-            title=Text("pyaging · predict_age", style=TEAL),
+            title=Text("pyaging · predict_age", style=f"bold {TEAL}"),
             title_align="left",
             border_style=TEAL,
             padding=(0, 2),
@@ -184,13 +219,14 @@ class ClockRunDisplay:
 
     # -- rendering ----------------------------------------------------------
     def __rich_console__(self, console, options):
+        done_count = sum(1 for n in self.order if self.rows[n]["status"] == "done")
+        elapsed = time.perf_counter() - self.started
         header = Table.grid(padding=(0, 1))
         header.add_row(
             self._spinner,
-            Text.assemble(
-                ("predict_age", "bold"),
-                (f" · {len(self.order)} clock{'s' if len(self.order) != 1 else ''} · {self.device}", MUTED),
-            ),
+            Text.assemble(("predict_age", "bold"), (f" · {self.device}", MUTED)),
+            _bar(done_count, len(self.order), width=18),
+            Text(f"{done_count}/{len(self.order)} clocks · {elapsed:.0f}s", style=MUTED),
         )
         yield header
         for name in self.order:
@@ -199,7 +235,12 @@ class ClockRunDisplay:
                 yield Text.assemble(("  ○ ", MUTED), (name, MUTED))
             elif row["status"] == "running":
                 grid = Table.grid(padding=(0, 1))
-                grid.add_row(Text("  "), self._spinner, Text(name, style="bold"), Text(row["stage"], style=TEAL))
+                cells = [Text("  "), self._spinner, Text(name, style="bold"), Text(row["stage"], style=TEAL)]
+                if row["progress"] and row["progress"][1] > 1:
+                    completed, total = row["progress"]
+                    cells.append(_bar(completed, total, width=16))
+                    cells.append(Text(f"{completed}/{total}", style=MUTED))
+                grid.add_row(*cells)
                 yield grid
             elif row["status"] == "failed":
                 yield Text.assemble(("  ✗ ", f"bold {RED}"), (name, "bold"), (" failed", RED))
@@ -210,21 +251,23 @@ class ClockRunDisplay:
 
 
 class SimpleStep:
-    """Spinner while working; the summary line replaces it in the same output.
+    """Animated pulse bar while working; a summary line replaces it after.
 
-    ``done(message)`` inside the ``with`` block sets the completion line. Used
-    without entering the context (e.g. cache hits), ``done`` prints directly.
+    ``update(label)`` changes the stage text mid-run. ``done(message)`` inside
+    the ``with`` block sets the completion line. Used without entering the
+    context (e.g. cache hits), ``done`` prints directly.
     """
 
     def __init__(self, label: str, console: Console | None = None):
         self.console = console or _console
         self.label = label
+        self.started = time.perf_counter()
+        self._spinner = Spinner("dots", style=TEAL)
         self._region = None
         self._final = None
 
     def __enter__(self):
-        spinner = Spinner("dots", text=Text(self.label, style=TEAL), style=TEAL)
-        self._region = _make_region(self.console, spinner)
+        self._region = _make_region(self.console, self)
         self._region.start()
         return self
 
@@ -237,9 +280,23 @@ class SimpleStep:
         self._region = None
         return False
 
+    def update(self, label: str):
+        self.label = label
+
     def done(self, message: str):
         text = Text.assemble(("✓ ", f"bold {GREEN}"), (message, ""))
         if self._region is not None:
             self._final = text
         else:
             self.console.print(text)
+
+    def __rich_console__(self, console, options):
+        elapsed = time.perf_counter() - self.started
+        grid = Table.grid(padding=(0, 1))
+        grid.add_row(
+            self._spinner,
+            Text(self.label, style="bold"),
+            _bar(0, None, width=18, pulse=True),
+            Text(f"{elapsed:.0f}s", style=MUTED),
+        )
+        yield grid

@@ -6,7 +6,7 @@ import torch
 from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
 
 from ..logger import LoggerManager, silence_logger
-from ..logger._live import ClockRunDisplay, live_display_enabled
+from ..logger._live import ClockRunDisplay, live_display_enabled, verbosity
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
     check_features_in_adata,
@@ -22,7 +22,7 @@ def predict_age(
     dir: str = "pyaging_data",
     batch_size: int = 1024,
     clean: bool = True,
-    verbose: bool = True,
+    verbose: bool | int = True,
 ) -> anndata.AnnData:
     """
     Predicts biological age using specified aging clocks.
@@ -51,8 +51,10 @@ def predict_age(
     clean: bool
         Whether to delete the matrix data create for each clock in adata.obsm[X_clock]. Defaults to True.
 
-    verbose: bool
-        Whether to log the output to console with the logger. Defaults to True.
+    verbose: int or bool
+        Output level: 0 (or False) is silent, 1 (or True) shows a compact live
+        display with progress in interactive runs, 2 shows the detailed text
+        logs. Defaults to True.
 
     Returns
     -------
@@ -82,7 +84,7 @@ def predict_age(
     """
     logger = LoggerManager.gen_logger("predict_age")
     live = live_display_enabled(verbose)
-    if not verbose or live:
+    if verbosity(verbose) == 0 or live:
         silence_logger("predict_age")
     logger.first_info("Starting predict_age function")
 
@@ -130,10 +132,15 @@ def predict_age(
                 )
 
                 # Perform age prediction using the model applying preprocessing and postprocessing steps
+                progress_callback = None
                 if display:
                     display.stage(clock_name, "predicting")
+
+                    def progress_callback(completed, total, name=clock_name):
+                        display.progress(name, completed, total)
+
                 predicted_ages_tensor = predict_ages_with_model(
-                    adata, model, device, batch_size, logger, indent_level=2
+                    adata, model, device, batch_size, logger, indent_level=2, progress_callback=progress_callback
                 )
 
                 # Add predicted ages and clock metadata to adata

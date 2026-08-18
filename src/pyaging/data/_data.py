@@ -18,7 +18,7 @@ _EXAMPLE_DATA_FILENAMES = {
 }
 
 
-def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bool = True) -> str:
+def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bool | int = True) -> str:
     """
     Downloads example datasets for various types of biological data used in aging studies.
 
@@ -36,8 +36,10 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         Directory where the example file is placed (default "pyaging_data"). The download
         itself goes through the standard Hugging Face cache and is then copied here.
 
-    verbose : bool
-        Whether to log the output to console with the logger. Defaults to True.
+    verbose : int or bool
+        Output level: 0 (or False) is silent, 1 (or True) shows a compact live
+        display with progress in interactive runs, 2 shows the detailed text
+        logs. Defaults to True.
 
     Raises
     ------
