@@ -117,7 +117,7 @@ version:
 
 commit:
 	@echo "Committing and pushing changes..."
-	git add src/pyaging/__init__.py uv.lock clocks/notebooks clocks/metadata tutorials docs/source README.md
+	git add src/pyaging/__init__.py uv.lock clocks/notebooks clocks/metadata tutorials docs/source docs/_static README.md
 	git commit -m $(COMMIT_MSG) || { echo "Git commit failed"; exit 1; }
 	git push || { echo "Git push failed"; exit 1; }
 

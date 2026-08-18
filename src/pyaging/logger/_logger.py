@@ -199,7 +199,6 @@ class Logger:
 
     def info_insert_adata_var(self, key, log_level, indent_level, *args, **kwargs):
         return self.info_insert_adata(
-            self,
             key,
             *args,
             adata_attr="var",
@@ -210,7 +209,6 @@ class Logger:
 
     def info_insert_adata_obsm(self, key, log_level, indent_level, *args, **kwargs):
         return self.info_insert_adata(
-            self,
             key,
             *args,
             adata_attr="obsm",
@@ -221,7 +219,6 @@ class Logger:
 
     def info_insert_adata_uns(self, key, log_level, indent_level, *args, **kwargs):
         return self.info_insert_adata(
-            self,
             key,
             *args,
             adata_attr="uns",

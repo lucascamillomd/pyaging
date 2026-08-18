@@ -1,3 +1,6 @@
+import shutil
+from pathlib import Path
+
 from ..logger import LoggerManager, silence_logger
 from ..utils._hf import download_hf_file
 
@@ -12,7 +15,7 @@ _EXAMPLE_DATA_FILENAMES = {
 }
 
 
-def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
+def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bool = True) -> str:
     """
     Downloads example datasets for various types of biological data used in aging studies.
 
@@ -27,7 +30,8 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         'ENCFF386QWG', 'GSE65765', 'GSE193140', and 'blood_chemistry_example'.
 
     dir : str
-        Retained for backward compatibility. Hugging Face files use its standard cache.
+        Directory where the example file is placed (default "pyaging_data"). The download
+        itself goes through the standard Hugging Face cache and is then copied here.
 
     verbose : bool
         Whether to log the output to console with the logger. Defaults to True.
@@ -64,5 +68,10 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         raise ValueError
 
     filename = _EXAMPLE_DATA_FILENAMES[data_type]
-    download_hf_file(filename, dir, logger, indent_level=1)
+    cache_path = download_hf_file(filename, dir, logger, indent_level=1)
+    destination = Path(dir) / filename
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(cache_path, destination)
+    logger.info(f"Example data available at {destination}", indent_level=2)
     logger.done()
+    return str(destination)

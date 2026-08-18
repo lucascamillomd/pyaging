@@ -37,6 +37,11 @@ example_data/
 clocks/weights/
 clocks/metadata/all_clock_metadata.pt
 
+# Source datasets downloaded during clock-notebook execution; only the
+# notebooks themselves are tracked
+clocks/notebooks/*
+!clocks/notebooks/*.ipynb
+
 # Hugging Face static-data staging area
 hf_static_data/
 

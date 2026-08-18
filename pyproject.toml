@@ -94,7 +94,7 @@ path = "src/pyaging/__init__.py"
 packages = ["src/pyaging"]
 
 [tool.hatch.build.targets.sdist]
-only-include = ["src/pyaging", "tests", "README.md", "LICENSE", "pyproject.toml"]
+only-include = ["src/pyaging", "README.md", "LICENSE", "pyproject.toml"]
 
 [tool.ruff]
 line-length = 120

@@ -1,21 +1,23 @@
 import hashlib
+import os
 import re
 import shutil
 import subprocess
+import sys
 import tarfile
 import tomllib
 from pathlib import Path
 
 import yaml
 
-MAKEFILE = Path("Makefile").read_text(encoding="utf-8")
-HF_README = Path("clocks/huggingface/README.md")
-GITIGNORE = Path(".gitignore").read_text(encoding="utf-8")
-WORKFLOW_DIRECTORY = Path(".github/workflows")
-READTHEDOCS_CONFIG = Path(".readthedocs.yaml")
+ROOT = Path(__file__).resolve().parents[1]
+MAKEFILE = (ROOT / "Makefile").read_text(encoding="utf-8")
+HF_README = ROOT / "clocks" / "huggingface" / "README.md"
+GITIGNORE = (ROOT / ".gitignore").read_text(encoding="utf-8")
+WORKFLOW_DIRECTORY = ROOT / ".github" / "workflows"
+READTHEDOCS_CONFIG = ROOT / ".readthedocs.yaml"
 SDIST_ONLY_INCLUDE = {
     "src/pyaging",
-    "tests",
     "README.md",
     "LICENSE",
     "pyproject.toml",
@@ -41,8 +43,8 @@ EXCLUDED_DOCS_ASSETS = {
 }
 
 
-def test_release_build_ships_only_the_package_tests_and_metadata():
-    with Path("pyproject.toml").open("rb") as pyproject:
+def test_release_build_ships_only_the_package_and_metadata():
+    with (ROOT / "pyproject.toml").open("rb") as pyproject:
         configuration = tomllib.load(pyproject)
 
     targets = configuration["tool"]["hatch"]["build"]["targets"]
@@ -63,6 +65,7 @@ def _build_fixture_sdist(project, output_directory):
             str(output_directory),
         ],
         cwd=project,
+        env={**os.environ, "VIRTUAL_ENV": sys.prefix},
         check=True,
         capture_output=True,
         text=True,
@@ -78,9 +81,9 @@ def _relative_sdist_members(sdist):
 def test_release_sdist_excludes_ignored_sentinels_and_generated_docs_assets(tmp_path):
     project = tmp_path / "project"
     project.mkdir()
-    shutil.copy2("pyproject.toml", project / "pyproject.toml")
-    shutil.copy2("README.md", project / "README.md")
-    shutil.copy2("LICENSE", project / "LICENSE")
+    shutil.copy2(ROOT / "pyproject.toml", project / "pyproject.toml")
+    shutil.copy2(ROOT / "README.md", project / "README.md")
+    shutil.copy2(ROOT / "LICENSE", project / "LICENSE")
 
     package = project / "src" / "pyaging"
     package.mkdir(parents=True)
@@ -235,6 +238,7 @@ def test_release_runs_steps_sequentially_in_one_recipe():
 def test_parallel_release_dry_run_preserves_publish_sequence():
     result = subprocess.run(
         ["make", "-n", "-j4", "release-slim", "VERSION=v0.3.1"],
+        cwd=ROOT,
         check=True,
         capture_output=True,
         text=True,
@@ -377,4 +381,4 @@ def test_workflows_have_named_jobs_and_concurrency_controls():
 
 def test_legacy_chained_workflows_are_removed():
     for name in ("build.yml", "publish.yml", "test.yml", "release.yml"):
-        assert not Path(".github/workflows", name).exists()
+        assert not (WORKFLOW_DIRECTORY / name).exists()

@@ -16,7 +16,12 @@ from huggingface_hub.errors import (
 )
 
 REPO_ID = "lucascamillomd/pyaging-data"
-REVISION = os.environ.get("PYAGING_DATA_REVISION", "main")
+DEFAULT_REVISION = "main"
+
+
+def get_data_revision() -> str:
+    """Resolve the data-repo revision, honoring PYAGING_DATA_REVISION at call time."""
+    return os.environ.get("PYAGING_DATA_REVISION", DEFAULT_REVISION)
 
 
 class PyAgingHubError(RuntimeError):
@@ -52,7 +57,7 @@ def download_hf_file(filename: str, dir: str = "pyaging_data", logger=None, inde
         path = hf_hub_download(
             repo_id=REPO_ID,
             filename=filename,
-            revision=REVISION,
+            revision=get_data_revision(),
         )
     except LocalEntryNotFoundError as exc:
         raise PyAgingDownloadError(f"Could not download data file '{filename}' and no local copy is available") from exc

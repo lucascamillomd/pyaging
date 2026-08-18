@@ -191,7 +191,8 @@ def df_to_adata(
         raise TypeError("Input df must be a pandas DataFrame.")
 
     # Split data and metadata
-    metadata_cols = metadata_cols or []
+    if metadata_cols is None:
+        metadata_cols = []
     if len(metadata_cols) > 0:
         metadata = df.loc[:, metadata_cols]
         df = df.drop(metadata_cols, axis=1)
