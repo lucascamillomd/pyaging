@@ -34,6 +34,9 @@ def _sync_notebooks():
         (_repo_root / "clocks" / "notebooks", _conf_dir / "clock_notebooks"),
     ):
         dest_dir.mkdir(exist_ok=True)
+        for stale in sorted(dest_dir.glob("*.ipynb")):
+            if not (src_dir / stale.name).is_file():
+                stale.unlink()
         for src in sorted(src_dir.glob("*.ipynb")):
             dest = dest_dir / src.name
             if not dest.is_file() or src.stat().st_mtime > dest.stat().st_mtime:

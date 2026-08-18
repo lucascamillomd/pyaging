@@ -46,6 +46,26 @@ def test_download_example_data_uses_hf_filename_and_copies_into_caller_directory
     logger.done.assert_called_once_with()
 
 
+def test_download_example_data_skips_download_when_destination_exists(monkeypatch, tmp_path):
+    logger = Mock()
+    logger_manager = Mock()
+    logger_manager.gen_logger.return_value = logger
+    download_hf_file = Mock()
+    caller_dir = tmp_path / "example-data"
+    caller_dir.mkdir()
+    existing = caller_dir / "GSE139307.pkl"
+    existing.write_bytes(b"user-modified-bytes")
+    monkeypatch.setattr(data_module, "LoggerManager", logger_manager)
+    monkeypatch.setattr(data_module, "download_hf_file", download_hf_file)
+
+    result = data_module.download_example_data("GSE139307", dir=str(caller_dir), verbose=True)
+
+    download_hf_file.assert_not_called()
+    assert result == str(existing)
+    assert existing.read_bytes() == b"user-modified-bytes"
+    logger.done.assert_called_once_with()
+
+
 def test_example_data_filename_mapping_is_not_public():
     assert not hasattr(public_data, "EXAMPLE_DATA_FILENAMES")
 

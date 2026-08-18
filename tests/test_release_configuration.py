@@ -129,13 +129,11 @@ def _target_recipe(target):
 
 def test_readthedocs_installs_the_project_with_its_docs_group_via_uv():
     configuration = yaml.safe_load(READTHEDOCS_CONFIG.read_text(encoding="utf-8"))
-    install = next(
-        entry for entry in configuration["python"]["install"] if isinstance(entry, dict) and entry.get("method") == "uv"
-    )
+    install_commands = configuration["build"]["jobs"]["install"]
 
     assert configuration["sphinx"]["configuration"] == "docs/source/conf.py"
-    assert install["command"] == "sync"
-    assert "docs" in install["groups"]
+    assert "pandoc" in configuration["build"]["apt_packages"]
+    assert any("uv sync --locked --no-default-groups --group docs" in command for command in install_commands)
 
 
 def test_docs_target_runs_sphinx_in_managed_environment():
@@ -157,7 +155,7 @@ def test_makefile_uses_only_hf_publish_targets():
 
 
 def test_makefile_has_hf_release_defaults():
-    assert "VERSION ?= v0.3.1" in MAKEFILE
+    assert re.search(r"^VERSION \?= v\d+\.\d+\.\d+$", MAKEFILE, flags=re.MULTILINE)
     assert "HF_REPO_ID ?= lucascamillomd/pyaging-data" in MAKEFILE
     assert "HF_REPO_OWNER ?= lucascamillomd" in MAKEFILE
     assert "HF_STATIC_DIR ?= hf_static_data" in MAKEFILE

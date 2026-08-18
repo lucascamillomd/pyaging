@@ -68,8 +68,13 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         raise ValueError
 
     filename = _EXAMPLE_DATA_FILENAMES[data_type]
-    cache_path = download_hf_file(filename, dir, logger, indent_level=1)
     destination = Path(dir) / filename
+    if destination.exists():
+        logger.info(f"Example data already exists at {destination}", indent_level=2)
+        logger.done()
+        return str(destination)
+
+    cache_path = download_hf_file(filename, dir, logger, indent_level=1)
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(cache_path, destination)
     logger.info(f"Example data available at {destination}", indent_level=2)

@@ -6,13 +6,10 @@ build:
     python: "3.12"
   apt_packages:
     - pandoc
+  jobs:
+    install:
+      - pip install uv
+      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv sync --locked --no-default-groups --group docs
 
 sphinx:
   configuration: docs/source/conf.py
-
-python:
-  install:
-    - method: uv
-      command: sync
-      groups:
-        - docs

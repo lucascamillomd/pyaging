@@ -7,6 +7,24 @@ HF_STATIC_DIR ?= hf_static_data
 COMMIT_MSG ?= "Bump to $(VERSION)"
 RELEASE_MSG ?= "Release $(VERSION)"
 
+# Re-runs must move the tag to the freshly uploaded revision, so delete any
+# existing tag before recreating it (exist_ok would silently keep the old one)
+define TAG_HF_DATA_REPO_SCRIPT
+import contextlib
+import os
+
+from huggingface_hub import create_tag, delete_tag
+from huggingface_hub.errors import HfHubHTTPError, RevisionNotFoundError
+
+repo_id = os.environ["TAG_HF_REPO_ID"]
+tag = os.environ["TAG_HF_TAG"]
+with contextlib.suppress(RevisionNotFoundError, HfHubHTTPError):
+    delete_tag(repo_id, tag=tag)
+create_tag(repo_id, tag=tag)
+print(f"Tagged {repo_id} @ {tag}")
+endef
+export TAG_HF_DATA_REPO_SCRIPT
+
 lint:
 	@echo "Running ruff for linting..."
 	uv run ruff check src/pyaging --fix
@@ -78,7 +96,7 @@ upload-clocks-to-hf: verify-hf-data-repo-public
 
 tag-hf-data-repo: verify-hf-auth
 	@echo "Tagging HF data repo $(HF_REPO_ID) with $(VERSION)..."
-	uv run python -c "from huggingface_hub import create_tag; create_tag('$(HF_REPO_ID)', tag='$(VERSION)', exist_ok=True)" || { echo "Tagging HF data repo failed"; exit 1; }
+	TAG_HF_REPO_ID='$(HF_REPO_ID)' TAG_HF_TAG='$(VERSION)' uv run python -c "$$TAG_HF_DATA_REPO_SCRIPT" || { echo "Tagging HF data repo failed"; exit 1; }
 
 upload-static-data-to-hf: verify-hf-data-repo-public
 	@test -d "$(HF_STATIC_DIR)/repo" || { echo "Missing $(HF_STATIC_DIR)/repo staging directory"; exit 1; }
@@ -117,7 +135,7 @@ version:
 
 commit:
 	@echo "Committing and pushing changes..."
-	git add src/pyaging/__init__.py uv.lock clocks/notebooks clocks/metadata tutorials docs/source docs/_static README.md
+	git add src/pyaging uv.lock clocks/notebooks clocks/metadata tutorials docs/source docs/_static README.md
 	git commit -m $(COMMIT_MSG) || { echo "Git commit failed"; exit 1; }
 	git push || { echo "Git push failed"; exit 1; }
 
