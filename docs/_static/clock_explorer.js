@@ -217,26 +217,28 @@
   }
 
   // ---------- popular strip ----------
-  // Top clocks by Hub downloads once counters accumulate; by paper citations
-  // until then. Clicking a chip filters the table to that clock.
+  // Top clocks by Hub downloads, with citations breaking ties (counters start
+  // at zero on new repos and aggregate daily, so early on the tiebreak decides
+  // the order). Clicking a chip filters the table to that clock.
   function buildPopular() {
-    var hasDownloads = state.clocks.some(function (c) { return (c.downloads || 0) > 0; });
-    var metric = hasDownloads ? "downloads" : "citations";
     var top = state.clocks
-      .filter(function (c) { return c[metric] != null; })
       .slice()
-      .sort(function (a, b) { return (b[metric] || 0) - (a[metric] || 0); })
+      .sort(function (a, b) {
+        return (b.downloads || 0) - (a.downloads || 0) || (b.citations || 0) - (a.citations || 0);
+      })
       .slice(0, 8);
     if (!top.length) return el("span");
     var wrap = el("div", "ce-popular");
-    wrap.appendChild(el("span", "ce-popular-label", hasDownloads ? "Most downloaded" : "Most cited"));
+    wrap.appendChild(el("span", "ce-popular-label", "Most downloaded"));
     top.forEach(function (c, i) {
       var chip = el("button", "ce-popular-chip");
       chip.type = "button";
       chip.title = "Show " + c.clock_name + " in the table";
       chip.appendChild(el("span", "ce-popular-rank", String(i + 1)));
       chip.appendChild(el("span", "ce-popular-name", c.clock_name));
-      chip.appendChild(el("span", "ce-popular-metric", core.formatValue(c[metric])));
+      if ((c.downloads || 0) > 0) {
+        chip.appendChild(el("span", "ce-popular-metric", core.formatValue(c.downloads)));
+      }
       chip.addEventListener("click", function () {
         state.search = c.clock_name;
         state.expanded = {};
