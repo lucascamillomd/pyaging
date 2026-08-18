@@ -224,9 +224,9 @@ def df_to_adata(
         # Move adata.X to GPU if possible
         adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
 
-    if live:
-        imputed = " · missing values imputed" if "X_imputed" in adata.layers else ""
-        step.done(f"AnnData: {adata.n_obs} samples × {adata.n_vars} features{imputed}")
+        if live:
+            imputed = " · missing values imputed" if "X_imputed" in adata.layers else ""
+            step.done(f"AnnData: {adata.n_obs} samples × {adata.n_vars} features{imputed}")
 
     logger.done()
 

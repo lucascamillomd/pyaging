@@ -89,7 +89,7 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
                 cache_path = download_hf_file(filename, dir, logger, indent_level=1)
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(cache_path, destination)
-            step.done(f"example data at {destination}")
+                step.done(f"example data at {destination}")
         else:
             cache_path = download_hf_file(filename, dir, logger, indent_level=1)
             destination.parent.mkdir(parents=True, exist_ok=True)
