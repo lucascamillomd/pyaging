@@ -1,9 +1,12 @@
+import contextlib
 import gc
 
 import anndata
 import torch
+from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
 
 from ..logger import LoggerManager, silence_logger
+from ..logger._live import ClockRunDisplay, live_display_enabled
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
     check_features_in_adata,
@@ -78,7 +81,8 @@ def predict_age(
 
     """
     logger = LoggerManager.gen_logger("predict_age")
-    if not verbose:
+    live = live_display_enabled(verbose)
+    if not verbose or live:
         silence_logger("predict_age")
     logger.first_info("Starting predict_age function")
 
@@ -90,40 +94,67 @@ def predict_age(
     # Set device for PyTorch operations
     device = set_torch_device(logger)
 
-    for clock_name in clock_names:
-        logger.info(f"🕒 Processing clock: {clock_name}", indent_level=1)
+    # The Hub's own download bars would interleave with the live region
+    hf_bars_were_enabled = live and not are_progress_bars_disabled()
+    if hf_bars_were_enabled:
+        disable_progress_bars()
+    display = ClockRunDisplay(clock_names, str(device)) if live else None
+    try:
+        with display if display else contextlib.nullcontext():
+            for clock_name in clock_names:
+                logger.info(f"🕒 Processing clock: {clock_name}", indent_level=1)
+                if display:
+                    display.start_clock(clock_name, "loading weights")
 
-        # Load and prepare the clock
-        model = load_clock(clock_name, device, dir, logger, indent_level=2)
+                # Load and prepare the clock
+                model = load_clock(clock_name, device, dir, logger, indent_level=2)
 
-        # Disclaimer for commercial clocks
-        if model.metadata.get("research_only", False):  # Defaults to False if 'research_only' key doesn't exist
-            logger.warning(
-                f"⚠️ Clock '{clock_name}' is for research purposes only. Please check the clock's "
-                f"documentation or notes for more information.",
-                indent_level=2,
-            )
+                # Disclaimer for commercial clocks
+                if model.metadata.get("research_only", False):
+                    if display:
+                        display.note(clock_name, "research use only")
+                    logger.warning(
+                        f"⚠️ Clock '{clock_name}' is for research purposes only. Please check the clock's "
+                        f"documentation or notes for more information.",
+                        indent_level=2,
+                    )
 
-        # Check and update adata for missing features
-        check_features_in_adata(
-            adata,
-            model,
-            logger,
-            indent_level=2,
-        )
+                # Check and update adata for missing features
+                if display:
+                    display.stage(clock_name, "matching features")
+                check_features_in_adata(
+                    adata,
+                    model,
+                    logger,
+                    indent_level=2,
+                )
 
-        # Perform age prediction using the model applying preprocessing and postprocessing steps
-        predicted_ages_tensor = predict_ages_with_model(adata, model, device, batch_size, logger, indent_level=2)
+                # Perform age prediction using the model applying preprocessing and postprocessing steps
+                if display:
+                    display.stage(clock_name, "predicting")
+                predicted_ages_tensor = predict_ages_with_model(
+                    adata, model, device, batch_size, logger, indent_level=2
+                )
 
-        # Add predicted ages and clock metadata to adata
-        add_pred_ages_and_clock_metadata_adata(adata, model, predicted_ages_tensor, dir, logger, indent_level=2)
+                # Add predicted ages and clock metadata to adata
+                if display:
+                    display.stage(clock_name, "writing results")
+                add_pred_ages_and_clock_metadata_adata(adata, model, predicted_ages_tensor, dir, logger, indent_level=2)
 
-        # Delete the clock matrix object
-        if clean:
-            del adata.obsm[f"X_{clock_name}"]
+                # Delete the clock matrix object
+                if clean:
+                    del adata.obsm[f"X_{clock_name}"]
 
-        # Flush memory
-        gc.collect()
-        torch.cuda.empty_cache()
+                # Flush memory
+                gc.collect()
+                torch.cuda.empty_cache()
+
+                if display:
+                    display.finish_clock(clock_name)
+            if display:
+                display.finish(n_samples=adata.n_obs)
+    finally:
+        if hf_bars_were_enabled:
+            enable_progress_bars()
 
     logger.done()

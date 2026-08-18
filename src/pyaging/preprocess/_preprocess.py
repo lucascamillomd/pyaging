@@ -1,3 +1,5 @@
+import contextlib
+
 import anndata
 import numpy as np
 import pandas as pd
@@ -17,6 +19,7 @@ except Exception:
     CUPY_AVAILABLE = False
 
 from ..logger import LoggerManager, main_tqdm, silence_logger
+from ..logger._live import SimpleStep, live_display_enabled
 from ._preprocess_utils import (
     add_metadata_to_anndata,
     add_unstructured_data,
@@ -183,40 +186,47 @@ def df_to_adata(
 
     """
     logger = LoggerManager.gen_logger("df_to_adata")
-    if not verbose:
+    live = live_display_enabled(verbose)
+    if not verbose or live:
         silence_logger("df_to_adata")
     logger.first_info("Starting df_to_adata function")
 
     if not isinstance(df, pd.DataFrame):
         raise TypeError("Input df must be a pandas DataFrame.")
 
-    # Split data and metadata
-    if metadata_cols is None:
-        metadata_cols = []
-    if len(metadata_cols) > 0:
-        metadata = df.loc[:, metadata_cols]
-        df = df.drop(metadata_cols, axis=1)
-    else:
-        metadata = None
+    step = SimpleStep("building AnnData object") if live else contextlib.nullcontext()
+    with step:
+        # Split data and metadata
+        if metadata_cols is None:
+            metadata_cols = []
+        if len(metadata_cols) > 0:
+            metadata = df.loc[:, metadata_cols]
+            df = df.drop(metadata_cols, axis=1)
+        else:
+            metadata = None
 
-    # Create an AnnData object
-    adata = create_anndata_object(df, logger)
+        # Create an AnnData object
+        adata = create_anndata_object(df, logger)
 
-    # Add metadata
-    add_metadata_to_anndata(adata, metadata, logger)
+        # Add metadata
+        add_metadata_to_anndata(adata, metadata, logger)
 
-    # Log statistics
-    log_data_statistics(adata.X, logger)
+        # Log statistics
+        log_data_statistics(adata.X, logger)
 
-    # Impute missing values
-    impute_missing_values(adata, imputer_strategy, logger)
+        # Impute missing values
+        impute_missing_values(adata, imputer_strategy, logger)
 
-    # Add unstructured data
-    if "X_imputed" in adata.layers:
-        add_unstructured_data(adata, imputer_strategy, logger)
+        # Add unstructured data
+        if "X_imputed" in adata.layers:
+            add_unstructured_data(adata, imputer_strategy, logger)
 
-    # Move adata.X to GPU if possible
-    adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
+        # Move adata.X to GPU if possible
+        adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
+
+    if live:
+        imputed = " · missing values imputed" if "X_imputed" in adata.layers else ""
+        step.done(f"AnnData: {adata.n_obs} samples × {adata.n_vars} features{imputed}")
 
     logger.done()
 

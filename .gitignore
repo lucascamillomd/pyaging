@@ -56,3 +56,6 @@ docs/source/clock_notebooks/
 
 # Playwright MCP scratch output
 .playwright-mcp/
+
+# Local scratch
+tmp/

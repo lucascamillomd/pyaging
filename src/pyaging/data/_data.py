@@ -1,7 +1,10 @@
 import shutil
 from pathlib import Path
 
+from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
+
 from ..logger import LoggerManager, silence_logger
+from ..logger._live import SimpleStep, live_display_enabled
 from ..utils._hf import download_hf_file
 
 _EXAMPLE_DATA_FILENAMES = {
@@ -56,7 +59,8 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
 
     """
     logger = LoggerManager.gen_logger("download_example_data")
-    if not verbose:
+    live = live_display_enabled(verbose)
+    if not verbose or live:
         silence_logger("download_example_data")
     logger.first_info("Starting download_example_data function")
 
@@ -70,13 +74,29 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     filename = _EXAMPLE_DATA_FILENAMES[data_type]
     destination = Path(dir) / filename
     if destination.exists():
+        if live:
+            SimpleStep(filename).done(f"example data already at {destination}")
         logger.info(f"Example data already exists at {destination}", indent_level=2)
         logger.done()
         return str(destination)
 
-    cache_path = download_hf_file(filename, dir, logger, indent_level=1)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy(cache_path, destination)
+    hf_bars_were_enabled = live and not are_progress_bars_disabled()
+    if hf_bars_were_enabled:
+        disable_progress_bars()
+    try:
+        if live:
+            with SimpleStep(f"downloading {filename}") as step:
+                cache_path = download_hf_file(filename, dir, logger, indent_level=1)
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(cache_path, destination)
+            step.done(f"example data at {destination}")
+        else:
+            cache_path = download_hf_file(filename, dir, logger, indent_level=1)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(cache_path, destination)
+    finally:
+        if hf_bars_were_enabled:
+            enable_progress_bars()
     logger.info(f"Example data available at {destination}", indent_level=2)
     logger.done()
     return str(destination)
