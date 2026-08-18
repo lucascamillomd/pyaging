@@ -218,6 +218,7 @@ def df_to_adata(
 
         # Log statistics
         log_data_statistics(adata.X, pipeline_logger)
+        missing_pct = float(np.isnan(np.asarray(adata.X, dtype=float)).mean() * 100)
 
         # Impute missing values
         if live:
@@ -232,8 +233,12 @@ def df_to_adata(
         adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
 
         if live:
-            imputed = " · missing values imputed" if "X_imputed" in adata.layers else ""
-            step.done(f"AnnData: {adata.n_obs} samples × {adata.n_vars} features{imputed}")
+            if missing_pct == 0:
+                missing = " · no missing values"
+            else:
+                shown = f"{missing_pct:.2f}%" if missing_pct >= 0.01 else "<0.01%"
+                missing = f" · {shown} missing values imputed"
+            step.done(f"AnnData: {adata.n_obs} samples × {adata.n_vars} features{missing}")
 
     logger.done()
 

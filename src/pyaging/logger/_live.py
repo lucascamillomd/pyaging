@@ -70,7 +70,7 @@ class Shimmer:
     the message rests between sweeps - same cycle Claude Code uses.
     """
 
-    def __init__(self, message: str, base: str = TEAL, glow: str = f"bold {TEAL_BRIGHT}"):
+    def __init__(self, message: str, base: str | None = TEAL, glow: str = f"bold {TEAL_BRIGHT}"):
         self.message = message
         self.base = base
         self.glow = glow
@@ -81,7 +81,8 @@ class Shimmer:
         position = width + 10 - (int(time.perf_counter() * 1000 / 200) % cycle)
         text = Text()
         for index, char in enumerate(self.message):
-            text.append(char, style=self.glow if abs(index - position) <= 1 else self.base)
+            base = self.base if self.base else None
+            text.append(char, style=self.glow if abs(index - position) <= 1 else base)
         yield text
 
     def __rich_measure__(self, console, options):
@@ -268,6 +269,7 @@ class ClockRunDisplay:
                     f" · {n_samples} samples · {elapsed:.1f}s · {self.device}",
                     MUTED,
                 ),
+                (" · results in adata.obs", MUTED),
             )
         ]
         for name in self.order:
@@ -278,9 +280,6 @@ class ClockRunDisplay:
             lines.append(Text.assemble((f"  {DOT} ", GREEN), (name, "bold"), (seconds, MUTED)))
             for message in row["warnings"]:
                 lines.append(Text.assemble((f"    {ELBOW} ", MUTED), ("⚠ ", SAND), (message, MUTED)))
-        lines.append(
-            Text.assemble((f"  {ELBOW} ", MUTED), ("results in adata.obs · clock metadata in adata.uns", MUTED))
-        )
         self._summary = Group(*lines)
 
     # -- rendering ----------------------------------------------------------
@@ -374,7 +373,7 @@ class SimpleStep:
         grid = Table.grid(padding=(0, 1))
         grid.add_row(
             self._spinner,
-            Shimmer(self.label, base="default", glow=f"bold {TEAL_BRIGHT}"),
+            Shimmer(self.label, base=None, glow=f"bold {TEAL_BRIGHT}"),
             _bar(0, None, width=18, pulse=True),
             Text(f"{elapsed:.0f}s", style=MUTED),
         )
