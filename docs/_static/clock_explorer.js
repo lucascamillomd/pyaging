@@ -357,7 +357,13 @@
       tr.appendChild(exp);
       cols().forEach(function (col) {
         var td = el("td", columnClass(col));
-        td.appendChild(col.key === "approved_by_author" ? approvalBadge(c[col.key]) : document.createTextNode(fmt(c[col.key])));
+        if (col.key === "approved_by_author") {
+          td.appendChild(approvalBadge(c[col.key]));
+        } else {
+          var text = fmt(c[col.key]);
+          td.appendChild(document.createTextNode(text));
+          if (col.cls === "ce-col-long" || col.cls === "ce-col-short") td.title = text;
+        }
         tr.appendChild(td);
       });
       tr.addEventListener("click", function () {

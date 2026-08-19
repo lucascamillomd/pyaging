@@ -86,7 +86,11 @@ body[data-theme="dark"] .ce-controls::after {
 .ce-table thead th { padding-top: 8px; padding-bottom: 8px; }
 .ce-table .ce-col-clock { min-width: 12rem; font-weight: 600; }
 .ce-table .ce-col-approval, .ce-table .ce-col-num, .ce-table .ce-col-short { width: 1%; }
-.ce-table .ce-col-long { min-width: 11rem; }
+.ce-table td.ce-col-short { max-width: 10rem; overflow: hidden; text-overflow: ellipsis; }
+/* Long free-text columns are capped; the row's detail panel has the full
+   text, and truncated cells carry it as a hover tooltip. */
+.ce-table .ce-col-long { min-width: 9rem; }
+.ce-table td.ce-col-long { max-width: 13rem; overflow: hidden; text-overflow: ellipsis; }
 .ce-table thead th { position: sticky; top: 0; background: var(--ce-surface); cursor: pointer; user-select: none;
   font-weight: 600; z-index: 1; }
 .ce-table thead th.sort-asc::after { content: " ▲"; color: var(--ce-primary); }
