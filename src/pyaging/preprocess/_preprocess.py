@@ -18,7 +18,6 @@ try:
 except Exception:
     CUPY_AVAILABLE = False
 
-from ..logger import main_tqdm
 from ..logger._live import live_step
 from ._preprocess_utils import (
     add_metadata_to_anndata,
@@ -94,7 +93,7 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
             # Open bigWig file
             with open_bw(bw_file) as bw:
                 signal_sample = np.empty(shape=(0, 0), dtype=float)
-                for i in main_tqdm(range(genes.shape[0]), indent_level=2, logger=pipeline_logger):
+                for i in range(genes.shape[0]):
                     try:
                         signal = bw.stats(
                             "chr" + genes["chr"].iloc[i],
@@ -256,7 +255,7 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
         aggregated_data = {}
         n_duplicated_probes = 0
 
-        for column in main_tqdm(df.columns, indent_level=2, logger=pipeline_logger):
+        for column in df.columns:
             cpg_site = column.split("_")[0]
             if cpg_site in aggregated_data:
                 n_duplicated_probes += 1
@@ -271,7 +270,7 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
 
         step.update(f"averaging {n_duplicated_probes} duplicated probes")
         aggregated_columns = []
-        for cpg_site, columns in main_tqdm(aggregated_data.items(), indent_level=2, logger=pipeline_logger):
+        for cpg_site, columns in aggregated_data.items():
             if len(columns) > 1:
                 mean_series = pd.concat(columns, axis=1).mean(axis=1)
                 mean_series.name = cpg_site

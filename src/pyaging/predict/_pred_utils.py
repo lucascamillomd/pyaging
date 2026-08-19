@@ -13,7 +13,6 @@ except Exception:
 
 import gc
 
-from ..logger import main_tqdm
 from ..models import pyagingModel
 from ..utils._hf import PyAgingResourceNotFoundError, download_clock_weights
 from ..utils._utils import progress
@@ -74,18 +73,23 @@ def load_clock(
 
     """
     clock_name = clock_name.lower()
-    if logger is None:
-        # Direct user call: run under the display instead of a plumbed logger
-        from ..logger._live import live_step, quiet_hf_bars
+    if logger is not None:
+        return _load_clock_impl(clock_name, device, dir, logger, indent_level)
 
-        with (
-            quiet_hf_bars(),
-            live_step(f"loading {clock_name}", verbose) as (step, pipeline_logger),
-        ):
-            model = load_clock(clock_name, device, dir, pipeline_logger, indent_level=indent_level)
-            step.done(f"{clock_name} ready on {device}")
-        return model
+    # Direct user call: run under the display instead of a plumbed logger.
+    # Imported here to avoid a predict <-> logger import cycle.
+    from ..logger._live import live_step, quiet_hf_bars
 
+    with (
+        quiet_hf_bars(verbose),
+        live_step(f"loading {clock_name}", verbose) as (step, pipeline_logger),
+    ):
+        model = _load_clock_impl(clock_name, device, dir, pipeline_logger, indent_level)
+        step.done(f"{clock_name} ready on {device}")
+    return model
+
+
+def _load_clock_impl(clock_name: str, device: str, dir: str, logger, indent_level: int):
     try:
         weights_path = download_clock_weights(clock_name, dir, logger, indent_level=indent_level)
     except PyAgingResourceNotFoundError as exc:
@@ -318,7 +322,7 @@ def predict_ages_with_model(
     starts = list(range(0, matrix.shape[0], batch_size))
     predictions = []
     with torch.inference_mode():
-        for index, start in enumerate(main_tqdm(starts, indent_level=indent_level + 1, logger=logger)):
+        for index, start in enumerate(starts):
             batch = torch.as_tensor(matrix[start : start + batch_size], dtype=torch.float64, device=device)
             predictions.append(model(batch))
             if progress_callback is not None:

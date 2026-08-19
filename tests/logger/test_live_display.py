@@ -108,3 +108,37 @@ def test_running_clock_shows_batch_progress():
     console.print(display)
 
     assert "3/10" in buffer.getvalue()
+
+
+def test_plain_region_prints_intro_and_final_for_captured_output():
+    buffer = io.StringIO()
+    plain_console = Console(file=buffer, force_terminal=False, force_jupyter=False, width=100)
+    step = SimpleStep("downloading data.pkl", console=plain_console)
+    with step:
+        step.done("example data at pyaging_data/data.pkl")
+    output = buffer.getvalue()
+
+    assert "downloading data.pkl" in output
+    assert "example data at pyaging_data/data.pkl" in output
+
+
+def test_simple_step_payload_renders_under_completion_line():
+    buffer = io.StringIO()
+    step = SimpleStep("loading metadata", console=_forced_console(buffer))
+    with step:
+        step.payload("horvath2013 · altumage · phenoage")
+        step.done("3 clocks available")
+    output = buffer.getvalue()
+
+    assert "3 clocks available" in output
+    assert "horvath2013 · altumage · phenoage" in output
+
+
+def test_disabled_step_suppresses_payloads_too():
+    buffer = io.StringIO()
+    step = SimpleStep("loading metadata", console=_forced_console(buffer), enabled=False)
+    with step:
+        step.payload("should not appear")
+        step.done("also hidden")
+
+    assert buffer.getvalue() == ""

@@ -25,8 +25,9 @@ import time
 from rich.console import Console, Group
 
 try:
-    # Private rich helper; guarded so a future rich release degrades pyaging
-    # to plain text logs instead of breaking `import pyaging`.
+    # Private rich helper; guarded so a future rich release degrades notebooks
+    # to the non-animated region (final summary lines only) instead of
+    # breaking `import pyaging`.
     from rich.jupyter import _render_segments
 except ImportError:  # pragma: no cover
     _render_segments = None
@@ -110,12 +111,14 @@ def display_enabled(verbose) -> bool:
 
 
 @contextlib.contextmanager
-def quiet_hf_bars():
-    """Suppress the Hub's own download bars: the display owns all output
-    (and verbose=False must be fully silent)."""
+def quiet_hf_bars(verbose=True):
+    """Suppress the Hub's own download bars wherever the display renders its
+    own progress, and always at verbose=False. Non-interactive verbose runs
+    keep the bars: they are the only live progress signal there."""
     from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
 
-    were_enabled = not are_progress_bars_disabled()
+    animated = _console.is_jupyter or _console.is_interactive
+    were_enabled = (not verbose or animated) and not are_progress_bars_disabled()
     if were_enabled:
         disable_progress_bars()
     try:
@@ -234,13 +237,16 @@ class _TerminalRegion:
 
 
 class _PlainRegion:
-    """Non-interactive output (pipes, CI): no animation, final lines only."""
+    """Non-interactive output (pipes, CI): an intro line, then final lines."""
 
     def __init__(self, console: Console, renderable):
         self.console = console
+        self.renderable = renderable
 
     def start(self):
-        pass
+        intro = getattr(self.renderable, "plain_intro", None)
+        if intro is not None:
+            self.console.print(intro())
 
     def close(self, final=None):
         if final is not None:
@@ -286,6 +292,13 @@ class ClockRunDisplay:
         self._summary = None
         self._spinner = Sparkle()
         self._region = _make_region(self.console, self, enabled=enabled)
+
+    def plain_intro(self):
+        return Text.assemble(
+            (f"{DOT} ", TEAL),
+            ("predict_age", "bold"),
+            (f" · {len(self.order)} clock{'s' if len(self.order) != 1 else ''} · {self.device} · running…", MUTED),
+        )
 
     # -- lifecycle ----------------------------------------------------------
     def __enter__(self):
@@ -413,6 +426,7 @@ class SimpleStep:
         self.label = label
         self.enabled = enabled
         self.warnings = []
+        self.payloads = []
         self.started = time.perf_counter()
         self._spinner = Sparkle()
         self._region = None
@@ -446,11 +460,18 @@ class SimpleStep:
         if message:
             self.warnings.append(str(message).strip())
 
+    def payload(self, renderable):
+        """Attach a result block rendered under the completion line."""
+        self.payloads.append(renderable)
+
+    def plain_intro(self):
+        return Text.assemble((f"{DOT} ", TEAL), (self.label, "bold"), (" …", MUTED))
+
     def done(self, message: str):
         text = Text.assemble((f"{DOT} ", GREEN), (message, ""))
-        if self.warnings:
-            elbows = (Text.assemble((f"  {ELBOW} ", MUTED), ("⚠ ", SAND), (m, MUTED)) for m in self.warnings)
-            text = Group(text, *elbows)
+        if self.warnings or self.payloads:
+            elbows = [Text.assemble((f"  {ELBOW} ", MUTED), ("⚠ ", SAND), (m, MUTED)) for m in self.warnings]
+            text = Group(text, *elbows, *self.payloads)
         if self._region is not None:
             self._final = text
         elif self.enabled:
