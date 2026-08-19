@@ -64,6 +64,7 @@ jobs:
       # over an hour on `apt-get update` (observed twice on 2026-08-19)
       - run: |
           curl -sL -o /tmp/pandoc.deb https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-1-amd64.deb
+          echo "4f41d817d262ef3d17953a3e6e0fefddb971aa4f2f121544a9a86db449d945e1  /tmp/pandoc.deb" | sha256sum --check
           sudo dpkg -i /tmp/pandoc.deb
       - run: uv sync --locked --no-default-groups --group docs
       - run: uv run --no-sync sphinx-build -b html docs/source docs/_build/html
