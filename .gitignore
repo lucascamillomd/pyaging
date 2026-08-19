@@ -1,37 +1,55 @@
-pyaing/clocks
-pyaging_data/
-example_data/
-pyaging/clocks/
-clocks/weights/
-*.pt
-*.json
-pyaging_data/
-testing.ipynb
-.ipynb_checkpoints/
+# Python bytecode
+__pycache__/
 *.pyc
-.DS_Store
-pyaging.egg-info/
-dist/
-build/
-docs/_build
-docs/_templates
-*.RData
-.ruff_cache/
-.pytest_cache/
-.tox/
-*.gz
-*.parquet
+
+# Virtual environments and local shell configuration
+.venv/
 .direnv/
 .envrc
-.worktrees/
-hf_static_data/
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+
+# Packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Agent and editor state
+.claude/
 .cursor/
+.remember/
+.superpowers/
+.worktrees/
 
-# Clock Explorer data: committed build artifact used as the fallback when the
-# build-time regeneration (docs/source/make_clock_data.py) can't reach S3.
-# Overrides the blanket "*.json" ignore above; the .pt binary stays ignored.
-!docs/_static/clocks.json
+# Clock data downloaded from Hugging Face on demand
+pyaging_data/
+example_data/
 
-# Audited clock metadata registries override only the blanket "*.json" ignore.
-!clocks/metadata/controlled_vocabulary.json
-!clocks/metadata/clock_metadata.json
+# Generated clock weights and aggregate metadata (published to Hugging Face)
+clocks/weights/
+clocks/metadata/all_clock_metadata.pt
+
+# Source datasets downloaded during clock-notebook execution; only the
+# notebooks themselves are tracked
+clocks/notebooks/*
+!clocks/notebooks/*.ipynb
+
+# Hugging Face static-data staging area
+hf_static_data/
+
+# Documentation build outputs
+docs/_build/
+docs/_templates/
+docs/_static/.cache/
+docs/_static/all_clock_metadata.pt
+docs/source/_static/all_clock_metadata.pt
+docs/source/tutorials/*.ipynb
+docs/source/clock_notebooks/

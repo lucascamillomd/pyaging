@@ -1,0 +1,39 @@
+name: Clock request
+description: Request a new aging clock for the pyaging catalog
+labels: ["clock request"]
+body:
+  - type: input
+    id: clock-name
+    attributes:
+      label: Clock name
+      description: The name of the clock as used in the publication
+      placeholder: GrimAge3
+    validations:
+      required: true
+  - type: input
+    id: doi
+    attributes:
+      label: Paper DOI
+      description: DOI of the publication or preprint describing the clock
+      placeholder: 10.1093/bioinformatics/btae200
+    validations:
+      required: true
+  - type: input
+    id: species-tissue
+    attributes:
+      label: Species and tissue
+      placeholder: Human, whole blood
+    validations:
+      required: true
+  - type: textarea
+    id: weights
+    attributes:
+      label: Weights availability
+      description: Where the model coefficients or weights can be obtained (supplementary table, repository link, on request from the authors, ...)
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else that helps, such as the input platform, units of the prediction, or existing implementations

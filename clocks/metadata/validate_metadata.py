@@ -166,7 +166,7 @@ def _same_json_value(left, right):
     if isinstance(left, float) and (not math.isfinite(left) or not math.isfinite(right)):
         return False
     if type(left) is list:
-        return len(left) == len(right) and all(_same_json_value(a, b) for a, b in zip(left, right))
+        return len(left) == len(right) and all(_same_json_value(a, b) for a, b in zip(left, right, strict=False))
     if type(left) is dict:
         return left.keys() == right.keys() and all(_same_json_value(left[key], right[key]) for key in left)
     return left == right
@@ -507,27 +507,17 @@ def _effective_model_feature_count(model):
     if len(coefficient_vectors) == 1:
         return len(coefficient_vectors[0])
     base_model_features = getattr(model, "base_model_features", None)
-    if (
-        base_model_features is not None
-        and getattr(model, "preprocess_name", None) == "tpm_norm_log1p"
-    ):
+    if base_model_features is not None and getattr(model, "preprocess_name", None) == "tpm_norm_log1p":
         return len(base_model_features)
     base_model = getattr(model, "base_model", None)
     linear = getattr(base_model, "linear", None)
     weight = getattr(linear, "weight", None)
-    clock_name = getattr(getattr(model, "metadata", None), "get", lambda _key: None)(
-        "clock_name"
-    )
+    clock_name = getattr(getattr(model, "metadata", None), "get", lambda _key: None)("clock_name")
     policy = EFFECTIVE_FEATURE_POLICIES.get(clock_name)
     if policy == "nonzero_linear_columns":
-        if (
-            not isinstance(weight, torch.Tensor)
-            or weight.ndim != 2
-            or weight.shape[1] != len(model.features)
-        ):
+        if not isinstance(weight, torch.Tensor) or weight.ndim != 2 or weight.shape[1] != len(model.features):
             raise ValueError(
-                f"{clock_name}: nonzero_linear_columns policy requires a "
-                "same-width 2-D linear coefficient matrix"
+                f"{clock_name}: nonzero_linear_columns policy requires a same-width 2-D linear coefficient matrix"
             )
         return int(torch.count_nonzero(torch.any(weight.detach() != 0, dim=0)).item())
     return len(model.features)
@@ -559,14 +549,8 @@ def validate_artifact_consistency(root):
     ledger = load_ledger(metadata_dir / "evidence_ledger.jsonl")
     validate_evidence(registry, ledger)
     expected = set(registry)
-    notebooks = {
-        path.stem: path
-        for path in (root / "clocks" / "notebooks").glob("*.ipynb")
-        if path.stem != "template"
-    }
-    weights = {
-        path.stem: path for path in (root / "clocks" / "weights").glob("*.pt")
-    }
+    notebooks = {path.stem: path for path in (root / "clocks" / "notebooks").glob("*.ipynb") if path.stem != "template"}
+    weights = {path.stem: path for path in (root / "clocks" / "weights").glob("*.pt")}
     aggregate_path = metadata_dir / "all_clock_metadata.pt"
     aggregate = torch.load(aggregate_path, weights_only=False, map_location="cpu")
     artifact_sets = {
@@ -577,8 +561,7 @@ def validate_artifact_consistency(root):
     for label, names in artifact_sets.items():
         if names != expected:
             raise ValueError(
-                f"{label} clock set mismatch: missing={sorted(expected - names)}, "
-                f"extra={sorted(names - expected)}"
+                f"{label} clock set mismatch: missing={sorted(expected - names)}, extra={sorted(names - expected)}"
             )
     if type(aggregate) is not dict:
         raise ValueError("aggregate must be a dictionary")
@@ -595,9 +578,7 @@ def validate_artifact_consistency(root):
             source_value = cell.get("source")
             if type(source_value) is str:
                 source = source_value
-            elif type(source_value) is list and all(
-                type(line) is str for line in source_value
-            ):
+            elif type(source_value) is list and all(type(line) is str for line in source_value):
                 source = "".join(source_value)
             else:
                 raise ValueError(f"{name}.cells[{index}]: invalid source")
@@ -606,9 +587,7 @@ def validate_artifact_consistency(root):
             try:
                 tree = ast.parse(source)
             except SyntaxError as error:
-                raise ValueError(
-                    f"{name}.cells[{index}]: invalid Python: {error.msg}"
-                ) from error
+                raise ValueError(f"{name}.cells[{index}]: invalid Python: {error.msg}") from error
             assignments = {}
             nodes = {}
             valid_cell = False
@@ -623,9 +602,7 @@ def validate_artifact_consistency(root):
                 try:
                     assignments[field] = ast.literal_eval(statement.value)
                 except (ValueError, TypeError) as error:
-                    raise ValueError(
-                        f"{name}.{field}: notebook value must be a Python literal"
-                    ) from error
+                    raise ValueError(f"{name}.{field}: notebook value must be a Python literal") from error
                 nodes[field] = statement
             if valid_cell:
                 matches.append((source, assignments, nodes))
@@ -643,17 +620,11 @@ def validate_artifact_consistency(root):
             line = source_lines[nodes[field].end_lineno - 1]
             marker = "# Paper:"
             if marker not in line or not line.split(marker, 1)[1].strip():
-                raise ValueError(
-                    f"{name}.{field}: requires a nonempty same-line # Paper: comment"
-                )
+                raise ValueError(f"{name}.{field}: requires a nonempty same-line # Paper: comment")
             comment = line.split(marker, 1)[1].strip()
-            expected_comment = _collapse_source_text(
-                ledger[name]["fields"][field]["source_text"]
-            )
+            expected_comment = _collapse_source_text(ledger[name]["fields"][field]["source_text"])
             if comment != expected_comment:
-                raise ValueError(
-                    f"{name}.{field}: notebook # Paper: comment does not match evidence ledger"
-                )
+                raise ValueError(f"{name}.{field}: notebook # Paper: comment does not match evidence ledger")
         for field in CURATED_METADATA_FIELDS:
             if not _same_json_value(assignments[field], registry[name][field]):
                 raise ValueError(f"{name}.{field}: notebook value does not match registry")
@@ -682,13 +653,9 @@ def validate_artifact_consistency(root):
                 "version": getattr(model, "version", None),
                 "preprocess": getattr(model, "preprocess_name", None),
                 "postprocess": getattr(model, "postprocess_name", None),
-                "reference_values": (
-                    True if getattr(model, "reference_values", None) is not None else None
-                ),
+                "reference_values": (True if getattr(model, "reference_values", None) is not None else None),
             }
-            runtime_by_name[name] = {
-                field: value for field, value in runtime.items() if value is not None
-            }
+            runtime_by_name[name] = {field: value for field, value in runtime.items() if value is not None}
         finally:
             del model
             gc.collect()

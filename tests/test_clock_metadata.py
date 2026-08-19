@@ -1,4 +1,5 @@
 import copy
+import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -6,20 +7,22 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from clocks.metadata.validate_metadata import (
-    ARRAY_FIELDS,
-    AUDITED_FIELDS,
-    _effective_model_feature_count,
-    load_json,
-    load_ledger,
-    validate_artifact_consistency,
-    validate_evidence,
-    validate_registry,
-    validate_vocabulary,
-)
-
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_DIR = ROOT / "clocks" / "metadata"
+
+_spec = importlib.util.spec_from_file_location("validate_metadata", METADATA_DIR / "validate_metadata.py")
+_validate_metadata = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_validate_metadata)
+
+ARRAY_FIELDS = _validate_metadata.ARRAY_FIELDS
+AUDITED_FIELDS = _validate_metadata.AUDITED_FIELDS
+_effective_model_feature_count = _validate_metadata._effective_model_feature_count
+load_json = _validate_metadata.load_json
+load_ledger = _validate_metadata.load_ledger
+validate_artifact_consistency = _validate_metadata.validate_artifact_consistency
+validate_evidence = _validate_metadata.validate_evidence
+validate_registry = _validate_metadata.validate_registry
+validate_vocabulary = _validate_metadata.validate_vocabulary
 REGISTRY_PATH = METADATA_DIR / "clock_metadata.json"
 VOCABULARY_PATH = METADATA_DIR / "controlled_vocabulary.json"
 LEDGER_PATH = METADATA_DIR / "evidence_ledger.jsonl"
@@ -64,9 +67,7 @@ def test_evidence_is_complete_and_resolved(registry, ledger):
 
 
 def test_reedbmi_access_issues_do_not_contradict_corrected_feature_count(ledger):
-    assert not any(
-        "134 CpGs" in issue for issue in ledger["reedbmi"]["access_issues"]
-    )
+    assert not any("134 CpGs" in issue for issue in ledger["reedbmi"]["access_issues"])
 
 
 def _write_consistent_artifact_fixture(tmp_path, registry, clock_name="tiny"):
@@ -148,9 +149,7 @@ def _write_consistent_artifact_fixture(tmp_path, registry, clock_name="tiny"):
     )
     torch.save(model, weights_dir / f"{clock_name}.pt")
     aggregate_record = copy.deepcopy(record)
-    aggregate_record.update(
-        {"version": "1", "preprocess": "none", "postprocess": "none"}
-    )
+    aggregate_record.update({"version": "1", "preprocess": "none", "postprocess": "none"})
     torch.save({clock_name: aggregate_record}, metadata_dir / "all_clock_metadata.pt")
     return root
 
@@ -180,9 +179,7 @@ def test_validate_artifact_consistency_requires_same_line_paper_comments(tmp_pat
     notebook_path = root / "clocks" / "notebooks" / "tiny.ipynb"
     notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
     notebook["cells"][0]["source"] = [
-        line.replace("  # Paper: exact source wording", "")
-        if '["tissue"]' in line
-        else line
+        line.replace("  # Paper: exact source wording", "") if '["tissue"]' in line else line
         for line in notebook["cells"][0]["source"]
     ]
     notebook_path.write_text(json.dumps(notebook) + "\n", encoding="utf-8")
@@ -234,9 +231,7 @@ def test_validate_artifact_consistency_rejects_raw_pool_for_sparse_selected_mode
     notebook_path = root / "clocks" / "notebooks" / "cellpopage.ipynb"
     notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
     notebook["cells"][0]["source"] = [
-        'model.metadata["n_features"] = 50\n'
-        if '["n_features"]' in line
-        else line
+        'model.metadata["n_features"] = 50\n' if '["n_features"]' in line else line
         for line in notebook["cells"][0]["source"]
     ]
     notebook_path.write_text(json.dumps(notebook) + "\n", encoding="utf-8")
@@ -526,9 +521,7 @@ def test_validate_evidence_rejects_representative_invalid_values(registry, ledge
             r"example\.record.*unknown.*typo_field",
         ),
         (
-            lambda record: record["fields"].__setitem__(
-                "typo_field", copy.deepcopy(record["fields"]["year"])
-            ),
+            lambda record: record["fields"].__setitem__("typo_field", copy.deepcopy(record["fields"]["year"])),
             r"example\.fields.*unknown.*typo_field",
         ),
         (
@@ -537,9 +530,7 @@ def test_validate_evidence_rejects_representative_invalid_values(registry, ledge
         ),
     ],
 )
-def test_validate_evidence_rejects_unknown_schema_fields(
-    registry, ledger, mutation, context
-):
+def test_validate_evidence_rejects_unknown_schema_fields(registry, ledger, mutation, context):
     registry_record = copy.deepcopy(next(iter(registry.values())))
     ledger_record = copy.deepcopy(ledger[registry_record["clock_name"]])
     registry_record["clock_name"] = "example"
@@ -558,9 +549,7 @@ def test_validate_evidence_rejects_unknown_schema_fields(
         [3],
     ],
 )
-def test_validate_evidence_rejects_invalid_access_issue_shape(
-    registry, ledger, access_issues
-):
+def test_validate_evidence_rejects_invalid_access_issue_shape(registry, ledger, access_issues):
     registry_record = copy.deepcopy(next(iter(registry.values())))
     clock_name = registry_record["clock_name"]
     ledger_record = copy.deepcopy(ledger[clock_name])
@@ -570,33 +559,25 @@ def test_validate_evidence_rejects_invalid_access_issue_shape(
         validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
 
 
-def test_validate_evidence_rejects_resolved_field_called_unresolved(
-    registry, ledger
-):
+def test_validate_evidence_rejects_resolved_field_called_unresolved(registry, ledger):
     registry_record = copy.deepcopy(next(iter(registry.values())))
     clock_name = registry_record["clock_name"]
     ledger_record = copy.deepcopy(ledger[clock_name])
     ledger_record["access_issues"] = ["The training_target remains unresolved."]
     assert ledger_record["fields"]["training_target"]["status"] != "unresolved"
 
-    with pytest.raises(
-        ValueError, match=rf"{clock_name}\.access_issues.*training_target.*resolved"
-    ):
+    with pytest.raises(ValueError, match=rf"{clock_name}\.access_issues.*training_target.*resolved"):
         validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
 
 
-def test_validate_evidence_rejects_resolved_population_called_age_unspecified(
-    registry, ledger
-):
+def test_validate_evidence_rejects_resolved_population_called_age_unspecified(registry, ledger):
     registry_record = copy.deepcopy(next(iter(registry.values())))
     clock_name = registry_record["clock_name"]
     ledger_record = copy.deepcopy(ledger[clock_name])
     ledger_record["access_issues"] = ["The population remains age-unspecified."]
     assert ledger_record["fields"]["population"]["status"] != "unresolved"
 
-    with pytest.raises(
-        ValueError, match=rf"{clock_name}\.access_issues.*population.*resolved"
-    ):
+    with pytest.raises(ValueError, match=rf"{clock_name}\.access_issues.*population.*resolved"):
         validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
 
 
@@ -720,15 +701,9 @@ def test_final_evidence_sample_corrections_are_synchronized(registry, ledger):
     assert intrin["n_features"] == 380
     assert "article reports 381 CpGs" in intrin["notes"]
     assert intrin_evidence["fields"]["n_features"]["source_id"] == "intrin-official-code"
-    assert intrin_evidence["fields"]["n_features"]["note"].startswith(
-        "The article repeatedly reports 381 CpGs"
-    )
+    assert intrin_evidence["fields"]["n_features"]["note"].startswith("The article repeatedly reports 381 CpGs")
 
-    twelve_names = sorted(
-        name
-        for name in registry
-        if name.startswith("twelvecelldeconvolutebloodepic")
-    )
+    twelve_names = sorted(name for name in registry if name.startswith("twelvecelldeconvolutebloodepic"))
     assert len(twelve_names) == 12
     for clock_name in twelve_names:
         entry = registry[clock_name]
@@ -747,13 +722,8 @@ def test_final_evidence_sample_corrections_are_synchronized(registry, ledger):
             "reporting-summary",
         } & {source["id"] for source in evidence["sources"]}
 
-    six_cell_names = [
-        name for name in registry if "sixcell" in name
-    ]
-    assert all(
-        registry[name]["training_target"] != ["cell-type proportions"]
-        for name in six_cell_names
-    )
+    six_cell_names = [name for name in registry if "sixcell" in name]
+    assert all(registry[name]["training_target"] != ["cell-type proportions"] for name in six_cell_names)
 
     exact_training_comment = (
         'model.metadata["training_target"] = ["cell-type proportions"]  '
@@ -769,31 +739,13 @@ def test_final_evidence_sample_corrections_are_synchronized(registry, ledger):
     )
     for clock_name in twelve_names:
         source_notebook = json.loads(
-            (ROOT / "clocks" / "notebooks" / f"{clock_name}.ipynb").read_text(
-                encoding="utf-8"
-            )
+            (ROOT / "clocks" / "notebooks" / f"{clock_name}.ipynb").read_text(encoding="utf-8")
         )
-        docs_notebook = json.loads(
-            (
-                ROOT
-                / "docs"
-                / "source"
-                / "clock_notebooks"
-                / f"{clock_name}.ipynb"
-            ).read_text(encoding="utf-8")
-        )
-        source_lines = [
-            line.rstrip("\n")
-            for cell in source_notebook["cells"]
-            for line in cell.get("source", [])
-        ]
+        source_lines = [line.rstrip("\n") for cell in source_notebook["cells"] for line in cell.get("source", [])]
         assert exact_training_comment in source_lines
         assert exact_population_comment in source_lines
-        assert docs_notebook == source_notebook
 
-    intrin_source = (
-        ROOT / "clocks" / "notebooks" / "intrinclock.ipynb"
-    ).read_text(encoding="utf-8")
+    intrin_source = (ROOT / "clocks" / "notebooks" / "intrinclock.ipynb").read_text(encoding="utf-8")
     assert (
         "At lambda.min, the official serialized cv.glmnet model contains 380 "
         "non-zero CpG coefficients, and pyaging contains the identical "

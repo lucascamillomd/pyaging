@@ -1,36 +1,26 @@
 import hashlib
+import os
 import re
 import shutil
 import subprocess
+import sys
 import tarfile
+import tomllib
 from pathlib import Path
 
 import yaml
 
-try:
-    import tomllib
-except ModuleNotFoundError:  # pragma: no cover - exercised on Python 3.9 and 3.10
-    import tomli as tomllib
-
-MAKEFILE = Path("Makefile").read_text(encoding="utf-8")
-HF_README = Path("clocks/huggingface/README.md")
-GITIGNORE = Path(".gitignore").read_text(encoding="utf-8")
-WORKFLOW_DIRECTORY = Path(".github/workflows")
-DOCS_ENVIRONMENT = Path("docs/environment.yml")
-RELEASE_BUILD_EXCLUSIONS = {
-    "/.venv",
-    "/.worktrees",
-    "/hf_static_data",
-    "/pyaging_data",
-    "/clocks/weights",
-    "/clocks/metadata",
-    "/docs/_build",
-    "/docs/_static/.cache",
-    "/docs/_static/all_clock_metadata.pt",
-    "/.pytest_cache",
-    "/.ruff_cache",
-    "/dist",
-    "/build",
+ROOT = Path(__file__).resolve().parents[1]
+MAKEFILE = (ROOT / "Makefile").read_text(encoding="utf-8")
+HF_README = ROOT / "clocks" / "huggingface" / "README.md"
+GITIGNORE = (ROOT / ".gitignore").read_text(encoding="utf-8")
+WORKFLOW_DIRECTORY = ROOT / ".github" / "workflows"
+READTHEDOCS_CONFIG = ROOT / ".readthedocs.yaml"
+SDIST_ONLY_INCLUDE = {
+    "src/pyaging",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
 }
 FORBIDDEN_SENTINELS = {
     ".venv/sentinel.txt",
@@ -47,18 +37,20 @@ FORBIDDEN_SENTINELS = {
     "dist/sentinel.txt",
     "build/sentinel.txt",
 }
-PRESERVED_STATIC_FILES = {
+EXCLUDED_DOCS_ASSETS = {
     "docs/_static/clocks.json",
     "docs/_static/clock_glossary.csv",
 }
 
 
-def test_release_build_explicitly_excludes_local_and_generated_data():
-    with Path("pyproject.toml").open("rb") as pyproject:
+def test_release_build_ships_only_the_package_and_metadata():
+    with (ROOT / "pyproject.toml").open("rb") as pyproject:
         configuration = tomllib.load(pyproject)
 
-    exclusions = set(configuration["tool"]["hatch"]["build"]["exclude"])
-    assert exclusions >= RELEASE_BUILD_EXCLUSIONS
+    targets = configuration["tool"]["hatch"]["build"]["targets"]
+    assert set(targets["sdist"]["only-include"]) == SDIST_ONLY_INCLUDE
+    assert targets["wheel"]["packages"] == ["src/pyaging"]
+    assert configuration["tool"]["hatch"]["version"]["path"] == "src/pyaging/__init__.py"
 
 
 def _build_fixture_sdist(project, output_directory):
@@ -73,6 +65,7 @@ def _build_fixture_sdist(project, output_directory):
             str(output_directory),
         ],
         cwd=project,
+        env={**os.environ, "VIRTUAL_ENV": sys.prefix},
         check=True,
         capture_output=True,
         text=True,
@@ -85,23 +78,20 @@ def _relative_sdist_members(sdist):
         return {name.split("/", 1)[1] for name in archive.getnames() if "/" in name}
 
 
-def test_release_sdist_excludes_ignored_sentinels_and_preserves_catalog_files(tmp_path):
+def test_release_sdist_excludes_ignored_sentinels_and_generated_docs_assets(tmp_path):
     project = tmp_path / "project"
     project.mkdir()
-    shutil.copy2("pyproject.toml", project / "pyproject.toml")
-    shutil.copy2("README.md", project / "README.md")
+    shutil.copy2(ROOT / "pyproject.toml", project / "pyproject.toml")
+    shutil.copy2(ROOT / "README.md", project / "README.md")
+    shutil.copy2(ROOT / "LICENSE", project / "LICENSE")
 
-    package = project / "pyaging"
-    package.mkdir()
+    package = project / "src" / "pyaging"
+    package.mkdir(parents=True)
     package.joinpath("__init__.py").write_text('__version__ = "0.3.1"\n', encoding="utf-8")
-    for relative_path in PRESERVED_STATIC_FILES:
-        path = project / relative_path
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text("tracked catalog data\n", encoding="utf-8")
 
     clean_sdist = _build_fixture_sdist(project, tmp_path / "clean-dist")
 
-    for relative_path in FORBIDDEN_SENTINELS:
+    for relative_path in FORBIDDEN_SENTINELS | EXCLUDED_DOCS_ASSETS:
         path = project / relative_path
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("must not ship\n", encoding="utf-8")
@@ -110,7 +100,8 @@ def test_release_sdist_excludes_ignored_sentinels_and_preserves_catalog_files(tm
     members = _relative_sdist_members(populated_sdist)
 
     assert members.isdisjoint(FORBIDDEN_SENTINELS)
-    assert members >= PRESERVED_STATIC_FILES
+    assert members.isdisjoint(EXCLUDED_DOCS_ASSETS)
+    assert members >= {"src/pyaging/__init__.py", "pyproject.toml", "README.md", "LICENSE"}
     assert hashlib.sha256(clean_sdist.read_bytes()).digest() == hashlib.sha256(populated_sdist.read_bytes()).digest()
 
 
@@ -136,15 +127,13 @@ def _target_recipe(target):
     return lines[header_index], commands
 
 
-def test_readthedocs_environment_includes_hugging_face_runtime_dependency():
-    environment = yaml.safe_load(DOCS_ENVIRONMENT.read_text(encoding="utf-8"))
-    pip_dependencies = next(
-        dependency["pip"]
-        for dependency in environment["dependencies"]
-        if isinstance(dependency, dict) and "pip" in dependency
-    )
+def test_readthedocs_installs_the_project_with_its_docs_group_via_uv():
+    configuration = yaml.safe_load(READTHEDOCS_CONFIG.read_text(encoding="utf-8"))
+    install_commands = configuration["build"]["jobs"]["install"]
 
-    assert any(dependency.startswith("huggingface-hub") for dependency in pip_dependencies)
+    assert configuration["sphinx"]["configuration"] == "docs/source/conf.py"
+    assert "pandoc" in configuration["build"]["apt_packages"]
+    assert any("uv sync --locked --no-default-groups --group docs" in command for command in install_commands)
 
 
 def test_docs_target_runs_sphinx_in_managed_environment():
@@ -166,7 +155,7 @@ def test_makefile_uses_only_hf_publish_targets():
 
 
 def test_makefile_has_hf_release_defaults():
-    assert "VERSION ?= v0.3.1" in MAKEFILE
+    assert re.search(r"^VERSION \?= v\d+\.\d+\.\d+$", MAKEFILE, flags=re.MULTILINE)
     assert "HF_REPO_ID ?= lucascamillomd/pyaging-data" in MAKEFILE
     assert "HF_REPO_OWNER ?= lucascamillomd" in MAKEFILE
     assert "HF_STATIC_DIR ?= hf_static_data" in MAKEFILE
@@ -217,6 +206,7 @@ def test_release_runs_steps_sequentially_in_one_recipe():
             "test-tutorials",
             "docs",
             "upload-clocks-to-hf",
+            "tag-hf-data-repo",
             "commit",
             "tag",
         ],
@@ -231,6 +221,7 @@ def test_release_runs_steps_sequentially_in_one_recipe():
             "test",
             "docs",
             "upload-clocks-to-hf",
+            "tag-hf-data-repo",
             "commit",
             "tag",
         ],
@@ -245,6 +236,7 @@ def test_release_runs_steps_sequentially_in_one_recipe():
 def test_parallel_release_dry_run_preserves_publish_sequence():
     result = subprocess.run(
         ["make", "-n", "-j4", "release-slim", "VERSION=v0.3.1"],
+        cwd=ROOT,
         check=True,
         capture_output=True,
         text=True,
@@ -279,7 +271,7 @@ def test_hf_repository_card_documents_security_licensing_and_ownership():
 
 
 def test_release_workflow_is_tag_gated_and_publishes_after_verify():
-    workflow = _load_workflow("release.yml")
+    workflow = _load_workflow("release.yaml")
 
     assert workflow["on"] == {"push": {"tags": ["v*"]}}
     assert workflow["permissions"] == {"contents": "read"}
@@ -289,11 +281,15 @@ def test_release_workflow_is_tag_gated_and_publishes_after_verify():
 
 
 def test_release_verifies_version_tests_and_distribution_before_publish():
-    workflow = _load_workflow("release.yml")
-    verify_commands = "\n".join(step["run"] for step in workflow["jobs"]["verify"]["steps"] if "run" in step)
+    workflow = _load_workflow("release.yaml")
+    verify_steps = workflow["jobs"]["verify"]["steps"]
+    verify_commands = "\n".join(step["run"] for step in verify_steps if "run" in step)
 
-    assert "GITHUB_REF_NAME" in verify_commands
-    assert "pyaging.__version__" in verify_commands
+    assert any(step.get("uses", "").startswith("astral-sh/setup-uv@") for step in verify_steps)
+    assert "pip install uv" not in verify_commands
+    assert "uv sync --locked" in verify_commands
+    assert "src/pyaging/__init__.py" in verify_commands
+    assert 'test "${GITHUB_REF_NAME}" = "v${version}"' in verify_commands
     assert "git fetch origin main --no-tags" in verify_commands
     assert 'git merge-base --is-ancestor "$GITHUB_SHA" origin/main' in verify_commands
     assert "not full_catalog and not online" in verify_commands
@@ -301,19 +297,21 @@ def test_release_verifies_version_tests_and_distribution_before_publish():
     assert "twine check dist/*" in verify_commands
 
 
-def test_release_uses_token_auth_without_oidc():
-    workflow = _load_workflow("release.yml")
-    workflow_text = WORKFLOW_DIRECTORY.joinpath("release.yml").read_text(encoding="utf-8")
+def test_release_publishes_with_trusted_publishing():
+    workflow = _load_workflow("release.yaml")
+    workflow_text = WORKFLOW_DIRECTORY.joinpath("release.yaml").read_text(encoding="utf-8")
     publish = workflow["jobs"]["publish"]
     publish_action = next(step for step in publish["steps"] if step["uses"].startswith("pypa/"))
 
-    assert "permissions" not in publish
-    assert "id-token" not in workflow_text
-    assert publish_action["with"] == {"password": "${{ secrets.PYPI_API_TOKEN }}"}
+    environment = publish["environment"]
+    assert environment == "pypi" or environment["name"] == "pypi"
+    assert publish["permissions"] == {"id-token": "write"}
+    assert "PYPI_API_TOKEN" not in workflow_text
+    assert "password" not in publish_action.get("with", {})
 
 
 def test_release_checkout_has_no_persisted_credentials_and_full_history():
-    workflow = _load_workflow("release.yml")
+    workflow = _load_workflow("release.yaml")
     checkout = next(
         step for step in workflow["jobs"]["verify"]["steps"] if step["uses"].startswith("actions/checkout@")
     )
@@ -327,9 +325,10 @@ def test_ci_excludes_large_and_online_tests():
     triggers = workflow["on"]
     unit_commands = "\n".join(step["run"] for step in workflow["jobs"]["unit"]["steps"] if "run" in step)
 
-    assert set(triggers) == {"push", "pull_request", "workflow_dispatch"}
+    assert set(triggers) == {"push", "pull_request", "schedule", "workflow_dispatch"}
     assert triggers["push"] == {"branches": ["main"]}
     assert triggers["pull_request"] == ""
+    assert all(entry["cron"] for entry in triggers["schedule"])
     assert triggers["workflow_dispatch"] == ""
     assert workflow["permissions"] == {"contents": "read"}
     assert "not full_catalog and not online" in unit_commands
@@ -343,10 +342,10 @@ def test_ci_covers_supported_platforms_and_tutorials():
 
     assert matrix == {
         "os": ["ubuntu-latest", "macos-latest"],
-        "python-version": ["3.9", "3.10", "3.11", "3.12", "3.13"],
+        "python-version": ["3.11", "3.12", "3.13", "3.14"],
     }
-    assert tutorials["if"] == "github.event_name == 'workflow_dispatch'"
-    assert "uv run pytest --nbmake tutorials/" in tutorial_commands
+    assert tutorials["if"] == "github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'"
+    assert "uv run --no-sync pytest --nbmake tutorials/" in tutorial_commands
     assert "--ignore=tutorials/tutorial_cpgptgrimage3.ipynb" in tutorial_commands
 
 
@@ -360,7 +359,7 @@ def test_ci_runs_pinned_workflow_security_check():
 
 
 def test_workflow_actions_are_commit_pinned_and_checkouts_discard_credentials():
-    for name in ("ci.yml", "release.yml"):
+    for name in ("ci.yml", "release.yaml"):
         workflow = _load_workflow(name)
         action_steps = [step for step in _workflow_steps(workflow) if "uses" in step]
         assert action_steps
@@ -371,7 +370,7 @@ def test_workflow_actions_are_commit_pinned_and_checkouts_discard_credentials():
 
 
 def test_workflows_have_named_jobs_and_concurrency_controls():
-    for name in ("ci.yml", "release.yml"):
+    for name in ("ci.yml", "release.yaml"):
         workflow = _load_workflow(name)
         assert workflow["concurrency"]["group"]
         assert workflow["concurrency"]["cancel-in-progress"] in {"true", "false"}
@@ -379,5 +378,5 @@ def test_workflows_have_named_jobs_and_concurrency_controls():
 
 
 def test_legacy_chained_workflows_are_removed():
-    for name in ("build.yml", "publish.yml", "test.yml"):
-        assert not Path(".github/workflows", name).exists()
+    for name in ("build.yml", "publish.yml", "test.yml", "release.yml"):
+        assert not (WORKFLOW_DIRECTORY / name).exists()

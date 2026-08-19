@@ -19,18 +19,18 @@ pyaging.predict._pred_utils
    :undoc-members:
    :show-inheritance:
 
-pyaging.predict._preprocessing
-------------------------------
+pyaging.predict._transforms
+---------------------------
 
-.. automodule:: pyaging.predict._preprocessing
+.. automodule:: pyaging.predict._transforms
    :members:
    :undoc-members:
    :show-inheritance:
 
-pyaging.predict._postprocessing
--------------------------------
+pyaging.predict._inverse_transforms
+-----------------------------------
 
-.. automodule:: pyaging.predict._postprocessing
+.. automodule:: pyaging.predict._inverse_transforms
    :members:
    :undoc-members:
    :show-inheritance:

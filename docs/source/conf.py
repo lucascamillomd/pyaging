@@ -7,19 +7,43 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 import os
+import shutil
 import sys
-from datetime import datetime
-from pathlib import Path
 from importlib import metadata
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath("../../"))  # Adjust the path as needed
+from sphinx.util import logging as sphinx_logging
+
+logger = sphinx_logging.getLogger(__name__)
 
 project = "pyaging"
 copyright = "2023, Lucas Paulo de Lima Camillo"
 author = "Lucas Paulo de Lima Camillo"
-from pyaging import __version__
 
-release = version = __version__
+release = version = metadata.version("pyaging")
+
+# -- Copy canonical notebooks into the docs tree at build time ----------------
+
+_conf_dir = Path(__file__).resolve().parent
+_repo_root = _conf_dir.parents[1]
+
+
+def _sync_notebooks():
+    for src_dir, dest_dir in (
+        (_repo_root / "tutorials", _conf_dir / "tutorials"),
+        (_repo_root / "clocks" / "notebooks", _conf_dir / "clock_notebooks"),
+    ):
+        dest_dir.mkdir(exist_ok=True)
+        for stale in sorted(dest_dir.glob("*.ipynb")):
+            if not (src_dir / stale.name).is_file():
+                stale.unlink()
+        for src in sorted(src_dir.glob("*.ipynb")):
+            dest = dest_dir / src.name
+            if not dest.is_file() or src.stat().st_mtime > dest.stat().st_mtime:
+                shutil.copy(src, dest)
+
+
+_sync_notebooks()
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -43,11 +67,9 @@ extensions = [
     "scanpydoc",  # needs to be before linkcode
     "sphinx.ext.linkcode",
     "IPython.sphinxext.ipython_console_highlighting",
-    "sphinx.ext.imgmath",
     "sphinx.ext.extlinks",
 ]
 
-templates_path = ["../_templates"]
 exclude_patterns = [
     "_build",
     "Thumbs.db",
@@ -96,12 +118,8 @@ html_js_files = ["clock_explorer_core.js", "clock_explorer.js"]
 nbsphinx_execute = "never"
 suppress_warnings = ["nbsphinx.ipywidgets"]
 
-# -- Additional configurations from the provided conf.py ----------------------
-
-# ... (Add other configurations from the provided conf.py here)
-# Make sure to resolve any conflicts with the existing settings above.
-
 # -- Generate Clock Explorer data at build time (local + Read the Docs) -------
+
 
 def _generate_clock_data(app):
     # Ensure this conf dir is importable when builder-inited fires (Read the Docs
@@ -110,20 +128,11 @@ def _generate_clock_data(app):
     try:
         from make_clock_data import generate
 
-        local_metadata = (
-            Path(__file__).resolve().parents[2]
-            / "clocks"
-            / "metadata"
-            / "all_clock_metadata.pt"
-        )
-        n = (
-            generate(metadata_path=local_metadata)
-            if local_metadata.is_file()
-            else generate()
-        )
-        print("[clocks] regenerated clocks.json with {} clocks".format(n))
+        local_metadata = Path(__file__).resolve().parents[2] / "clocks" / "metadata" / "all_clock_metadata.pt"
+        n = generate(metadata_path=local_metadata) if local_metadata.is_file() else generate()
+        logger.info("[clocks] regenerated clocks.json with %s clocks", n)
     except Exception as exc:  # noqa: BLE001 — never break the build
-        print("[clocks] WARNING: using committed clocks.json ({})".format(exc))
+        logger.warning("[clocks] using committed clocks.json (%s)", exc)
 
 
 def setup(app):

@@ -1,0 +1,37 @@
+name: Bug report
+description: Report a problem with pyaging
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: pyaging version
+      description: Output of `python -c "import pyaging; print(pyaging.__version__)"`
+      placeholder: 0.3.1
+    validations:
+      required: true
+  - type: input
+    id: clock
+    attributes:
+      label: Clock name
+      description: The clock(s) passed to `predict_age`, if the problem involves a specific clock
+      placeholder: AltumAge
+  - type: input
+    id: input-data
+    attributes:
+      label: Input data type and platform
+      description: Data modality and platform of the input matrix
+      placeholder: DNA methylation beta values, Illumina EPIC v2
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead. Include a minimal code snippet if possible.
+    validations:
+      required: true
+  - type: textarea
+    id: traceback
+    attributes:
+      label: Traceback
+      description: The full error output, if any
+      render: python-traceback

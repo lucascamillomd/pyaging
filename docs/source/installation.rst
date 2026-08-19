@@ -1,7 +1,7 @@
 Installation
 ============
 
-*Please note that pyaging is supported by python versions 3.9, 3.10, 3.11, and 3.12.**
+*Please note that pyaging requires python version 3.11 or newer.*
 
 pyaging now has been released to PyPi and can easily be installed via:
 
@@ -31,7 +31,7 @@ Lastly, it can be installed from source:
     pip install git+https://github.com/lucascamillomd/pyaging
 
 .. note::
-    
+
     The histone mark clocks can only be used when the optional dependency pyBigWig is also installed. Currently, pyBigWig is not supported on Windows.
 
 Installation with histone mark clock support

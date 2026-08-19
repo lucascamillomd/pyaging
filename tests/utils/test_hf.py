@@ -24,6 +24,7 @@ def test_download_hf_file_uses_pinned_repository_standard_cache_and_logs_path(mo
     hub_download = Mock(return_value=downloaded_path)
     logger = Mock()
     monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", hub_download)
+    monkeypatch.delenv("PYAGING_DATA_REVISION", raising=False)
 
     result = download_hf_file("horvath2013.pt", str(tmp_path), logger, indent_level=2)
 
@@ -34,6 +35,16 @@ def test_download_hf_file_uses_pinned_repository_standard_cache_and_logs_path(mo
         revision="main",
     )
     logger.info.assert_called_once_with(f"Data available at {downloaded_path}", indent_level=3)
+
+
+def test_download_hf_file_honors_data_revision_env_var_at_call_time(monkeypatch, tmp_path):
+    hub_download = Mock(return_value=str(tmp_path / "horvath2013.pt"))
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", hub_download)
+    monkeypatch.setenv("PYAGING_DATA_REVISION", "v0.3.1")
+
+    download_hf_file("horvath2013.pt")
+
+    assert hub_download.call_args.kwargs["revision"] == "v0.3.1"
 
 
 def test_download_hf_file_keeps_dir_argument_for_backward_compatibility(monkeypatch):

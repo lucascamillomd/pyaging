@@ -88,7 +88,7 @@ ACTIVE_FILENAMES = {
     "makefile",
     "pipfile",
 }
-EXCLUDED_PREFIXES = (("docs", "superpowers"),)
+EXCLUDED_PREFIXES = (("dev", "plans"),)
 EXCLUDED_FIXTURES = {
     Path("tests/test_no_aws_dependencies.py"),
     Path("tests/test_notebook_hosts.py"),
@@ -251,7 +251,7 @@ def test_active_file_discovery_uses_tracked_text_and_config_sources(tmp_path):
         "tests/test_release_configuration.py",
     }
     excluded = {
-        "docs/superpowers/archive.md",
+        "dev/plans/archive.md",
         "tests/test_no_aws_dependencies.py",
         "tests/test_notebook_hosts.py",
         "docs/source/image.png",
