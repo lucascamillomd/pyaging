@@ -69,7 +69,7 @@ are maintained in the pyaging repository.
 ## Licensing and provenance
 
 This is a mixed-provenance research collection, so the repository license is `other`.
-The pyaging BSD license does not grant additional rights to third-party clock weights or
+The pyaging MIT license does not grant additional rights to third-party clock weights or
 source datasets. Consult each clock's embedded metadata, cited publication, and notes
 before use. Some clocks are marked research-only or have separate commercial terms.
 

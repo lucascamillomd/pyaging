@@ -4,7 +4,7 @@ description = "A Python-based compendium of GPU-optimized aging clocks."
 authors = [
     {name = "Lucas Paulo de Lima Camillo", email = "lucas_camillo@alumni.brown.edu"}
 ]
-license = "BSD-3-Clause"
+license = "MIT"
 license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.11"

@@ -29,7 +29,7 @@ OWNER = "pyaging"
 DOCS_URL = "https://pyaging.readthedocs.io"
 
 CARD_TEMPLATE = """---
-license: bsd-3-clause
+license: mit
 library_name: pyaging
 tags:
 - pyaging

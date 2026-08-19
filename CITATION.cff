@@ -5,7 +5,7 @@ title: pyaging
 authors:
   - family-names: de Lima Camillo
     given-names: Lucas Paulo
-license: BSD-3-Clause
+license: MIT
 repository-code: "https://github.com/lucascamillomd/pyaging"
 url: "https://pyaging.readthedocs.io"
 preferred-citation:
