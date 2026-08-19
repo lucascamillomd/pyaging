@@ -1,7 +1,9 @@
 Tutorials
 =========
 
-End-to-end walkthroughs for each supported data type and workflow.
+One walkthrough per supported data type. Each downloads a small public
+example dataset, builds an AnnData object, runs one or more clocks, and reads
+out the predictions.
 
 .. toctree::
    :maxdepth: 1

@@ -4,8 +4,11 @@ from pprint import pformat
 from urllib.request import urlretrieve
 
 import torch
+from rich.columns import Columns
+from rich.table import Table
+from rich.text import Text
 
-from ..logger import LoggerManager, main_tqdm
+from ..logger._live import MUTED, live_step
 from ._hf import download_hf_file
 
 
@@ -82,6 +85,11 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     ----------
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
+
+    verbose : bool
+        Whether to show the progress display and warnings. Animated in
+        notebooks and terminals, a plain summary when output is captured,
+        and fully silent when False. Defaults to True.
     logger : object
         Logger object used for logging information, warnings, and errors.
     indent_level : int, optional
@@ -147,12 +155,12 @@ def download(url: str, dir: str, logger, indent_level: int = 1) -> None:
     urlretrieve(url, file_path, reporthook=logger.request_report_hook)
 
 
-def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
+def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Searches for aging clocks in the metadata by a specified DOI (Digital Object Identifier).
 
     This function retrieves the metadata for all aging clocks and searches for clocks that match
-    the given DOI. It uses a Logger object for logging the progress and results of the search.
+    the given DOI. It reports progress through the package's step display and results of the search.
     The function outputs the names of clocks with the matching DOI, or a warning message if no
     matches are found.
 
@@ -162,6 +170,11 @@ def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
         The DOI to search for in the aging clocks' metadata.
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
+
+    verbose : bool
+        Whether to show the progress display and warnings. Animated in
+        notebooks and terminals, a plain summary when output is captured,
+        and fully silent when False. Defaults to True.
 
     Returns
     -------
@@ -174,8 +187,7 @@ def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
     aging clocks. It then iterates over this metadata to find matches. The logging includes
     starting and ending messages for the search process, and a summary of the findings.
 
-    The function assumes the existence of a LoggerManager for generating loggers and uses
-    `main_tqdm` for progress tracking in the loop. It's important to ensure that the metadata
+    Progress is reported through the package's step display. It's important to ensure that the metadata
     contains the 'doi' field for each clock for the search to be effective.
 
     Examples
@@ -186,40 +198,20 @@ def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data") -> None:
     or, if no match is found,
 
     >>> find_clock_by_doi("10.1000/xyz123")
-    No files found with DOI 10.1000/xyz123
+    no clocks found with DOI 10.1000/xyz123
 
     """
-    logger = LoggerManager.gen_logger("find_clock_by_doi")
-    logger.first_info("Starting find_clock_by_doi function")
-
-    # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
-
-    # Message to indicate the start of the search process
-    message = "Searching for clock based on DOI"
-    logger.start_progress(f"{message} started")
-    matching_clocks = []
-
-    # Loop through clocks in the dictionary
-    for clock_name in main_tqdm(list(all_clock_metadata.keys()), indent_level=2):
-        clock_dict = all_clock_metadata[clock_name]
-        if "doi" in clock_dict and clock_dict["doi"] == search_doi:
-            matching_clocks.append(clock_name)
-
-    # Logging the results
-    if matching_clocks:
-        logger.info(
-            f"Clocks with DOI {search_doi}: {', '.join(matching_clocks)}",
-            indent_level=2,
-        )
-    else:
-        logger.warning(f"No files found with DOI {search_doi}", indent_level=2)
-    logger.finish_progress(f"{message} finished")
-
-    logger.done()
+    with live_step("searching clocks by DOI", verbose) as (step, pipeline_logger):
+        all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
+        matching_clocks = [name for name, meta in all_clock_metadata.items() if meta.get("doi") == search_doi]
+        if matching_clocks:
+            step.done(f"clocks with DOI {search_doi}: {', '.join(matching_clocks)}")
+        else:
+            step.warn(f"no clocks found with DOI {search_doi}")
+            step.done(f"searched {len(all_clock_metadata)} clocks")
 
 
-def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
+def cite_clock(clock_name: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Retrieves and logs the citation information for a specified aging clock.
 
@@ -236,6 +228,11 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
+    verbose : bool
+        Whether to show the progress display and warnings. Animated in
+        notebooks and terminals, a plain summary when output is captured,
+        and fully silent when False. Defaults to True.
+
     Returns
     -------
     None
@@ -245,7 +242,7 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
     -----
     The function calls `load_clock_metadata` to load the entire metadata of aging clocks and
     then searches for the specified clock. It logs the progress of the search and the results.
-    The `LoggerManager` is used for generating loggers for logging purposes.
+    Progress is reported through the package's step display.
 
     The function assumes that the metadata for each clock may contain a 'citation' field. If
     this field is missing, the function will indicate that no citation information is available.
@@ -267,40 +264,29 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data") -> None:
     UnknownClock is not currently available in pyaging
 
     """
-    logger = LoggerManager.gen_logger("cite_clock")
-    logger.first_info("Starting cite_clock function")
-
     clock_name = clock_name.lower()
+    pyaging_citation = (
+        'de Lima Camillo, Lucas Paulo. "pyaging: a Python-based compendium of '
+        'GPU-optimized aging clocks." bioRxiv (2023): 2023-11.'
+    )
 
-    # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
-
-    message = f"Searching for citation of clock {clock_name}"
-    logger.start_progress(f"{message} started")
-    citation = ""
-
-    if clock_name in list(all_clock_metadata.keys()):
-        clock_dict = all_clock_metadata[clock_name]
-        if "citation" in clock_dict:
-            citation = clock_dict["citation"]
-            logger.info(f"Citation for {clock_name}:", indent_level=2)
-            logger.info(citation, indent_level=2)
-            logger.info("Please also consider citing pyaging :)", indent_level=2)
-            logger.info(
-                'de Lima Camillo, Lucas Paulo. "pyaging: a Python-based compendium of '
-                'GPU-optimized aging clocks." bioRxiv (2023): 2023-11.',
-                indent_level=2,
-            )
+    with live_step(f"looking up citation for {clock_name}", verbose) as (step, pipeline_logger):
+        all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
+        clock_dict = all_clock_metadata.get(clock_name)
+        citation = clock_dict.get("citation") if clock_dict else None
+        if citation:
+            step.payload(f"  {citation}")
+            step.payload(Text(f"  Please also consider citing pyaging: {pyaging_citation}", style=MUTED))
+            step.done(f"citation for {clock_name}")
+        elif clock_dict:
+            step.warn(f"citation not found in {clock_name}")
+            step.done(clock_name)
         else:
-            logger.warning(f"Citation not found in {clock_name}", indent_level=2)
-    else:
-        logger.warning(f"{clock_name} is not currently available in pyaging", indent_level=2)
-
-    logger.finish_progress(f"{message} finished")
-    logger.done()
+            step.warn(f"{clock_name} is not currently available in pyaging")
+            step.done("clock not found")
 
 
-def show_all_clocks(dir: str = "pyaging_data") -> None:
+def show_all_clocks(dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Displays the names of all aging clocks available in the metadata.
 
@@ -314,6 +300,11 @@ def show_all_clocks(dir: str = "pyaging_data") -> None:
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
+    verbose : bool
+        Whether to show the progress display and warnings. Animated in
+        notebooks and terminals, a plain summary when output is captured,
+        and fully silent when False. Defaults to True.
+
     Returns
     -------
     None
@@ -323,7 +314,7 @@ def show_all_clocks(dir: str = "pyaging_data") -> None:
     -----
     The function calls `load_clock_metadata` to load the metadata containing the aging clocks.
     It then iterates over this metadata to log the name of each clock. The function uses the
-    `LoggerManager` for logging, ensuring that all log messages are properly formatted and
+    the package's step display, ensuring that the output is properly formatted and
     indented.
 
     The logger's progress methods (`start_progress` and `finish_progress`) are used to indicate
@@ -338,24 +329,14 @@ def show_all_clocks(dir: str = "pyaging_data") -> None:
     ...
 
     """
-    logger = LoggerManager.gen_logger("show_all_clocks")
-    logger.first_info("Starting show_all_clocks function")
-
-    # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
-
-    # Message to indicate the start of the search process
-    message = "Showing all available clock names"
-    logger.start_progress(f"{message} started")
-    all_clocks = sorted(all_clock_metadata.keys())
-    for clock_name in all_clocks:
-        logger.info(clock_name, indent_level=2)
-    logger.finish_progress(f"{message} finished")
-
-    logger.done()
+    with live_step("loading clock metadata", verbose) as (step, pipeline_logger):
+        all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
+        all_clocks = sorted(all_clock_metadata.keys())
+        step.payload(Columns(all_clocks, padding=(0, 2)))
+        step.done(f"{len(all_clocks)} clocks available")
 
 
-def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
+def get_clock_metadata(clock_name: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
     """
     Retrieves and logs the metadata of a specified aging clock.
 
@@ -371,6 +352,11 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
         The name of the aging clock whose metadata is to be retrieved. The name is case-insensitive.
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
+
+    verbose : bool
+        Whether to show the progress display and warnings. Animated in
+        notebooks and terminals, a plain summary when output is captured,
+        and fully silent when False. Defaults to True.
 
     Returns
     -------
@@ -397,24 +383,15 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data") -> None:
     ...
 
     """
-    logger = LoggerManager.gen_logger("get_clock_metadata")
-    logger.first_info("Starting get_clock_metadata function")
-
-    # Load all metadata
-    all_clock_metadata = load_clock_metadata(dir, logger, indent_level=1)
-
-    # Lowercase clock name
     clock_name = clock_name.lower()
-    clock_dict = all_clock_metadata[clock_name]
-
-    # Message to indicate the start of the search process
-    message = f"Showing {clock_name} metadata"
-    logger.start_progress(f"{message} started")
-    for key in list(clock_dict.keys()):
-        logger.info(f"{key}: {clock_dict[key]}", indent_level=2)
-    logger.finish_progress(f"{message} finished")
-
-    logger.done()
+    with live_step(f"loading {clock_name} metadata", verbose) as (step, pipeline_logger):
+        all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
+        clock_dict = all_clock_metadata[clock_name]
+        grid = Table.grid(padding=(0, 2))
+        for key, value in clock_dict.items():
+            grid.add_row(f"[{MUTED}]{key}[/]", str(value))
+        step.payload(grid)
+        step.done(f"{clock_name} metadata")
 
 
 def print_model_details(model, max_list_length=30, max_tensor_elements=30):

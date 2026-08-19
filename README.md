@@ -48,7 +48,7 @@ pya.pred.predict_age(adata, ["Horvath2013", "AltumAge", "DunedinPACE"])
 adata.obs.head()
 ```
 
-Clock weights and example data are downloaded on demand from the [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data) Hugging Face repository. Set the `PYAGING_DATA_REVISION` environment variable to a release tag (e.g. `v0.3.1`) to pin downloads to a specific data revision for reproducibility; it defaults to `main`, the live data release.
+Clock weights are downloaded on demand from per-clock repositories under the [`pyaging` Hugging Face organization](https://huggingface.co/pyaging) (example data comes from [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data)). Set the `PYAGING_DATA_REVISION` environment variable to a release tag (e.g. `v0.3.1`) to pin downloads to a specific data revision for reproducibility; it defaults to `main`, the live data release.
 
 ## ❓ Can't find an aging clock?
 

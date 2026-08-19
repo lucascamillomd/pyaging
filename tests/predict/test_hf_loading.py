@@ -10,17 +10,17 @@ from pyaging.utils._utils import load_clock_metadata
 
 def test_load_clock_downloads_lowercase_hf_file_and_prepares_model(monkeypatch, tmp_path):
     returned_path = str(tmp_path / "resolved" / "horvath2013.pt")
-    download_hf_file = Mock(return_value=returned_path)
+    download_clock_weights = Mock(return_value=returned_path)
     model = Mock()
     torch_load = Mock(return_value=model)
     logger = Mock()
-    monkeypatch.setattr("pyaging.predict._pred_utils.download_hf_file", download_hf_file)
+    monkeypatch.setattr("pyaging.predict._pred_utils.download_clock_weights", download_clock_weights)
     monkeypatch.setattr("pyaging.predict._pred_utils.torch.load", torch_load)
 
     result = load_clock("Horvath2013", "cuda", str(tmp_path), logger, indent_level=2)
 
     assert result is model
-    download_hf_file.assert_called_once_with("horvath2013.pt", str(tmp_path), logger, indent_level=2)
+    download_clock_weights.assert_called_once_with("horvath2013", str(tmp_path), logger, indent_level=2)
     torch_load.assert_called_once_with(returned_path, weights_only=False)
     assert model.to.call_args_list == [call(torch.float64), call("cuda")]
     model.eval.assert_called_once_with()
@@ -30,7 +30,7 @@ def test_load_clock_translates_only_missing_resource_to_chained_name_error(monke
     missing_error = PyAgingResourceNotFoundError("missing clock")
     logger = Mock()
     monkeypatch.setattr(
-        "pyaging.predict._pred_utils.download_hf_file",
+        "pyaging.predict._pred_utils.download_clock_weights",
         Mock(side_effect=missing_error),
     )
 
@@ -47,7 +47,7 @@ def test_load_clock_propagates_download_error_unchanged(monkeypatch, tmp_path):
     download_error = PyAgingDownloadError("network unavailable")
     logger = Mock()
     monkeypatch.setattr(
-        "pyaging.predict._pred_utils.download_hf_file",
+        "pyaging.predict._pred_utils.download_clock_weights",
         Mock(side_effect=download_error),
     )
 

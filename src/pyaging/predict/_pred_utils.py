@@ -3,7 +3,6 @@ import os
 import anndata
 import numpy as np
 import torch
-from anndata.experimental.pytorch import AnnLoader
 
 try:
     import cupy as cp
@@ -14,14 +13,19 @@ except Exception:
 
 import gc
 
-from ..logger import main_tqdm
 from ..models import pyagingModel
-from ..utils._hf import PyAgingResourceNotFoundError, download_hf_file
+from ..utils._hf import PyAgingResourceNotFoundError, download_clock_weights
 from ..utils._utils import progress
 
 
-@progress("Load clock")
-def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int = 2) -> tuple:
+def load_clock(
+    clock_name: str,
+    device: str = "cpu",
+    dir: str = "pyaging_data",
+    logger=None,
+    indent_level: int = 2,
+    verbose: bool = True,
+) -> "pyagingModel":
     """
     Loads the specified aging clock from Hugging Face and returns its components.
 
@@ -32,20 +36,23 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
     ----------
     clock_name : str
         The name of the aging clock to be loaded. This name identifies the clock's weights
-        and configuration on Hugging Face.
+        and configuration on Hugging Face. Case-insensitive.
 
-    device : str
-        Device to move clock to. Eithe 'cpu' or 'cuda'.
+    device : str, optional
+        Device to move the clock to, 'cpu' or 'cuda'. Defaults to 'cpu'.
 
-    dir : str
+    dir : str, optional
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
-    logger : Logger
-        A logger object used for logging information during the function execution.
+    logger : optional
+        Internal pipeline logger. Leave as None when calling directly; the
+        progress display handles output.
 
     indent_level : int, optional
-        The indentation level for the logger, by default 2. It controls the formatting
-        of the log messages.
+        Indentation level for internal pipeline logging, by default 2.
+
+    verbose : bool, optional
+        Whether to show the progress display for direct calls. Defaults to True.
 
     Returns
     -------
@@ -62,12 +69,29 @@ def load_clock(clock_name: str, device: str, dir: str, logger, indent_level: int
 
     Examples
     --------
-    >>> clock = load_clock("clock1", "pyaging_data", logger)
+    >>> clock = load_clock("horvath2013")
 
     """
     clock_name = clock_name.lower()
+    if logger is not None:
+        return _load_clock_impl(clock_name, device, dir, logger, indent_level)
+
+    # Direct user call: run under the display instead of a plumbed logger.
+    # Imported here to avoid a predict <-> logger import cycle.
+    from ..logger._live import live_step, quiet_hf_bars
+
+    with (
+        quiet_hf_bars(verbose),
+        live_step(f"loading {clock_name}", verbose) as (step, pipeline_logger),
+    ):
+        model = _load_clock_impl(clock_name, device, dir, pipeline_logger, indent_level)
+        step.done(f"{clock_name} ready on {device}")
+    return model
+
+
+def _load_clock_impl(clock_name: str, device: str, dir: str, logger, indent_level: int):
     try:
-        weights_path = download_hf_file(f"{clock_name}.pt", dir, logger, indent_level=indent_level)
+        weights_path = download_clock_weights(clock_name, dir, logger, indent_level=indent_level)
     except PyAgingResourceNotFoundError as exc:
         message = (
             f"Clock {clock_name} is not available on pyaging. "
@@ -94,7 +118,7 @@ def check_features_in_adata(
     model: pyagingModel,
     logger,
     indent_level: int = 2,
-) -> anndata.AnnData:
+) -> None:
     """
     Verifies if all required features are present in an AnnData object and adds missing features.
 
@@ -123,8 +147,8 @@ def check_features_in_adata(
 
     Returns
     -------
-    anndata.AnnData
-        The updated AnnData object, which includes any missing features added with a default
+    None
+        The AnnData object is updated in place; missing features are added with a default
         value of 0 (or reference value if provided).
 
     Notes
@@ -180,14 +204,14 @@ def check_features_in_adata(
 
     # Raises error if there are no features in the data
     if percent_missing == 100:
-        logger.error(
+        message = (
             f"Every single feature out of {len(model.features)} features "
             f"is missing. Please double check the features in the adata object"
             f" actually contain the clock features such as "
-            f"{missing_features[: np.min([3, num_missing_features])]}, etc.",
-            indent_level=3,
+            f"{missing_features[: np.min([3, num_missing_features])]}, etc."
         )
-        raise NameError
+        logger.error(message, indent_level=3)
+        raise NameError(message)
 
     # Log and add missing features if any
     if len(missing_features) > 0:
@@ -222,6 +246,7 @@ def predict_ages_with_model(
     batch_size: int,
     logger,
     indent_level: int = 2,
+    progress_callback=None,
 ) -> torch.Tensor:
     """
     Predict biological ages using a trained model and input data.
@@ -244,7 +269,7 @@ def predict_ages_with_model(
         Device to move AnnData to during inference. Eithe 'cpu' or 'cuda'.
 
     batch_size : int
-        Batch size for the AnnLoader object to predict age.
+        Number of samples per prediction batch.
 
     logger : Logger
         A logger object for logging the progress or any relevant information during the prediction process.
@@ -292,16 +317,16 @@ def predict_ages_with_model(
     else:
         logger.info("There is no postprocessing necessary", indent_level=indent_level + 1)
 
-    # Create an AnnLoader
-    use_cuda = torch.cuda.is_available()
-    dataloader = AnnLoader(adata, batch_size=batch_size, use_cuda=use_cuda)
-
-    # Use the AnnLoader for batched prediction
+    # Batched prediction over the clock's feature matrix on the model's device
+    matrix = adata.obsm[f"X_{model.metadata['clock_name']}"]
+    starts = list(range(0, matrix.shape[0], batch_size))
     predictions = []
     with torch.inference_mode():
-        for batch in main_tqdm(dataloader, indent_level=indent_level + 1, logger=logger):
-            batch_pred = model(batch.obsm[f"X_{model.metadata['clock_name']}"].to(torch.float64))
-            predictions.append(batch_pred)
+        for index, start in enumerate(starts):
+            batch = torch.as_tensor(matrix[start : start + batch_size], dtype=torch.float64, device=device)
+            predictions.append(model(batch))
+            if progress_callback is not None:
+                progress_callback(index + 1, len(starts))
     # Concatenate all batch predictions
     predictions = torch.cat(predictions)
 
@@ -387,8 +412,7 @@ def add_pred_ages_and_clock_metadata_adata(
     adata.uns[f"{model.metadata['clock_name']}_metadata"] = model.metadata
 
 
-@progress("Set PyTorch device")
-def set_torch_device(logger, indent_level: int = 1) -> None:
+def set_torch_device(logger=None, indent_level: int = 1) -> torch.device:
     """
     Set and return the PyTorch device based on the availability of CUDA.
 
@@ -428,7 +452,8 @@ def set_torch_device(logger, indent_level: int = 1) -> None:
 
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    logger.info(f"Using device: {device}", indent_level=2)
+    if logger is not None:
+        logger.info(f"Using device: {device}", indent_level=2)
     return device
 
 

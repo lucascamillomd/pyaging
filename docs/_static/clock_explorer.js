@@ -16,25 +16,26 @@
   };
   var COLUMNS = [
     { key: "clock_name", label: "Clock", def: true, cls: "ce-col-clock" },
+    { key: "citations", label: "Citations", def: true, num: true, cls: "ce-col-num" },
+    { key: "downloads", label: "Downloads", def: true, num: true, cls: "ce-col-num" },
     { key: "approved_by_author", label: "Verified", def: true, cls: "ce-col-approval" },
     { key: "data_type", label: "Data type", def: true, cls: "ce-col-short" },
     { key: "species", label: "Species", def: true, cls: "ce-col-short" },
     { key: "year", label: "Year", def: true, num: true, cls: "ce-col-num" },
-    { key: "citations", label: "Citations", def: true, num: true, cls: "ce-col-num" },
-    { key: "n_features", label: "N features", def: true, num: true, cls: "ce-col-num" },
-    { key: "unit", label: "Unit", def: true, cls: "ce-col-short" },
-    { key: "model_type", label: "Model", def: true, cls: "ce-col-long" },
-    { key: "platform", label: "Platform", def: true, cls: "ce-col-long" },
+    { key: "n_features", label: "N features", def: false, num: true, cls: "ce-col-num" },
+    { key: "unit", label: "Unit", def: false, cls: "ce-col-short" },
+    { key: "model_type", label: "Model", def: false, cls: "ce-col-long" },
+    { key: "platform", label: "Platform", def: false, cls: "ce-col-long" },
     { key: "predicts", label: "Predicts", def: true, cls: "ce-col-long" },
     { key: "tissue", label: "Tissue", def: true, cls: "ce-col-long" },
-    { key: "population", label: "Population", def: true, cls: "ce-col-long" },
-    { key: "last_author", label: "Last author", def: true, cls: "ce-col-long" },
-    { key: "journal", label: "Journal", def: true, cls: "ce-col-long" },
+    { key: "population", label: "Population", def: false, cls: "ce-col-long" },
+    { key: "last_author", label: "Last author", def: false, cls: "ce-col-long" },
+    { key: "journal", label: "Journal", def: false, cls: "ce-col-long" },
   ];
   var DETAIL_FIELDS = [
     ["predicts", "Predicts"], ["training_target", "Training target"], ["unit", "Unit"], ["tissue", "Tissue"],
     ["platform", "Platform"], ["population", "Population"], ["model_type", "Model type"],
-    ["n_features", "N features"], ["year", "Year"], ["citations", "Citations"],
+    ["n_features", "N features"], ["year", "Year"], ["citations", "Citations"], ["downloads", "Downloads"],
     ["last_author", "Last author"], ["journal", "Journal"], ["species", "Species"],
     ["data_type", "Data type"], ["approved_by_author", "Verified"],
   ];
@@ -47,9 +48,9 @@
 
   var state = {
     clocks: [], selected: {}, search: "", sortKey: "default", sortDir: "asc",
-    view: "table", cols: null, expanded: {},
+    cols: null, expanded: {},
   };
-  var mount, body, sortSelEl, sortDirBtn, viewToggleBtns;
+  var mount, body, sortSelEl, sortDirBtn;
   var filterBtns, activeChipsEl, checkboxIndex, openPopover = null;
 
   function el(tag, cls, txt) {
@@ -215,6 +216,40 @@
     activeChipsEl.style.display = activeChipsEl.childNodes.length ? "flex" : "none";
   }
 
+  // ---------- popular strip ----------
+  // Top clocks by Hub downloads, with citations breaking ties (counters start
+  // at zero on new repos and aggregate daily, so early on the tiebreak decides
+  // the order). Clicking a chip filters the table to that clock.
+  function buildPopular() {
+    var top = state.clocks
+      .slice()
+      .sort(function (a, b) {
+        return (b.downloads || 0) - (a.downloads || 0) || (b.citations || 0) - (a.citations || 0);
+      })
+      .slice(0, 8);
+    if (!top.length) return el("span");
+    var wrap = el("div", "ce-popular");
+    wrap.appendChild(el("span", "ce-popular-label", "Most downloaded"));
+    top.forEach(function (c, i) {
+      var chip = el("button", "ce-popular-chip");
+      chip.type = "button";
+      chip.title = "Show " + c.clock_name + " in the table";
+      chip.appendChild(el("span", "ce-popular-rank", String(i + 1)));
+      chip.appendChild(el("span", "ce-popular-name", c.clock_name));
+      if ((c.downloads || 0) > 0) {
+        chip.appendChild(el("span", "ce-popular-metric", core.formatValue(c.downloads)));
+      }
+      chip.addEventListener("click", function () {
+        state.search = c.clock_name;
+        state.expanded = {};
+        state.expanded[c.clock_name] = true;
+        buildAll();
+      });
+      wrap.appendChild(chip);
+    });
+    return wrap;
+  }
+
   // ---------- toolbar ----------
   function buildToolbar() {
     var bar = el("div", "ce-toolbar");
@@ -240,16 +275,6 @@
     sortDirBtn.addEventListener("click", function () {
       state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
       render();
-    });
-
-    var toggle = el("div", "ce-viewtoggle");
-    viewToggleBtns = [];
-    ["table", "cards"].forEach(function (v) {
-      var b = el("button", "ce-btn" + (state.view === v ? " active" : ""), v === "table" ? "Table" : "Cards");
-      b.type = "button";
-      b.addEventListener("click", function () { state.view = v; render(); });
-      viewToggleBtns.push({ view: v, btn: b });
-      toggle.appendChild(b);
     });
 
     var dl = el("button", "ce-btn", "Download CSV");
@@ -278,7 +303,7 @@
     var count = el("span", "ce-count");
     count.id = "ce-count";
 
-    [sortSelEl, sortDirBtn, toggle, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
+    [sortSelEl, sortDirBtn, dl, reset, count].forEach(function (n) { bar.appendChild(n); });
     return bar;
   }
 
@@ -332,7 +357,13 @@
       tr.appendChild(exp);
       cols().forEach(function (col) {
         var td = el("td", columnClass(col));
-        td.appendChild(col.key === "approved_by_author" ? approvalBadge(c[col.key]) : document.createTextNode(fmt(c[col.key])));
+        if (col.key === "approved_by_author") {
+          td.appendChild(approvalBadge(c[col.key]));
+        } else {
+          var text = fmt(c[col.key]);
+          td.appendChild(document.createTextNode(text));
+          if (col.cls === "ce-col-long" || col.cls === "ce-col-short") td.title = text;
+        }
         tr.appendChild(td);
       });
       tr.addEventListener("click", function () {
@@ -347,36 +378,6 @@
     });
     table.appendChild(tbody); scroller.appendChild(table);
     return scroller;
-  }
-
-  // ---------- cards ----------
-  function buildCards(rows) {
-    var grid = el("div", "ce-cards");
-    rows.forEach(function (c) {
-      var card = el("div", "ce-card");
-      var head = el("div", "ce-card-head");
-      head.appendChild(el("h3", "ce-card-title", c.clock_name));
-      if (c.citations != null) head.appendChild(el("span", "ce-card-cites", c.citations + " cites"));
-      card.appendChild(head);
-      var badges = el("div", "ce-badges");
-      [c.data_type, c.species, c.model_type].forEach(function (value) {
-        core.valuesOf(value).forEach(function (b) {
-          badges.appendChild(el("span", "ce-badge", String(b)));
-        });
-      });
-      card.appendChild(badges);
-      var unit = core.formatValue(c.unit);
-      card.appendChild(el("p", "ce-card-predicts", fmt(c.predicts) + (unit ? " (" + unit + ")" : "")));
-      var more = el("button", "ce-btn ce-card-more", state.expanded[c.clock_name] ? "Hide details" : "Details");
-      more.type = "button";
-      more.addEventListener("click", function () { state.expanded[c.clock_name] = !state.expanded[c.clock_name]; render(); });
-      card.appendChild(more);
-      if (state.expanded[c.clock_name]) {
-        card.appendChild(buildDetailBox(c));
-      }
-      grid.appendChild(card);
-    });
-    return grid;
   }
 
   // ---------- render ----------
@@ -395,14 +396,8 @@
       SORT_OPTIONS.forEach(function (o) { if (o.key === state.sortKey) hasKey = true; });
       if (hasKey) sortSelEl.value = state.sortKey;
     }
-    if (viewToggleBtns) {
-      viewToggleBtns.forEach(function (t) {
-        if (t.view === state.view) t.btn.classList.add("active");
-        else t.btn.classList.remove("active");
-      });
-    }
     body.innerHTML = "";
-    body.appendChild(state.view === "cards" ? buildCards(rows) : buildTable(rows));
+    body.appendChild(buildTable(rows));
   }
 
   function buildAll() {
@@ -415,6 +410,7 @@
     // chips into one block above the bounded, self-scrolling table (.ce-scroll),
     // so they stay reachable while the 170+ rows scroll inside their box.
     var controls = el("div", "ce-controls");
+    controls.appendChild(buildPopular());
     controls.appendChild(buildToolbar());
     controls.appendChild(buildFilterBar());
     controls.appendChild(buildActiveChips());
@@ -431,6 +427,30 @@
     render();
   }
 
+  // Per-clock download counts come live from the Hub API: each clock has its
+  // own model repo under the pyaging org, so its repo download counter IS the
+  // per-clock metric. Fetched client-side, merged in when it arrives; the
+  // catalogue works unchanged if the request fails (cells show an em dash).
+  function fetchDownloads() {
+    var counts = {};
+    function page(url) {
+      return fetch(url).then(function (r) {
+        if (!r.ok) throw new Error("HF API " + r.status);
+        var link = r.headers.get("Link");
+        return r.json().then(function (models) {
+          models.forEach(function (m) {
+            var name = String(m.id || "").split("/")[1];
+            var n = m.downloadsAllTime != null ? m.downloadsAllTime : m.downloads;
+            if (name && n != null) counts[name] = n;
+          });
+          var next = link && /<([^>]+)>;\s*rel="next"/.exec(link);
+          return next ? page(next[1]) : counts;
+        });
+      });
+    }
+    return page("https://huggingface.co/api/models?author=pyaging&expand[]=downloadsAllTime&limit=100");
+  }
+
   function init() {
     mount = document.getElementById("clock-explorer");
     if (!mount || !core) return;
@@ -438,7 +458,19 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closePopover(); });
     fetch(staticBase() + "clocks.json")
       .then(function (r) { return r.json(); })
-      .then(function (data) { state.clocks = data; buildAll(); })
+      .then(function (data) {
+        state.clocks = data;
+        buildAll();
+        fetchDownloads()
+          .then(function (counts) {
+            state.clocks.forEach(function (c) {
+              var n = counts[String(c.clock_name || "").toLowerCase()];
+              if (n != null) c.downloads = n;
+            });
+            buildAll();
+          })
+          .catch(function () { /* counts stay blank; the catalogue is fully usable without them */ });
+      })
       .catch(function (e) {
         mount.appendChild(el("p", "ce-error", "Could not load clock data. See the table below or the GitHub repository. (" + e + ")"));
       });

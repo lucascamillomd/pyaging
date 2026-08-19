@@ -1,3 +1,5 @@
+import os
+
 import anndata
 import numpy as np
 import pandas as pd
@@ -16,7 +18,7 @@ try:
 except Exception:
     CUPY_AVAILABLE = False
 
-from ..logger import LoggerManager, main_tqdm, silence_logger
+from ..logger._live import live_step
 from ._preprocess_utils import (
     add_metadata_to_anndata,
     add_unstructured_data,
@@ -76,55 +78,49 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
     if not PYBIGWIG_AVAILABLE:
         raise ImportError("pyBigWig is not installed. To use this function, please install it.")
 
-    logger = LoggerManager.gen_logger("bigwig_to_df")
-    if not verbose:
-        silence_logger("bigwig_to_df")
-    logger.first_info("Starting bigwig_to_df function")
-
     # Ensure bws is a list
     if isinstance(bw_files, str):
         bw_files = [bw_files]
 
-    # Get genomic annotation data
-    genes = load_ensembl_metadata(dir, logger, indent_level=1)
+    with live_step("processing bigWig files", verbose) as (step, pipeline_logger):
+        # Get genomic annotation data
+        genes = load_ensembl_metadata(dir, pipeline_logger, indent_level=1)
 
-    all_samples = []  # List to store signal data for each sample
+        all_samples = []  # List to store signal data for each sample
+        for index, bw_file in enumerate(bw_files, start=1):
+            step.update(f"processing {os.path.basename(bw_file)} ({index}/{len(bw_files)})")
 
-    message = "Processing bigWig files"
-    logger.start_progress(f"{message} started")
-    for bw_file in bw_files:
-        logger.info(f"Processing file: {bw_file}", indent_level=2)
+            # Open bigWig file
+            with open_bw(bw_file) as bw:
+                signal_sample = np.empty(shape=(0, 0), dtype=float)
+                for i in range(genes.shape[0]):
+                    try:
+                        signal = bw.stats(
+                            "chr" + genes["chr"].iloc[i],
+                            genes["start"].iloc[i] - 1,
+                            genes["end"].iloc[i],
+                            type="mean",
+                            exact=True,
+                        )[0]
+                    except Exception:
+                        signal = None
 
-        # Open bigWig file
-        with open_bw(bw_file) as bw:
-            signal_sample = np.empty(shape=(0, 0), dtype=float)
-            for i in main_tqdm(range(genes.shape[0]), indent_level=2, logger=logger):
-                try:
-                    signal = bw.stats(
-                        "chr" + genes["chr"].iloc[i],
-                        genes["start"].iloc[i] - 1,
-                        genes["end"].iloc[i],
-                        type="mean",
-                        exact=True,
-                    )[0]
-                except Exception:
-                    signal = None
+                    signal_transformed = np.arcsinh(signal) if signal is not None else 0
 
-                signal_transformed = np.arcsinh(signal) if signal is not None else 0
+                    signal_sample = np.append(signal_sample, signal_transformed)
 
-                signal_sample = np.append(signal_sample, signal_transformed)
+            # Append DataFrame for the current sample
+            all_samples.append(pd.DataFrame(signal_sample[None, :], columns=genes.gene_id.tolist()))
 
-        # Append DataFrame for the current sample
-        all_samples.append(pd.DataFrame(signal_sample[None, :], columns=genes.gene_id.tolist()))
-    logger.finish_progress(f"{message} finished")
+        # Concatenate all sample dataframes
+        df_concat = pd.concat(all_samples, ignore_index=True)
 
-    # Concatenate all sample dataframes
-    df_concat = pd.concat(all_samples, ignore_index=True)
+        # Add file name as index
+        df_concat.index = bw_files
 
-    # Add file name as index
-    df_concat.index = bw_files
+        plural = "s" if len(bw_files) != 1 else ""
+        step.done(f"{len(bw_files)} bigWig file{plural} × {genes.shape[0]} genes")
 
-    logger.done()
     return df_concat
 
 
@@ -156,7 +152,9 @@ def df_to_adata(
         'median', 'constant' (0 values), and 'knn'. Defaults to 'knn'.
 
     verbose: bool
-        Whether to log the output to console with the logger. Defaults to True.
+        Whether to show the progress display and warnings. Animated in
+        notebooks and terminals, a plain summary when output is captured,
+        and fully silent when False. Defaults to True.
 
     Returns
     -------
@@ -182,43 +180,45 @@ def df_to_adata(
     # This returns an AnnData object with the imputed data from 'df'.
 
     """
-    logger = LoggerManager.gen_logger("df_to_adata")
-    if not verbose:
-        silence_logger("df_to_adata")
-    logger.first_info("Starting df_to_adata function")
-
     if not isinstance(df, pd.DataFrame):
         raise TypeError("Input df must be a pandas DataFrame.")
 
-    # Split data and metadata
-    if metadata_cols is None:
-        metadata_cols = []
-    if len(metadata_cols) > 0:
-        metadata = df.loc[:, metadata_cols]
-        df = df.drop(metadata_cols, axis=1)
-    else:
-        metadata = None
+    with live_step("building AnnData object", verbose) as (step, pipeline_logger):
+        # Split data and metadata
+        if metadata_cols is None:
+            metadata_cols = []
+        if len(metadata_cols) > 0:
+            metadata = df.loc[:, metadata_cols]
+            df = df.drop(metadata_cols, axis=1)
+        else:
+            metadata = None
 
-    # Create an AnnData object
-    adata = create_anndata_object(df, logger)
+        # Create an AnnData object
+        adata = create_anndata_object(df, pipeline_logger)
 
-    # Add metadata
-    add_metadata_to_anndata(adata, metadata, logger)
+        # Add metadata
+        add_metadata_to_anndata(adata, metadata, pipeline_logger)
 
-    # Log statistics
-    log_data_statistics(adata.X, logger)
+        # Log statistics
+        missing_pct = log_data_statistics(adata.X, pipeline_logger)
 
-    # Impute missing values
-    impute_missing_values(adata, imputer_strategy, logger)
+        # Impute missing values
+        step.update(f"imputing missing values ({imputer_strategy})")
+        impute_missing_values(adata, imputer_strategy, pipeline_logger)
 
-    # Add unstructured data
-    if "X_imputed" in adata.layers:
-        add_unstructured_data(adata, imputer_strategy, logger)
+        # Add unstructured data
+        if "X_imputed" in adata.layers:
+            add_unstructured_data(adata, imputer_strategy, pipeline_logger)
 
-    # Move adata.X to GPU if possible
-    adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
+        # Move adata.X to GPU if possible
+        adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
 
-    logger.done()
+        if missing_pct == 0:
+            missing = " · no missing values"
+        else:
+            shown = f"{missing_pct:.2f}%" if missing_pct >= 0.01 else "<0.01%"
+            missing = f" · {shown} missing values imputed"
+        step.done(f"AnnData: {adata.n_obs} samples × {adata.n_vars} features{missing}")
 
     return adata
 
@@ -247,57 +247,40 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
         to unique CpG sites, and the column names are the CpG site identifiers (e.g., "cgXXXXXXX").
     """
 
-    logger = LoggerManager.gen_logger("epicv2_probe_aggregation")
-    if not verbose:
-        silence_logger("epicv2_probe_aggregation")
-    logger.first_info("Starting epicv2_probe_aggregation function")
-
     if not isinstance(df, pd.DataFrame):
         raise TypeError("Input df must be a pandas DataFrame.")
 
-    # Create an empty dictionary to store aggregated data
-    aggregated_data = {}
-    n_duplicated_probes = 0
+    with live_step("scanning for duplicated probes", verbose) as (step, pipeline_logger):
+        # Create an empty dictionary to store aggregated data
+        aggregated_data = {}
+        n_duplicated_probes = 0
 
-    # Logging the start of probe dictionary creation
-    message = "Looking for duplicated probes"
-    logger.start_progress(f"{message} started")
-    for column in main_tqdm(df.columns, indent_level=2, logger=logger):
-        cpg_site = column.split("_")[0]
-        if cpg_site in aggregated_data:
-            n_duplicated_probes += 1
-            aggregated_data[cpg_site].append(df[column])
-        else:
-            aggregated_data[cpg_site] = [df[column]]
-    # In case there are no duplicated probes, just return current array
-    if n_duplicated_probes == 0:
-        logger.info("There are no duplicated probes. Returning original data", indent_level=2)
-        logger.done()
-        return df
-    else:
-        logger.info(
-            f"There are {n_duplicated_probes} duplicated probes in the data",
-            indent_level=2,
-        )
-    logger.finish_progress(f"{message} finished")
+        for column in df.columns:
+            cpg_site = column.split("_")[0]
+            if cpg_site in aggregated_data:
+                n_duplicated_probes += 1
+                aggregated_data[cpg_site].append(df[column])
+            else:
+                aggregated_data[cpg_site] = [df[column]]
 
-    # Logging the start of averaging duplicated probes
-    message = "Averaging duplicated probes"
-    logger.start_progress(f"{message} started")
-    aggregated_columns = []
-    for cpg_site, columns in main_tqdm(aggregated_data.items(), indent_level=2, logger=logger):
-        if len(columns) > 1:
-            mean_series = pd.concat(columns, axis=1).mean(axis=1)
-            mean_series.name = cpg_site
-            aggregated_columns.append(mean_series)
-        else:
-            # Directly use the single column DataFrame if there's only one probe for the CpG site
-            aggregated_columns.append(columns[0].rename(cpg_site))
-    logger.finish_progress(f"{message} finished")
+        # In case there are no duplicated probes, just return current array
+        if n_duplicated_probes == 0:
+            step.done(f"no duplicated probes across {df.shape[1]} columns · returning original data")
+            return df
 
-    # Concatenate all aggregated columns to form the final DataFrame
-    aggregated_df = pd.concat(aggregated_columns, axis=1)
+        step.update(f"averaging {n_duplicated_probes} duplicated probes")
+        aggregated_columns = []
+        for cpg_site, columns in aggregated_data.items():
+            if len(columns) > 1:
+                mean_series = pd.concat(columns, axis=1).mean(axis=1)
+                mean_series.name = cpg_site
+                aggregated_columns.append(mean_series)
+            else:
+                # Directly use the single column DataFrame if there's only one probe for the CpG site
+                aggregated_columns.append(columns[0].rename(cpg_site))
 
-    logger.done()
+        # Concatenate all aggregated columns to form the final DataFrame
+        aggregated_df = pd.concat(aggregated_columns, axis=1)
+        step.done(f"{df.shape[1]} probes aggregated into {aggregated_df.shape[1]} unique CpG sites")
 
     return aggregated_df

@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 
-from ..logger import LoggerManager, silence_logger
+from ..logger._live import SimpleStep, display_enabled, live_step, quiet_hf_bars
 from ..utils._hf import download_hf_file
 
 _EXAMPLE_DATA_FILENAMES = {
@@ -34,7 +34,9 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
         itself goes through the standard Hugging Face cache and is then copied here.
 
     verbose : bool
-        Whether to log the output to console with the logger. Defaults to True.
+        Whether to show the progress display and warnings. Animated in
+        notebooks and terminals, a plain summary when output is captured,
+        and fully silent when False. Defaults to True.
 
     Raises
     ------
@@ -55,28 +57,19 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     >>> # This will download the example methylation dataset to the local system.
 
     """
-    logger = LoggerManager.gen_logger("download_example_data")
-    if not verbose:
-        silence_logger("download_example_data")
-    logger.first_info("Starting download_example_data function")
-
     if data_type not in _EXAMPLE_DATA_FILENAMES:
-        logger.error(
-            f"Example data {data_type} has not yet been implemented in pyaging.",
-            indent_level=2,
-        )
-        raise ValueError
+        raise ValueError(f"Example data {data_type} has not yet been implemented in pyaging.")
 
+    enabled = display_enabled(verbose)
     filename = _EXAMPLE_DATA_FILENAMES[data_type]
     destination = Path(dir) / filename
     if destination.exists():
-        logger.info(f"Example data already exists at {destination}", indent_level=2)
-        logger.done()
+        SimpleStep(filename, enabled=enabled).done(f"example data already at {destination}")
         return str(destination)
 
-    cache_path = download_hf_file(filename, dir, logger, indent_level=1)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy(cache_path, destination)
-    logger.info(f"Example data available at {destination}", indent_level=2)
-    logger.done()
+    with quiet_hf_bars(verbose), live_step(f"downloading {filename}", verbose) as (step, pipeline_logger):
+        cache_path = download_hf_file(filename, dir, pipeline_logger, indent_level=1)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(cache_path, destination)
+        step.done(f"example data at {destination}")
     return str(destination)

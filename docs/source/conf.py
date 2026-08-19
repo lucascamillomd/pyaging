@@ -83,33 +83,53 @@ source_suffix = [".rst", ".md"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "pydata_sphinx_theme"
+html_theme = "furo"
 html_theme_options = {
-    "github_url": "https://github.com/lucascamillomd/pyaging",
-    "icon_links": [
-        {"name": "PyPI", "url": "https://pypi.org/project/pyaging/", "icon": "fa-brands fa-python"},
-        {"name": "Paper", "url": "https://doi.org/10.1093/bioinformatics/btae200", "icon": "fa-solid fa-book-open"},
+    "source_repository": "https://github.com/lucascamillomd/pyaging",
+    "source_branch": "main",
+    "source_directory": "docs/source",
+    "light_css_variables": {
+        "color-brand-primary": "#2f6394",
+        "color-brand-content": "#2f6394",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#7fb0e8",
+        "color-brand-content": "#7fb0e8",
+    },
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/lucascamillomd/pyaging",
+            "html": (
+                '<svg stroke="currentColor" fill="currentColor" stroke-width="0"'
+                ' viewBox="0 0 16 16" height="1.2em" width="1.2em">'
+                '<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17'
+                ".55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-"
+                ".82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 "
+                "2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82"
+                "-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68"
+                " 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56."
+                "82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01"
+                ' 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>'
+                "</svg>"
+            ),
+            "class": "",
+        },
     ],
-    "navbar_start": ["navbar-logo"],
-    "navbar_center": ["navbar-nav"],
-    "navbar_end": ["theme-switcher", "navbar-icon-links"],
-    "navbar_align": "left",
-    "show_prev_next": False,
-    "navigation_with_keys": False,
-    "pygments_light_style": "friendly",
-    "pygments_dark_style": "monokai",
-    "header_links_before_dropdown": 6,
 }
+# scanpydoc.rtd_github_links resolves source links from these
 html_context = {
-    "default_mode": "auto",
     "github_user": "lucascamillomd",
     "github_repo": "pyaging",
     "github_version": "main",
 }
-# The Clock Catalogue owns the full width — drop its left section-nav sidebar.
-html_sidebars = {"clock_glossary": []}
 html_logo = "../_static/logo.png"
-html_css_files = ["custom.css", "clock_explorer.css"]
+html_favicon = "../_static/logo.png"
+html_css_files = [
+    "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap",
+    "custom.css",
+    "clock_explorer.css",
+]
 html_js_files = ["clock_explorer_core.js", "clock_explorer.js"]
 
 # -- Options for nbshpinx ----------------------------------------------------
