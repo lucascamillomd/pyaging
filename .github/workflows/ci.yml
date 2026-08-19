@@ -51,6 +51,7 @@ jobs:
   docs:
     name: Docs build
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -59,7 +60,11 @@ jobs:
         with:
           enable-cache: true
           python-version: "3.11"
-      - run: sudo apt-get update && sudo apt-get install -y pandoc
+      # Direct release download: GitHub's apt mirrors intermittently hang for
+      # over an hour on `apt-get update` (observed twice on 2026-08-19)
+      - run: |
+          curl -sL -o /tmp/pandoc.deb https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-1-amd64.deb
+          sudo dpkg -i /tmp/pandoc.deb
       - run: uv sync --locked --no-default-groups --group docs
       - run: uv run --no-sync sphinx-build -b html docs/source docs/_build/html
 
