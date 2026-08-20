@@ -31,7 +31,8 @@ def _as_records(features, data_type, units):
 
     for index, feature in enumerate(features):
         entry = per_feature.get(feature, default)
-        unit = units[index] if units is not None else entry["unit"]
+        override = units[index] if units is not None else None
+        unit = override or entry["unit"]
         yield {
             "feature": feature,
             "unit": unit,
@@ -58,7 +59,8 @@ def resolve_feature_ranges(features, data_type, feature_units=None) -> list[dict
 
     feature_units : list of str or str, optional
         Units that override the registry unit. A single string applies to every
-        feature; a list must have one entry per feature.
+        feature; a list must have one entry per feature, and a ``None`` entry
+        falls back to the registry unit for that feature.
 
     Returns
     -------
@@ -95,6 +97,11 @@ def get_feature_ranges(clock_name: str):
         One row per clock feature, with columns ``feature``, ``unit``, ``low``,
         and ``high``.
 
+    Raises
+    ------
+    ValueError
+        If the loaded clock carries no feature list.
+
     Examples
     --------
     >>> get_feature_ranges("phenoage")  # doctest: +SKIP
@@ -104,6 +111,8 @@ def get_feature_ranges(clock_name: str):
     from ..predict import load_clock
 
     model = load_clock(clock_name, verbose=False)
+    if model.features is None:
+        raise ValueError(f"clock {clock_name!r} has no feature list, so its feature ranges cannot be resolved")
     records = resolve_feature_ranges(
         model.features,
         model.metadata.get("data_type"),
