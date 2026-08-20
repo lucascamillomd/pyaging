@@ -1,3 +1,12 @@
+"""Checks on the frozen LinAge2 constants the parity tests are anchored to.
+
+``clocks/notebooks/linage2.ipynb`` re-derives these constants from the published
+archive every time it runs, so this snapshot is not a build input. It is the
+independent reference: these tests confirm the snapshot alone reproduces the
+paper's two published subjects, and ``tests/predict/test_linage2.py`` confirms
+the built clock agrees with the same snapshot.
+"""
+
 import json
 import math
 from pathlib import Path
@@ -5,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-PARAMS = json.loads((Path(__file__).resolve().parents[1] / "clocks" / "linage2_params.json").read_text())
+PARAMS = json.loads((Path(__file__).resolve().parent / "data" / "linage2_params.json").read_text())
 
 
 def test_feature_vector_has_59_entries_in_fixed_order():

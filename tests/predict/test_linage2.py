@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 import torch
 
-PARAMS = json.loads((Path(__file__).resolve().parents[2] / "clocks" / "linage2_params.json").read_text())
+PARAMS = json.loads((Path(__file__).resolve().parents[1] / "data" / "linage2_params.json").read_text())
 WEIGHTS_DIR = Path(__file__).resolve().parents[2] / "clocks" / "weights"
 
 

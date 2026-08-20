@@ -3,6 +3,10 @@
 The expected values in ``reference_predictions.json`` were produced by BioAge
 itself, not by a re-implementation, so they pin these ports to the published
 behaviour rather than to our reading of it.
+
+The fixtures are a frozen snapshot. Each notebook re-derives its own parameters
+from BioAge at build time, so comparing a freshly built clock against this
+snapshot is what catches a derivation that has drifted.
 """
 
 import copy
@@ -18,7 +22,7 @@ import torch
 import pyaging as pya
 from pyaging.predict._pred_utils import check_features_in_adata
 
-PARAMS_DIR = Path(__file__).resolve().parents[2] / "clocks" / "bioage_params"
+PARAMS_DIR = Path(__file__).resolve().parents[1] / "data" / "bioage_params"
 WEIGHTS_DIR = Path(__file__).resolve().parents[2] / "clocks" / "weights"
 
 
