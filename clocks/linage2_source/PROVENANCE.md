@@ -11,7 +11,7 @@ Licence: CC BY 4.0. The archive's files are redistributed here unmodified under 
 
 ## What is vendored here
 
-The published code archive, minus one file:
+The published code archive, minus the three files listed under "What is deliberately not vendored":
 
 | file | role |
 |---|---|

@@ -39,11 +39,32 @@ def test_overlapping_clinical_features_reuse_package_names():
     }
     assert shared <= set(PARAMS["features"]) | set(PARAMS["inputs"]["numeric"])
     assert shared <= set(registry)
-    # total_cholesterol is the one overlap LinAge2 consumes without modelling: it feeds the
-    # Friedewald LDL and is then dropped, so it is an input but not a feature-vector slot.
-    assert "total_cholesterol" in PARAMS["inputs"]["numeric"]
-    assert "total_cholesterol" not in PARAMS["features"]
     assert shared - {"total_cholesterol"} <= set(PARAMS["features"])
+
+
+def test_the_three_lipids_are_inputs_but_not_model_features():
+    """linAge2.R:1016-1026 drops all three after they have been used for the Friedewald LDL."""
+    lipids = {"total_cholesterol", "hdl_cholesterol", "triglycerides"}
+    assert lipids <= set(PARAMS["inputs"]["numeric"])
+    assert not lipids & set(PARAMS["features"])
+    assert lipids == set(PARAMS["derived"]["ldl_cholesterol"]["inputs"])
+
+
+def test_the_fold_applies_to_the_skip_columns_too():
+    """`foldOutliers` has no skip list, so skipping normalization does not mean skipping the fold."""
+    from pyaging.utils._feature_ranges import load_feature_range_registry
+
+    registry = load_feature_range_registry()["features"]
+    assert PARAMS["fold"]["cap"] == 6
+    assert "including the five in skip_mask" in PARAMS["fold"]["applies_to"]
+
+    # These two skip z-scoring, so their raw 0-8 range meets the cap directly. Their registry
+    # bounds describe the input, not the folded value, which is exactly the trap the note warns of.
+    skipped = {name for name, skip in zip(PARAMS["features"], PARAMS["skip_mask"], strict=True) if skip}
+    for name in ("self_reported_health_index", "healthcare_use_index"):
+        assert name in skipped
+        assert registry[name]["high"] > PARAMS["fold"]["cap"]
+        assert "NOT the fold" in PARAMS["derived"][name]["recipe"]
 
 
 def test_masks_align_with_the_feature_vector():

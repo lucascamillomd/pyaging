@@ -161,6 +161,21 @@ COMORBIDITY_ITEMS = [
     "hospital_overnight_past_year",
 ]
 
+# `foldOutliers` (linAge2.R:331-352) loops over every column with no skip list, so the fold is not
+# the second half of z-scoring -- it applies to all 59 features, the five skip columns included.
+FOLD = {
+    "cap": 6,
+    "applies_to": "all 59 features, including the five in skip_mask",
+    "note": (
+        "clip(value, -6, +6) after z-scoring. The five skip_mask columns are never z-scored but are "
+        "still clipped, so their raw scale meets the same cap: self_reported_health_index and "
+        "healthcare_use_index both range 0-8 and are capped at 6, and log(0) reaches the vector as "
+        "-inf and folds to exactly -6. Do not infer that skipping normalization means skipping the "
+        "fold -- the registry bounds for those two features are their input range, not their "
+        "post-fold range."
+    ),
+}
+
 DERIVED = {
     "smoking_intensity": {
         "nhanes": "LBXCOT",
@@ -180,13 +195,17 @@ DERIVED = {
         "inputs": ["general_health_condition", "health_compared_to_one_year_ago"],
         "recipe": (
             "((health == 4) * 2 + (health == 5) * 4) * (1 - (versus == 1) * 0.5 + (versus == 2)); "
-            "missing defaults are health = 3 and versus = 3, giving 0"
+            "missing defaults are health = 3 and versus = 3, giving 0. Skips z-scoring but NOT the "
+            "fold: its 0-8 range is clipped to 6, so 'poor and worsening' health saturates at 6"
         ),
     },
     "healthcare_use_index": {
         "nhanes": "fs3Score",
         "inputs": ["healthcare_visits_past_year"],
-        "recipe": "the raw HUQ050 visit-count code used as a number, with 77, 99 and missing mapped to 0",
+        "recipe": (
+            "the raw HUQ050 visit-count code used as a number, with 77, 99 and missing mapped to 0. "
+            "Skips z-scoring but NOT the fold: codes 7 and 8 are both clipped to 6"
+        ),
     },
     "ldl_cholesterol": {
         "nhanes": "LDLV",
@@ -285,6 +304,7 @@ def main() -> None:
         },
         "nhanes_to_pyaging": NHANES_TO_PYAGING,
         "derived": DERIVED,
+        "fold": FOLD,
         # lambda is either 0 (natural log) or NA (identity); no other Box-Cox power occurs.
         "log_mask": features["lam"].eq(0).tolist(),
         "skip_mask": normstats["skip"].tolist(),
