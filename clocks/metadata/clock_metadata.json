@@ -4202,6 +4202,40 @@
     "postprocess": "mortality_to_phenoage",
     "version": "v0.3.0"
   },
+  "phenoagesaopaulo": {
+    "clock_name": "phenoagesaopaulo",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "⌛",
+    "citation": "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591.",
+    "doi": "https://doi.org/10.18632/aging.101414",
+    "notes": "PhenoAge refit on NHANES III adults aged 20-84 with BioAge::phenoage_calc(), dropping creatinine, albumin, and alkaline phosphatase and keeping the remaining six biomarkers plus chronological age. The coefficients and the mortality-to-age constants are refit, so they differ from the published PhenoAge and its constants do not apply. Biomarkers are on BioAge's SI-unit variants, which are natively pyaging's unit convention, and C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. The refit is pooled across sexes, so unlike kdmage and homeostaticdysregulation this clock takes no female column.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "phenotypic age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "Gompertz hazards regression with age calibration",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 7,
+    "citations": 3594,
+    "citations_date": "2026-07-05",
+    "version": "v0.5.0"
+  },
   "pipekelasticnet": {
     "clock_name": "pipekelasticnet",
     "data_type": "DNA methylation",

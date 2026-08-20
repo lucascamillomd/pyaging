@@ -47,7 +47,7 @@ def test_registry_has_every_implementation_notebook(registry):
     notebook_names = {
         path.stem for path in (ROOT / "clocks" / "notebooks").glob("*.ipynb") if path.name != "template.ipynb"
     }
-    assert len(registry) == 175
+    assert len(registry) == 176
     assert set(registry) == notebook_names
 
 

@@ -522,6 +522,7 @@
         "elastic net logistic regression",
         "elastic net regression",
         "feature-selected logistic regression",
+        "Gompertz hazards regression with age calibration",
         "Klemera–Doubal composite",
         "LASSO regression",
         "linear regression",

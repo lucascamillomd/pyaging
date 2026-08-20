@@ -6,6 +6,7 @@ from ._inverse_transforms import (
     anti_log_log,
     anti_logp2,
     mortality_to_phenoage,
+    mortality_to_phenoage_saopaulo,
     petkovichblood,
     stubbsmultitissue,
 )
@@ -40,6 +41,7 @@ __all__ = [
     "cleanup_clock_memory",
     "load_clock",
     "mortality_to_phenoage",
+    "mortality_to_phenoage_saopaulo",
     "petkovichblood",
     "predict_age",
     "predict_ages_with_model",

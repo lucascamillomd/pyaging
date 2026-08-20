@@ -237,11 +237,25 @@ sp_train <- phenoage_calc(
 sp_coef <- sp_train$fit$coef
 stopifnot(identical(rownames(sp_coef), c("shape", "rate", sp_markers, "age")))
 
+# Training-sample means over exactly the rows the gompertz fit used: flexsurvreg
+# drops incomplete cases, so the model frame, not the filtered data frame, is the
+# training sample. pyaging substitutes these for any predictor a user's data does
+# not carry, so an absent one contributes its average contribution to the linear
+# predictor instead of the 0 the pipeline would otherwise supply. They are on the
+# fitted scale, so the log_crp entry is log1p(CRP in mg/dL).
+sp_frame <- model.frame(
+  BioAge:::surv_form(paste(c(sp_markers, "age"), collapse = "+")),
+  data = nhanes3 %>% filter(age >= 20, age <= 84)
+)
+sp_mean <- colMeans(sp_frame[, c(sp_markers, "age")])
+
 write_json(
   list(
     features = to_feature_names(c(sp_markers, "age")),
     coefficients = as.numeric(sp_coef[c(sp_markers, "age"), "coef"]),
     intercept = as.numeric(sp_coef["rate", "coef"]),
+    training_mean = as.numeric(sp_mean[c(sp_markers, "age")]),
+    training_n = nrow(sp_frame),
     m_n = as.numeric(sp_train$fit$m_n),
     m_d = as.numeric(sp_train$fit$m_d),
     ba_n = as.numeric(sp_train$fit$BA_n),

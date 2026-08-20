@@ -1,6 +1,9 @@
 import torch
 import torch.nn as nn
 
+# ``pyaging.predict`` imports this module in turn, so this only resolves because
+# ``predict/__init__`` binds ``_inverse_transforms`` before ``_pred_utils``.
+from ..predict._inverse_transforms import mortality_to_phenoage_saopaulo
 from ._base_models import pyagingModel
 
 # Lowest C-reactive protein the log transforms will accept, in mg/dL. Matches the
@@ -1609,6 +1612,41 @@ class PhenoAge(pyagingModel):
         mortality_score = 1 - torch.exp(-torch.exp(x) * (torch.exp(120 * lambda_) - 1) / lambda_)
         age = 141.50225 + torch.log(-0.00553 * torch.log(1 - mortality_score)) / 0.090165
         return age
+
+
+class PhenoAgeSaoPaulo(pyagingModel):
+    """PhenoAge refit without creatinine, albumin, and alkaline phosphatase."""
+
+    def __init__(self):
+        super().__init__()
+        for name in ["m_n", "m_d", "ba_n", "ba_d", "ba_i"]:
+            self.register_buffer(name, torch.empty(0))
+
+    def preprocess(self, x):
+        """Apply BioAge's log1p transform to C-reactive protein.
+
+        Notes
+        -----
+        The refit's CRP coefficient is fit against ``log1p(CRP in mg/dL)``, not
+        the natural log the published ``PhenoAge`` uses, so the two clocks read
+        the same raw column differently.
+        """
+        return log1p_crp(self.features, x)
+
+    def postprocess(self, x):
+        """Convert the Gompertz mortality score to phenotypic age.
+
+        Notes
+        -----
+        The constants are refit alongside the coefficients and differ from
+        Levine's published ones, so they travel as buffers rather than being
+        hardcoded the way ``PhenoAge.postprocess`` hardcodes them.
+        """
+        m_n, m_d, ba_n, ba_d, ba_i = (
+            buffer.to(device=x.device, dtype=x.dtype)
+            for buffer in (self.m_n, self.m_d, self.ba_n, self.ba_d, self.ba_i)
+        )
+        return mortality_to_phenoage_saopaulo(x, m_n, m_d, ba_n, ba_d, ba_i)
 
 
 class RepliTali(pyagingModel):

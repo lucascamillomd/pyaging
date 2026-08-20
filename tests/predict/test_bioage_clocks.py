@@ -421,3 +421,105 @@ def test_homeostaticdysregulation_zero_filled_crp_is_the_one_benign_omission(ref
 
     assert abs(floor) < 2.0
     assert 0.15 < model.reference_values[position] < 0.35  # mg/dL, the young-healthy centre
+
+
+# --- phenoagesaopaulo ------------------------------------------------------
+
+
+def test_phenoagesaopaulo_matches_bioage_reference(reference):
+    model = _weights("phenoagesaopaulo")
+    predicted = _predict(model, reference["rows"], model.features)
+    np.testing.assert_allclose(predicted, reference["expected"]["phenoagesaopaulo"], rtol=0, atol=1e-6)
+
+
+def test_phenoagesaopaulo_excludes_the_three_dropped_biomarkers():
+    model = _weights("phenoagesaopaulo")
+    assert not {"creatinine", "albumin", "alkaline_phosphatase"} & set(model.features)
+    assert "age" in model.features
+
+
+def test_phenoagesaopaulo_increases_with_age(reference):
+    model = _weights("phenoagesaopaulo")
+    row = dict(reference["rows"][0])
+    younger = _predict(model, [dict(row, age=40.0)], model.features)
+    older = _predict(model, [dict(row, age=70.0)], model.features)
+    assert older > younger
+
+
+def test_phenoagesaopaulo_has_no_sex_term():
+    """The refit is pooled across sexes, unlike kdmage and homeostaticdysregulation,
+    so there is no ``female`` column to code and no sex-specific parameter set.
+    """
+    model = _weights("phenoagesaopaulo")
+    assert "female" not in model.features
+
+
+def test_phenoagesaopaulo_applies_log1p_to_crp_alone():
+    """BioAge's lncrp is log1p(CRP in mg/dL), not the ln that published phenoage uses."""
+    model = _weights("phenoagesaopaulo")
+    index = model.features.index("c_reactive_protein")
+
+    row = torch.arange(1, len(model.features) + 1, dtype=torch.float64).unsqueeze(0)
+    expected = row.clone()
+    expected[0, index] = np.log1p(expected[0, index].item())
+    assert torch.equal(model.preprocess(row), expected)
+
+
+def test_phenoagesaopaulo_survives_a_zero_crp(reference):
+    model = _weights("phenoagesaopaulo")
+    row = dict(reference["rows"][0], c_reactive_protein=0.0)
+    assert np.isfinite(_predict(model, [row], model.features)).all()
+
+
+def test_phenoagesaopaulo_uses_its_own_refit_gompertz_constants():
+    """The refit's mortality-to-age constants are fit alongside the coefficients and
+    are not Levine's published ones, so reusing ``mortality_to_phenoage`` would be
+    wrong even though the algebraic shape is identical.
+    """
+    model = _weights("phenoagesaopaulo")
+    assert model.postprocess_name == "mortality_to_phenoage_saopaulo"
+    assert not math.isclose(model.ba_i.item(), 141.50225, abs_tol=0.1)
+    assert not math.isclose(model.ba_d.item(), 0.090165, abs_tol=1e-3)
+    assert not math.isclose(model.ba_n.item(), -0.00553, abs_tol=1e-4)
+
+    from pyaging.predict._inverse_transforms import mortality_to_phenoage
+
+    linear_predictor = torch.tensor([-6.0], dtype=torch.float64)
+    assert not math.isclose(
+        model.postprocess(linear_predictor).item(), mortality_to_phenoage(linear_predictor.item()), abs_tol=1.0
+    )
+
+
+def test_phenoagesaopaulo_reference_values_are_the_training_means():
+    """An absent predictor should contribute the population-average amount to the
+    linear predictor, which for a linear model is exactly its training mean.
+    """
+    model = _weights("phenoagesaopaulo")
+    params = json.loads((PARAMS_DIR / "phenoagesaopaulo.json").read_text())
+    crp = model.features.index("c_reactive_protein")
+
+    assert model.reference_values is not None
+    assert len(model.reference_values) == len(model.features)
+    for position, expected in enumerate(params["training_mean"]):
+        stored = model.reference_values[position]
+        # CRP is stored raw because preprocess will log1p whatever sits in that slot.
+        assert math.isclose(math.log1p(stored) if position == crp else stored, expected)
+
+
+def test_phenoagesaopaulo_reference_fill_beats_zero_fill(reference):
+    """Pin both measured bounds. Substituting a training mean leaves an error bounded
+    by that subject's own deviation, whereas the 0 the pipeline would otherwise
+    substitute is not a physiological value for any of these assays.
+    """
+    model = _weights("phenoagesaopaulo")
+    worst_reference = worst_zero = 0.0
+    for dropped in model.features[:-1]:
+        position = model.features.index(dropped)
+        for row in reference["rows"]:
+            target = _predict(model, [row], model.features)[0]
+            filled = _predict(model, [dict(row, **{dropped: model.reference_values[position]})], model.features)
+            zeroed = _predict(model, [dict(row, **{dropped: 0.0})], model.features)
+            worst_reference = max(worst_reference, abs(filled[0] - target))
+            worst_zero = max(worst_zero, abs(zeroed[0] - target))
+
+    assert worst_reference < worst_zero
