@@ -7,8 +7,11 @@ from types import SimpleNamespace
 import pytest
 import torch
 
+from pyaging.utils import resolve_feature_ranges
+
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_DIR = ROOT / "clocks" / "metadata"
+WEIGHTS_DIR = ROOT / "clocks" / "weights"
 
 _spec = importlib.util.spec_from_file_location("validate_metadata", METADATA_DIR / "validate_metadata.py")
 _validate_metadata = importlib.util.module_from_spec(_spec)
@@ -300,6 +303,34 @@ def test_effective_model_feature_count_prefers_explicit_base_model_features():
 @pytest.mark.full_catalog
 def test_local_runtime_artifacts_match_registry():
     validate_artifact_consistency(ROOT)
+
+
+def test_every_built_clock_carries_the_registry_feature_units():
+    """A stored ``feature_units`` shadows the registry, so a stale copy must not survive a build.
+
+    ``resolve_feature_ranges`` resolves a unit as ``override or entry["unit"]``,
+    which means a clock's saved units win over the package registry. That is
+    deliberate — a clock is authoritative about its own units — but it also
+    means a registry correction that never reaches the weights would be
+    silently ignored at predict time. This catches that at build time.
+    """
+    paths = sorted(WEIGHTS_DIR.glob("*.pt"))
+    if not paths:
+        pytest.skip(f"{WEIGHTS_DIR} is build output; generate it by running the clocks/notebooks")
+
+    stale = []
+    for path in paths:
+        model = torch.load(path, weights_only=False)
+        expected = [
+            record["unit"] for record in resolve_feature_ranges(model.features, model.metadata.get("data_type"))
+        ]
+        if getattr(model, "feature_units", None) != expected:
+            stale.append(path.stem)
+
+    assert not stale, (
+        f"{len(stale)} of {len(paths)} clocks have feature_units that disagree with the registry: "
+        f"{', '.join(stale)}. Re-run 'uv run python clocks/patch_clocks_v050.py clocks/weights'."
+    )
 
 
 def test_load_ledger_rejects_duplicate_clock_names(tmp_path):
