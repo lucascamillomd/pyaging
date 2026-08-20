@@ -2962,6 +2962,41 @@
     "citations_date": "2026-07-05",
     "version": "v0.3.0"
   },
+  "linage2": {
+    "clock_name": "linage2",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Fong, Sheng, et al. \"LinAge2: providing actionable insights and benchmarking with epigenetic clocks.\" npj Aging 11.1 (2025): 29.",
+    "doi": "https://doi.org/10.1038/s41514-025-00221-4",
+    "notes": "Principal-component clinical clock trained on 20-year mortality in the NHANES IV 1999-2000 wave and tested in the 2001-2002 wave. The 59 model features are log transformed where the reference specifies, robustly z-scored by sex against a healthy 40-50 year old NHANES reference, and folded at 6 MAD-scaled units; the folded vector is projected onto sex-specific singular vectors and scored by a sex-specific Cox model, so male and female samples run through entirely separate parameter sets. Chronological age is supplied in years and enters the Cox terms in months, where it is a genuine covariate rather than a cancelling offset. Sex is coded female = 1 and male = 0; a dataset with no female column scores every sample with the male parameters. C-reactive protein is supplied raw in mg/dL and takes a plain natural log with no floor, so a reading below detection coded as 0 folds to the -6 cap instead of being clamped the way the BioAge clocks clamp it. The input contract is wider than the 59 model features: total cholesterol, HDL cholesterol and triglycerides are consumed only by the Friedewald LDL and are not features themselves, and 26 questionnaire codes feed the comorbidity, self-reported-health and healthcare-use indices. An absent questionnaire block is the main hazard and it biases the estimate downward: the substituted values are the reference cohort's own median profile, which is no to all 22 conditions and good, unchanged health, so a subject who would have reported poor and worsening health reads about 5.3 years younger than they should, and a subject who would have reported conditions reads up to 0.06 years younger. The healthcare-use index pushes the other way, by about 0.5 years for a subject who made 16 or more visits. An absent lipid panel substitutes a total cholesterol chosen so that the derived LDL lands on the reference median, avoiding the reference implementation's hard 0 mmol/L substitution; a NaN inside a lipid column that is present still takes that hard 0 path and lowers the estimate by roughly 0.35 years. Heed the missing-feature warning the prediction pipeline emits.",
+    "research_only": null,
+    "tissue": [
+      "blood",
+      "urine"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + Cox regression",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "npj Aging",
+    "last_author": "Jan Gruber",
+    "n_features": 85,
+    "citations": 6,
+    "citations_date": "2026-08-20",
+    "version": "v0.5.0"
+  },
   "mammalian1": {
     "clock_name": "mammalian1",
     "data_type": "DNA methylation",
