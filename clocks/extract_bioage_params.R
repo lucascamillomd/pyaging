@@ -13,7 +13,16 @@
 #   * NHANES3$fev is millilitres (median 2885); NHANES3$fev_1000 is litres
 #     (median 2.885). We use fev_1000.
 #   * lncrp is log1p(crp in mg/dL), NOT log(crp): exp(lncrp) - crp == 1 exactly
-#     across both cohorts. pyaging's `log_crp` therefore means log(CRP_mg_dL + 1).
+#     across both cohorts.
+#
+# CRP naming. Internally the fitted column stays `log_crp`, because that is what
+# the value is: log1p(CRP in mg/dL), the scale every fit below is trained on. The
+# name EMITTED to the JSON is `c_reactive_protein`, because that is what a pyaging
+# user supplies: the raw measurement in mg/dL, which each clock log1p's itself in
+# preprocess(). The rename is therefore name-only for the parameters — no q, k, s,
+# coefficient, mean, sd, or covariance moves — while the reference rows carry the
+# raw `crp` column so that feeding them in and letting the clock transform
+# reproduces BioAge's own output.
 #   * albumin_gL == albumin * 10, glucose_mmol == glucose * 0.0555, and
 #     creat_umol == creat * 88.4017 (= 10000 / 113.12) are all exact, with zero
 #     deviation across every non-missing row of both cohorts.
@@ -44,6 +53,7 @@ to_pyaging_units <- function(data) {
     creatinine = creat_umol,
     glucose = glucose_mmol,
     log_crp = lncrp,
+    c_reactive_protein = crp,
     lymphocyte_percent = lymph,
     mean_cell_volume = mcv,
     red_cell_distribution_width = rdw,
@@ -60,6 +70,12 @@ to_pyaging_units <- function(data) {
 
 nhanes3 <- to_pyaging_units(NHANES3)
 nhanes4 <- to_pyaging_units(NHANES4)
+
+# The internal fitted column name -> the feature name a pyaging user supplies.
+# See the CRP naming note in the header.
+to_feature_names <- function(names) {
+  replace(names, names == "log_crp", "c_reactive_protein")
+}
 
 # ---- KDM -------------------------------------------------------------------
 kdm_markers <- c(
@@ -82,7 +98,7 @@ kdm_params_for <- function(train) {
   agev <- train$fit$lm_age
   stopifnot(identical(agev$bm, kdm_markers))
   list(
-    biomarkers = agev$bm,
+    biomarkers = to_feature_names(agev$bm),
     q = as.numeric(agev$q),
     k = as.numeric(agev$k),
     s = as.numeric(agev$s),
@@ -92,7 +108,7 @@ kdm_params_for <- function(train) {
 
 write_json(
   list(
-    features = c(kdm_markers, "age", "female"),
+    features = to_feature_names(c(kdm_markers, "age", "female")),
     male = kdm_params_for(kdm_train[["0"]]),
     female = kdm_params_for(kdm_train[["1"]])
   ),
@@ -151,7 +167,10 @@ hd_reference_window <- function(female_value) {
     } else {
       c(0.8, 1.3) * CREAT_MGDL_TO_UMOL
     },
-    log_crp = c(0, log(3)),
+    # Expressed in raw mg/dL like the user-facing feature, not on the log1p scale
+    # the fit uses: log1p(0) = 0 and log1p(2) = log(3), so this is the exact
+    # preimage of the old c(0, log(3)).
+    c_reactive_protein = c(0, 2),
     alkaline_phosphatase = if (female_value == 1) c(37, 98) else c(45, 115),
     white_blood_cell_count = c(4.5, 11)
   )
@@ -180,7 +199,7 @@ hd_fit_for <- function(female_value) {
   distances <- sqrt(mahalanobis(projection, center, covariance))
 
   list(
-    biomarkers = hd_markers,
+    biomarkers = to_feature_names(hd_markers),
     reference_mean = unname(ref_mean),
     reference_sd = unname(ref_sd),
     reference_window = hd_reference_window(female_value),
@@ -194,7 +213,10 @@ hd_fit_for <- function(female_value) {
 hd_fit <- list("0" = hd_fit_for(0), "1" = hd_fit_for(1))
 
 write_json(
-  list(features = c(hd_markers, "female"), male = hd_fit[["0"]], female = hd_fit[["1"]]),
+  list(
+    features = to_feature_names(c(hd_markers, "female")),
+    male = hd_fit[["0"]], female = hd_fit[["1"]]
+  ),
   file.path(out_dir, "homeostaticdysregulation.json"),
   digits = 12, auto_unbox = TRUE, pretty = TRUE
 )
@@ -217,7 +239,7 @@ stopifnot(identical(rownames(sp_coef), c("shape", "rate", sp_markers, "age")))
 
 write_json(
   list(
-    features = c(sp_markers, "age"),
+    features = to_feature_names(c(sp_markers, "age")),
     coefficients = as.numeric(sp_coef[c(sp_markers, "age"), "coef"]),
     intercept = as.numeric(sp_coef["rate", "coef"]),
     m_n = as.numeric(sp_train$fit$m_n),
@@ -283,22 +305,32 @@ for (female_value in c(0, 1)) {
   stopifnot(max(abs(own - theirs)) < 1e-10)
 }
 
+# Subject selection runs over the fitted columns, exactly as before, so that
+# carrying the raw CRP column cannot shift cohort membership and move `expected`.
+# The raw column is joined back only afterwards, for emission.
 selected <- nhanes4 %>%
   select(sampleID, all_of(ref_features)) %>%
   filter(stats::complete.cases(.)) %>%
   arrange(sampleID) %>%
   head(20) %>%
+  left_join(nhanes4 %>% select(sampleID, c_reactive_protein), by = "sampleID") %>%
   left_join(kdm_projected, by = "sampleID") %>%
   left_join(hd_projected, by = "sampleID") %>%
   left_join(sp_projected, by = "sampleID")
 
 stopifnot(nrow(selected) == 20, !anyNA(selected))
 
+# The emitted rows carry raw CRP where the fits carry log1p(CRP); the clocks close
+# that gap in preprocess(). If this ever fails, the two have drifted apart.
+stopifnot(max(abs(log1p(selected$c_reactive_protein) - selected$log_crp)) < 1e-12)
+
+emit_features <- to_feature_names(ref_features)
+
 write_json(
   list(
-    features = ref_features,
+    features = emit_features,
     sample_ids = selected$sampleID,
-    rows = selected %>% select(all_of(ref_features)),
+    rows = selected %>% select(all_of(emit_features)),
     expected = list(
       kdmage = selected$kdm,
       homeostaticdysregulation = selected$hd_log,

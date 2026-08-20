@@ -1,5 +1,5 @@
 {
-  "features": ["glucose", "log_crp", "lymphocyte_percent", "mean_cell_volume", "red_cell_distribution_width", "white_blood_cell_count", "age"],
+  "features": ["glucose", "c_reactive_protein", "lymphocyte_percent", "mean_cell_volume", "red_cell_distribution_width", "white_blood_cell_count", "age"],
   "coefficients": [0.1051465664493, 0.3174744823455, -0.0103423193089, 0.0248395653643, 0.2840435864018, 0.06222324593716, 0.08315482084326],
   "intercept": -19.224941333853,
   "m_n": -1.357301880289,

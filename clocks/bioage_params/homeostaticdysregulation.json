@@ -1,7 +1,7 @@
 {
-  "features": ["albumin", "lymphocyte_percent", "mean_cell_volume", "glucose", "red_cell_distribution_width", "creatinine", "log_crp", "alkaline_phosphatase", "white_blood_cell_count", "female"],
+  "features": ["albumin", "lymphocyte_percent", "mean_cell_volume", "glucose", "red_cell_distribution_width", "creatinine", "c_reactive_protein", "alkaline_phosphatase", "white_blood_cell_count", "female"],
   "male": {
-    "biomarkers": ["albumin", "lymphocyte_percent", "mean_cell_volume", "glucose", "red_cell_distribution_width", "creatinine", "log_crp", "alkaline_phosphatase", "white_blood_cell_count"],
+    "biomarkers": ["albumin", "lymphocyte_percent", "mean_cell_volume", "glucose", "red_cell_distribution_width", "creatinine", "c_reactive_protein", "alkaline_phosphatase", "white_blood_cell_count"],
     "reference_mean": [44.350508011996, 31.160453279409, 89.812805724659, 4.85796626506, 12.674841658655, 85.136778478749, 0.2228441333656, 81.673031026253, 6.991518888275],
     "reference_sd": [2.863602902553, 5.072885164726, 3.529201164133, 0.39949185628, 0.5546970316591, 8.563140926807, 0.1110186085316, 16.214638540131, 1.523746371484],
     "reference_window": {
@@ -11,7 +11,7 @@
       "glucose": [3.33, 5.55],
       "red_cell_distribution_width": [11.5, 14.5],
       "creatinine": [70.72, 114.92],
-      "log_crp": [0, 1.098612288668],
+      "c_reactive_protein": [0, 2],
       "alkaline_phosphatase": [45, 115],
       "white_blood_cell_count": [4.5, 11]
     },
@@ -31,7 +31,7 @@
     "log_hd_sd": 0.5008245319085
   },
   "female": {
-    "biomarkers": ["albumin", "lymphocyte_percent", "mean_cell_volume", "glucose", "red_cell_distribution_width", "creatinine", "log_crp", "alkaline_phosphatase", "white_blood_cell_count"],
+    "biomarkers": ["albumin", "lymphocyte_percent", "mean_cell_volume", "glucose", "red_cell_distribution_width", "creatinine", "c_reactive_protein", "alkaline_phosphatase", "white_blood_cell_count"],
     "reference_mean": [41.632653041401, 31.19168358739, 89.095241679166, 4.67011778291, 12.720774637142, 66.092324887659, 0.2529609992397, 66.681625740898, 7.076214408156],
     "reference_sd": [3.153351137213, 5.095044571705, 4.084456967111, 0.3849168696188, 0.6337733796148, 6.858124785028, 0.1516918968824, 14.301484196967, 1.588278126716],
     "reference_window": {
@@ -41,7 +41,7 @@
       "glucose": [3.33, 5.55],
       "red_cell_distribution_width": [11.5, 14.5],
       "creatinine": [53.04, 97.24],
-      "log_crp": [0, 1.098612288668],
+      "c_reactive_protein": [0, 2],
       "alkaline_phosphatase": [37, 98],
       "white_blood_cell_count": [4.5, 11]
     },
