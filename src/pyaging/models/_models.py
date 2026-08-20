@@ -666,10 +666,9 @@ class LinAge2(pyagingModel):
         Those defaults are the *healthiest* profile, so an absent questionnaire block
         biases the biological age downward; the registry notes say so.
         """
-        position = {name: index for index, name in enumerate(self.features)}
 
         def column(name):
-            return x[:, position[name]]
+            return x[:, self.features.index(name)]
 
         # digiCot: a four-level step function on raw cotinine in ng/mL. NaN has no bin
         # in the reference either, so it propagates rather than reading as a non-smoker.
