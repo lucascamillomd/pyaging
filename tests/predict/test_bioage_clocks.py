@@ -408,6 +408,30 @@ def test_homeostaticdysregulation_reference_fill_beats_zero_fill(reference):
     assert worst_zero > 4.5
 
 
+def test_homeostaticdysregulation_a_missing_biomarker_biases_the_score_downward(reference):
+    """The registry notes warn users that an incomplete panel reads as healthier than it
+    is. Pin the direction that claim rests on: the score is a distance, so removing a
+    marker's own contribution shrinks it for every marker on average, and by enough to
+    matter against the 1.98-6.76 spread the reference subjects occupy.
+    """
+    model = _weights("homeostaticdysregulation")
+    baseline = _predict(model, reference["rows"], model.features)
+
+    worst_drop = 0.0
+    for dropped in model.features[:-1]:
+        position = model.features.index(dropped)
+        filled = _predict(
+            model,
+            [dict(row, **{dropped: model.reference_values[position]}) for row in reference["rows"]],
+            model.features,
+        )
+        shifts = filled - baseline
+        assert shifts.mean() < 0, f"omitting {dropped} does not lower the score on average"
+        worst_drop = max(worst_drop, -shifts.min())
+
+    assert worst_drop > 2.5
+
+
 def test_homeostaticdysregulation_zero_filled_crp_is_the_one_benign_omission(reference):
     """CRP is the exception to the test above, and it is worth pinning so the general
     claim is not overstated. ``log1p`` compresses a clamped zero to 1.8 standard
