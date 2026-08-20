@@ -1,5 +1,6 @@
 # pyaging/utils/__init__.py
 
+from ._feature_ranges import get_feature_ranges, resolve_feature_ranges
 from ._utils import (
     cite_clock,
     download,
@@ -16,8 +17,10 @@ __all__ = [
     "download",
     "find_clock_by_doi",
     "get_clock_metadata",
+    "get_feature_ranges",
     "load_clock_metadata",
     "print_model_details",
     "progress",
+    "resolve_feature_ranges",
     "show_all_clocks",
 ]
