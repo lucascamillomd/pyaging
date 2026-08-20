@@ -61,6 +61,36 @@ def _predict(model, rows, features):
         return model(matrix).squeeze(-1).numpy()
 
 
+# --- The shared log1p_crp transform ----------------------------------------
+
+CLOCKS = ["kdmage", "homeostaticdysregulation", "phenoagesaopaulo"]
+
+
+@pytest.mark.parametrize("clock", CLOCKS)
+def test_bioage_clocks_apply_log1p_to_crp_alone(clock):
+    """BioAge's lncrp is log1p(CRP in mg/dL), not ln, and only that column moves."""
+    model = _weights(clock)
+    index = model.features.index("c_reactive_protein")
+
+    # Distinct positive values, so a transform applied to the whole tensor rather
+    # than to the CRP column alone cannot pass.
+    row = torch.arange(1, len(model.features) + 1, dtype=torch.float64).unsqueeze(0)
+    expected = row.clone()
+    expected[0, index] = np.log1p(expected[0, index].item())
+    assert torch.equal(model.preprocess(row), expected)
+
+
+@pytest.mark.parametrize("clock", CLOCKS)
+def test_bioage_clocks_survive_a_zero_crp(reference, clock):
+    """A below-detection or constant-imputed 0 must not reach log1p unclamped."""
+    model = _weights(clock)
+    row = dict(reference["rows"][0], c_reactive_protein=0.0)
+    assert np.isfinite(_predict(model, [row], model.features)).all()
+
+
+# --- kdmage ----------------------------------------------------------------
+
+
 def test_kdmage_matches_bioage_reference(reference):
     model = _weights("kdmage")
     predicted = _predict(model, reference["rows"], model.features)
@@ -88,26 +118,6 @@ def test_kdmage_takes_raw_crp_not_a_logged_value():
     model = _weights("kdmage")
     assert "c_reactive_protein" in model.features
     assert "log_crp" not in model.features
-
-
-def test_kdmage_applies_log1p_to_crp_alone():
-    """BioAge's lncrp is log1p(CRP in mg/dL), not ln, and only that column moves."""
-    model = _weights("kdmage")
-    index = model.features.index("c_reactive_protein")
-
-    # Distinct positive values, so a transform applied to the whole tensor rather
-    # than to the CRP column alone cannot pass.
-    row = torch.arange(1, len(model.features) + 1, dtype=torch.float64).unsqueeze(0)
-    expected = row.clone()
-    expected[0, index] = np.log1p(expected[0, index].item())
-    assert torch.equal(model.preprocess(row), expected)
-
-
-def test_kdmage_survives_a_zero_crp(reference):
-    """A below-detection or constant-imputed 0 must not reach log1p unclamped."""
-    model = _weights("kdmage")
-    row = dict(reference["rows"][0], c_reactive_protein=0.0)
-    assert np.isfinite(_predict(model, [row], model.features)).all()
 
 
 # --- The biomarker reindex -------------------------------------------------
@@ -312,23 +322,6 @@ def test_homeostaticdysregulation_center_is_load_bearing_for_the_prediction(refe
     assert np.abs(np.array(uncentered) - predicted).max() > 0.05
 
 
-def test_homeostaticdysregulation_applies_log1p_to_crp_alone():
-    """BioAge's lncrp is log1p(CRP in mg/dL), not ln, and only that column moves."""
-    model = _weights("homeostaticdysregulation")
-    index = model.features.index("c_reactive_protein")
-
-    row = torch.arange(1, len(model.features) + 1, dtype=torch.float64).unsqueeze(0)
-    expected = row.clone()
-    expected[0, index] = np.log1p(expected[0, index].item())
-    assert torch.equal(model.preprocess(row), expected)
-
-
-def test_homeostaticdysregulation_survives_a_zero_crp(reference):
-    model = _weights("homeostaticdysregulation")
-    row = dict(reference["rows"][0], c_reactive_protein=0.0)
-    assert np.isfinite(_predict(model, [row], model.features)).all()
-
-
 def test_homeostaticdysregulation_buffers_are_keyed_by_biomarker_name_not_position():
     """The JSON happens to list its biomarkers in feature order, so the reindex is a
     no-op and a positional build would be indistinguishable. Permute the JSON and the
@@ -476,23 +469,6 @@ def test_phenoagesaopaulo_has_no_sex_term():
     """
     model = _weights("phenoagesaopaulo")
     assert "female" not in model.features
-
-
-def test_phenoagesaopaulo_applies_log1p_to_crp_alone():
-    """BioAge's lncrp is log1p(CRP in mg/dL), not the ln that published phenoage uses."""
-    model = _weights("phenoagesaopaulo")
-    index = model.features.index("c_reactive_protein")
-
-    row = torch.arange(1, len(model.features) + 1, dtype=torch.float64).unsqueeze(0)
-    expected = row.clone()
-    expected[0, index] = np.log1p(expected[0, index].item())
-    assert torch.equal(model.preprocess(row), expected)
-
-
-def test_phenoagesaopaulo_survives_a_zero_crp(reference):
-    model = _weights("phenoagesaopaulo")
-    row = dict(reference["rows"][0], c_reactive_protein=0.0)
-    assert np.isfinite(_predict(model, [row], model.features)).all()
 
 
 def test_phenoagesaopaulo_uses_its_own_refit_gompertz_constants():

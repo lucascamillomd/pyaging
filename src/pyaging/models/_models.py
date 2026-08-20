@@ -20,19 +20,6 @@ def log1p_crp(features, x):
     transform; users supply the raw measurement so one column can feed clocks
     that log it differently.
 
-    Parameters
-    ----------
-    features : list of str
-        The clock's feature names, used to locate the CRP column.
-
-    x : torch.Tensor
-        A sample-by-feature matrix of raw inputs.
-
-    Returns
-    -------
-    torch.Tensor
-        ``x`` with the CRP column replaced by its ``log1p``.
-
     Notes
     -----
     CRP is clamped to ``CRP_FLOOR_MG_DL`` first, so a below-detection reading
@@ -482,30 +469,16 @@ class HomeostaticDysregulation(pyagingModel):
         """
         biomarkers, female = x[:, :-1], x[:, -1]
 
-        def score(reference_mean, reference_sd, center, precision, log_hd_sd):
-            reference_mean, reference_sd, center, precision, log_hd_sd = (
-                t.to(device=x.device, dtype=x.dtype)
-                for t in (reference_mean, reference_sd, center, precision, log_hd_sd)
+        def score(sex):
+            mean, sd, center, precision, log_hd_sd = (
+                getattr(self, f"{name}_{sex}").to(device=x.device, dtype=x.dtype)
+                for name in ("reference_mean", "reference_sd", "center", "precision", "log_hd_sd")
             )
-            deviation = (biomarkers - reference_mean) / reference_sd - center
+            deviation = (biomarkers - mean) / sd - center
             squared = (deviation @ precision * deviation).sum(dim=1)
             return torch.log(torch.sqrt(squared)) / log_hd_sd
 
-        female_score = score(
-            self.reference_mean_female,
-            self.reference_sd_female,
-            self.center_female,
-            self.precision_female,
-            self.log_hd_sd_female,
-        )
-        male_score = score(
-            self.reference_mean_male,
-            self.reference_sd_male,
-            self.center_male,
-            self.precision_male,
-            self.log_hd_sd_male,
-        )
-        return torch.where(female == 1, female_score, male_score).unsqueeze(-1)
+        return torch.where(female == 1, score("female"), score("male")).unsqueeze(-1)
 
 
 class KDMAge(pyagingModel):
@@ -530,17 +503,17 @@ class KDMAge(pyagingModel):
         The denominator sums over every biomarker, matching ``kdm_calc``'s
         deliberate choice not to rescale the estimate for missing markers.
         """
-        biomarkers, age, female = x[:, :-2], x[:, -2], x[:, -1:]
+        biomarkers, age, female = x[:, :-2], x[:, -2], x[:, -1]
 
-        def estimate(q, k, s, s_ba2):
-            q, k, s, s_ba2 = (t.to(device=x.device, dtype=x.dtype) for t in (q, k, s, s_ba2))
+        def estimate(sex):
+            q, k, s, s_ba2 = (
+                getattr(self, f"{name}_{sex}").to(device=x.device, dtype=x.dtype) for name in ("q", "k", "s", "s_ba2")
+            )
             numerator = ((biomarkers - q) * k / s**2).sum(dim=1)
             denominator = ((k / s) ** 2).sum()
             return (numerator + age / s_ba2) / (denominator + 1 / s_ba2)
 
-        female_age = estimate(self.q_female, self.k_female, self.s_female, self.s_ba2_female)
-        male_age = estimate(self.q_male, self.k_male, self.s_male, self.s_ba2_male)
-        return torch.where(female.squeeze(-1) == 1, female_age, male_age).unsqueeze(-1)
+        return torch.where(female == 1, estimate("female"), estimate("male")).unsqueeze(-1)
 
 
 class Knight(pyagingModel):
@@ -1623,14 +1596,7 @@ class PhenoAgeSaoPaulo(pyagingModel):
             self.register_buffer(name, torch.empty(0))
 
     def preprocess(self, x):
-        """Apply BioAge's log1p transform to C-reactive protein.
-
-        Notes
-        -----
-        The refit's CRP coefficient is fit against ``log1p(CRP in mg/dL)``, not
-        the natural log the published ``PhenoAge`` uses, so the two clocks read
-        the same raw column differently.
-        """
+        """Apply BioAge's log1p transform to C-reactive protein, not ``PhenoAge``'s ``ln``."""
         return log1p_crp(self.features, x)
 
     def postprocess(self, x):
