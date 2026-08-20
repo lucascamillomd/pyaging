@@ -105,6 +105,17 @@ def test_phenoage_takes_raw_crp_not_a_logged_value():
 
 
 @requires_weights
+def test_phenoage_declares_that_it_preprocesses():
+    """print_model_details, the clock glossary and the metadata all read this label.
+
+    Leaving it None said phenoage does no preprocessing, which is the exact fact
+    v0.5.0's breaking change turns on.
+    """
+    model = _phenoage()
+    assert model.preprocess_name == "natural_log_crp"
+
+
+@requires_weights
 def test_phenoage_applies_natural_log_to_crp():
     """Levine 2018 uses ln(CRP in mg/dL); the clock must apply it, not the user."""
     model = _phenoage()

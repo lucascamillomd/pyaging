@@ -4243,6 +4243,7 @@
     "citations": 3594,
     "citations_date": "2026-07-05",
     "version": "0.5.0",
+    "preprocess": "natural_log_crp",
     "postprocess": "mortality_to_phenoage"
   },
   "phenoagesaopaulo": {
