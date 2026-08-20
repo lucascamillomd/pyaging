@@ -24,23 +24,6 @@ def load_feature_range_registry() -> dict:
     return json.loads(source.read_text(encoding="utf-8"))
 
 
-def _as_records(features, data_type, units):
-    registry = load_feature_range_registry()
-    per_feature = registry["features"]
-    default = registry["modality_defaults"].get(data_type, _UNBOUNDED)
-
-    for index, feature in enumerate(features):
-        entry = per_feature.get(feature, default)
-        override = units[index] if units is not None else None
-        unit = override or entry["unit"]
-        yield {
-            "feature": feature,
-            "unit": unit,
-            "low": -math.inf if entry["low"] is None else float(entry["low"]),
-            "high": math.inf if entry["high"] is None else float(entry["high"]),
-        }
-
-
 def resolve_feature_ranges(features, data_type, feature_units=None) -> list[dict]:
     """
     Resolve each feature to its unit and plausibility bounds.
@@ -75,11 +58,25 @@ def resolve_feature_ranges(features, data_type, feature_units=None) -> list[dict
         If ``feature_units`` is a list whose length differs from ``features``.
     """
     features = list(features)
-    if isinstance(feature_units, str):
+    if feature_units is None or isinstance(feature_units, str):
         feature_units = [feature_units] * len(features)
-    if feature_units is not None and len(feature_units) != len(features):
+    elif len(feature_units) != len(features):
         raise ValueError(f"feature_units has {len(feature_units)} entries but there are {len(features)} features")
-    return list(_as_records(features, data_type, feature_units))
+
+    registry = load_feature_range_registry()
+    default = registry["modality_defaults"].get(data_type, _UNBOUNDED)
+    records = []
+    for feature, override in zip(features, feature_units, strict=True):
+        entry = registry["features"].get(feature, default)
+        records.append(
+            {
+                "feature": feature,
+                "unit": override or entry["unit"],
+                "low": -math.inf if entry["low"] is None else float(entry["low"]),
+                "high": math.inf if entry["high"] is None else float(entry["high"]),
+            }
+        )
+    return records
 
 
 def get_feature_ranges(clock_name: str):

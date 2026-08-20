@@ -301,25 +301,22 @@ def check_feature_ranges(
             getattr(model, "feature_units", None),
         )
     except Exception as exc:
-        # Deliberately broad: this check is cosmetic, and nothing here may ever
-        # block a prediction. A clock whose stored feature_units disagree with
-        # its features would otherwise abort predict_age for every user.
+        # Deliberately broad: one clock whose stored feature_units disagree with its
+        # features must not abort predict_age for every user.
         logger.warning(f"Could not resolve feature ranges: {exc}", indent_level=indent_level + 1)
         return
 
     matrix = adata.obsm[f"X_{model.metadata['clock_name']}"]
-    matrix = np.asarray(
-        cp.asnumpy(matrix) if CUPY_AVAILABLE and isinstance(matrix, cp.ndarray) else matrix, dtype=float
-    )
+    if CUPY_AVAILABLE and isinstance(matrix, cp.ndarray):
+        matrix = cp.asnumpy(matrix)
+    matrix = np.asarray(matrix, dtype=float)
 
     offenders = []
     for index, record in enumerate(records):
-        column = matrix[:, index]
-        finite = ~np.isnan(column)
-        outside = finite & ((column < record["low"]) | (column > record["high"]))
-        count = int(outside.sum())
+        observed = matrix[:, index]
+        observed = observed[~np.isnan(observed)]
+        count = int(((observed < record["low"]) | (observed > record["high"])).sum())
         if count:
-            observed = column[finite]
             offenders.append((record, 100 * count / observed.size, observed.min(), observed.max()))
 
     if not offenders:

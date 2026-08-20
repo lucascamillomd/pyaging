@@ -24,7 +24,7 @@ class _RecordingLogger:
         pass
 
 
-def _adata_for(clock_name, features, values):
+def _adata_for(clock_name, values):
     matrix = np.asarray(values, dtype=float)
     adata = anndata.AnnData(np.zeros((matrix.shape[0], 1), dtype=float))
     adata.obsm[f"X_{clock_name}"] = matrix
@@ -40,7 +40,7 @@ class _FakeModel:
 
 def test_in_range_methylation_produces_no_warning():
     model = _FakeModel(["cg1", "cg2"], "DNA methylation")
-    adata = _adata_for("fakeclock", model.features, [[0.1, 0.9], [0.5, 0.5]])
+    adata = _adata_for("fakeclock", [[0.1, 0.9], [0.5, 0.5]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     assert logger.warnings == []
@@ -48,7 +48,7 @@ def test_in_range_methylation_produces_no_warning():
 
 def test_out_of_range_methylation_warns_with_feature_range_and_percent():
     model = _FakeModel(["cg1", "cg2"], "DNA methylation")
-    adata = _adata_for("fakeclock", model.features, [[1.5, 0.2], [2.0, 0.3]])
+    adata = _adata_for("fakeclock", [[1.5, 0.2], [2.0, 0.3]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     joined = " ".join(logger.warnings)
@@ -60,7 +60,7 @@ def test_out_of_range_methylation_warns_with_feature_range_and_percent():
 
 def test_warning_reports_unit_for_clinical_features():
     model = _FakeModel(["albumin", "age"], "clinical biomarkers")
-    adata = _adata_for("fakeclock", model.features, [[4.5, 50.0]])
+    adata = _adata_for("fakeclock", [[4.5, 50.0]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     joined = " ".join(logger.warnings)
@@ -70,7 +70,7 @@ def test_warning_reports_unit_for_clinical_features():
 
 def test_nan_values_are_ignored():
     model = _FakeModel(["cg1"], "DNA methylation")
-    adata = _adata_for("fakeclock", model.features, [[np.nan], [0.5]])
+    adata = _adata_for("fakeclock", [[np.nan], [0.5]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     assert logger.warnings == []
@@ -81,7 +81,7 @@ def test_nan_values_are_excluded_from_the_reported_percentage():
     # denominator, so this is 100% of the values that were actually there,
     # not 50% of the rows.
     model = _FakeModel(["cg1"], "DNA methylation")
-    adata = _adata_for("fakeclock", model.features, [[np.nan], [1.5]])
+    adata = _adata_for("fakeclock", [[np.nan], [1.5]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     joined = " ".join(logger.warnings)
@@ -91,7 +91,7 @@ def test_nan_values_are_excluded_from_the_reported_percentage():
 
 def test_unknown_data_type_produces_no_warning():
     model = _FakeModel(["prot1"], "proteomics")
-    adata = _adata_for("fakeclock", model.features, [[-1e6], [1e6]])
+    adata = _adata_for("fakeclock", [[-1e6], [1e6]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     assert logger.warnings == []
@@ -99,7 +99,7 @@ def test_unknown_data_type_produces_no_warning():
 
 def test_mismatched_feature_units_warns_instead_of_raising():
     model = _FakeModel(["cg1"], "DNA methylation", feature_units=["beta value", "beta value"])
-    adata = _adata_for("fakeclock", model.features, [[0.4]])
+    adata = _adata_for("fakeclock", [[0.4]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     assert len(logger.warnings) == 1
@@ -108,7 +108,7 @@ def test_mismatched_feature_units_warns_instead_of_raising():
 
 def test_warning_reports_the_observed_minimum_and_maximum():
     model = _FakeModel(["cg1"], "DNA methylation")
-    adata = _adata_for("fakeclock", model.features, [[12.4], [97.3]])
+    adata = _adata_for("fakeclock", [[12.4], [97.3]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     assert "observed 12.4 to 97.3" in " ".join(logger.warnings)
@@ -116,7 +116,7 @@ def test_warning_reports_the_observed_minimum_and_maximum():
 
 def test_half_bounded_range_is_phrased_as_below_the_bound():
     model = _FakeModel(["gene1"], "transcriptomics")
-    adata = _adata_for("fakeclock", model.features, [[-3.0], [5.0]])
+    adata = _adata_for("fakeclock", [[-3.0], [5.0]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     joined = " ".join(logger.warnings)
@@ -126,7 +126,7 @@ def test_half_bounded_range_is_phrased_as_below_the_bound():
 
 def test_check_does_not_mutate_the_matrix():
     model = _FakeModel(["cg1"], "DNA methylation")
-    adata = _adata_for("fakeclock", model.features, [[5.0]])
+    adata = _adata_for("fakeclock", [[5.0]])
     before = adata.obsm["X_fakeclock"].copy()
     check_feature_ranges(adata, model, _RecordingLogger())
     np.testing.assert_array_equal(adata.obsm["X_fakeclock"], before)
@@ -135,14 +135,14 @@ def test_check_does_not_mutate_the_matrix():
 def test_model_without_feature_units_attribute_is_supported():
     model = _FakeModel(["cg1"], "DNA methylation")
     del model.feature_units
-    adata = _adata_for("fakeclock", model.features, [[0.4]])
+    adata = _adata_for("fakeclock", [[0.4]])
     check_feature_ranges(adata, model, _RecordingLogger())
 
 
 def test_many_offending_features_are_summarized_not_listed_in_full():
     features = [f"cg{index}" for index in range(50)]
     model = _FakeModel(features, "DNA methylation")
-    adata = _adata_for("fakeclock", features, [[5.0] * 50])
+    adata = _adata_for("fakeclock", [[5.0] * 50])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     assert len(logger.warnings) <= 6
@@ -152,7 +152,7 @@ def test_many_offending_features_are_summarized_not_listed_in_full():
 @pytest.mark.parametrize("value", [-0.1, 1.1])
 def test_boundary_violations_are_detected(value):
     model = _FakeModel(["cg1"], "DNA methylation")
-    adata = _adata_for("fakeclock", ["cg1"], [[value]])
+    adata = _adata_for("fakeclock", [[value]])
     logger = _RecordingLogger()
     check_feature_ranges(adata, model, logger)
     assert logger.warnings
