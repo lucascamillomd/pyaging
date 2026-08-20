@@ -242,6 +242,15 @@ def check_features_in_adata(
 _MAX_REPORTED_FEATURES = 5
 
 
+def _describe_range(low: float, high: float) -> str:
+    """Phrase a violated range, keeping half-bounded ranges readable."""
+    if np.isinf(low):
+        return f"above {high:g}"
+    if np.isinf(high):
+        return f"below {low:g}"
+    return f"outside [{low:g}, {high:g}]"
+
+
 @progress("Check feature ranges")
 def check_feature_ranges(
     adata: anndata.AnnData,
@@ -285,11 +294,19 @@ def check_feature_ranges(
     reported percentage is therefore the share of non-NaN values that fall
     outside the range.
     """
-    records = resolve_feature_ranges(
-        model.features,
-        model.metadata.get("data_type"),
-        getattr(model, "feature_units", None),
-    )
+    try:
+        records = resolve_feature_ranges(
+            model.features,
+            model.metadata.get("data_type"),
+            getattr(model, "feature_units", None),
+        )
+    except Exception as exc:
+        # Deliberately broad: this check is cosmetic, and nothing here may ever
+        # block a prediction. A clock whose stored feature_units disagree with
+        # its features would otherwise abort predict_age for every user.
+        logger.warning(f"Could not resolve feature ranges: {exc}", indent_level=indent_level + 1)
+        return
+
     matrix = adata.obsm[f"X_{model.metadata['clock_name']}"]
     matrix = np.asarray(
         cp.asnumpy(matrix) if CUPY_AVAILABLE and isinstance(matrix, cp.ndarray) else matrix, dtype=float
@@ -302,7 +319,8 @@ def check_feature_ranges(
         outside = finite & ((column < record["low"]) | (column > record["high"]))
         count = int(outside.sum())
         if count:
-            offenders.append((record, 100 * count / int(finite.sum())))
+            observed = column[finite]
+            offenders.append((record, 100 * count / observed.size, observed.min(), observed.max()))
 
     if not offenders:
         logger.info("All feature values are within their expected ranges.", indent_level=indent_level + 1)
@@ -314,10 +332,12 @@ def check_feature_ranges(
         f"This usually means the data is in different units than the clock expects.{truncated}",
         indent_level=indent_level + 1,
     )
-    for record, percent in offenders[:_MAX_REPORTED_FEATURES]:
+    for record, percent, observed_low, observed_high in offenders[:_MAX_REPORTED_FEATURES]:
         unit = f" {record['unit']}" if record["unit"] else ""
         logger.warning(
-            f"{record['feature']}: {percent:.2f}% of values outside [{record['low']:g}, {record['high']:g}]{unit}",
+            f"{record['feature']}: {percent:.2f}% of values "
+            f"{_describe_range(record['low'], record['high'])}{unit} "
+            f"(observed {observed_low:g} to {observed_high:g})",
             indent_level=indent_level + 2,
         )
 
