@@ -1,6 +1,7 @@
 import math
 from pathlib import Path
 
+import numpy as np
 import pytest
 import torch
 
@@ -127,6 +128,42 @@ def test_get_feature_ranges_falls_back_to_the_registry_without_stored_units(monk
 def test_extreme_but_real_clinical_values_stay_within_bounds(feature, value):
     (record,) = resolve_feature_ranges([feature], "clinical biomarkers")
     assert record["low"] <= value <= record["high"]
+
+
+@pytest.mark.parametrize(
+    ("feature", "unit"),
+    [
+        ("grimage", "years"),
+        ("grimage2timp1", "pg/mL"),
+        ("grimage2packyrs", "pack-years"),
+        ("grimage2logcrp", "natural log of mg/L"),
+        ("cpgpt_timp1", "z-score of a DNAm-predicted plasma protein level"),
+    ],
+)
+def test_dnam_surrogate_features_are_not_treated_as_beta_values(feature, unit):
+    """These live on DNA methylation clocks but are ages, protein levels and z-scores."""
+    (record,) = resolve_feature_ranges([feature], "DNA methylation")
+    assert record["unit"] == unit
+    assert (record["low"], record["high"]) != (0.0, 1.0)
+
+
+@pytest.mark.parametrize("clock_name", ["cpgptgrimage3", "cpgptpcgrimage3"])
+def test_surrogate_bounds_contain_the_clocks_own_training_distribution(monkeypatch, clock_name):
+    """Both clocks standardize their input, so the scaler carries the training mean and sd.
+
+    A bound the training mean sits near would fire on ordinary data. The upper bound
+    must clear three standard deviations; the lower bound may instead clear an order
+    of magnitude, since a plasma concentration is right-skewed and its mean minus
+    three standard deviations is often negative.
+    """
+    model = _local_clock(monkeypatch, clock_name)
+    mean, deviation = (np.asarray(dependency) for dependency in model.preprocess_dependencies[:2])
+
+    records = resolve_feature_ranges(model.features, model.metadata["data_type"])
+
+    for record, center, spread in zip(records, mean, deviation, strict=True):
+        assert record["low"] < max(center - 3 * spread, center / 10), record["feature"]
+        assert center + 3 * spread < record["high"], record["feature"]
 
 
 def test_registry_feature_names_are_lowercase_and_have_no_sex_aliases():
