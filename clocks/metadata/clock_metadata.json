@@ -4252,9 +4252,12 @@
     "species": "Homo sapiens",
     "year": 2026,
     "approved_by_author": "⌛",
-    "citation": "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591.",
-    "doi": "https://doi.org/10.18632/aging.101414",
-    "notes": "PhenoAge refit on NHANES III adults aged 20-84 with BioAge::phenoage_calc(), dropping creatinine, albumin, and alkaline phosphatase and keeping the remaining six biomarkers plus chronological age. The coefficients and the mortality-to-age constants are refit, so they differ from the published PhenoAge and its constants do not apply. Biomarkers are on BioAge's SI-unit variants, which are natively pyaging's unit convention, and C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. The refit is pooled across sexes, so unlike kdmage and homeostaticdysregulation this clock takes no female column.",
+    "citation": [
+      "Kwon, Dayoon, and Daniel W. Belsky. \"A toolkit for quantification of biological age from blood chemistry and organ function test data: BioAge.\" GeroScience 43.6 (2021): 2795-2808.",
+      "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
+    ],
+    "doi": "https://doi.org/10.1007/s11357-021-00480-5",
+    "notes": "PhenoAge refit on NHANES III adults aged 20-84 with BioAge::phenoage_calc(), dropping creatinine, albumin, and alkaline phosphatase and keeping the remaining six biomarkers plus chronological age. The coefficients and the mortality-to-age constants are refit, so they differ from the published PhenoAge and its constants do not apply. Biomarkers are on BioAge's SI-unit variants, which are natively pyaging's unit convention, and C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. The refit is pooled across sexes, so unlike kdmage and homeostaticdysregulation this clock takes no female column. The refit has no publication of its own: it was produced for pyaging 0.5.0 by clocks/extract_bioage_params.R with the BioAge toolkit, so the DOI, journal, last author and citation count are the toolkit's, and Levine 2018 is listed beside it as the method reference that defines PhenoAge.",
     "research_only": null,
     "tissue": [
       "blood"
@@ -4273,11 +4276,11 @@
       "clinical laboratory assays"
     ],
     "population": "adults",
-    "journal": "Aging",
-    "last_author": "Steve Horvath",
+    "journal": "GeroScience",
+    "last_author": "Daniel W. Belsky",
     "n_features": 7,
-    "citations": 3594,
-    "citations_date": "2026-07-05",
+    "citations": 332,
+    "citations_date": "2026-08-20",
     "version": "0.5.0",
     "preprocess": "log1p_crp",
     "postprocess": "mortality_to_phenoage_saopaulo",

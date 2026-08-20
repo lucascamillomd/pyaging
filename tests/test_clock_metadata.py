@@ -706,6 +706,26 @@ def test_resolved_evidence_rejects_provisional_source_text(registry, ledger):
         validate_evidence({clock_name: registry_record}, {clock_name: ledger_record})
 
 
+def test_the_sao_paulo_refit_does_not_present_itself_as_the_published_phenoage(registry, ledger):
+    """It is a derived model with no publication of its own.
+
+    Carrying Levine's DOI made find_clock_by_doi return it beside phenoage and
+    attributed that paper's citation count to an unpublished in-house refit. It now
+    points at the toolkit that produced it, as its two sibling refits do, and keeps
+    Levine as the method reference.
+    """
+    entry = registry["phenoagesaopaulo"]
+    evidence = ledger["phenoagesaopaulo"]
+
+    assert entry["doi"] == registry["kdmage"]["doi"]
+    assert entry["doi"] != registry["phenoage"]["doi"]
+    assert entry["citations"] == registry["kdmage"]["citations"]
+    assert entry["citations"] != registry["phenoage"]["citations"]
+    assert entry["citation"][-1] == registry["phenoage"]["citation"]
+    assert "no publication of its own" in entry["notes"]
+    assert evidence["fields"]["citation"]["source_id"] == "bioage-paper"
+
+
 def test_final_evidence_sample_corrections_are_synchronized(registry, ledger):
     mammalian = registry["mammalianlifespan"]
     mammalian_evidence = ledger["mammalianlifespan"]
