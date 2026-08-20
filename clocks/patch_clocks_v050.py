@@ -11,15 +11,22 @@ directory leaves the files already processed in their patched state. That is
 safe to recover from: the patch is idempotent, so the script can simply be
 re-run over the same directory.
 
-The notebook patch refuses to guess. The 178 clock notebooks were written over
+It also brings each notebook's ``## Index`` cell back in step with the sections
+the notebook actually has, which the feature-ranges section was added without
+doing.
+
+The notebook patches refuse to guess. The 178 clock notebooks were written over
 several years and only mostly share a shape, so :func:`patch_notebook` accepts
 one narrowly specified layout and raises :class:`NotebookShapeError` on anything
-else rather than rewriting a cell it cannot identify.
+else rather than rewriting a cell it cannot identify, and
+:func:`patch_notebook_index` raises rather than renumbering an index it cannot
+line up against the headings.
 """
 
 import argparse
 import json
 import os
+import re
 import sys
 import tempfile
 import uuid
@@ -280,8 +287,130 @@ def patch_notebook(path: Path) -> bool:
     return True
 
 
+INDEX_HEADING = "## Index"
+_INDEX_ENTRY = re.compile(r"^\d+\. \[(?P<title>.+?)\]\((?P<anchor>#.+?)\)$")
+
+
+def _find_index_cell(cells) -> int:
+    """Return the index of the sole ``## Index`` markdown cell.
+
+    Raises
+    ------
+    NotebookShapeError
+        If the notebook does not have exactly one such cell.
+    """
+    matches = [
+        index
+        for index, cell in enumerate(cells)
+        if cell["cell_type"] == "markdown" and _source(cell).lstrip().startswith(INDEX_HEADING)
+    ]
+    if len(matches) != 1:
+        raise NotebookShapeError(f"{len(matches)} '{INDEX_HEADING}' cells, expected 1")
+    return matches[0]
+
+
+def _section_headings(cells) -> list:
+    """Return the notebook's ``## `` section titles in order, excluding the index itself."""
+    headings = []
+    for cell in cells:
+        if cell["cell_type"] != "markdown":
+            continue
+        for line in _source(cell).splitlines():
+            if line.startswith("## ") and line.strip() != INDEX_HEADING:
+                headings.append(line[3:].strip())
+    return headings
+
+
+def _index_entries(body: str) -> list:
+    """Parse an index cell body into ``(title, anchor)`` pairs.
+
+    Raises
+    ------
+    NotebookShapeError
+        If the cell holds anything besides the heading and numbered entries.
+    """
+    entries = []
+    for line in body.splitlines()[1:]:
+        if not line.strip():
+            continue
+        match = _INDEX_ENTRY.match(line.strip())
+        if match is None:
+            raise NotebookShapeError(f"index cell holds a line that is not a numbered entry: {line.strip()!r}")
+        entries.append((match["title"], match["anchor"]))
+    return entries
+
+
+def _index_body(entries, headings) -> str:
+    """Rebuild an index that lists every section, keeping the wording of the entries already there.
+
+    Existing entries are matched onto the headings in order and case-insensitively, because 27
+    notebooks spell the heading ``## Basic Test`` while their index says ``Basic test``. A matched
+    entry keeps its own title and anchor; a heading with no entry gets one. Numbering is then
+    redone from 1, which is what the hand-maintained numbering had drifted away from.
+
+    Raises
+    ------
+    NotebookShapeError
+        If an existing entry has no heading to match, which means the index and the notebook
+        disagree about more than the missing entries.
+    """
+    matched = {}
+    position = 0
+    for title, anchor in entries:
+        while position < len(headings) and headings[position].lower() != title.lower():
+            position += 1
+        if position == len(headings):
+            raise NotebookShapeError(f"index entry {title!r} has no '## ' heading to match")
+        matched[position] = (title, anchor)
+        position += 1
+
+    lines = [INDEX_HEADING]
+    for number, heading in enumerate(headings, start=1):
+        title, anchor = matched.get(number - 1, (heading, "#" + heading.replace(" ", "-")))
+        lines.append(f"{number}. [{title}]({anchor})")
+    return "\n".join(lines)
+
+
+def patch_notebook_index(path: Path) -> bool:
+    """Make a clock notebook's ``## Index`` list every section, numbered from 1.
+
+    Parameters
+    ----------
+    path : pathlib.Path
+        Path to a notebook in ``clocks/notebooks``.
+
+    Returns
+    -------
+    bool
+        True if the index was rewritten, False if it already matched the notebook's sections.
+
+    Raises
+    ------
+    NotebookShapeError
+        If the notebook has no single index cell, if that cell holds anything but numbered
+        entries, or if an entry cannot be matched to a section heading. The file on disk is
+        left untouched when it raises.
+    """
+    notebook = json.loads(path.read_text())
+    cells = notebook["cells"]
+
+    index = _find_index_cell(cells)
+    body = _source(cells[index])
+    headings = _section_headings(cells)
+    if not headings:
+        raise NotebookShapeError("no '## ' section headings to index")
+
+    rebuilt = _index_body(_index_entries(body), headings)
+    if rebuilt == body.rstrip("\n"):
+        return False
+
+    cells[index]["source"] = rebuilt.splitlines(keepends=True)
+    path.write_text(json.dumps(notebook, indent=1, ensure_ascii=False) + "\n")
+    return True
+
+
 def _patch_notebooks(notebooks_dir: Path) -> int:
-    """Patch every notebook in a directory and report what changed.
+    """Patch every notebook in a directory, reindex it, and report what changed.
 
     Returns
     -------
@@ -294,15 +423,18 @@ def _patch_notebooks(notebooks_dir: Path) -> int:
         print(f"no .ipynb files found in {notebooks_dir}", file=sys.stderr)
         return 1
 
-    changed, skipped = [], []
+    changed, reindexed, skipped = [], [], []
     for path in paths:
         try:
             if patch_notebook(path):
                 changed.append(path.name)
+            if patch_notebook_index(path):
+                reindexed.append(path.name)
         except NotebookShapeError as error:
             skipped.append(f"{path.name} ({error})")
 
     print(f"scanned {len(paths)} notebooks, patched {len(changed)}: {', '.join(changed) if changed else 'none'}")
+    print(f"reindexed {len(reindexed)}: {', '.join(reindexed) if reindexed else 'none'}")
     if skipped:
         print(f"skipped {len(skipped)} notebooks needing a hand: {'; '.join(skipped)}")
         return 1

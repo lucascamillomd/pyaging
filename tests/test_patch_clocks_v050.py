@@ -13,6 +13,7 @@ from patch_clocks_v050 import (  # noqa: E402
     NotebookShapeError,
     main,
     patch_notebook,
+    patch_notebook_index,
     patch_weight_file,
     rename_features,
 )
@@ -43,8 +44,11 @@ def _code(source):
     return {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": source}
 
 
-def _notebook_with_basic_test(path, heading="## Basic test"):
-    return _notebook(path, [_code(IMPORT_SOURCE), _markdown(heading), _code(BASIC_TEST_SOURCE)])
+def _notebook_with_basic_test(path, heading="## Basic test", with_index=False):
+    cells = [_code(IMPORT_SOURCE), _markdown(heading), _code(BASIC_TEST_SOURCE)]
+    if with_index:
+        cells.insert(0, _markdown("## Index\n1. [Basic test](#Basic-test)"))
+    return _notebook(path, cells)
 
 
 def _cells(path):
@@ -361,17 +365,112 @@ def test_patch_notebook_leaves_the_file_untouched_when_it_refuses(tmp_path):
     assert path.read_text() == before
 
 
+DRIFTED_INDEX = (
+    "## Index\n1. [Load features](#Load-features)\n3. [Basic test](#Basic-test)\n3. [Clear directory](#Clear-directory)"
+)
+
+
+def _indexed_notebook(path, index=DRIFTED_INDEX, sections=("Load features", "Normal feature ranges")):
+    cells = [_markdown("# Fake"), _markdown(index)]
+    for section in sections:
+        cells += [_markdown(f"## {section}"), _code(["pass"])]
+    cells += [_markdown("## Basic test"), _code(["pass"]), _markdown('## Clear directory\n<a id="10"></a>')]
+    return _notebook(path, cells)
+
+
+def _index_body(path):
+    return "".join(_cells(path)[1]["source"])
+
+
+def test_patch_notebook_index_adds_the_missing_section_and_renumbers(tmp_path):
+    path = _indexed_notebook(tmp_path / "fake.ipynb")
+
+    assert patch_notebook_index(path) is True
+    assert _index_body(path) == (
+        "## Index\n"
+        "1. [Load features](#Load-features)\n"
+        "2. [Normal feature ranges](#Normal-feature-ranges)\n"
+        "3. [Basic test](#Basic-test)\n"
+        "4. [Clear directory](#Clear-directory)"
+    )
+
+
+def test_patch_notebook_index_is_idempotent(tmp_path):
+    path = _indexed_notebook(tmp_path / "fake.ipynb")
+
+    patch_notebook_index(path)
+    assert patch_notebook_index(path) is False
+
+
+def test_patch_notebook_index_keeps_the_wording_of_an_entry_that_already_exists(tmp_path):
+    """27 notebooks head the section ``## Basic Test`` but write ``Basic test`` in the index.
+
+    The entry is theirs, so the patch matches case-insensitively and leaves the wording and
+    the anchor alone rather than restyling an index it was only asked to complete.
+    """
+    path = _indexed_notebook(tmp_path / "fake.ipynb")
+    cells = _cells(path)
+    cells[-3]["source"] = ["## Basic Test"]
+    _notebook(path, cells)
+
+    assert patch_notebook_index(path) is True
+    assert "3. [Basic test](#Basic-test)" in _index_body(path)
+
+
+def test_patch_notebook_index_refuses_a_notebook_without_exactly_one_index_cell(tmp_path):
+    path = _notebook(tmp_path / "fake.ipynb", [_markdown("## Basic test"), _code(["pass"])])
+
+    with pytest.raises(NotebookShapeError, match="0 '## Index' cells"):
+        patch_notebook_index(path)
+
+
+def test_patch_notebook_index_refuses_an_index_cell_holding_free_text(tmp_path):
+    path = _indexed_notebook(tmp_path / "fake.ipynb", index="## Index\nThe sections of this notebook:")
+
+    with pytest.raises(NotebookShapeError, match="not a numbered entry"):
+        patch_notebook_index(path)
+
+
+def test_patch_notebook_index_refuses_an_entry_with_no_matching_heading(tmp_path):
+    path = _indexed_notebook(tmp_path / "fake.ipynb", index="## Index\n1. [Map to orthologs](#Map-to-orthologs)")
+
+    with pytest.raises(NotebookShapeError, match="has no '## ' heading to match"):
+        patch_notebook_index(path)
+
+
+def test_patch_notebook_index_refuses_an_index_whose_entries_are_out_of_order(tmp_path):
+    """Reordering is a rewrite, not a completion, so the patch declines it."""
+    path = _indexed_notebook(
+        tmp_path / "fake.ipynb",
+        index="## Index\n1. [Basic test](#Basic-test)\n2. [Load features](#Load-features)",
+    )
+
+    with pytest.raises(NotebookShapeError, match="'Load features' has no '## ' heading to match"):
+        patch_notebook_index(path)
+
+
+def test_patch_notebook_index_leaves_the_file_untouched_when_it_refuses(tmp_path):
+    path = _indexed_notebook(tmp_path / "fake.ipynb", index="## Index\nThe sections of this notebook:")
+    before = path.read_text()
+
+    with pytest.raises(NotebookShapeError):
+        patch_notebook_index(path)
+    assert path.read_text() == before
+
+
 def test_main_patches_notebooks_when_given_a_notebooks_dir(tmp_path, capsys, monkeypatch):
     weights = tmp_path / "weights"
     notebooks = tmp_path / "notebooks"
     weights.mkdir()
     notebooks.mkdir()
     _save_fake_clock(weights / "fake.pt", ["cg001", "Female", "Age"])
-    _notebook_with_basic_test(notebooks / "fake.ipynb")
+    _notebook_with_basic_test(notebooks / "fake.ipynb", with_index=True)
     monkeypatch.setattr(sys, "argv", ["patch_clocks_v050.py", str(weights), "--notebooks-dir", str(notebooks)])
 
     assert main() == 0
-    assert "scanned 1 notebooks, patched 1: fake.ipynb" in capsys.readouterr().out
+    output = capsys.readouterr().out
+    assert "scanned 1 notebooks, patched 1: fake.ipynb" in output
+    assert "reindexed 1: fake.ipynb" in output
 
 
 def test_main_reports_skipped_notebooks_and_fails(tmp_path, capsys, monkeypatch):
@@ -380,7 +479,7 @@ def test_main_reports_skipped_notebooks_and_fails(tmp_path, capsys, monkeypatch)
     weights.mkdir()
     notebooks.mkdir()
     _save_current_clock(weights / "fake.pt", ["cg001", "female", "age"])
-    _notebook_with_basic_test(notebooks / "good.ipynb")
+    _notebook_with_basic_test(notebooks / "good.ipynb", with_index=True)
     _notebook(notebooks / "odd.ipynb", [_code(IMPORT_SOURCE), _markdown("## Save torch model")])
     monkeypatch.setattr(sys, "argv", ["patch_clocks_v050.py", str(weights), "--notebooks-dir", str(notebooks)])
 

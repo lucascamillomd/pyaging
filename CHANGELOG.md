@@ -83,7 +83,7 @@ Two public helpers expose the same registry:
   arbitrary feature list.
 
 Every clock now carries a `feature_units` attribute, and every clock notebook documents the
-ranges its features are expected to fall in.
+ranges its features are expected to fall in and lists that section in its index.
 
 ### Fixes
 
