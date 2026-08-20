@@ -16,6 +16,7 @@ import pytest
 import torch
 
 import pyaging as pya
+from pyaging.models._models import CRP_FLOOR_MG_DL
 from pyaging.predict._pred_utils import check_feature_ranges, check_features_in_adata
 
 WEIGHTS = Path(__file__).resolve().parents[2] / "clocks" / "weights" / "phenoage.pt"
@@ -154,6 +155,12 @@ def test_crp_is_registered_in_mg_dl():
     (record,) = pya.utils.resolve_feature_ranges(["c_reactive_protein"], "clinical biomarkers")
     assert record["unit"] == "mg/dL"
     assert record["low"] > 0.0
+
+
+def test_the_clamp_floor_matches_the_registered_lower_bound():
+    """The clamp is only safe while it cannot move a value the range check accepts."""
+    (record,) = pya.utils.resolve_feature_ranges(["c_reactive_protein"], "clinical biomarkers")
+    assert record["low"] == CRP_FLOOR_MG_DL
 
 
 def test_a_logged_crp_value_now_falls_outside_the_registered_range():
