@@ -29,7 +29,7 @@ requires_weights = pytest.mark.skipif(
 
 
 class _RecordingLogger:
-    """Captures pipeline warnings. Mirrors the stub in test_feature_range_check.py."""
+    """Captures the pipeline warnings raised while a clock's inputs are checked."""
 
     def __init__(self):
         self.warnings = []

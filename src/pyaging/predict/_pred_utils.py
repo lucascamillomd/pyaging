@@ -207,8 +207,7 @@ def check_features_in_adata(
     # Add missing features and percent missing values to the clock
     adata.uns[f"{model.metadata['clock_name']}_percent_na"] = percent_missing
     adata.uns[f"{model.metadata['clock_name']}_missing_features"] = missing_features
-    # Which columns hold the user's own data rather than a substituted value.
-    # check_feature_ranges reads this so that it only judges what the user supplied.
+    # Columns the input carried; check_feature_ranges judges only these.
     adata.uns[f"{model.metadata['clock_name']}_supplied_features_mask"] = existing_features_mask
 
     # Raises error if there are no features in the data

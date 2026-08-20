@@ -41,7 +41,7 @@ _FALLBACK_SPAN = 10.0
 
 
 class _SilentLogger:
-    """The pipeline's logger interface, quieted. Mirrors the stub in test_bioage_clocks.py."""
+    """The pipeline's logger interface, quieted."""
 
     def warning(self, message, indent_level=2):
         pass
