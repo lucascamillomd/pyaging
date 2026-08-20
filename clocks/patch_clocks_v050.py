@@ -7,20 +7,15 @@ and rewrites each notebook's smoke test to feed values drawn from the middle of
 every feature's plausible range instead of standard normal noise.
 
 Each file is rewritten individually, so an exception part-way through a
-directory leaves the files already processed in their patched state. That is
-safe to recover from: the patch is idempotent, so the script can simply be
-re-run over the same directory.
+directory leaves the files already processed patched; the patch is idempotent,
+so re-run it over the same directory.
 
 It also brings each notebook's ``## Index`` cell back in step with the sections
-the notebook actually has, which the feature-ranges section was added without
-doing.
+the notebook actually has, including the ranges section this script adds.
 
-The notebook patches refuse to guess. The 178 clock notebooks were written over
-several years and only mostly share a shape, so :func:`patch_notebook` accepts
-one narrowly specified layout and raises :class:`NotebookShapeError` on anything
-else rather than rewriting a cell it cannot identify, and
-:func:`patch_notebook_index` raises rather than renumbering an index it cannot
-line up against the headings.
+The 178 clock notebooks were written over several years and only mostly share a
+shape, so a notebook whose layout is not recognised is reported and left
+untouched rather than patched on a guess.
 """
 
 import argparse
@@ -175,13 +170,7 @@ def _source(cell):
 
 
 def _find_import_cell(cells) -> int:
-    """Return the index of the notebook's import cell.
-
-    Raises
-    ------
-    NotebookShapeError
-        If no code cell opens with an ``import`` or ``from`` statement.
-    """
+    """Return the index of the notebook's import cell."""
     for index, cell in enumerate(cells):
         if cell["cell_type"] == "code" and _source(cell).lstrip().startswith(("import ", "from ")):
             return index
@@ -202,11 +191,6 @@ def _find_basic_test_heading(cells) -> int:
 
     The heading is matched case-insensitively because 27 notebooks spell it
     ``## Basic Test``.
-
-    Raises
-    ------
-    NotebookShapeError
-        If the notebook does not have exactly one such heading.
     """
     matches = [
         index
@@ -225,11 +209,6 @@ def _find_basic_test_cell(cells, heading: int) -> int:
 
     Markdown prose between the heading and the code belongs to the section and
     is stepped over, but a further ``## `` heading ends the section.
-
-    Raises
-    ------
-    NotebookShapeError
-        If the section holds no code cell.
     """
     for index in range(heading + 1, len(cells)):
         cell = cells[index]
@@ -292,13 +271,7 @@ _INDEX_ENTRY = re.compile(r"^\d+\. \[(?P<title>.+?)\]\((?P<anchor>#.+?)\)$")
 
 
 def _find_index_cell(cells) -> int:
-    """Return the index of the sole ``## Index`` markdown cell.
-
-    Raises
-    ------
-    NotebookShapeError
-        If the notebook does not have exactly one such cell.
-    """
+    """Return the index of the sole ``## Index`` markdown cell."""
     matches = [
         index
         for index, cell in enumerate(cells)
@@ -322,13 +295,7 @@ def _section_headings(cells) -> list:
 
 
 def _index_entries(body: str) -> list:
-    """Parse an index cell body into ``(title, anchor)`` pairs.
-
-    Raises
-    ------
-    NotebookShapeError
-        If the cell holds anything besides the heading and numbered entries.
-    """
+    """Parse an index cell body into ``(title, anchor)`` pairs."""
     entries = []
     for line in body.splitlines()[1:]:
         if not line.strip():

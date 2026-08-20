@@ -268,7 +268,7 @@ def add_metadata_to_anndata(
     """
     if metadata is None:
         logger.warning("No metadata provided. Leaving adata.obs empty", indent_level=2)
-        return adata
+        return
 
     # Add metadata to the AnnData object
     logger.info("Adding provided metadata to adata.obs", indent_level=2)
@@ -311,7 +311,7 @@ def add_unstructured_data(adata: anndata.AnnData, imputer_strategy: str, logger,
     -------
     >>> from anndata import AnnData
     >>> adata = AnnData(np.random.rand(5, 3))
-    >>> adata = add_unstructured_data(adata, "mean", logger)
+    >>> add_unstructured_data(adata, "mean", logger)
     # This will add the imputer strategy 'mean' and the data type 'dna_methylation' to the AnnData object.
 
     """

@@ -90,7 +90,7 @@ def assert_defensible(frame: pd.DataFrame) -> None:
 
     The dataset this replaces shipped a ``log_crp`` column with a standard
     deviation of exactly zero, so every published PhenoAge was computed against
-    a placeholder. That must never happen again silently.
+    a placeholder.
     """
     features = load_feature_range_registry()["features"]
     problems = []

@@ -86,10 +86,6 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
-    verbose : bool
-        Whether to show the progress display and warnings. Animated in
-        notebooks and terminals, a plain summary when output is captured,
-        and fully silent when False. Defaults to True.
     logger : object
         Logger object used for logging information, warnings, and errors.
     indent_level : int, optional
