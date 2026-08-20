@@ -139,10 +139,18 @@ def test_the_fold_covers_the_features_that_skip_z_scoring():
     model = _model()
     row = dict(_validation_rows(model)[0])
     at = {
-        visits: _predict(model, [dict(row, healthcare_visits_past_year=visits)])[0] for visits in (5.0, 6.0, 7.0, 8.0)
+        visits: _predict(model, [dict(row, healthcare_visits_past_year=visits)])[0]
+        for visits in (0.0, 5.0, 6.0, 7.0, 8.0)
     }
     assert not math.isclose(at[5.0], at[6.0])
     assert at[6.0] == at[7.0] == at[8.0]
+
+    # 77 (refused), 99 (don't know) and a missing answer all mean "no visit count", not a
+    # count of 77 or 99. Reading them literally would fold the index to the 6 cap and move
+    # this subject by 0.70 years.
+    for sentinel in (77.0, 99.0, float("nan")):
+        assert _predict(model, [dict(row, healthcare_visits_past_year=sentinel)])[0] == at[0.0]
+    assert abs(at[0.0] - at[6.0]) > 0.5
 
 
 def test_told_congestive_heart_failure_is_declared_but_never_consumed():
