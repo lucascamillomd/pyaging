@@ -17,6 +17,28 @@ Notable changes for each release. Versions follow [semantic versioning](https://
   The lowercase `age` and `female` feature names are *not* a change in this release: Hugging
   Face has served those spellings all along, and no migration is needed for them.
 
+- **If you cannot upgrade yet, pin your clock weights:
+  `PYAGING_DATA_REVISION=v0.4.0`.** Clock weights are downloaded from Hugging Face at call
+  time and resolve from `main`, so they move ahead of your installed package: a 0.4.x
+  environment starts downloading the 0.5.0 weights as soon as they are published, without
+  anything changing locally. For `phenoage` that pairing is silent rather than loud. The new
+  weight file carries the renamed `c_reactive_protein` feature, but 0.4.x still expects
+  `log_crp` and has no preprocessing step to apply the log. The renamed column matches
+  nothing, is filled with zeros, and drops CRP out of the model entirely — roughly four years
+  too young on a typical adult, reported only as a generic "1 out of 10 features are missing"
+  line, with no out-of-range warning because 0.4.x has no range check.
+
+  Setting the environment variable to the tag matching your installed version keeps the old
+  weights resolving until you are ready to migrate:
+
+  ```bash
+  PYAGING_DATA_REVISION=v0.4.0 python my_analysis.py
+  ```
+
+  Pinning is worth doing regardless of this release; see
+  [Pinning the clock weights](https://pyaging.readthedocs.io/en/latest/installation.html)
+  in the installation docs.
+
 ### New clocks
 
 The catalogue grows from 173 to 177 clocks, all four clinical:
@@ -63,3 +85,16 @@ ranges its features are expected to fall in.
   pattern in `.gitignore` matched it anywhere in the tree.
 - `clocks/update_all_clocks.py` read a `clock.version` attribute that no clock defines,
   which had made the aggregate clock metadata impossible to regenerate.
+
+### Known issues
+
+- **`phenoage` is the only clinical clock without `reference_values`.** `kdmage`,
+  `homeostaticdysregulation`, `phenoagesaopaulo` and `linage2` all ship them, so an absent
+  feature is substituted with a plausible constant rather than zero; `phenoage` still takes
+  the pipeline's zero fill. This is deliberate for now — for `phenoage` a zero-filled CRP is
+  already both clamped to a finite value and reported by the missing-feature warning, and
+  filling in a reference value would make an incomplete panel look more like a complete one.
+  The counter-argument is that the same reasoning applies to the three clocks where reference
+  values *were* accepted, and the warnings fire either way, so the asymmetry is worth
+  revisiting rather than defending. Until then, expect `pya.utils.get_clock_metadata` to
+  report `reference_values` for four of the five clinical clocks.

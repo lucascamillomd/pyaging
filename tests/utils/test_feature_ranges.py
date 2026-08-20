@@ -1,8 +1,12 @@
 import math
+from pathlib import Path
 
 import pytest
+import torch
 
 from pyaging.utils._feature_ranges import get_feature_ranges, load_feature_range_registry, resolve_feature_ranges
+
+WEIGHTS_DIR = Path(__file__).resolve().parents[2] / "clocks" / "weights"
 
 
 def test_registry_has_schema_version_and_sections():
@@ -66,6 +70,47 @@ def test_get_feature_ranges_rejects_a_clock_without_features(monkeypatch):
 
     with pytest.raises(ValueError, match="horvath2013"):
         get_feature_ranges("horvath2013")
+
+
+def _local_clock(monkeypatch, clock_name):
+    """Serve a built weight file to ``get_feature_ranges`` instead of downloading it."""
+    path = WEIGHTS_DIR / f"{clock_name}.pt"
+    if not path.exists():
+        pytest.skip(f"{WEIGHTS_DIR} is build output; generate it by running the clocks/notebooks")
+    model = torch.load(path, weights_only=False, map_location="cpu")
+    monkeypatch.setattr("pyaging.predict.load_clock", lambda name, **kwargs: model, raising=True)
+    return model
+
+
+def test_get_feature_ranges_returns_one_row_per_feature(monkeypatch):
+    model = _local_clock(monkeypatch, "phenoage")
+
+    frame = get_feature_ranges("phenoage")
+
+    assert list(frame.columns) == ["feature", "unit", "low", "high"]
+    assert list(frame["feature"]) == list(model.features)
+    assert (frame["low"] < frame["high"]).all()
+
+
+def test_get_feature_ranges_prefers_the_units_stored_on_the_clock(monkeypatch):
+    """A clock is authoritative about its own units, so a stored copy must win."""
+    model = _local_clock(monkeypatch, "phenoage")
+    monkeypatch.setattr(model, "feature_units", ["stored unit"] * len(model.features), raising=False)
+
+    frame = get_feature_ranges("phenoage")
+
+    assert list(frame["unit"]) == ["stored unit"] * len(model.features)
+
+
+def test_get_feature_ranges_falls_back_to_the_registry_without_stored_units(monkeypatch):
+    """Clocks built before ``feature_units`` existed have no attribute to read."""
+    model = _local_clock(monkeypatch, "phenoage")
+    monkeypatch.delattr(model, "feature_units", raising=False)
+
+    frame = get_feature_ranges("phenoage")
+
+    expected = [record["unit"] for record in resolve_feature_ranges(model.features, model.metadata["data_type"])]
+    assert list(frame["unit"]) == expected
 
 
 @pytest.mark.parametrize(
