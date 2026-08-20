@@ -133,6 +133,19 @@ def _transaction_residue(tmp_path):
     )
 
 
+def _staged_copies(tmp_path):
+    return sorted(path for path in tmp_path.rglob(".*") if ".clock-metadata-stage-" in path.name)
+
+
+def _assert_published(path, version="0.3.0", mode=None, load=torch.load):
+    published = load(path, weights_only=False)
+    assert published.version == version
+    assert published.metadata["clock_name"] == path.stem
+    if mode is not None:
+        assert path.stat().st_mode & 0o7777 == mode
+    return published
+
+
 def _write_symlink_inputs(tmp_path, clock_names=("clock",)):
     backing_dir = tmp_path / "backing"
     backing_dir.mkdir()
@@ -419,7 +432,15 @@ def test_regeneration_requires_nonempty_weights_directory(tmp_path, monkeypatch,
     save.assert_not_called()
 
 
-def test_broken_later_weight_cleans_earlier_stage_without_publishing(tmp_path, monkeypatch):
+def test_broken_later_weight_keeps_earlier_clock_committed_and_stops(tmp_path, monkeypatch):
+    """A later broken weight stops the run without corrupting anything.
+
+    Regeneration streams one clock at a time to bound peak disk, so alpha has
+    already committed by the time beta fails: there is no whole-catalogue
+    rollback. What must hold is that alpha is a complete, loadable clock, beta
+    still holds its original bytes, the aggregate was never written, and no
+    staging residue survives.
+    """
     update_all_clocks = _load_update_all_clocks_module()
     weights_dir = tmp_path / "weights"
     weights_dir.mkdir()
@@ -433,20 +454,24 @@ def test_broken_later_weight_cleans_earlier_stage_without_publishing(tmp_path, m
             "beta": _registry_entry("beta"),
         },
     )
+    metadata_path = tmp_path / "all_clock_metadata.pt"
+    original_load = update_all_clocks.torch.load
     load = Mock(side_effect=[_clock("alpha"), OSError("broken weight")])
     monkeypatch.setattr(update_all_clocks.torch, "load", load)
-    originals = _snapshot([weights_dir / "alpha.pt", weights_dir / "beta.pt"])
+    untouched = _snapshot([weights_dir / "beta.pt"])
 
     with pytest.raises(ValueError, match="broken weight"):
         update_all_clocks.regenerate_clock_metadata(
             "0.3.0",
             weights_dir=weights_dir,
             registry_path=registry_path,
-            metadata_path=tmp_path / "all_clock_metadata.pt",
+            metadata_path=metadata_path,
         )
 
     assert load.call_count == 2
-    _assert_snapshot(originals)
+    _assert_published(weights_dir / "alpha.pt", load=original_load)
+    _assert_snapshot(untouched)
+    assert not metadata_path.exists()
     assert _transaction_residue(tmp_path) == []
 
 
@@ -506,14 +531,14 @@ def test_invalid_updated_clock_name_is_never_staged(tmp_path, monkeypatch):
     _assert_snapshot(original)
 
 
-def test_later_stage_save_failure_preserves_all_original_bytes_and_modes(tmp_path, monkeypatch):
+def test_later_stage_save_failure_leaves_unreached_targets_untouched(tmp_path, monkeypatch):
     update_all_clocks = _load_update_all_clocks_module()
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
     targets = [weights_dir / "alpha.pt", weights_dir / "beta.pt", metadata_path]
     os.chmod(targets[0], 0o640)
     os.chmod(targets[1], 0o600)
     os.chmod(metadata_path, 0o644)
-    original = _snapshot(targets)
+    untouched = _snapshot(targets[1:])
     original_save = update_all_clocks.torch.save
     calls = 0
 
@@ -534,18 +559,21 @@ def test_later_stage_save_failure_preserves_all_original_bytes_and_modes(tmp_pat
             metadata_path=metadata_path,
         )
 
-    _assert_snapshot(original)
+    _assert_published(targets[0], mode=0o640)
+    _assert_snapshot(untouched)
     assert _transaction_residue(tmp_path) == []
 
 
 @pytest.mark.parametrize("failure_point", [1, 2, 3])
-def test_replace_failure_rolls_back_every_target_without_residue(tmp_path, monkeypatch, failure_point):
+def test_replace_failure_rolls_back_its_own_target_and_stops(tmp_path, monkeypatch, failure_point):
+    """A failed swap restores its own target; already-published ones stay published."""
     update_all_clocks = _load_update_all_clocks_module()
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
     targets = [weights_dir / "alpha.pt", weights_dir / "beta.pt", metadata_path]
-    os.chmod(targets[0], 0o640)
-    os.chmod(targets[1], 0o600)
-    original = _snapshot(targets)
+    modes = [0o640, 0o600]
+    os.chmod(targets[0], modes[0])
+    os.chmod(targets[1], modes[1])
+    untouched = _snapshot(targets[failure_point - 1 :])
     original_publish = update_all_clocks._publish_replace
     calls = 0
 
@@ -566,7 +594,9 @@ def test_replace_failure_rolls_back_every_target_without_residue(tmp_path, monke
             metadata_path=metadata_path,
         )
 
-    _assert_snapshot(original)
+    for target, mode in zip(targets[: failure_point - 1], modes, strict=False):
+        _assert_published(target, mode=mode)
+    _assert_snapshot(untouched)
     assert _transaction_residue(tmp_path) == []
 
 
@@ -646,7 +676,7 @@ def test_replace_failure_restores_symlink_backing_targets_without_touching_links
     backing_paths = backing_weights + [backing_metadata]
     os.chmod(backing_paths[0], 0o640)
     os.chmod(backing_paths[1], 0o600)
-    originals = _snapshot(backing_paths)
+    untouched = _snapshot(backing_paths[1:])
     original_publish = update_all_clocks._publish_replace
     calls = 0
 
@@ -668,7 +698,8 @@ def test_replace_failure_restores_symlink_backing_targets_without_touching_links
         )
 
     assert {path: _symlink_identity(path) for path in logical_paths} == identities
-    _assert_snapshot(originals)
+    _assert_published(backing_paths[0], mode=0o640)
+    _assert_snapshot(untouched)
     assert _transaction_residue(tmp_path) == []
 
 
@@ -774,6 +805,93 @@ def test_regeneration_streams_one_clock_at_a_time_without_path_read_bytes(tmp_pa
     assert len(result) == len(names)
     assert maximum_live == 1
     assert live == 0
+
+
+def test_regeneration_never_holds_more_than_one_staged_copy_on_disk(tmp_path, monkeypatch):
+    """Peak extra disk is one clock, not the catalogue.
+
+    Staging every clock before publishing any of them needed free space equal
+    to the whole 25 GiB catalogue, which is what ran the release machine out of
+    disk. Sampling the staging directory at both ends of each publish pins the
+    replacement down to a single staged copy at a time.
+    """
+    update_all_clocks = _load_update_all_clocks_module()
+    clock_names = tuple(f"clock_{index:03d}" for index in range(8))
+    weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, clock_names)
+    samples = []
+    original_stage = update_all_clocks._stage_torch_object
+    original_publish = update_all_clocks._publish_replace
+
+    def sampling_stage(target, value, index):
+        result = original_stage(target, value, index)
+        samples.append(len(_staged_copies(tmp_path)))
+        return result
+
+    def sampling_publish(source, target):
+        samples.append(len(_staged_copies(tmp_path)))
+        original_publish(source, target)
+
+    monkeypatch.setattr(update_all_clocks, "_stage_torch_object", sampling_stage)
+    monkeypatch.setattr(update_all_clocks, "_publish_replace", sampling_publish)
+
+    result = update_all_clocks.regenerate_clock_metadata(
+        "0.3.0",
+        weights_dir=weights_dir,
+        registry_path=registry_path,
+        metadata_path=metadata_path,
+    )
+
+    assert set(result) == set(clock_names)
+    assert len(samples) == 2 * (len(clock_names) + 1)
+    assert max(samples) == 1
+    assert _staged_copies(tmp_path) == []
+
+
+def test_rerunning_after_an_interrupted_run_completes_the_catalogue(tmp_path, monkeypatch):
+    """Per-clock atomicity makes an interrupted run recoverable by re-running it.
+
+    Restamping is idempotent, so the clocks that committed before the failure
+    are re-stamped to the same bytes and the run finishes the rest. The
+    aggregate is published last, so it is never written by the failed run.
+    """
+    update_all_clocks = _load_update_all_clocks_module()
+    clock_names = ("clocka", "clockb", "clockc")
+    weights_dir, registry_path, metadata_path = _write_real_model_inputs(tmp_path, clock_names)
+    original_publish = update_all_clocks._publish_replace
+    calls = 0
+
+    def fail_third_replace(source, target):
+        nonlocal calls
+        calls += 1
+        if calls == 3:
+            raise OSError("injected interrupted run")
+        original_publish(source, target)
+
+    monkeypatch.setattr(update_all_clocks, "_publish_replace", fail_third_replace)
+
+    with pytest.raises(ValueError, match="injected interrupted run"):
+        update_all_clocks.regenerate_clock_metadata(
+            "0.5.0",
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=metadata_path,
+        )
+
+    assert not metadata_path.exists()
+    monkeypatch.setattr(update_all_clocks, "_publish_replace", original_publish)
+
+    result = update_all_clocks.regenerate_clock_metadata(
+        "0.5.0",
+        weights_dir=weights_dir,
+        registry_path=registry_path,
+        metadata_path=metadata_path,
+    )
+
+    assert set(result) == set(clock_names)
+    assert torch.load(metadata_path, weights_only=False) == result
+    for clock_name in clock_names:
+        assert torch.load(weights_dir / f"{clock_name}.pt", weights_only=False).metadata == result[clock_name]
+    assert _transaction_residue(tmp_path) == []
 
 
 def test_successful_regeneration_publishes_valid_registry_backed_transaction(tmp_path, monkeypatch):
