@@ -124,7 +124,7 @@ def test_mortality_rate_doubling_time_is_the_pre_rounded_constant():
 
 def test_c_reactive_protein_is_not_floored_the_way_phenoage_floors_it():
     """LinAge2 takes a plain log with no floor, so 0 and phenoage's 0.01 floor differ."""
-    from pyaging.models._models import PHENOAGE_CRP_FLOOR_MG_DL
+    from pyaging.predict._transforms import PHENOAGE_CRP_FLOOR_MG_DL
 
     model = _model()
     row = dict(_validation_rows(model)[0])
