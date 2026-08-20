@@ -674,7 +674,7 @@ class LinAge2(pyagingModel):
     def __init__(self):
         super().__init__()
         # The 59 names the loadings, medians and MADs are indexed by, in SVD row order.
-        # Set from clocks/linage2_params.json when the clock is built.
+        # Set from the constants clocks/notebooks/linage2.ipynb derives when the clock is built.
         self.model_features = None
         for sex in ["male", "female"]:
             for name in ["median", "mad", "loadings", "beta", "means", "beta_null", "mean_null", "mrdt"]:

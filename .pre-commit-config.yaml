@@ -8,14 +8,10 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-    # The .R and .csv files under clocks/linage2_source/ carry the redistributed CC-BY source and
-    # the constants exported from it, including consts/linAge2_export.R, which is the reference
-    # script patched in place. Reformatting any of them would break the diff against the published
-    # archive. The Markdown and Python we author there stay under the hooks.
     -   id: end-of-file-fixer
-        exclude: \.ipynb$|^clocks/linage2_source/.*\.(R|csv)$
+        exclude: \.ipynb$
     -   id: trailing-whitespace
-        exclude: \.ipynb$|^clocks/linage2_source/.*\.(R|csv)$
+        exclude: \.ipynb$
     -   id: check-yaml
     -   id: check-added-large-files
         args: [--maxkb=12000]
