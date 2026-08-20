@@ -8,10 +8,12 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
+    # The .R and .csv files under clocks/linage2_source/ are redistributed CC-BY source; keep them
+    # byte-identical to the published archive. Files we author there are not exempt.
     -   id: end-of-file-fixer
-        exclude: \.ipynb$
+        exclude: \.ipynb$|^clocks/linage2_source/.*\.(R|csv)$
     -   id: trailing-whitespace
-        exclude: \.ipynb$
+        exclude: \.ipynb$|^clocks/linage2_source/.*\.(R|csv)$
     -   id: check-yaml
     -   id: check-added-large-files
         args: [--maxkb=12000]

@@ -1,0 +1,7 @@
+rowNr,pName,pValue,Explanation,varName,NOTE
+1,errorLevel,0.1,Set error level – in % of para value (normally distributed),errLevl,This will only affect noise level of custom clock – it will not change pre-saved PhenoAge noise
+2,NAcutOffpercent,0.09,Cut off percentage for NAs. Columns with more NAs will be dropped unless force included.,pNAcut,
+3,PCcutOffpercent,0.5,Cut off percentage for PC based on variance explained (dimensionality reduction) ,svCutP,
+4,lowerAgeLimit,40,Lower age bracket of cohort,ageLower,
+5,upperAgeLimit,84,Upper age bracket of cohort,ageUpper,
+6,derivedFeatFlag,1,"Set to zero (0) to skip calculating derived features (fsScores, LDL etc)",useDerived,Will only calculate derived features if the relevant primary features are included in data matrix

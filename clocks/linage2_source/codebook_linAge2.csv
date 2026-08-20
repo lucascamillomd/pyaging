@@ -1,0 +1,1145 @@
+Var,Human,Demo/Exam/Quest/Lab/Mort,Data,ForceInc
+SEQN,Patient number,DEMO,1,1
+SDDSRVYR,Data release cycle,DEMO,0,0
+RIDSTATR,Interview/Examination status,DEMO,0,0
+RIDEXMON,6 month time period when exam was performed,DEMO,0,0
+RIAGENDR,Gender,DEMO,0,0
+RIDAGEYR,Age in years (85 and over topcoded at 85),DEMO,0,0
+RIDAGEMN,Age in months at date of screen (for those under 85 years of age),DEMO,0,0
+RIDAGEEX,Age in months at date of exam (for those under 85 years of age),DEMO,0,0
+RIDRETH1,Race Ethnicity,DEMO,0,0
+RIDRETH2,Linked Race Ethnicity,DEMO,0,0
+DMQMILIT,Served active duty in US armed forces,DEMO,0,0
+DMDBORN,Country of birth,DEMO,0,0
+DMDCITZN,Citizenship status,DEMO,0,0
+DMDYRSUS,Length of time in US,DEMO,0,0
+DMDEDUC3,Education level – Children Youth 6-19,DEMO,0,0
+DMDEDUC2,Education level – Adults 20+,DEMO,0,0
+DMDEDUC,Education recode old version,DEMO,0,0
+DMDSCHOL,Now attending school,DEMO,0,0
+DMDMARTL,Marital status,DEMO,0,0
+DMDHHSIZ,Total number of people in household,DEMO,0,0
+INDHHINC,Annual household income,DEMO,0,0
+INDFMINC,Annual family income,DEMO,0,0
+INDFMPIR,Ratio of family income to poverty guidelines,DEMO,0,0
+RIDEXPRG,Pregnancy status at exam,DEMO,0,0
+RIDPREG,Pregnancy status recode old version,DEMO,0,0
+DMDHRGND,HH reference person gender,DEMO,0,0
+DMDHRAGE,HH reference person age in years,DEMO,0,0
+DMDHRBRN,HH reference person country of birth,DEMO,0,0
+DMDHREDU,HH reference person education level,DEMO,0,0
+DMDHRMAR,HH reference person marital status,DEMO,0,0
+DMDHSEDU,HH reference person spouse education level ,DEMO,0,0
+WTINT2YR,Full sample 2 year interview weight,DEMO,0,0
+WTINT4YR,Full sample 4 year interview weight,DEMO,0,0
+WTMEC2YR,Full sample 2 year MEC exam weight,DEMO,0,0
+WTMEC4YR,Full sample 4 year MEC exam weight,DEMO,0,0
+SDMVPSU,Masked variance pseudoPSU,DEMO,0,0
+SDMVSTRA,Masked variance unit pseudostratum variable for variance estimation,DEMO,0,0
+ALQ100,At least 12 alcohol drinks per year,Q,0,0
+ALQ110,At least 12 alcohol drinks per lifetime,Q,0,0
+ALQ120Q,How often drink alcohol over past 12 months,Q,0,0
+ALQ120U,Number days drink alcohol per week month year,Q,0,0
+ALQ130,Average number alcoholic drinks per day past 12 months,Q,0,0
+ALQ140Q,Number days 5 or more drinks past 12 months,Q,0,0
+ALQ140U,Number days per week month year,Q,0,0
+ALQ150,Ever have 5 or more drinks every day,Q,0,0
+AUQ130,General condition of hearing,Q,0,0
+AUQ140,When was hearing last tested,Q,0,0
+AUQ150,Ever worn a hearing aid,Q,0,0
+AUQ160,Now wearing a hearing aid,Q,0,0
+AUQ170,Worn hearing aid in past 12 months,Q,0,0
+AUQ180,How often wear hearing aid in past year,Q,0,0
+AUQ190,"Ears ringing, roaring, buzzing past year",Q,0,0
+AUQ200,"How often ringing, roaring, buzzing",Q,0,0
+BAQ010,Dizzy/balance/falling problems/past yr,Q,0,0
+BAQ020A,Dizziness problems in past year,Q,0,0
+BAQ020B,Balance problems in past year,Q,0,0
+BAQ020C,Falling problems in past year,Q,0,0
+BAQ030A,How long did dizziness last,Q,0,0
+BAQ030B,How long did balance problem last,Q,0,0
+BAQ040,Get dizzy when turn over in bed,Q,0,0
+BAQ060A,Off balance due to cold or flu,Q,0,0
+BAQ060B,Off balance due to injury or accident,Q,0,0
+BAQ060C,Off balance due to drugs or medicine,Q,0,0
+BAQ060D,Off balance due to aging,Q,0,0
+BAQ060E,Off balance due to surgery,Q,0,0
+BAQ060F,Off balance due to hearing problem,Q,0,0
+BAQ060G,Off balance due to vision problem,Q,0,0
+BAQ060H,Nothing related to balance problem,Q,0,0
+BAQ070,Received treatment for dizziness/balance,Q,0,0
+BAQ075,How long ago where you treated,Q,0,0
+BAQ080A,Did treatment involve medication,Q,0,0
+BAQ080B,Did treatment involve surgery to ear,Q,0,0
+BAQ080C,Did treatment involve other type surgery,Q,0,0
+BAQ080D,Did treatment involve exercises,Q,0,0
+BAQ090,Treatment affect on dizziness/balance,Q,0,0
+BAQ100,Blood relative dizziness/balance problem,Q,0,0
+BPQ010,Last BP reading by doctor,Q,0,0
+BPQ020,Dr told you have high BP,Q,0,0
+BPQ030,Told had high BP twice,Q,0,0
+BPQ040A,Taking prescription for hypertension,Q,0,0
+BPQ040B,Told to control weight for hypertension,Q,0,0
+BPQ040C,Told to reduce sodium for hypertension,Q,0,0
+BPQ040D,Told to exercise more for hypertension,Q,0,0
+BPQ040E,Told to reduce alcohol for hypertension,Q,0,0
+BPQ040F,Told to do other things for hypertension,Q,0,0
+BPQ042,Check item,Q,0,0
+BPQ043A,Told to stop smoking for hypertension,Q,0,0
+BPQ043B,Told to increase potassium for hypertension,Q,0,0
+BPQ043C,Told of other diet changes for hypertension,Q,0,0
+BPQ043D,Told to do other things for hypertension,Q,0,0
+BPQ045,Check item in boxes,Q,0,0
+BPQ050A,Now taking prescribed medicine for hypertension,Q,0,0
+BPQ050B,Now controlling weight,Q,0,0
+BPQ050C,Now reducing salt sodium,Q,0,0
+BPQ050D,Now exercising more,Q,0,0
+BPQ050E,Now reducing alcohol consumption,Q,0,0
+BPQ055,Check item in boxes,Q,0,0
+BPQ060,Ever had blood cholesterol checked,Q,0,0
+BPQ070,When blood cholesterol last checked,Q,0,0
+BPQ080,Dr told you have high cholesterol,Q,0,0
+BPQ090A,Told to eat less fat for cholesterol,Q,0,0
+BPQ090B,Told to reduce weight for cholesterol,Q,0,0
+BPQ090C,Told to exercise more for cholesterol,Q,0,0
+BPQ090D,Told to take prescription for cholesterol,Q,0,0
+BPQ095,Check item in boxes,Q,0,0
+BPQ100A,Now eating fewer high fat foods,Q,0,0
+BPQ100B,Now controlling weight,Q,0,0
+BPQ100C,Now increasing exercise,Q,0,0
+BPQ100D,Now taking prescribed medicine,Q,0,0
+BPQ110A,Eating fewer high fat foods on own,Q,0,0
+BPQ110B,Controlling weight on own,Q,0,0
+BPQ110C,Increasing exercise on own,Q,0,0
+BPQ115,Check item in boxes,Q,0,0
+BPQ117,Check item in boxes,Q,0,0
+BPQ120,Eating fewer high fat foods on own ,Q,0,0
+BPQ125,Check item in boxes,Q,0,0
+BPQ130,Controlling weight on own,Q,0,0
+BPQ135,Check item in boxes,Q,0,0
+BPQ140,Increasing exercise on own,Q,0,0
+CFD010,Can do exercise without distraction,Q,0,0
+CFQ020,Usually wear glasses to read,Q,0,0
+CFD030,Has SP completed sample exercise,Q,0,0
+CFD040,Reason unable to complete sample,Q,0,0
+CFD050,Digit symbol substitution test exercise completion result,Q,0,0
+CFDFINSH,Number completed,Q,0,0
+CFDRIGHT,DSST score (60-150 yo),Q,0,0
+DEQ040,Ever told by doctor you had melanoma,Q,0,0
+DEQ060,Dermatitis eczema rash in past year,Q,0,0
+DEQ070,Dermatitis eczema rash now ,Q,0,0
+DIQ010,Dr told you have diabetes,Q,0,0
+DIQ040G,Age when first told had diabetes,Q,0,0
+DIQ040Q,Number of years of age,Q,0,0
+DIQ050,Taking insulin now,Q,0,0
+DIQ060G,How long taking insulin,Q,0,0
+DIQ060Q,Number of months years taking insulin,Q,0,0
+DIQ060U,Unit of measure month year,Q,0,0
+DIQ065,Check item in boxes,Q,0,0
+DIQ070,Take diabetic pills to lower blood sugar,Q,0,0
+DIQ075,Check item in boxes,Q,0,0
+DIQ080,Diabetes affected eyes or had retinopathy,Q,0,0
+DIQ085,Check item in boxes,Q,0,0
+DIQ090,Ulcer or sore not healed within 4 weeks,Q,0,0
+DIQ100,Numbness in hands or feet past 3 months,Q,0,0
+DIQ110,Numbness in hands and or feet,Q,0,0
+DIQ120,Pain or tingling in hands feet,Q,0,0
+DIQ130,Pain or tingling in hands feet or both,Q,0,0
+DIQ140,Pain in either leg while walking,Q,0,0
+DIQ150,Pain in calf or calves,Q,0,0
+HCQ030,First time told had Hep C (not in NHANES 9900),Q,0,0
+HCQ040,How long known infected with Hep C (not in NHANES 9900),Q,0,0
+HUQ010,General health condition,Q,0,0
+HUQ020,Health now compared with 1 year ago,Q,0,0
+HUQ030,Routine place to go for healthcare,Q,0,0
+HUQ040,Type place most often go for healthcare,Q,0,0
+HUQ050,Number times received healthcare over past year,Q,0,0
+HUQ060,How long since last healthcare visit,Q,0,0
+HUQ070,Overnight hospital patient in last year (for 99-00) (same as HUD070) ,Q,0,0
+HUD070,Overnight hospital patient in last year (for 01-02) (same as HUQ070) – synced to HUQ070 in merged,Q,0,0
+HUD080,Number times overnight hospital patient past year (for 99-00) (same as HUQ080),Q,0,0
+HUQ080,Number times overnight hospital patient past year (for 01-02) (same as HUD080) – synced to HUD080 in merged,Q,0,0
+HUQ081,Check item (not in NHANES 9900),Q,0,0
+HUQ082,In long term care facility last 12 months (not in NHANES 9900),Q,0,0
+HUQ084,Total number of days in long term facility (not in NHANES 9900),Q,0,0
+HUQ086,Non SP household member in care facility overnight (not in NHANES 9900),Q,0,0
+HUQ088A,Acute care facility (not in NHANES 9900),Q,0,0
+HUQ088B,Long term care facility (not in NHANES 9900),Q,0,0
+HUQ088C,Rehabilitation facility (not in NHANES 9900),Q,0,0
+HUQ089,Check item (not in NHANES 9900),Q,0,0
+HUQ090,Seen mental health professional past year,Q,0,0
+IMQ010,Received Hep A vaccine,Q,0,0
+IMQ020,Received Hep B vaccine,Q,0,0
+IMQ030,Had pneumonia vaccination,Q,0,0
+KIQ020,Told had weak/failing kidneys (for 99-00) (same as KIQ022),Q,0,0
+KIQ022,Told had weak/failing kidneys (for 01-02) (same as KIQ020) – synced to KIQ020 in merged,Q,0,0
+KIQ025,Received dialysis in past 12 months (not in NHANES 99-00),Q,0,0
+KIQ042,Leak urine during physical activities (not in NHANES 99-00),Q,0,0
+KIQ043,How frequently does this occur (leak during during physical activities) (not in NHANES 99-00),Q,0,0
+KIQ044,Urinated before reaching toilet (not in NHANES 99-00),Q,0,0
+KIQ045,Frequency with which this occurs (not in NHANES 99-00),Q,0,0
+KIQ046,Leak urine during nonphysical activities (not in NHANES 99-00),Q,0,0
+KIQ047,How frequently does this occur (leak during during nonphysical activities) (not in NHANES 99-00),Q,0,0
+KIQ048,Check item (not in NHANES 99-00),Q,0,0
+KIQ050,How much did urine leakage bother you (not in NHANES 99-00),Q,0,0
+KIQ052,How much were daily activities affected (not in NHANES 99-00),Q,0,0
+KIDUQUEX,Flag for source questionnaire (not in NHANES 99-00),Q,0,0
+KIQ080,Difficulty starting to urinate (not in NHANES 01-02) (same as KIQ081),Q,0,0
+KIQ100,Bladder feel empty after urinating (not in NHANES 01-02) (same as KIQ101),Q,0,0
+KIQ120,Ever told you had enlarged prostate (not in NHANES 01-02) (same as KIQ121),Q,0,0
+KIQ140,Told it was a benign enlargement (not in NHANES 01-02) (same as KIQ141),Q,0,0
+KIQ160,Age first told had benign enlargement (not in NHANES 01-02) (same as KIQ161),Q,0,0
+KIQ180,Enlargement due to cancer (not in NHANES 01-02) (same as KIQ182),Q,0,0
+KIQ200,Ever told you had prostate cancer (not in NHANES 01-02) (same as KIQ201),Q,0,0
+KIQ220,Age when first told had prostate cancer (not in NHANES 01-02),Q,0,0
+KIQ240,Ever had surgery on prostate gland (not in NHANES 01-02),Q,0,0
+KIQ260,Surgery on prostate but not for cancer (not in NHANES 01-02),Q,0,0
+KIQ280,Surgery for cancer of prostate (not in NHANES 01-02),Q,0,0
+KIQ300,Radiation treatment for prostate cancer (not in NHANES 01-02),Q,0,0
+KIQ320,Blood test to check for prostate cancer (not in NHANES 01-02),Q,0,0
+KIQ040,Difficulty controlling bladder (not in NHANES 01-02),Q,0,0
+KIQ060,Frequency of bladder control problem (not in NHANES 01-02),Q,0,0
+KIQ340,Ever had rectal exam (not in NHANES 01-02) (same as KIQ341),Q,0,0
+KIQ360,Rectal exam check for prostate cancer (not in NHANES 01-02) (same as KIQ361),Q,0,0
+KIQ380,Rectal exam check for blood in stool (not in NHANES 01-02) (same as KIQ381),Q,0,0
+KIAQUEX,Question KIQ340 360 380 1=SI 2=MI (not in NHANES 01-02),Q,0,0
+MCQ010,Ever told had asthma,Q,0,0
+MCQ020,Age when first had asthma,Q,0,0
+MCQ030,Still have asthma,Q,0,0
+MCQ040,Asthma attack in past year,Q,0,0
+MCQ050,Emergency care visit for asthma past year,Q,0,0
+MCQ053,Taking treatment for anemia past 3 months,Q,0,0
+MCQ060,Told have attention deficit disorder,Q,0,0
+MCQ080,Told to be overweight,Q,0,0
+MCQ083,Told have learning disability,Q,0,0
+MCQ090,Ever had chickenpox,Q,0,0
+MCQ092,Ever receive blood transfusion,Q,0,0
+MCD093,Year receive blood transfusion,Q,0,0
+MCQ100,Told have high blood pressure (not in NHANES 01-02),Q,0,0
+MCQ110,Taking medicine for high blood pressure (not in NHANES 01-02),Q,0,0
+MCQ114,Ever tested for lead poisoning ,Q,0,0
+MCQ117Q,How long since lead poisoning test,Q,0,0
+MCQ117U,Months or years,Q,0,0
+MCQ120A,Had hay fever past year,Q,0,0
+MCQ120B,Had 3 or more ear infections past year,Q,0,0
+MCQ120C,Had frequent or severe headaches past year,Q,0,0
+MCQ120D,Stuttering or stammering past year,Q,0,0
+MCQ140,Trouble seeing even with glass or contacts,Q,0,0
+MCQ147,Menstrual periods started yet,Q,0,0
+MCQ148,Age when menstrual periods started (not in NHANES 01-02),Q,0,0
+MCQ150G,School days missed from injury or illness,Q,0,0
+MCQ150Q,Number school days missed from injury or illness,Q,0,0
+MCQ160A,Told had arthritis,Q,0,0
+MCQ160B,Told had congestive heart failure,Q,0,0
+MCQ160C,Told had coronary heart disease,Q,0,0
+MCQ160D,Told had angina,Q,0,0
+MCQ160E,Told had heart attack,Q,0,0
+MCQ160F,Told had stroke,Q,0,0
+MCQ160G,Told had emphysema,Q,0,0
+MCQ160H,Told had goiter (not in NHANES 01-02) (can omit if using MCQ160I or MCQ160M),Q,0,0
+MCQ160I,Told had thyroid disease (not in NHANES 01-02) (same as MCQ160M),Q,0,0
+MCQ160J,Told overweight,Q,0,0
+MCQ160K,Told had chronic bronchitis,Q,0,0
+MCQ160L,Told had liver condition,Q,0,0
+MCD160M,Told had thyroid problem (not in NHANES 99-00) (same as MCQ160I) – synced to MCQ160I in merged,Q,0,0
+MCQ170H,Still have goiter (not in NHANES 01-02) (can omit if using MCQ170I or MCD170M),Q,0,0
+MCQ170I,Still have thyroid disease (not in NHANES 01-02) (same as MCD170M),Q,0,0
+MCQ170K,Still have chronic bronchitis,Q,0,0
+MCQ170L,Still have liver condition,Q,0,0
+MCD170M,Still have thyroid problem (not in NHANES 99-00) (same as MCQ170I),Q,0,0
+MCQ180A,Age when told had arthritis,Q,0,0
+MCQ180B,Age when told had heart failure,Q,0,0
+MCQ180C,Age when told had coronary heart disease,Q,0,0
+MCQ180D,Age when told had angina,Q,0,0
+MCQ180E,Age when told had heart attack,Q,0,0
+MCQ180F,Age when told had stroke,Q,0,0
+MCQ180G,Age when told had emphysema,Q,0,0
+MCQ180H,Age when told had goiter (not in NHANES 01-02) (can omit if using MCQ180I or MCD180M),Q,0,0
+MCQ180I,Age when told had thyroid disease (not in NHANES 01-02) (same as MCD180M),Q,0,0
+MCQ180K,Age when told had chronic bronchitis,Q,0,0
+MCQ180L,Age when told had liver condition,Q,0,0
+MCD180M,Age when told had thyroid problem (not in NHANES 99-00) (same as MCQ180I),Q,0,0
+MCQ190,What type of arthritis,Q,0,0
+MCQ200,Told had stomach duodenal peptic ulcer (not in NHANES 01-02),Q,0,0
+MCQ210,Had ulcer past year (not in NHANES 01-02),Q,0,0
+MCQ220,Told had cancer or malignancy,Q,0,0
+MCQ230A,What kind of cancer,Q,0,0
+MCQ230B,What kind of cancer,Q,0,0
+MCQ230C,What kind of cancer,Q,0,0
+MCQ230D,What kind of cancer,Q,0,0
+MCQ240A,Age when bladder cancer first diagnosed,Q,0,0
+MCQ240B,Age when blood cancer first diagnosed,Q,0,0
+MCQ240C,Age when bone cancer first diagnosed,Q,0,0
+MCQ240D,Age when brain cancer first diagnosed,Q,0,0
+MCQ240E,Age when breast cancer first diagnosed,Q,0,0
+MCQ240F,Age when cervical cancer first diagnosed,Q,0,0
+MCQ240G,Age when colon cancer first diagnosed,Q,0,0
+MCQ240H,Age when esophageal cancer first diagnosed,Q,0,0
+MCQ240I,Age when gallbladder cancer first diagnosed,Q,0,0
+MCQ240J,Age when kidney cancer first diagnosed,Q,0,0
+MCQ240K,Age when larynx cancer first diagnosed,Q,0,0
+MCQ240L,Age when leukemia first diagnosed,Q,0,0
+MCQ240M,Age when liver cancer first diagnosed,Q,0,0
+MCQ240N,Age when lung cancer first diagnosed,Q,0,0
+MCQ240O,Age when lymphoma first diagnosed,Q,0,0
+MCQ240P,Age when melanoma first diagnosed,Q,0,0
+MCQ240Q,Age when mouth tongue lip cancer first diagnosed,Q,0,0
+MCQ240R,Age when nervous system cancer first diagnosed,Q,0,0
+MCQ240S,Age when ovarian cancer first diagnosed,Q,0,0
+MCQ240T,Age when pancreatic cancer first diagnosed,Q,0,0
+MCQ240U,Age when prostate cancer first diagnosed,Q,0,0
+MCQ240V,Age when rectal cancer first diagnosed,Q,0,0
+MCQ240W,Age when non-melanoma skin cancer first diagnosed,Q,0,0
+MCQ240X,Age when unknown skin cancer first diagnosed,Q,0,0
+MCQ240Y,Age when soft tissue cancer first diagnosed,Q,0,0
+MCQ240Z,Age when stomach cancer first diagnosed,Q,0,0
+MCQ240AA,Age when testicular cancer first diagnosed,Q,0,0
+MCQ240BB,Age when thyroid cancer first diagnosed,Q,0,0
+MCQ240CC,Age when uterine cancer first diagnosed,Q,0,0
+MCQ240DD,Age when other type of cancer first diagnosed,Q,0,0
+MCQ245A,Work days missed for illness or maternity,Q,0,0
+MCQ245B,Number of workdays missed,Q,0,0
+MCQ250A,Blood relatives have diabetes,Q,0,0
+MCQ250B,Blood relatives had Alzheimers,Q,0,0
+MCQ250C,Blood relatives have asthma,Q,0,0
+MCQ250D,Blood relatives have arthritis (not in NHANES 01-02),Q,0,0
+MCQ250E,Blood relatives have osteoporosis,Q,0,0
+MCQ250F,Blood relatives with hypertension or stroke,Q,0,0
+MCQ250G,Blood relatives have angina,Q,0,0
+MCQ260AA,Blood relatives diabetes mother,Q,0,0
+MCQ260AB,Blood relatives diabetes father,Q,0,0
+MCQ260AC,Blood relatives diabetes mothers mother,Q,0,0
+MCQ260AD,Blood relatives diabetes mothers father,Q,0,0
+MCQ260AE,Blood relatives diabetes fathers mother,Q,0,0
+MCQ260AF,Blood relatives diabetes fathers father,Q,0,0
+MCQ260AG,Blood relatives diabetes brother,Q,0,0
+MCQ260AH,Blood relatives diabetes sister,Q,0,0
+MCQ260AI,Blood relatives diabetes other,Q,0,0
+MCQ260BA,Blood relatives Alzheimers mother,Q,0,0
+MCQ260BB,Blood relatives Alzheimers father,Q,0,0
+MCQ260BC,Blood relatives Alzheimers mothers mother,Q,0,0
+MCQ260BD,Blood relatives Alzheimers mothers father,Q,0,0
+MCQ260BE,Blood relatives Alzheimers fathers mother,Q,0,0
+MCQ260BF,Blood relatives Alzheimers fathers father,Q,0,0
+MCQ260BG,Blood relatives Alzheimers brother,Q,0,0
+MCQ260BH,Blood relatives Alzheimers sister,Q,0,0
+MCQ260BI,Blood relatives Alzheimers other,Q,0,0
+MCQ260CA,Blood relatives asthma mother,Q,0,0
+MCQ260CB,Blood relatives asthma father,Q,0,0
+MCQ260CC,Blood relatives asthma mothers mother,Q,0,0
+MCQ260CD,Blood relatives asthma mothers father,Q,0,0
+MCQ260CE,Blood relatives asthma fathers mother,Q,0,0
+MCQ260CF,Blood relatives asthma fathers father,Q,0,0
+MCQ260CG,Blood relatives asthma brother,Q,0,0
+MCQ260CH,Blood relatives asthma sister,Q,0,0
+MCQ260CI,Blood relatives asthma other,Q,0,0
+MCQ260DA,Blood relatives arthritis mother (not in NHANES 01-02),Q,0,0
+MCQ260DB,Blood relatives arthritis father (not in NHANES 01-02),Q,0,0
+MCQ260DC,Blood relatives arthritis mothers mother (not in NHANES 01-02),Q,0,0
+MCQ260DD,Blood relatives arthritis mothers father (not in NHANES 01-02),Q,0,0
+MCQ260DE,Blood relatives arthritis fathers mother (not in NHANES 01-02),Q,0,0
+MCQ260DF,Blood relatives arthritis fathers father (not in NHANES 01-02),Q,0,0
+MCQ260DG,Blood relatives arthritis brother (not in NHANES 01-02),Q,0,0
+MCQ260DH,Blood relatives arthritis sister (not in NHANES 01-02),Q,0,0
+MCQ260DI,Blood relatives arthritis other (not in NHANES 01-02),Q,0,0
+MCQ260EA,Blood relatives osteoporosis mother,Q,0,0
+MCQ260EB,Blood relatives osteoporosis father,Q,0,0
+MCQ260EC,Blood relatives osteoporosis mothers mother,Q,0,0
+MCQ260ED,Blood relatives osteoporosis mothers father,Q,0,0
+MCQ260EE,Blood relatives osteoporosis fathers mother,Q,0,0
+MCQ260EF,Blood relatives osteoporosis fathers father,Q,0,0
+MCQ260EG,Blood relatives osteoporosis brother,Q,0,0
+MCQ260EH,Blood relatives osteoporosis sister,Q,0,0
+MCQ260EI,Blood relatives osteoporosis other,Q,0,0
+MCQ260FA,Blood relatives hypertension mother,Q,0,0
+MCQ260FB,Blood relatives hypertension father,Q,0,0
+MCQ260FC,Blood relatives hypertension mothers mother,Q,0,0
+MCQ260FD,Blood relatives hypertension mothers father,Q,0,0
+MCQ260FE,Blood relatives hypertension fathers mother,Q,0,0
+MCQ260FF,Blood relatives hypertension fathers father,Q,0,0
+MCQ260FG,Blood relatives hypertension brother,Q,0,0
+MCQ260FH,Blood relatives hypertension sister,Q,0,0
+MCQ260FI,Blood relatives hypertension other,Q,0,0
+MCQ260GA,Blood relatives heart attack mother,Q,0,0
+MCQ260GB,Blood relatives heart attack father,Q,0,0
+MCQ260GC,Blood relatives heart attack mothers mother,Q,0,0
+MCQ260GD,Blood relatives heart attack mothers father,Q,0,0
+MCQ260GE,Blood relatives heart attack fathers mother,Q,0,0
+MCQ260GF,Blood relatives heart attack fathers father,Q,0,0
+MCQ260GG,Blood relatives heart attack brother,Q,0,0
+MCQ260GH,Blood relatives heart attack sister,Q,0,0
+MCQ260GI,Blood relatives heart attack other,Q,0,0
+MCQ270,Mother ever fracture hip,Q,0,0
+MCQ280,Mothers age when fractured hip,Q,0,0
+MCQ290,Mother under or over 50 when fracture hip,Q,0,0
+OSQ010A,Broken or fractured a hip,Q,0,0
+OSQ010B,Broken or fractured a wrist,Q,0,0
+OSQ010C,Broken or fractured spine,Q,0,0
+OSQ020A,Number times broken or fractured hip,Q,0,0
+OSQ020B,Number times broken or fractured wrist,Q,0,0
+OSQ020C,Number times broken or fractured spine,Q,0,0
+OSQ025,Check item,Q,0,0
+OSD030AA,Age when fractured hip first time,Q,0,0
+OSQ040AA,Under or over 50 when fractured hip first time,Q,0,0
+OSQ045 ,Check item,Q,0,0
+OSQ050AA,Reason hip fracture occurred first time,Q,0,0
+OSD030AB,Age when fractured hip second time,Q,0,0
+OSQ040AB,Under or over 50 when fractured hip second time,Q,0,0
+OSQ050AB,Reason hip fracture occurred second time,Q,0,0
+OSD030AC,Age when fractured hip third time,Q,0,0
+OSQ040AC,Under or over 50 when fractured hip third time,Q,0,0
+OSD050AC,Reason hip fracture occurred third time (not in NHANES 99-00),Q,0,0
+OSD030BA,Age when fractured wrist first time,Q,0,0
+OSQ040BA,Under or over 50 when fractured wrist first time,Q,0,0
+OSQ045BA,Check item (not in NHANES 99-00),Q,0,0
+OSQ050BA,Reason wrist fracture occurred first time,Q,0,0
+OSD030BB,Age when fractured wrist second time,Q,0,0
+OSQ040BB,Under or over 50 when fractured wrist second time,Q,0,0
+OSQ050BB,Reason wrist fracture occurred second time,Q,0,0
+OSD030BC,Age when fractured wrist third time,Q,0,0
+OSQ040BC,Under or over 50 when fractured wrist third time,Q,0,0
+OSQ050BC,Reason wrist fracture occurred third time,Q,0,0
+OSD030BD,Age when fractured wrist fourth time,Q,0,0
+OSQ040BD,Under or over 50 when fractured wrist fourth time,Q,0,0
+OSQ050BD,Reason wrist fracture occurred fourth time,Q,0,0
+OSD030BE,Age when fractured wrist fifth time,Q,0,0
+OSQ040BE,Under or over 50 when fractured wrist fifth time,Q,0,0
+OSD030BF,Age when fractured wrist sixth time (not in NHANES 01-02),Q,0,0
+OSQ040BF,Under or over 50 when fractured wrist sixth time (not in NHANES 01-02),Q,0,0
+OSD030BG,Age when fractured wrist seventh time (not in NHANES 01-02),Q,0,0
+OSQ040BG,Under or over 50 when fractured wrist seventh time (not in NHANES 01-02),Q,0,0
+OSD030BH,Age when fractured wrist eighth time (not in NHANES 01-02),Q,0,0
+OSQ040BH,Under or over 50 when fractured wrist eighth time (not in NHANES 01-02),Q,0,0
+OSD030BI,Age when fractured wrist nineth time (not in NHANES 01-02),Q,0,0
+OSQ040BI,Under or over 50 when fractured wrist nineth time (not in NHANES 01-02),Q,0,0
+OSD030BJ,Age when fractured wrist tenth time (not in NHANES 01-02),Q,0,0
+OSQ040BJ,Under or over 50 when fractured wrist tenth time (not in NHANES 01-02),Q,0,0
+OSD030CA,Age when fractured spine first time,Q,0,0
+OSQ040CA,Under or over 50 when fractured spine first time,Q,0,0
+OSQ045CA,Check item (not in NHANES 99-00),Q,0,0
+OSQ050CA,Reason spine fracture occurred first time,Q,0,0
+OSD030CB,Age when fractured spine second time,Q,0,0
+OSQ040CB,Under or over 50 when fractured spine second time,Q,0,0
+OSQ050CB,Reason spine fracture occurred second time,Q,0,0
+OSD030CC,Age when fractured spine third time,Q,0,0
+OSQ040CC,Under or over 50 when fractured spine third time,Q,0,0
+OSD050CC,Reason spine fracture occurred third time (not in NHANES 99-00),Q,0,0
+OSD030CD,Age when fractured spine fourth time,Q,0,0
+OSQ040CD,Under or over 50 when fractured spine fourth time,Q,0,0
+OSD050CD,Reason spine fracture occurred fourth time (not in NHANES 99-00),Q,0,0
+OSD030CE,Age when fractured spine fifth time,Q,0,0
+OSQ040CE,Under or over 50 when fractured spine fifth time,Q,0,0
+OSD050CE,Reason spine fracture occurred fifth time (not in NHANES 99-00),Q,0,0
+OSQ030CF,Age when fractured spine sixth time (not in NHANES 99-00),Q,0,0
+OSQ040CF,Under or over 50 when fractured spine sixth time (not in NHANES 99-00),Q,0,0
+OSD050CF,Reason spine fracture occurred sixth time (not in NHANES 99-00),Q,0,0
+OSQ060,Told had osteoporosis or brittle bones,Q,0,0
+OSQ070,Ever treated for osteoporosis,Q,0,0
+PAD020,Walked or bicycled over past 30 days,Q,0,0
+PAD050Q,Number times walked or bicycled,Q,0,0
+PAQ050U,Unit of measure (day week month),Q,0,0
+PAD080,How longer per day (minutes),Q,0,0
+PAQ100,Tasks around home or yard past 30 days,Q,0,0
+PAD120,Number of times past 30 days,Q,0,0
+PAD160,How long each time (minutes),Q,0,0
+PAQ180,Average level of physical activity each day,Q,0,0
+PAD200,Vigorous activity over past 30 days,Q,0,0
+PAD320,Moderate activity over past 30 days,Q,0,0
+PAD440,Muscle strengthening activities,Q,0,0
+PAD460,Number of times past 30 days,Q,0,0
+PAQ480,Daily hours of TV video or computer use,Q,0,0
+PAQ500,Activity comparison last month to last year,Q,0,0
+PAQ520,Compare activity with others same age,Q,0,0
+PAQ540,Compare activity with 10 years ago,Q,0,0
+PAQ560,Number time past week play or exercise hard,Q,0,0
+PAD570,Number hours watch TV or videos yesterday (not in NHANES 01-02),Q,0,0
+PAQ580,Number hours use computer or play computer games yesterday (not in NHANES 01-02),Q,0,0
+PAD590,Number hours watch TV or videos past 30 days (not in NHANES 99-00),Q,0,0
+PAD600,Number hours use computer past 30 days (not in NHANES 99-00),Q,0,0
+PAAQUEX,Questionnaire source flag for weighting,Q,0,0
+PADACTIV,"Leisure time activity (if used, causes duplicates in SEQN)",Q,0,0
+PADLEVEL,"Activity level (if used, causes duplicates in SEQN)",Q,0,0
+PADTIMES,"Number of times did activity in past 30 days (if used, causes duplicates in SEQN)",Q,0,0
+PADDURAT,"Average duration of activity (minutes) (if used, causes duplicates in SEQN)",Q,0,0
+PADMETS,"MET score for activity (if used, causes duplicates in SEQN)",Q,0,0
+PAAQUEX,"Questionnaire source flag for weighting (if used, causes duplicates in SEQN)",Q,0,0
+PFQ010,"Physical, mental, emotional limitations",Q,0,0
+PFQ015,Able to take part in most type of play,Q,0,0
+PFQ020,"Crawl, walk, run, play limitations",Q,0,0
+PFQ030,Long term impairment or health problem,Q,0,0
+PFQ035,Check item (not in NHANES 01-02),Q,0,0
+PFD036,Check item (not in NHANES 99-00),Q,0,0
+PFQ040,Receive special education or early intervention,Q,0,0
+PFQ048,Limitations keeping you from working,Q,0,0
+PFQ050,Limited in amount of work you can do,Q,0,0
+PFQ055,Need special equipment to walk,Q,0,0
+PFQ056,Experience confusion/memory problems,Q,0,0
+PFQ058,Check item,Q,0,0
+PFQ059,"Physical, mental, emotional limitations",Q,0,0
+PFQ059A,Check item,Q,0,0
+PFQ060A,Managing money difficulty,Q,0,0
+PFQ060B,Walking for quarter mile difficulty,Q,0,0
+PFQ060C,Walking up 10 steps difficulty,Q,0,0
+PFQ060D,"Stooping, crouching, kneeling difficulty",Q,0,0
+PFQ060E,Lifting or carrying difficulty,Q,0,0
+PFQ060F,House chore difficulty,Q,0,0
+PFQ060G,Preparing meals difficulty,Q,0,0
+PFQ060H,Walking between rooms on same floor,Q,0,0
+PFQ060I,Standing up from armless chair difficulty,Q,0,0
+PFQ060J,Getting in and out of bed difficulty,Q,0,0
+PFQ060K,"Using fork, knife, drinking from cup",Q,0,0
+PFQ060L,Dressing yourself difficulty,Q,0,0
+PFQ060M,Standing for long periods difficulty,Q,0,0
+PFQ060N,Sitting for long periods difficulty,Q,0,0
+PFQ060O,Reaching up over head difficulty,Q,0,0
+PFQ060P,Grasp/holding small objects difficulty,Q,0,0
+PFQ060Q,"Going out to movies, events difficulty",Q,0,0
+PFQ060R,Attending social event difficulty,Q,0,0
+PFQ060S,Leisure activity at home difficulty,Q,0,0
+PFQ066,Check item,Q,0,0
+PFD067A,Health problems causing difficulty,Q,0,0
+PFD067B,Health problems causing difficulty,Q,0,0
+PFD067C,Health problems causing difficulty,Q,0,0
+PFD067D,Health problems causing difficulty,Q,0,0
+PFD067E,Health problems causing difficulty,Q,0,0
+PFD069AG,Arthritis or rheumatism problems (not in NHANES 01-02),Q,0,0
+PFD069AQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069AU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069BG,Back or neck problems (not in NHANES 01-02),Q,0,0
+PFD069BQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069BU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069CG,"Cancer conditions, days (not in NHANES 01-02)",Q,0,0
+PFD069CQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069CU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069DG,Depression anxiety emotional problems (not in NHANES 01-02),Q,0,0
+PFD069DQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069DU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069EG,Other development problems (not in NHANES 01-02),Q,0,0
+PFD069EQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069EU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069FG,Diabetes condition (not in NHANES 01-02),Q,0,0
+PFD069FQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069FU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069GG,Fractures bone joint injury problems (not in NHANES 01-02),Q,0,0
+PFD069GQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069GU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069HG,"Hearing problems, days (not in NHANES 01-02)",Q,0,0
+PFD069HQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069HU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069IG,Heart problems (not in NHANES 01-02),Q,0,0
+PFD069IQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069IU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069JG,Hypertension (not in NHANES 01-02),Q,0,0
+PFD069JQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069JU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069KG,Lung or breathing problems (not in NHANES 01-02),Q,0,0
+PFD069KQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069KU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069LG,Mental retardation condition (not in NHANES 01-02),Q,0,0
+PFD069LQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069LU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069MG,Other injury problems (not in NHANES 01-02),Q,0,0
+PFD069MQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069MU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069NG,Senility condition (not in NHANES 01-02),Q,0,0
+PFD069NQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069NU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069OG,Stroke problems (not in NHANES 01-02),Q,0,0
+PFD069OQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069OU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069PG,Vision problems (not in NHANES 01-02),Q,0,0
+PFD069PQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069PU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069QG,Weight problems (not in NHANES 01-02),Q,0,0
+PFD069QQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069QU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069RG,Other impairment problems (not in NHANES 01-02),Q,0,0
+PFD069RQ,Number of days weeks months years (not in NHANES 01-02),Q,0,0
+PFD069RU,Unit of measure (day week month year) (not in NHANES 01-02),Q,0,0
+PFD069A,Arthritis or rheumatism problems days (not in NHANES 99-00),Q,0,0
+PFD069B,Back or neck problems days (not in NHANES 99-00),Q,0,0
+PFD069C,Cancer conditions days (not in NHANES 99-00),Q,0,0
+PFD069D,Depression anxiety emotional problems days (not in NHANES 99-00),Q,0,0
+PFD069E,Other development problems days (not in NHANES 99-00),Q,0,0
+PFD069F,Diabetes condition days (not in NHANES 99-00),Q,0,0
+PFD069G,Fractures bone joint injury problems days (not in NHANES 99-00),Q,0,0
+PFD069H,Hearing problems days (not in NHANES 99-00),Q,0,0
+PFD069I,Heart problems days (not in NHANES 99-00),Q,0,0
+PFD069J,Hypertension days (not in NHANES 99-00),Q,0,0
+PFD069K,Lung or breathing problems days (not in NHANES 99-00),Q,0,0
+PFD069L,Mental retardation condition days (not in NHANES 99-00),Q,0,0
+PFD069M,Other injury problems days (not in NHANES 99-00),Q,0,0
+PFD069N,Senility condition days (not in NHANES 99-00),Q,0,0
+PFD069O,Stroke problems days (not in NHANES 99-00),Q,0,0
+PFD069P,Vision problems days (not in NHANES 99-00),Q,0,0
+PFD069Q,Weight problems days (not in NHANES 99-00),Q,0,0
+PFD069R,Other impairment problems days (not in NHANES 99-00),Q,0,0
+PFQ090,Require special healthcare equipment,Q,0,0
+PFQ100,Special eating utensils (not in NHANES 01-02),Q,0,0
+PFQ110,Dressing aids or devices (not in NHANES 01-02),Q,0,0
+RXD030,Taken prescription medicine past month,Q,0,0
+RXD295,Number of prescription medicines taken (not in NHANES 01-02),Q,0,0
+KIQ081,Usually have trouble trying to urinate (not in NHANES 99-00) (same as KIQ080),Q,0,0
+KIQ101,Bladder feels empty after urinating (not in NHANES 99-00) (same as KIQ100),Q,0,0
+KIQ106,Diagnosed with prostate disease (not in NHANES 99-00),Q,0,0
+KIQ121,Diagnosed with enlarged prostate (not in NHANES 99-00) (same as KIQ120),Q,0,0
+KIQ141,Enlargement was BPH (not in NHANES 99-00) (same as KIQ140),Q,0,0
+KIQ161,Age at first BPH diagnosis (not in NHANES 99-00) (same as KIQ160),Q,0,0
+KIQ170A,Check item (not in NHANES 99-00),Q,0,0
+KID182,Enlargement due to prostate cancer (not in NHANES 99-00) (same as KIQ180),Q,0,0
+KIQ321,Ever had a PSA test (not in NHANES 99-00),Q,0,0
+KIQ341,Ever had a rectal exam (not in NHANES 99-00) (same as KIQ340),Q,0,0
+KIQ361,DRE to check for prostate cancer (not in NHANES 99-00) (same as KIQ360),Q,0,0
+KIQ381,DRE to check for blood in stool (not in NHANES 99-00) (same as KIQ380),Q,0,0
+KIQ400,Ability to maintain an erection (not in NHANES 99-00),Q,0,0
+SMQ020,Smoked at least 100 cigarettes in life,Q,0,0
+SMD030,Age started smoking cigarettes regularly,Q,0,0
+SMQ040,Do you now smoke cigarettes,Q,0,0
+SMQ050Q,How long since quit smoking cigarettes,Q,0,0
+SMQ050U,Unit of measure (day week month year),Q,0,0
+SMQ053,Check item,Q,0,0
+SMD055,Age last smoked cigarettes regularly,Q,0,0
+SMD057,Number cigarettes smoked per day when quit,Q,0,0
+SMD070,Number cigarettes smoked per day now,Q,0,0
+SMD075,How many years smoked this amount,Q,0,0
+SMQ077,How soon after waking do you smoke (not in NHANES 99-00),Q,0,0
+SMD080,Number days smoked cigarettes past 30 days,Q,0,0
+SMD090,Average number cigarettes per day during past 30 days,Q,0,0
+SMD092,May I please see the pack of cigarettes (not in NHANES 99-00),Q,0,0
+SMDUPCA,Cig 12-digit universal product code (not in NHANES 99-00),Q,0,0
+SMD100BR,Cigarette brand or sub-brand,Q,0,0
+SMD100FL,Filter type,Q,0,0
+SMD100MN,Menthol indicator,Q,0,0
+SMD100LN,Length in milllimeters,Q,0,0
+SMD100TR,FTC tar content,Q,0,0
+SMD100NI,FTC nicotine content,Q,0,0
+SMD100CO,FTC carbon monoxide content,Q,0,0
+SMD120,Smoked a pipe at least 20 times in life,Q,0,0
+SMD130,Age started smoking pipe regularly,Q,0,0
+SMD140,Do you now smoke a pipe,Q,0,0
+SMQ143,Number pipefuls of tobacco smoked per day,Q,0,0
+SMQ145,Number years smoked this amount of pipes,Q,0,0
+SMQ150,Smoked cigars at least 20 times in life,Q,0,0
+SMD160,Age started cigar smoking regularly,Q,0,0
+SMQ170,Do you now smoke cigars,Q,0,0
+SMQ173,Number cigars smokes per day,Q,0,0
+SMQ175,Number years smoked this amount of cigars,Q,0,0
+SMQ180,Used snuff at least 20 times in life,Q,0,0
+SMQ190,Age started using snuff regularly,Q,0,0
+SMQ200,Do you now use snuff,Q,0,0
+SMD203,Number snuff pinches dips rubs per day,Q,0,0
+SMQ205,Number years used this amount of snuff,Q,0,0
+SMQ210,Used chewing tobacco 20 times in life,Q,0,0
+SMD220,Age started chewing tobacco regularly,Q,0,0
+SMD230,Do you now use chewing tobacco,Q,0,0
+SMD233,Number chewing plugs wads chaws per day,Q,0,0
+SMD235,Number years used this chewing tobacco amount,Q,0,0
+VIQ030,General condition of eyesight,Q,0,0
+VIQ040,Time worrying about eyesight,Q,0,0
+VIQ050A,Difficulty reading ordinary newsprint,Q,0,0
+VIQ050B,Difficulty with up close work or chores,Q,0,0
+VIQ050C,Difficulty seeing steps or curbs under dim light,Q,0,0
+VIQ050D,Difficulty noticing objects to side,Q,0,0
+VIQ050E,Difficulty finding objects on crowded shelf,Q,0,0
+VIQ055,Difficulty driving daytime in familiar place,Q,0,0
+VIQ060,Vision limits how long can do activities,Q,0,0
+VIQ070,Ever had cataract operation,Q,0,0
+VIQ080,Operation in right left or both eyes,Q,0,0
+PEASCST1,Blood Pressure Status,E,0,0
+PEASCTM1,Blood Pressure Time in Seconds,E,0,0
+PEASCCT1,Blood Pressure Comment,E,0,0
+BPXCHR,60 sec HR (30 sec HR x 2),E,0,0
+BPQ150A,Had food past 30 minutes,E,0,0
+BPQ150B,Had alcohol past 30 minutes,E,0,0
+BPQ150C,Had coffee past 30 minutes,E,0,0
+BPQ150D,Had cigarettes past 30 minutes,E,0,0
+BPAARM,Arm selected,E,0,0
+BPACSZ,Cuff size (cm),E,0,0
+BPXDB,Number of dropped beats in 30 seconds,E,0,0
+BPXPULS,Pulse regular or irregular?,E,0,0
+BPXPTY,Pulse type,E,0,0
+BPXML1,MIL: maximum inflation levels (mm Hg),E,0,0
+BPXSY1,SBP first reading (mm Hg),E,0,0
+BPXDI1,DBP first reading (mm Hg),E,0,0
+BPAEN1,Enhancement used first reading,E,0,0
+BPXSY2,SBP second reading (mm Hg),E,0,0
+BPXDI2,DBP second reading (mm Hg),E,0,0
+BPAEN2,Enhancement used second reading,E,0,0
+BPXSY3,SBP third reading (mm Hg),E,0,0
+BPXDI3,DBP third reading (mm Hg),E,0,0
+BPAEN3,Enhancement used third reading,E,0,0
+BPXSY4,Systolic: Blood pressure (fourth reading if necessary) mm Hg,E,0,0
+BPXDI4,Diastolic: Blood pressure (fourth reading if necessary) mm Hg,E,0,0
+BPAEN4,Enhancement used fourth reading,E,0,0
+BMAEXLEN,Length of a MEC exam (sec) (not in NHANES 01-02),E,0,0
+BMAEXSTS,Status of a MEC exam (not in NHANES 01-02),E,0,0
+BMAEXCMT,Comment code for an exam (not in NHANES 01-02),E,0,0
+BMXWT,Weight (kg),E,0,0
+BMIWT,Weight Comment,E,0,0
+BMXRECUM,Recumbent Length (cm),E,0,0
+BMIRECUM,Recumbent Length Comment,E,0,0
+BMXHEAD,Head Circumference (cm),E,0,0
+BMIHEAD,Head Circumference Comment,E,0,0
+BMXHT,Standing Height (cm),E,0,0
+BMIHT,Standing Height Comment,E,0,0
+BMXLEG,Upper Leg Length (cm),E,0,0
+BMILEG,Upper Leg Length Comment,E,0,0
+BMXCALF,Maximal Calf Circumference (cm),E,0,0
+BMICALF,Maximal Calf Comment,E,0,0
+BMXARML,Upper Arm Length (cm),E,0,0
+BMIARML,Upper Arm Length Comment,E,0,0
+BMXARMC,Arm Circumference (cm),E,0,0
+BMIARMC,Arm Circumference Comment,E,0,0
+BMXWAIST,Waist Circumference (cm),E,0,0
+BMIWAIST,Waist Circumference Comment,E,0,0
+BMXTHICR,Thigh Circumference (cm),E,0,0
+BMITHICR,Thigh Circumference Comment,E,0,0
+BMXTRI,Triceps Skinfold (mm),E,0,0
+BMITRI,Triceps Skinfold Comment,E,0,0
+BMXSUB,Subscapular Skinfold (mm),E,0,0
+BMISUB,Subscapular Skinfold Comment,E,0,0
+BMAAMP,Amputations (not in NHANES 01-02),E,0,0
+BMAUREXT,Amputations upper right extremity (not in NHANES 01-02),E,0,0
+BMAUPREL,Amputations UR above or below elbow (not in NHANES 01-02),E,0,0
+BMAULEXT,Amputations upper left extremity (not in NHANES 01-02),E,0,0
+BMAUPLEL,Amputations UL above or below elbow (not in NHANES 01-02),E,0,0
+BMALOREX,Amputations lower right extremity (not in NHANES 01-02),E,0,0
+BMALORKN,Amputations LR above or below knee (not in NHANES 01-02),E,0,0
+BMALLEXT,Amputations lower left extremity (not in NHANES 01-02),E,0,0
+BMALLKNE,Amputations LL above or below knee (not in NHANES 01-02),E,0,0
+DXAEXSTS,Exam Status,E,0,0
+DXITOT,Overall Imputation Indicator,E,0,0
+DXIHE,Head Imputation Indicator,E,0,0
+DXXHEA,Head Area (cm2),E,0,0
+DXAHEBV,Head Bone Invalidity Code,E,0,0
+DXXHEBMC,Head Bone Mineral Content (grams),E,0,0
+DXXHEBMD,Head Bone Mineral Density (grams/cm2),E,0,0
+DXAHETV,Head Tissue Invalidity Code,E,0,0
+DXXHEFAT,Head Fat (grams),E,0,0
+DXDHELE,Head Lean excl Bone Mineral Content (grams),E,0,0
+DXXHELI,Head Lean incl Bone Mineral Content (grams),E,0,0
+DXDHETOT,Head Total (grams),E,0,0
+DXDHEPF,Head Percent Fat,E,0,0
+DXILA,Left Arm Imputation Indicator,E,0,0
+DXXLAA,Left Arm Area (cm2),E,0,0
+DXALABV,Left Arm Bone Invalidity Code,E,0,0
+DXXLABMC,Left Arm Body Mineral Content (grams),E,0,0
+DXXLABMD,Left Arm Body Mineral Density (grams/cm2),E,0,0
+DXALATV,Left Arm Tissue Invalidity Code,E,0,0
+DXXLAFAT,Left Arm Fat (grams),E,0,0
+DXDLALE,Left Arm Lean excl Body Mineral Content (grams),E,0,0
+DXXLALI,Left Arm Lean incl BMC (grams),E,0,0
+DXDLATOT,Left Arm Total (grams),E,0,0
+DXDLAPF,Left Arm Percent Fat,E,0,0
+DXILL,Left Leg Imputation Indicator,E,0,0
+DXXLLA,Left Leg Area(cm2),E,0,0
+DXALLBV,Left Leg Bone Invalidity Code,E,0,0
+DXXLLBMC,Left Leg Bone Mineral Content (grams),E,0,0
+DXXLLBMD,Left Leg Bone Mineral Density (grams/cm2),E,0,0
+DXALLTV,Left Leg Tissue Invalidity Code,E,0,0
+DXXLLFAT,Left Leg Fat (grams),E,0,0
+DXDLLLE,Left Leg Lean excl Bone Mineral Content (grams),E,0,0
+DXXLLLI,Left Leg Lean incl Bone Mineral Content (grams),E,0,0
+DXDLLTOT,Left Leg Total (grams),E,0,0
+DXDLLPF,Left Leg Percent Fat,E,0,0
+DXIRA,Right Arm Imputation Indicator,E,0,0
+DXXRAA,Right Arm Area (cm2),E,0,0
+DXARABV,Right Arm Bone Invalidity Code,E,0,0
+DXXRABMC,Right Arm Bone Mineral Content (grams),E,0,0
+DXXRABMD,Right Arm Bone Mineral Density (grams/cm2),E,0,0
+DXARATV,Right Arm Tissue Invalidity Code,E,0,0
+DXXRAFAT,Right Arm Fat (grams),E,0,0
+DXDRALE,Right Arm Lean excl Bone Mineral Content (grams),E,0,0
+DXXRALI,Right Arm Lean incl Bone Mineral Content (grams),E,0,0
+DXDRATOT,Right Arm Total (grams),E,0,0
+DXDRAPF,Right Arm Percent Fat,E,0,0
+DXIRL,Right Leg Imputation Indicator,E,0,0
+DXXRLA,Right Leg Area (cm2),E,0,0
+DXARLBV,Right Leg Bone Invalidity Code,E,0,0
+DXXRLBMC,Right Leg Bone Mineral Content (grams),E,0,0
+DXXRLBMD,Right Leg Bone Mineral Density (grams/cm2),E,0,0
+DXARLTV,Right Leg Tissue Invalidity Code,E,0,0
+DXXRLFAT,Right Leg Fat (grams),E,0,0
+DXDRLLE,Right Leg Lean excl Bone Mineral Content (grams),E,0,0
+DXXRLLI,Right Leg Lean incl Bone Mineral Content (grams),E,0,0
+DXDRLTOT,Right Leg Total (grams),E,0,0
+DXDRLPF,Right Leg Percent Fat,E,0,0
+DXILR,Left Ribs Imputation Indicator,E,0,0
+DXXLRA,Left Ribs Area(cm2),E,0,0
+DXXLRBMC,Left Ribs Bone Mineral Content (grams),E,0,0
+DXXLRBMD,Left Ribs Bone Mineral Density (grams/cm2),E,0,0
+DXIRR,Right Ribs Imputation Indicator,E,0,0
+DXXRRA,Right Ribs Area (cm2),E,0,0
+DXXRRBMC,Right Ribs Bone Mineral Content (grams),E,0,0
+DXXRRBMD,Right Ribs Bone Mineral Density (grams/cm2),E,0,0
+DXITS,Thoracic Spine Imputation Indicator,E,0,0
+DXXTSA,Thoracic Spine Area (cm2),E,0,0
+DXXTSBMC,Thoracic Spine Bone Mineral Content (grams),E,0,0
+DXXTSBMD,Thoracic Spine Bone Mineral Density (grams/cm2),E,0,0
+DXILS,Lumbar Spine Imputation Indicator,E,0,0
+DXXLSA,Lumbar Spine Area (cm2),E,0,0
+DXXLSBMC,Lumbar Spine Bone Mineral Content (grams),E,0,0
+DXXLSBMD,Lumbar Spine Bone Mineral Density (grams/cm2),E,0,0
+DXIPE,Pelvis Imputation Indicator,E,0,0
+DXXPEA,Pelvis Area (cm2),E,0,0
+DXXPEBMC,Pelvis Bone Mineral Content (grams),E,0,0
+DXXPEBMD,Pelvis Bone Mineral Density (grams/cm2) ,E,0,0
+DXITR,Trunk Imputation Indicator,E,0,0
+DXDTRA,Trunk Bone area (cm2),E,0,0
+DXATRBV,Trunk Bone Invalidity Code,E,0,0
+DXDTRBMC,Trunk Bone Mineral Content (grams),E,0,0
+DXDTRBMD,Trunk Bone BMD (g/cm2),E,0,0
+DXATRTV,Trunk Tissue Invalidity Code,E,0,0
+DXXTRFAT,Trunk Fat (grams),E,0,0
+DXDTRLE,Trunk Lean excl Bone Mineral Content (grams),E,0,0
+DXXTRLI,Trunk Lean incl Bone Mineral Content (grams),E,0,0
+DXDTRTOT,Trunk Total (grams),E,0,0
+DXDTRPF,Trunk Percent Fat,E,0,0
+DXDSTA,Subtotal Area (cm2),E,0,0
+DXDSTBMC,Subtotal Bone Mineral Content (grams),E,0,0
+DXDSTBMD,Subtotal Bone Mineral Density (grams/cm2),E,0,0
+DXDSTFAT,Subtotal Fat (g),E,0,0
+DXDSTLE,Subtotal Lean excl BMC (g),E,0,0
+DXDSTLI,Subtotal Lean incl BMC (g),E,0,0
+DXDSTTOT,Subtotal (Total excl Head) (g),E,0,0
+DXDSTPF,Subtotal Percent Fat,E,0,0
+DXDTOA,Total Area (cm2),E,0,0
+DXDTOBMC,Total Bone Mineral Content (g),E,0,0
+DXDTOBMD,Total Bone Mineral Density (g/cm2),E,0,0
+DXDTOFAT,Total Fat (g),E,0,0
+DXDTOLE,Total Lean excl BMC (g),E,0,0
+DXDTOLI,Total Lean incl BMC (g),E,0,0
+DXDTOTOT,Total Lean+Fat(g),E,0,0
+DXDTOPF,Total Percent Fat,E,0,0
+LEDSCCT2,ABPI section comment (not in NHANES 99-00),E,0,0
+LEAARM,Arm,E,0,0
+LEAARMC,Arm comment (not in NHANES 99-00),E,0,0
+LEDARMCF,Brachial cuff size,E,0,0
+LEQ020,Large adult used poor thigh cuff fit (not in NHANES 99-00),E,0,0
+LEAANKL,Ankles,E,0,0
+LEAANKLC,Ankle comment (not in NHANES 99-00),E,0,0
+LEDANKCF,Ankle cuff size,E,0,0
+LEXBRP1,Brachial SBP 1,E,0,0
+LEXBRP2,Brachial SBP 2,E,0,0
+LEXBRPM,Mean Brachial SBP,E,0,0
+LEXLPTS1,Left Posterior Tibial SBP 1,E,0,0
+LEXLPTS2,Left Posterior Tibial SBP 2,E,0,0
+LEXLPTSM,Left Mean Posterior Tibial SBP,E,0,0
+LEXLABPI,Left ABPI,E,0,0
+LEXRPTS1,Right Posterior Tibial SBP 1,E,0,0
+LEXRPTS2,Right Posterior Tibial SBP 2,E,0,0
+LEXRPTSM,Right Mean Posterior Tibial SBP,E,0,0
+LEXRABPI,Right ABPI,E,0,0
+LEALPTPD,Left PT pulse detected (not in NHANES 99-00),E,0,0
+LEARPTPD,Right PT pulse detected (not in NHANES 99-00),E,0,0
+LEALAPNC,Left ankle SBP more than 255 mmHg (not in NHANES 99-00),E,0,0
+LEARAPNC,Right ankle SBP more than 255 mmHg (not in NHANES 99-00),E,0,0
+LEDSCCT1,Peripheral neuropathy section comment (not in NHANES 99-00),E,0,0
+LEALAMP,Left amputation,E,0,0
+LEALBUN,Left bunions,E,0,0
+LEALLES,Left lesion,E,0,0
+LEALLESS,Left lesion site,E,0,0
+LEARAMP,Right amputation,E,0,0
+LEARBUN,Right bunions,E,0,0
+LEARLES,Right lesion,E,0,0
+LEARLESS,Right lesion site,E,0,0
+LEXLMH11,Left metatarsal head 1 test 1,E,0,0
+LEALM1C1,Left metatarsal head 1 comment test 1 ,E,0,0
+LEXLHAL1,Left halux test 1,E,0,0
+LEALHAC1,Left halux comment test 1 ,E,0,0
+LEXLMH51,Left metatarsal head 5 test 1,E,0,0
+LEALM5C1,Left metatarsal head 5 comment test 1,E,0,0
+LEXLMH12,Left metatarsal head 1 test 2 ,E,0,0
+LEALM1C2,Left metatarsal head 1 comment test 2,E,0,0
+LEXLHAL2,Left halux test 2,E,0,0
+LEALHAC2,Left halux comment test 2,E,0,0
+LEXLMH52,Left metatarsal head 5 test 2,E,0,0
+LEALM5C2,Left metatarsal head 5 comment test 2,E,0,0
+LEXLMH13,Left metatarsal head 1 test 3,E,0,0
+LEALM1C3,Left metatarsal head 1 comment test 3 (not in NHANES 99-00),E,0,0
+LEXLHAL3,Left halux test 3,E,0,0
+LEALHAC3,Left halux comment test 3 (not in NHANES 99-00),E,0,0
+LEXLMH53,Left metatarsal head 5 test 3,E,0,0
+LEALM5C3,Left metatarsal head 5 comment test 3 (not in NHANES 99-00),E,0,0
+LEXRHAL1,Right halux test 1,E,0,0
+LEARHAC1,Right halux comment test 1 ,E,0,0
+LEXRMH11,Right metatarsal head 1 test 1,E,0,0
+LEARM1C1,Right metatarsal head 1 comment test 1 ,E,0,0
+LEXRMH51,Right metatarsal head 5 test 1,E,0,0
+LEARM5C1,Right metatarsal head 5 comment test 1,E,0,0
+LEXRHAL2,Right halux test 2,E,0,0
+LEARHAC2,Right halux comment test 2,E,0,0
+LEXRMH12,Right metatarsal head 1 test 2,E,0,0
+LEARM1C2,Right metatarsal head 1 comment test 2,E,0,0
+LEXRMH52,Right metatarsal head 5 test 2,E,0,0
+LEARM5C2,Right metatarsal head 5 comment test 2,E,0,0
+LEXRHAL3,Right halux test 3,E,0,0
+LEARHAC3,Right halux comment test 3 (not in NHANES 01-02),E,0,0
+LEXRMH13,Right metatarsal head 1 test 3 (not in NHANES 01-02),E,0,0
+LEARM1C3,Right metatarsal head 1 comment test 3 (not in NHANES 01-02),E,0,0
+LEXRMH53,Right metatarsal head 5 test 3,E,0,0
+LEARM5C3,Right metatarsal head 5 comment test 3 (not in NHANES 99-00),E,0,0
+LEALPN,Left foot number of insensate areas,E,0,0
+LEARPN,Right foot number of insensate areas,E,0,0
+MSAEXLEN,Timed walk and muscle strength time (sec),E,0,0
+MSAEXSTS,Timed walk and muscle strength status,E,0,0
+MSAEXCMT,Timed walk and muscle strength comments,E,0,0
+MSDEXCLU,Exclusion criteria for muscle strength,E,0,0
+MSDCWUA,Can SP walk unassisted (not in NHANES 99-00),E,0,0
+MSXWTIME,Time to complete 20 feet walk (sec) ,E,0,0
+MSXW08TM,Time to complete 8 feet walk (sec) (not in NHANES 99-00),E,0,0
+MSXWPAIN,Pain reported on walking,E,0,0
+MSAWDEV,Type of device used,E,0,0
+MSDPTIME,Time to peak force in seconds,E,0,0
+MSDPFANG,Angle of peak force (degrees),E,0,0
+MSXARML,Arm length cm,E,0,0
+MSXGRAV,Gravity correction in Lb,E,0,0
+MSDPFVEL,Peak force velocity degree per seconds,E,0,0
+MSDPF,Peak force (newtons),E,0,0
+MSDNTR,Number of trials,E,0,0
+MSDAPF,Average peak force (newtons),E,0,0
+MSDPFTR,Selected peak force trial,E,0,0
+SEQ010,Hemophilia (not in NHANES 01-02),E,0,0
+SEQ020,Cancer chemotherapy past or future 4 weeks (not in NHANES 01-02),E,0,0
+SEQ030,Pacemaker or automatic defibrillator (not in NHANES 01-02),E,0,0
+SEQ040,Amputations of legs or feet other than toes (not in NHANES 01-02),E,0,0
+SEQ050,Where is the amputation (not in NHANES 01-02),E,0,0
+SEQ060,Are you currently pregnant (not in NHANES 01-02),E,0,0
+SEQ070,How many weeks (not in NHANES 01-02),E,0,0
+WHQ020L,How much weight without clothes or shoes (not in NHANES 01-02),E,0,0
+SEQ080,CV exclusion and physician medical review (not in NHANES 01-02),E,0,0
+URXUMA,Albumin urine (ug/mL),LAB,0,0
+URXUCR,Creatinine urine (mg/dL),LAB,0,0
+LBXBPB,Lead (ug/dL),LAB,0,0
+LBDBPBSI,Lead (umol/L),LAB,0,0
+LBXBCD,Cadmium (ug/L),LAB,0,0
+LBDBCDSI,Cadmium (nmol/L),LAB,0,0
+LBXEPP,Protoporphyrin (ug/dL RBC),LAB,0,0
+LBDEPPSI,Protoporphyrin (umol/L RBC),LAB,0,0
+LBXIRN,Iron (ug/dL),LAB,0,0
+LBXTIB,Total iron binding capacity (ug/dL),LAB,0,0
+LBXFER,Ferritin (ng/mL),LAB,0,0
+LBXFOL,Folate serum (ng/mL),LAB,0,0
+LBXB12,Vitamin B12 serum (pg/mL),LAB,0,0
+LBXHCY,Homocysteine (umol/L) ,LAB,0,0
+LBXMMA,Methylmalonic acid (umol/L),LAB,0,0
+LBXTHG,Mercury total (ug/L),LAB,0,0
+LBDTHGSI,Mercury total (umol/L),LAB,0,0
+LBXIHG,Mercury inorganic (ug/L),LAB,0,0
+LBDIHGSI,Mercury inorganic (umol/L),LAB,0,0
+LBXRBF,Folate RBC (ng/mL RBC),LAB,0,0
+LBDRBFSI,Folate RBC (nmol/L RBC),LAB,0,0
+LBDCOTLC,Cotinine comment code (not in NHANES 99-00),LAB,0,0
+LBDCOTSI ,Cotinine (nmol/L) (not in NHANES 01-02),LAB,0,0
+LBXSEL,Selenium (ng/mL) (not in NHANES 01-02),LAB,0,0
+LBDSELSI,Selenium (nmol/L) (not in NHANES 01-02),LAB,0,0
+LBXGTC,Gamma tocopherol (ug/dL),LAB,0,0
+LBDGTCSI,Gamma tocopherol (umol/L),LAB,0,0
+LBXRPL,Retinyl palmitate (ug/dL),LAB,0,0
+LBDRPLSI,Retinyl palmitate (umol/L),LAB,0,0
+LBXRST,Retinyl stearate (ug/dL),LAB,0,0
+LBDRSTSI,Retinyl stearate (umol/L),LAB,0,0
+LBXVIA,Vitamin A (ug/dL) (not in NHANES 01-02),LAB,0,0
+LBDVIASI,Vitamin A (umol/L) (not in NHANES 01-02),LAB,0,0
+LBXVIE,Vitamin E (ug/dL),LAB,0,0
+LBDVIESI,Vitamin E (umol/L),LAB,0,0
+URXUHG,Mercury urine (ng/mL),LAB,0,0
+SSCA125,Cancer antigen 125 (U/mL) (surplus) (not in NHANES 99-00),LAB,0,0
+SSCA153,Cancer antigen 15.3 (mU/mL) (surplus) (not in NHANES 99-00),LAB,0,0
+WTSAF2YR,2Yr AM(3-11) & fasting (12+) weights,LAB,0,0
+WTSAF4YR,4Yr AM(3-11) & fasting (12+) weights,LAB,0,0
+LBXTR,Triglyceride (mg/dL),LAB,0,0
+LBDTRSI,Triglyceride (mmol/L),LAB,0,0
+LBDLDL,LDL (mg/dL),LAB,0,0
+LBDLDLSI,LDL (mmol/L),LAB,0,0
+LBXTC,Total Cholesterol (mg/dL),LAB,0,0
+LBDHDL,HDL (mg/dL),LAB,0,0
+LBXHP1,Helicobacter pylori (ISR) (not in NHANES 01-02),LAB,0,0
+LBXFB,Fibrinogen (mg/dL),LAB,0,0
+LBXBAP,Bone alkaline phosphotase (ug/L),LAB,0,0
+URXNT,N-telopeptides (Ntx) (nmol BCE),LAB,0,0
+SSCYPC,Cystatin C (mg/L) (surplus),LAB,0,0
+WTSCY4YR,Surplus sera cystatin 99-02 weights (surplus),LAB,0,0
+SSMETSI,Methyltetrahydrofolate (pmol/ml) (surplus) (60-150) (not in NHANES 01-02),LAB,0,0
+SSFOLSI,Folic acid (pmol/ml) (surplus) (60-150) (not in NHANES 01-02),LAB,0,0
+SSFOLTSI,Total Folate (pmol/ml) (surplus) (60-150) (not in NHANES 01-02),LAB,0,0
+SSMET,Methyltetrahydrofolate (ng/ml) (surplus) (60-150) (not in NHANES 01-02),LAB,0,0
+SSFOL,Folic acid (ng/ml) (surplus) (60-150) (not in NHANES 01-02),LAB,0,0
+SSFOLTOT,Total Folate (ng/ml) (surplus) (60-150) (not in NHANES 01-02),LAB,0,0
+WTSSCB2Y,Cardiac biomarkers 2 year weights,LAB,0,0
+WTSSCB4Y,Cardiac biomarkers 4 year weights 1999-2002,LAB,0,0
+SSB2M,Beta 2 Microglobulin (mg/L) (surplus),LAB,0,0
+SSB2ML,Beta 2 Microglobulin comment code,LAB,0,0
+SSCYST,Cystatin C (mg/L) (surplus),LAB,0,0
+SSCYSTL,Cystatin C comment code,LAB,0,0
+SSGALB,Glycated Albumin (g/dL) (surplus),LAB,0,0
+SSGALBL,Glycated Albumin comment code,LAB,0,0
+SSALB,Albumin (g/dL) (surplus),LAB,0,0
+SSALBL,Albumin comment code,LAB,0,0
+SSGALBP,Percent glycated albumin% (surplus),LAB,0,0
+SSPRIS,Pristine sample (surplus),LAB,0,0
+LBXHA,Hepatitis A antibody,LAB,0,0
+LBXHBS,Hepatitis B surface antibody (not in NHANES 01-02),LAB,0,0
+LBXHBC,Hepatitis B core antibody ,LAB,0,0
+LBDHBG,Hepatitis B surface antigen,LAB,0,0
+LBDHCV,Hepatitis C antibody confirmed,LAB,0,0
+LBXHCR,Hepatitis C RNA,LAB,0,0
+LBDHD,Hepatitis D (antiHDV),LAB,0,0
+WTSSCB2Y,Cardiac biomarkers 2 year weights (surplus) (newly added Sep 2022 - SSTROP_A),LAB,0,0
+WTSSCB4Y,Cardiac biomarker 4 yr weights 1999-2002 (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+SSTNT,Cardiac hs-Troponin T (ng/L) (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+SSTNTLC,Cardiac hs-Troponin T comment code (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+SSTNIA,Cardiac hs-Troponin I (Abbott) (ng/L) (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+SSTNIALC,Cardiac hs-Troponin I (Abbott) comment (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+SSTNIS,Cardiac hs-Troponin I (Siemens) (ng/L) (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+SSTNISLC,Cardiac hs-Troponin I (Siemens) comment (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+SSTNIO,Cardiac hs-Troponin I (Ortho) (ng/L) (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+SSTNIOLC,Cardiac hs-Troponin I (Ortho) comment (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+SSPRISTP,Pristine sample comment for SSTROP_A (surplus) (newly added Sep 2022 – SSTROP_A),LAB,0,0
+URXUIO,Iodine urine (ng/mL) (not in NHANES 99-00),LAB,0,0
+URXUCR,"Creatinine, urine (mg/dL)",LAB,0,0
+WTUIO2YR,Iodine Subsample 2 year Mec Weight,LAB,0,0
+WTSSCB2Y,Cardiac biomarkers 2 year weights (surplus),LAB,0,0
+WTSSCB4Y,Cardiac biomarker 4 yr weights 1999-2002 (surplus),LAB,0,0
+SSBNPL,NT-proBNP comment code (surplus),LAB,0,0
+SSPRIS,Pristine sample (surplus),LAB,0,0
+WTSAF2YR,Fasting Subsample 2 Year Mec Weight,LAB,0,0
+WTSAF4YR,Fasting Subsample 4 Year Mec Weight,LAB,0,0
+LBXGLU,Glucose plasma (mg/dL),LAB,0,0
+LBXGLUSI,Glucose plasma (mmol/L),LAB,0,0
+LBXCPSI,C-peptide (nmol/L),LAB,0,0
+LBXIN,Insulin (uU/mL),LAB,0,0
+LBXINSI,Insulin (pmol/L),LAB,0,0
+KIQ201,Diagnosed with prostate cancer (not in NHANES 99-00) (same as KIQ200) – L11PSA_B,LAB,0,0
+LBXP1,PSA total (ng/mL) (not in NHANES 99-00) – L11PSA_B,LAB,0,0
+LBXP2,PSA free (ng/mL) (not in NHANES 99-00) – L11PSA_B,LAB,0,0
+LBDP3,PSA ratio (%) (not in NHANES 99-00) – L11PSA_B,LAB,0,0
+SSTESTO,Testosterone (ng/mL) men (surplus),LAB,0,0
+SSSHBG,Sex Hormone Binding Globulin (nmol/L) men (surplus),LAB,0,0
+SSSE2,Estradiol (pg/mL) men (surplus),LAB,0,0
+SS3ADLG,Androstanedione glucuronide (ng/mL) men (surplus),LAB,0,0
+LBXSAL,Albumin (g/dL),LAB,0,0
+LBXSBU,Blood Urea Nitrogen (mg/dL),LAB,0,0
+LBXSCA,Calcium total (mg/dL),LAB,0,0
+LBXSCH,Cholesterol total (mg/dL),LAB,0,0
+LBDSCHSI,Cholesterol total (mmol/L),LAB,0,0
+LBXSGL,Glucose (mg/dL),LAB,0,0
+LBXSIR,Iron (ug/dL),LAB,0,0
+LBDSIRSI,Iron (umol/L),LAB,0,0
+LBXSPH,Phosphorus (mg/dL),LAB,0,0
+LBXSTB,Bilirubin total (mg/dL),LAB,0,0
+LBXSTP,Protein total (g/dL),LAB,0,0
+LBXSTR,Triglycerides (mg/dL),LAB,0,0
+LBXSUA ,Uric acid (mg/dL),LAB,0,0
+LBXSCR,Creatinine (mg/dL),LAB,0,0
+LBXSOSSI,Osmolality (mOsm/Kg),LAB,0,0
+LBXSGB,Globulin (g/dL),LAB,0,0
+LBXFSH,Follicle stimulating hormone (mIU/mL),LAB,0,0
+LBDFSHSI,Follicle stimulating hormone (IU/L),LAB,0,0
+LBXLH,Luteinizing hormone (mIU/mL),LAB,0,0
+LBDLHSI,Luteinizing hormone (IU/L),LAB,0,0
+TELOMEAN,Mean telomere length relative to standard ref DNA – T/S ratio (surplus),LAB,0,0
+TELOSTD,Asso Std Dev of Mean T/S ratio (surplus),LAB,0,0
+WTSTH2YR,Thyroid hormones Subsample 2 yr Mec Wgt,LAB,0,0
+WTSTH4YR,Thyroid hormones Subsample 4 yr Mec Wgt,LAB,0,0
+LBXT4,Thyroxine (T4) (ug/dL),LAB,0,0
+LBDT4SI,Thyroxine (T4) (nmol/L),LAB,0,0
+LBXTSH,Thyroid stimulating hormone (IU/L),LAB,0,0
+SSATG,Thyroglobulin antibody (surplus) (not in NHANES 99-00),LAB,0,0
+SST3F,Free T3 (surplus) (not in NHANES 99-00),LAB,0,0
+SST4F,Free T4 (not in NHANES 99-00),LAB,0,0
+SSTGN,Thyroglobulin (surplus) (not in NHANES 99-00),LAB,0,0
+SSTPO,Thyroperoxidase antibody (surplus) (not in NHANES 99-00),LAB,0,0
+SSTSH1,Thyroid stimulating hormone (surplus) (not in NHANES 99-00),LAB,0,0
+SSTT3,Total T3 (surplus) (not in NHANES 99-00),LAB,0,0
+SST4F,Total T4 (surplus) (not in NHANES 99-00),LAB,0,0
+LBXALC,A-carotene (ug/dL) (not in NHANES 99-00),LAB,0,0
+LBDALCSI,A-carotene (umol/L) (not in NHANES 99-00),LAB,0,0
+LBXBEC ,Trans-b-carotene (ug/dL) (not in NHANES 99-00),LAB,0,0
+LBDBECSI,Trans-b-carotene (umol/L) (not in NHANES 99-00),LAB,0,0
+LBXCBC,Cis-b-carotene (ug/dL) (not in NHANES 99-00),LAB,0,0
+LBDCBCSI,Cis-b-carotene (umol/L) (not in NHANES 99-00),LAB,0,0
+LBXCRY,B-cryptoxanthin (ug/dL) (not in NHANES 99-00),LAB,0,0
+LBDCRYSI,b-cryptoxanthin (umol/L) (not in NHANES 99-00),LAB,0,0
+LBXLUZ,Combined Lutein/zeaxanthin (ug/dL) (not in NHANES 99-00),LAB,0,0
+LBDLUZSI,Combined Lutein/zeaxanthin (umol/L) (not in NHANES 99-00),LAB,0,0
+LBXLYC,Trans-lycopene (ug/dL) (not in NHANES 99-00),LAB,0,0
+LBDLYCSI,Trans-lycopene (umol/L) (not in NHANES 99-00),LAB,0,0
+LBXVIA,Retinol (ug/dL) (not in NHANES 99-00),LAB,0,0
+LBDVIASI,Retinol (umol/L) (not in NHANES 99-00),LAB,0,0
+LBDVIDMS,Vitamin D (nmol/L) (not in NHANES 99-00),LAB,0,0
+WTTFA2YR,Trans Fatty Acid Subsample 2 Year Weight (not in NHANES 01-02),LAB,0,0
+LBXHDT,Trans 9 Hexadecenoic acid (not in NHANES 01-02),LAB,0,0
+LBDHDTLC,Trans 9 Hexadecenoic acid comment code (not in NHANES 01-02),LAB,0,0
+LBXOD1,Trans 11 Octadecenoic acid (not in NHANES 01-02),LAB,0,0
+LBDOD1LC,Trans 11 Octadecenoic acid comment code (not in NHANES 01-02),LAB,0,0
+LBXOD9,Trans 9 Octadecenoic acid (not in NHANES 01-02),LAB,0,0
+LBDOD9LC,Trans 9 Octadecenoic acid comment code (not in NHANES 01-02),LAB,0,0
+LBXOTT,Trans Trans 9 12 Octadecadienoic acid (not in NHANES 01-02),LAB,0,0
+LBDOTTLC,Trans Trans 9 12 Octadecadienoic acid comment code (not in NHANES 01-02),LAB,0,0
+ELIGSTAT,Eligibility status for mortality follow-up,MORTALITY,0,0
+MORTSTAT,Final mortality status,MORTALITY,0,0
+UCOD_LEADING,Underlying leading cause of death recode,MORTALITY,0,0
+DIABETES,Diabetes flag from multiple cause of death,MORTALITY,0,0
+HYPERTEN,Hypertension flag from multiple cause of death,MORTALITY,0,0
+PERMTH_INT,Number of person months of follow up from NHANES interview date,MORTALITY,0,0
+PERMTH_EXM,Number of person months of follow up from NHANES mobile exam center date,MORTALITY,0,0
+BPXPLS,60 sec pulse (30 sec pulse X2),E,1,1
+BPXSAR,SBP average reported to examinee,E,1,1
+BPXDAR,DBP average reported to examinee,E,1,1
+BMXBMI,Body Mass Index (kg/m2),E,1,1
+URXUMASI,Albumin urine (mg/L),LAB,1,1
+URXUCRSI,Creatinine urine (umol/L),LAB,1,1
+LBDIRNSI,Iron (umol/L),LAB,1,1
+LBDTIBSI,Total iron binding capacity (umol/L),LAB,1,1
+LBXPCT,Transferrin Saturation (%),LAB,1,1
+LBDFERSI,Ferritin (ug/L),LAB,1,1
+LBDFOLSI,Folate serum (nmol/L),LAB,1,1
+LBDB12SI,Vitamin B12 serum (pmol/L),LAB,1,1
+LBXCOT,Cotinine (ng/mL),LAB,1,1
+LBDTCSI,Total Cholesterol (mmol/L),LAB,1,1
+LBDHDLSI,HDL (mmol/L),LAB,1,1
+LBXWBCSI,WBC count (1000 cells/uL),LAB,1,1
+LBXLYPCT,Lymphocyte percent ,LAB,1,1
+LBXMOPCT,Monocyte percent ,LAB,1,1
+LBXNEPCT,Segmented neutrophils percent ,LAB,1,1
+LBXEOPCT,Eosinophils percent ,LAB,1,1
+LBXBAPCT,Basophils percent ,LAB,1,1
+LBDLYMNO,Lymphocyte number (1000 cells/uL),LAB,1,1
+LBDMONO,Monocyte number (1000 cells/uL),LAB,1,1
+LBDNENO,Segmented neutrophils number (1000 cell/uL),LAB,1,1
+LBDEONO,Eosinophils number (1000 cells/uL),LAB,1,1
+LBDBANO,Basophils number (1000 cells/uL),LAB,1,1
+LBXRBCSI,Red blood cell count (million cells/uL),LAB,1,1
+LBXHGB,Hemoglobin (g/dL),LAB,1,1
+LBXHCT,Hematocrit,LAB,1,1
+LBXMCVSI,Mean cell volume (fL),LAB,1,1
+LBXMCHSI,Mean cell hemoglobin (pg),LAB,1,1
+LBXMC,Mean Cell Hemoglobin Concentration (g/dL),LAB,1,1
+LBXRDW,Red cell distribution width (percent),LAB,1,1
+LBXPLTSI,Platelet count (1000 cells/uL),LAB,1,1
+LBXMPSI,Mean platelet volume (fL),LAB,1,1
+LBXCRP,CRP (mg/dL),LAB,1,1
+LBDFBSI,Fibrinogen (g/L),LAB,0,0
+LBXGH,Glycohemoglobin %,LAB,1,1
+SSBNP,NT-proBNP (pg/ml) (surplus),LAB,1,1
+LBDSALSI,Albumin (g/L),LAB,1,1
+LBXSATSI,Alanine Aminotransferase (ALT) (U/L),LAB,1,1
+LBXSASSI,Aspartate Aminotransferase (AST) (U/L),LAB,1,1
+LBXSAPSI,Alkaline Phosphatase (ALP) (IU/L),LAB,1,1
+LBDSBUSI,Blood Urea Nitrogen (mmol/L),LAB,1,1
+LBDSCASI,Calcium total (mmol/L),LAB,1,1
+LBXSC3SI,Bicarbonate (mmol/L),LAB,1,1
+LBXSGTSI,Gamma Glutamyl Transferase (GGT) (U/L),LAB,0,0
+LBDSGLSI,Glucose (mmol/L),LAB,1,1
+LBXSLDSI,Lactate Dehydrogenase (LDH) (U/L),LAB,1,1
+LBDSPHSI,Phosphorus (mmol/L),LAB,1,1
+LBDSTBSI,Bilirubin total (umol/L),LAB,1,1
+LBDSTPSI,Protein total (g/L),LAB,1,1
+LBDSTRSI,Triglycerides (mmol/L),LAB,1,1
+LBDSUASI,Uric acid (umol/L),LAB,1,1
+LBDSCRSI,Creatinine (umol/L),LAB,1,1
+LBXSNASI,Sodium (mmol/L),LAB,1,1
+LBXSKSI,Potassium (mmol/L),LAB,1,1
+LBXSCLSI,Chloride (mmol/L),LAB,1,1
+LBDSGBSI,Globulin (g/L),LAB,1,1
