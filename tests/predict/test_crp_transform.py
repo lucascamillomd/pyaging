@@ -16,7 +16,7 @@ import pytest
 import torch
 
 import pyaging as pya
-from pyaging.models._models import CRP_FLOOR_MG_DL
+from pyaging.models._models import CRP_FLOOR_MG_DL, log1p_crp
 from pyaging.predict._pred_utils import check_feature_ranges, check_features_in_adata
 
 WEIGHTS = Path(__file__).resolve().parents[2] / "clocks" / "weights" / "phenoage.pt"
@@ -160,6 +160,36 @@ def test_moving_the_log_into_the_clock_did_not_change_any_prediction():
 
     with torch.inference_mode():
         assert model(raw).item() == model.postprocess(model.base_model(logged)).item()
+
+
+def test_a_pre_0_5_0_weight_names_the_version_mismatch_and_the_way_out():
+    """PYAGING_DATA_REVISION can pin weights older than the installed pyaging."""
+    legacy_features = ["albumin", "log_crp", "age"]
+    row = torch.ones(1, len(legacy_features), dtype=torch.float64)
+
+    with pytest.raises(ValueError) as error:
+        log1p_crp(legacy_features, row)
+
+    message = str(error.value)
+    assert "c_reactive_protein" in message
+    assert "log_crp" in message
+    assert "0.5.0" in message
+    assert "PYAGING_DATA_REVISION" in message
+
+
+@requires_weights
+def test_phenoage_reports_the_same_mismatch_as_the_bioage_clocks():
+    model = _phenoage()
+    model.features = ["albumin", "log_crp", "age"]
+    row = torch.ones(1, len(model.features), dtype=torch.float64)
+
+    with pytest.raises(ValueError, match="PYAGING_DATA_REVISION"):
+        model.preprocess(row)
+
+
+def test_a_clock_with_no_crp_column_at_all_still_explains_itself():
+    with pytest.raises(ValueError, match="c_reactive_protein"):
+        log1p_crp(["albumin", "age"], torch.ones(1, 2, dtype=torch.float64))
 
 
 def test_crp_is_registered_in_mg_dl():

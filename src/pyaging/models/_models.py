@@ -14,6 +14,34 @@ from ._base_models import pyagingModel
 CRP_FLOOR_MG_DL = 0.01
 
 
+def crp_index(features):
+    """Locate the C-reactive protein column, or explain why there is not one.
+
+    pyaging 0.5.0 renamed this feature from ``log_crp`` and moved the log into the
+    clock, so 0.5.0 code cannot run a weight file built before it. Pinning
+    ``PYAGING_DATA_REVISION`` to an older release tag is documented and supported, so
+    that pairing is reachable from the instructions; a bare ``list.index`` failure
+    names neither the mismatch nor the way out of it.
+
+    Raises
+    ------
+    ValueError
+        If ``features`` has no ``c_reactive_protein`` entry.
+    """
+    try:
+        return features.index("c_reactive_protein")
+    except ValueError:
+        pass
+    legacy = " Its features call it 'log_crp', the name pyaging used before 0.5.0." if "log_crp" in features else ""
+    raise ValueError(
+        "This clock has no 'c_reactive_protein' feature, so its C-reactive protein transform "
+        f"cannot be applied.{legacy} Weights built before pyaging 0.5.0 do not work with "
+        "pyaging 0.5.0 or later. Unset PYAGING_DATA_REVISION, or pin it to v0.5.0 or a later "
+        "tag, to download weights that match the installed version; pin pyaging itself to "
+        "<0.5.0 to keep using the older weights."
+    )
+
+
 def log1p_crp(features, x):
     """Apply BioAge's ``lncrp`` transform to the C-reactive protein column alone.
 
@@ -29,7 +57,7 @@ def log1p_crp(features, x):
     downstream. The floor equals the registered lower bound, so any value it
     moves is already out of range and has already been warned about.
     """
-    index = features.index("c_reactive_protein")
+    index = crp_index(features)
     crp = torch.clamp(x[:, index : index + 1], min=CRP_FLOOR_MG_DL)
     return torch.cat([x[:, :index], torch.log1p(crp), x[:, index + 1 :]], dim=1)
 
@@ -1727,7 +1755,7 @@ class PhenoAge(pyagingModel):
         the registered lower bound: any value it moves is already out of range
         and has already been warned about.
         """
-        index = self.features.index("c_reactive_protein")
+        index = crp_index(self.features)
         crp = torch.clamp(x[:, index : index + 1], min=CRP_FLOOR_MG_DL)
         return torch.cat([x[:, :index], torch.log(crp), x[:, index + 1 :]], dim=1)
 
