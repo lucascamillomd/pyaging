@@ -1451,7 +1451,14 @@ class PhenoAge(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        """Apply Levine's natural-log transform to C-reactive protein.
+
+        The published coefficient is fit against ln(CRP in mg/dL); users supply
+        the raw measurement so the same column can feed clocks that log it
+        differently.
+        """
+        index = self.features.index("c_reactive_protein")
+        return torch.cat([x[:, :index], torch.log(x[:, index : index + 1]), x[:, index + 1 :]], dim=1)
 
     def postprocess(self, x):
         """
