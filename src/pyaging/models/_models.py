@@ -3,69 +3,13 @@ import math
 import torch
 import torch.nn as nn
 
-# ``pyaging.predict`` imports this module in turn, so this only resolves because
-# ``predict/__init__`` binds ``_inverse_transforms`` before ``_pred_utils``.
+# ``predict/_pred_utils`` imports ``..models`` in turn, so these two lines close a cycle.
+# It holds because ``_pred_utils`` only takes names ``models/__init__`` has already bound
+# from ``_base_models`` by the time this module runs; importing a name defined here would
+# break it.
 from ..predict._inverse_transforms import mortality_to_phenoage_saopaulo
+from ..predict._transforms import PHENOAGE_CRP_FLOOR_MG_DL, crp_index, log1p_crp
 from ._base_models import pyagingModel
-
-# Lowest C-reactive protein ``PhenoAge`` will take the natural log of, in mg/dL. It is
-# the only transform here that needs a floor, and the value matches the registry floor in
-# data/feature_ranges.json so that anything the clamp touches has already been reported by
-# check_feature_ranges.
-PHENOAGE_CRP_FLOOR_MG_DL = 0.01
-
-
-def crp_index(features):
-    """Locate the C-reactive protein column, or explain why there is not one.
-
-    pyaging 0.5.0 renamed this feature from ``log_crp`` and moved the log into the
-    clock, so 0.5.0 code cannot run a weight file built before it. Pinning
-    ``PYAGING_DATA_REVISION`` to an older release tag is documented and supported, so
-    that pairing is reachable from the instructions; a bare ``list.index`` failure
-    names neither the mismatch nor the way out of it.
-
-    Raises
-    ------
-    ValueError
-        If ``features`` has no ``c_reactive_protein`` entry.
-    """
-    try:
-        return features.index("c_reactive_protein")
-    except ValueError:
-        pass
-    legacy = " Its features call it 'log_crp', the name pyaging used before 0.5.0." if "log_crp" in features else ""
-    raise ValueError(
-        "This clock has no 'c_reactive_protein' feature, so its C-reactive protein transform "
-        f"cannot be applied.{legacy} Weights built before pyaging 0.5.0 do not work with "
-        "pyaging 0.5.0 or later. Unset PYAGING_DATA_REVISION, or pin it to v0.5.0 or a later "
-        "tag, to download weights that match the installed version; pin pyaging itself to "
-        "<0.5.0 to keep using the older weights."
-    )
-
-
-def log1p_crp(features, x):
-    """Apply BioAge's ``lncrp`` transform to the C-reactive protein column alone.
-
-    BioAge fits ``lncrp`` against ``log1p(CRP in mg/dL)``, not the natural log
-    ``PhenoAge`` uses, so every clock ported from that package shares this
-    transform; users supply the raw measurement so one column can feed clocks
-    that log it differently.
-
-    Notes
-    -----
-    CRP is not floored. ``log1p`` is finite everywhere it is defined, and
-    ``log1p(0) == 0`` is a point BioAge's own fitted preimage includes, so a
-    below-detection reading coded as ``0``, a constant imputer, or an absent
-    column all pass through as the reference scores them. Only a value at or
-    below ``-1`` mg/dL is outside the domain, and that is not a measurement;
-    those samples become ``NaN`` so they surface in the output instead of
-    carrying a value the clock made up for them.
-    """
-    index = crp_index(features)
-    crp = x[:, index : index + 1]
-    crp = torch.where(crp > -1, crp, torch.nan)
-    return torch.cat([x[:, :index], torch.log1p(crp), x[:, index + 1 :]], dim=1)
-
 
 # LinAge2's ``foldOutliers`` cap, in MAD-scaled z units, applied to every feature.
 LINAGE2_FOLD_CAP = 6
@@ -516,7 +460,6 @@ class HomeostaticDysregulation(pyagingModel):
                 self.register_buffer(f"{name}_{sex}", torch.empty(0))
 
     def preprocess(self, x):
-        """Apply BioAge's log1p transform to C-reactive protein."""
         return log1p_crp(self.features, x)
 
     def postprocess(self, x):
@@ -559,7 +502,6 @@ class KDMAge(pyagingModel):
             self.register_buffer(f"s_ba2_{sex}", torch.empty(0))
 
     def preprocess(self, x):
-        """Apply BioAge's log1p transform to C-reactive protein."""
         return log1p_crp(self.features, x)
 
     def postprocess(self, x):
@@ -753,9 +695,9 @@ class LinAge2(pyagingModel):
         -----
         The 13 log-transformed features take a plain ``log`` with no floor. The
         reference lets ``log(0)`` reach the fold as ``-inf``, where it becomes exactly
-        ``-6``; clamping the input first — as the shared ``log1p_crp`` helper does for
-        the BioAge clocks — would land a below-detection reading on a different
-        z-score, so this clock deliberately does not reuse that helper.
+        ``-6``; clamping the input first — as ``PhenoAge.preprocess`` does before its
+        natural log — would land a below-detection reading on a different z-score, so
+        this clock deliberately does not floor.
 
         The ±6 fold covers all 59 features, including the five that skip z-scoring:
         ``self_reported_health_index`` and ``healthcare_use_index`` both run 0-8 raw
@@ -1756,10 +1698,7 @@ class PhenoAge(pyagingModel):
         CRP is clamped to ``PHENOAGE_CRP_FLOOR_MG_DL`` before the log, so a zero
         — from a below-detection reading, a constant imputer, or a column the
         input never had — yields a finite age instead of ``-inf`` propagating
-        into every downstream summary. Unlike ``log1p_crp``, the natural log
-        genuinely needs the floor: ``log(0)`` is ``-inf``. Clamping is safe
-        precisely because the floor equals the registered lower bound, so any
-        value it moves is already out of range and has already been warned about.
+        into every downstream summary.
         """
         index = crp_index(self.features)
         crp = torch.clamp(x[:, index : index + 1], min=PHENOAGE_CRP_FLOOR_MG_DL)
@@ -1795,8 +1734,7 @@ class PhenoAgeSaoPaulo(pyagingModel):
         Notes
         -----
         The constants are refit alongside the coefficients and differ from
-        Levine's published ones, so they travel as buffers rather than being
-        hardcoded the way ``PhenoAge.postprocess`` hardcodes them.
+        Levine's published ones.
         """
         m_n, m_d, ba_n, ba_d, ba_i = (
             buffer.to(device=x.device, dtype=x.dtype)

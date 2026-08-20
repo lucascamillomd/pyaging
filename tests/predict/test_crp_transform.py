@@ -16,8 +16,8 @@ import pytest
 import torch
 
 import pyaging as pya
-from pyaging.models._models import PHENOAGE_CRP_FLOOR_MG_DL, log1p_crp
 from pyaging.predict._pred_utils import check_feature_ranges, check_features_in_adata
+from pyaging.predict._transforms import PHENOAGE_CRP_FLOOR_MG_DL, log1p_crp
 
 WEIGHTS = Path(__file__).resolve().parents[2] / "clocks" / "weights" / "phenoage.pt"
 
