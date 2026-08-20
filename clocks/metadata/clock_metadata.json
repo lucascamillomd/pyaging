@@ -2717,6 +2717,40 @@
     "postprocess": "anti_log_linear",
     "version": "v0.3.0"
   },
+  "kdmage": {
+    "clock_name": "kdmage",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "⌛",
+    "citation": "Kwon, Dayoon, and Daniel W. Belsky. \"A toolkit for quantification of biological age from blood chemistry and organ function test data: BioAge.\" GeroScience 43.6 (2021): 2795-2808.",
+    "doi": "https://doi.org/10.1007/s11357-021-00480-5",
+    "notes": "Klemera-Doubal biological age, trained sex-specifically on NHANES III adults aged 30-75 who were not pregnant, using the BioAge package defaults. Biomarker parameters were fit on SI-unit variants so they are natively in pyaging's unit convention, and C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. Sex is coded female = 1 and male = 0; a dataset with no female column scores every sample with the male parameters.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "Klemera–Doubal composite",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "GeroScience",
+    "last_author": "Daniel W. Belsky",
+    "n_features": 11,
+    "citations": 332,
+    "citations_date": "2026-08-20",
+    "version": "v0.5.0"
+  },
   "knight": {
     "clock_name": "knight",
     "data_type": "DNA methylation",
