@@ -11,6 +11,8 @@ from unittest.mock import Mock
 import pytest
 import torch
 
+from pyaging.models import pyagingModel
+
 REGISTRY_FIELDS = (
     "clock_name",
     "data_type",
@@ -189,7 +191,7 @@ def test_runtime_metadata_fields_are_explicitly_ordered():
     clock.preprocess_name = "runtime_preprocess"
     clock.postprocess_name = "runtime_postprocess"
     clock.reference_values = {"mean": 1.0}
-    generated_orders = [list(update_all_clocks._generated_metadata_entry(clock)[1]) for _ in range(10)]
+    generated_orders = [list(update_all_clocks._generated_metadata_entry(clock, "0.3.0")[1]) for _ in range(10)]
     assert generated_orders == [list(update_all_clocks.RUNTIME_METADATA_FIELDS)] * 10
 
 
@@ -204,12 +206,11 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 clock = SimpleNamespace(
     metadata={{"clock_name": "clock"}},
-    version="0.3.0",
     preprocess_name="pre",
     postprocess_name="post",
     reference_values={{"mean": 1.0}},
 )
-print(json.dumps(module._generated_metadata_entry(clock)[1]))
+print(json.dumps(module._generated_metadata_entry(clock, "0.3.0")[1]))
 """
     outputs = []
     for seed in ("1", "8675309"):
@@ -265,7 +266,7 @@ def test_generated_metadata_entry_contains_only_runtime_fields():
     clock.postprocess_name = "runtime_postprocess"
     clock.reference_values = {"mean": 1.0}
 
-    clock_name, generated_entry = update_all_clocks._generated_metadata_entry(clock)
+    clock_name, generated_entry = update_all_clocks._generated_metadata_entry(clock, "0.2.0")
 
     assert clock_name == "clock"
     assert generated_entry == {
@@ -806,3 +807,63 @@ def test_successful_regeneration_publishes_valid_registry_backed_transaction(tmp
     assert load.call_args_list[1].args[0] == clock_path
     assert load.call_args_list[2].args[0] == metadata_path
     assert _transaction_residue(tmp_path) == []
+
+
+class _ConcreteClock(pyagingModel):
+    """Minimal concrete ``pyagingModel`` standing in for a built clock.
+
+    The other fixtures in this module fake clocks with ``SimpleNamespace``, so
+    they cannot detect the script reading attributes the real model class no
+    longer defines. This one inherits the real ``__init__``.
+    """
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+
+def _write_real_model_inputs(tmp_path, clock_names):
+    weights_dir = tmp_path / "weights"
+    weights_dir.mkdir()
+    for clock_name in clock_names:
+        clock = _ConcreteClock()
+        clock.metadata["clock_name"] = clock_name
+        torch.save(clock, weights_dir / f"{clock_name}.pt")
+    registry_path = tmp_path / "clock_metadata.json"
+    _write_registry(
+        registry_path,
+        {clock_name: _registry_entry(clock_name) for clock_name in sorted(clock_names)},
+    )
+    return weights_dir, registry_path, tmp_path / "all_clock_metadata.pt"
+
+
+def test_regeneration_of_real_model_clocks_covers_every_registry_entry(tmp_path):
+    update_all_clocks = _load_update_all_clocks_module()
+    clock_names = ("clocka", "clockb")
+    weights_dir, registry_path, metadata_path = _write_real_model_inputs(tmp_path, clock_names)
+
+    result = update_all_clocks.regenerate_clock_metadata(
+        "0.5.0",
+        weights_dir=weights_dir,
+        registry_path=registry_path,
+        metadata_path=metadata_path,
+    )
+
+    assert set(result) == set(clock_names)
+    assert torch.load(metadata_path, weights_only=False) == result
+    for clock_name in clock_names:
+        assert result[clock_name]["version"] == "0.5.0"
+        assert torch.load(weights_dir / f"{clock_name}.pt", weights_only=False).metadata == result[clock_name]
+
+
+def test_script_only_reads_runtime_attributes_the_model_class_defines():
+    update_all_clocks = _load_update_all_clocks_module()
+    clock = _ConcreteClock()
+    clock.metadata["clock_name"] = "clock"
+
+    _, runtime_metadata = update_all_clocks._generated_metadata_entry(clock, "0.5.0")
+
+    assert runtime_metadata["version"] == "0.5.0"
+    assert set(runtime_metadata).issubset(update_all_clocks.RUNTIME_METADATA_FIELDS)

@@ -60,6 +60,10 @@ _REGISTRY_STRING_FIELDS = (
     "last_author",
     "citations_date",
 )
+_CLOCKS_DIR = Path(__file__).resolve().parent
+_DEFAULT_WEIGHTS_DIR = _CLOCKS_DIR / "weights"
+_DEFAULT_REGISTRY_PATH = _CLOCKS_DIR / "metadata" / "clock_metadata.json"
+_DEFAULT_METADATA_PATH = _CLOCKS_DIR / "metadata" / "all_clock_metadata.pt"
 _TargetRecord = namedtuple(
     "_TargetRecord",
     ("logical_path", "target_path", "logical_state", "target_state"),
@@ -185,16 +189,37 @@ def load_curated_metadata(registry_path):
     return metadata
 
 
-def _generated_metadata_entry(clock):
+def _generated_clock_name(clock):
+    """Return the clock_name recorded in a loaded clock's metadata."""
     if not isinstance(clock.metadata, dict):
         raise ValueError("Clock metadata must be a dictionary")
 
     key = clock.metadata.get("clock_name")
     if not isinstance(key, str) or not key:
         raise ValueError("Clock metadata must contain a non-empty string clock_name")
+    return key
+
+
+def _generated_metadata_entry(clock, version):
+    """Build the runtime metadata entry for one clock at a pyaging release version.
+
+    Parameters
+    ----------
+    clock : pyaging.models.pyagingModel
+        Clock loaded from its built weight file.
+    version : str
+        The pyaging release version being stamped onto every clock.
+
+    Returns
+    -------
+    tuple of (str, dict)
+        The clock name and its non-null runtime metadata fields, in the
+        canonical ``RUNTIME_METADATA_FIELDS`` order.
+    """
+    key = _generated_clock_name(clock)
 
     runtime_values = {
-        "version": clock.version,
+        "version": version,
         "preprocess": clock.preprocess_name,
         "postprocess": clock.postprocess_name,
         "reference_values": (True if clock.reference_values is not None else None),
@@ -452,11 +477,29 @@ def _transactional_publish(staged_targets):
 
 def regenerate_clock_metadata(
     version,
-    weights_dir=Path("weights"),
-    registry_path=Path("metadata/clock_metadata.json"),
-    metadata_path=Path("metadata/all_clock_metadata.pt"),
+    weights_dir=_DEFAULT_WEIGHTS_DIR,
+    registry_path=_DEFAULT_REGISTRY_PATH,
+    metadata_path=_DEFAULT_METADATA_PATH,
 ):
-    """Regenerate all weights and metadata as one registry-backed transaction."""
+    """Regenerate all weights and metadata as one registry-backed transaction.
+
+    Parameters
+    ----------
+    version : str
+        The pyaging release version stamped onto every clock and aggregate entry.
+    weights_dir : pathlib.Path, optional
+        Directory of built ``.pt`` weights. Defaults to ``clocks/weights``
+        resolved relative to this script, not the working directory.
+    registry_path : pathlib.Path, optional
+        Curated JSON metadata registry.
+    metadata_path : pathlib.Path, optional
+        Aggregate ``.pt`` metadata file to write.
+
+    Returns
+    -------
+    dict
+        The merged aggregate metadata, keyed by clock name.
+    """
     weights_dir = Path(weights_dir)
     registry_path = Path(registry_path)
     metadata_path = Path(metadata_path)
@@ -474,7 +517,7 @@ def regenerate_clock_metadata(
         for index, record in enumerate(weight_records, start=1):
             clock = torch.load(record.logical_path, weights_only=False)
             try:
-                clock_name, _ = _generated_metadata_entry(clock)
+                clock_name = _generated_clock_name(clock)
                 expected_name = record.logical_path.stem
                 if clock_name != expected_name:
                     raise ValueError(
@@ -482,7 +525,7 @@ def regenerate_clock_metadata(
                         f"expected {expected_name!r}, generated {clock_name!r}"
                     )
                 clock.version = version
-                clock_name, runtime_metadata = _generated_metadata_entry(clock)
+                clock_name, runtime_metadata = _generated_metadata_entry(clock, version)
                 synchronized_metadata = merge_clock_metadata(
                     {clock_name: runtime_metadata},
                     {clock_name: curated_dictionary[clock_name]},
@@ -535,4 +578,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     regenerate_clock_metadata(args.version)
-    print("Metadata dictionary saved to 'metadata/all_clock_metadata.pt'.")
+    print(f"Metadata dictionary saved to '{_DEFAULT_METADATA_PATH}'.")
