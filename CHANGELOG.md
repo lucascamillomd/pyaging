@@ -67,7 +67,13 @@ minimum and maximum.
 
 The check is **warn-only**. It never blocks a prediction, never modifies your data, and
 makes no claim about clinical abnormality — the bounds are deliberately far wider than any
-reference interval. Missing values are ignored; those are already reported separately.
+reference interval.
+
+It judges only the features you supplied. A feature your data did not carry is filled in
+with the clock's reference value, or zero, before prediction, and several clocks use a
+sentinel outside the normal range for that; those columns are the pipeline's own and are
+reported by the missing-feature warning instead. Missing values within a supplied column are
+ignored for the same reason.
 
 Two public helpers expose the same registry:
 
