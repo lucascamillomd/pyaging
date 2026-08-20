@@ -14,8 +14,9 @@
 #     (median 2.885). We use fev_1000.
 #   * lncrp is log1p(crp in mg/dL), NOT log(crp): exp(lncrp) - crp == 1 exactly
 #     across both cohorts. pyaging's `log_crp` therefore means log(CRP_mg_dL + 1).
-#   * albumin_gL == albumin * 10, glucose_mmol == glucose * 0.0555 (both exact);
-#     creat_umol == creat * 88.4 up to storage rounding (max |diff| ~6e-3).
+#   * albumin_gL == albumin * 10, glucose_mmol == glucose * 0.0555, and
+#     creat_umol == creat * 88.4017 (= 10000 / 113.12) are all exact, with zero
+#     deviation across every non-missing row of both cohorts.
 
 suppressPackageStartupMessages({
   library(BioAge)
@@ -31,7 +32,7 @@ dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 TOTCHOL_MGDL_TO_MMOL <- 0.02586 # cholesterol, 1 / 38.67
 BUN_MGDL_TO_MMOL <- 0.357 # urea nitrogen, 1 / 2.8
 ALBUMIN_GDL_TO_GL <- 10
-CREAT_MGDL_TO_UMOL <- 88.4
+CREAT_MGDL_TO_UMOL <- 88.4 # documentation window only; exact factor is 88.4017
 GLUCOSE_MGDL_TO_MMOL <- 0.0555 # 1 / 18.0182
 
 # Rename BioAge columns to pyaging feature names, converting units where needed.
