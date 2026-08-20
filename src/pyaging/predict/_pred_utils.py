@@ -14,6 +14,7 @@ except Exception:
 import gc
 
 from ..models import pyagingModel
+from ..utils._feature_ranges import resolve_feature_ranges
 from ..utils._hf import PyAgingResourceNotFoundError, download_clock_weights
 from ..utils._utils import progress
 
@@ -235,6 +236,89 @@ def check_features_in_adata(
         logger.info(
             "All features are present in adata.var_names.",
             indent_level=indent_level + 1,
+        )
+
+
+_MAX_REPORTED_FEATURES = 5
+
+
+@progress("Check feature ranges")
+def check_feature_ranges(
+    adata: anndata.AnnData,
+    model: pyagingModel,
+    logger,
+    indent_level: int = 2,
+) -> None:
+    """
+    Warn when input values fall outside a feature's plausible range.
+
+    Ranges come from the package-wide registry (per-feature entry, else the
+    modality default for the clock's ``data_type``). Out-of-range values usually
+    mean wrong units or swapped columns, so this warns and never blocks: the
+    data is not inspected for clinical abnormality and is never modified.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The AnnData object whose ``.obsm["X_{clock_name}"]`` matrix holds the
+        clock's feature values, one column per model feature.
+
+    model : pyagingModel
+        The pyagingModel of the aging clock of interest. Clocks saved before the
+        ``feature_units`` attribute existed are supported.
+
+    logger : Logger
+        A logger object used to report the out-of-range features.
+
+    indent_level : int, optional
+        The indentation level for the logger, by default 2.
+
+    Returns
+    -------
+    None
+        Nothing is returned and nothing is modified; the findings are logged.
+
+    Notes
+    -----
+    NaN values are ignored: missing features are handled by
+    :func:`check_features_in_adata`, and should not also be reported here. The
+    reported percentage is therefore the share of non-NaN values that fall
+    outside the range.
+    """
+    records = resolve_feature_ranges(
+        model.features,
+        model.metadata.get("data_type"),
+        getattr(model, "feature_units", None),
+    )
+    matrix = adata.obsm[f"X_{model.metadata['clock_name']}"]
+    matrix = np.asarray(
+        cp.asnumpy(matrix) if CUPY_AVAILABLE and isinstance(matrix, cp.ndarray) else matrix, dtype=float
+    )
+
+    offenders = []
+    for index, record in enumerate(records):
+        column = matrix[:, index]
+        finite = ~np.isnan(column)
+        outside = finite & ((column < record["low"]) | (column > record["high"]))
+        count = int(outside.sum())
+        if count:
+            offenders.append((record, 100 * count / int(finite.sum())))
+
+    if not offenders:
+        logger.info("All feature values are within their expected ranges.", indent_level=indent_level + 1)
+        return
+
+    truncated = f" Showing the first {_MAX_REPORTED_FEATURES}." if len(offenders) > _MAX_REPORTED_FEATURES else ""
+    logger.warning(
+        f"{len(offenders)} of {len(records)} features have values outside their expected range. "
+        f"This usually means the data is in different units than the clock expects.{truncated}",
+        indent_level=indent_level + 1,
+    )
+    for record, percent in offenders[:_MAX_REPORTED_FEATURES]:
+        unit = f" {record['unit']}" if record["unit"] else ""
+        logger.warning(
+            f"{record['feature']}: {percent:.2f}% of values outside [{record['low']:g}, {record['high']:g}]{unit}",
+            indent_level=indent_level + 2,
         )
 
 

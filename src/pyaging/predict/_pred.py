@@ -6,6 +6,7 @@ import torch
 from ..logger._live import ClockRunDisplay, DisplayLogger, display_enabled, quiet_hf_bars
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
+    check_feature_ranges,
     check_features_in_adata,
     load_clock,
     predict_ages_with_model,
@@ -105,6 +106,10 @@ def predict_age(
             # Check and update adata for missing features
             display.stage(clock_name, "matching features")
             check_features_in_adata(adata, model, pipeline_logger)
+
+            # Warn if the input values look implausible for these features
+            display.stage(clock_name, "checking feature ranges")
+            check_feature_ranges(adata, model, pipeline_logger)
 
             # Perform age prediction applying preprocessing and postprocessing steps
             display.stage(clock_name, "predicting")
