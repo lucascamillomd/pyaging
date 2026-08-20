@@ -180,6 +180,10 @@ gold_standard_dict = {
     "wu": -0.0831811425679023,
     "cvdwesterman": 0.5282845773841061,
     "adbahadosingh": 0.16751476786659578,
+    "kdmage": 50.1544854808129,
+    "homeostaticdysregulation": 7.483602152825977,
+    "phenoagesaopaulo": 18.401865240846007,
+    "linage2": 41.668947619228355,
 }
 
 
