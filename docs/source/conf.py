@@ -53,7 +53,6 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "nbsphinx",
-    # "nbsphinx_link",
     "myst_parser",
     "sphinx_copybutton",
     "sphinx.ext.intersphinx",
@@ -75,7 +74,9 @@ exclude_patterns = [
     "Thumbs.db",
     ".DS_Store",
     "**.ipynb_checkpoints",
-    "tutorials/notebooks/*.rst",
+    # An authoring scaffold for contributors, not a clock: kept in
+    # clocks/notebooks/ but never published.
+    "clock_notebooks/template.ipynb",
 ]
 html_static_path = ["../_static"]
 source_suffix = [".rst", ".md"]

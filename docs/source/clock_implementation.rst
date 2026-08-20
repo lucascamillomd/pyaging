@@ -186,4 +186,3 @@ one per clock.
    clock_notebooks/zhangblup
    clock_notebooks/zhangen
    clock_notebooks/zhangmortality
-   clock_notebooks/template
