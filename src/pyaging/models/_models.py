@@ -3,6 +3,11 @@ import torch.nn as nn
 
 from ._base_models import pyagingModel
 
+# Lowest C-reactive protein the log transforms will accept, in mg/dL. Matches the
+# registry floor in data/feature_ranges.json so that anything the clamp touches has
+# already been reported by check_feature_ranges.
+CRP_FLOOR_MG_DL = 0.01
+
 
 class AltumAge(pyagingModel):
     def __init__(self):
@@ -409,6 +414,54 @@ class HRSInCHPhenoAge(pyagingModel):
 
     def postprocess(self, x):
         return x
+
+
+class KDMAge(pyagingModel):
+    """Klemera-Doubal biological age with sex-specific NHANES III parameters."""
+
+    def __init__(self):
+        super().__init__()
+        for sex in ["male", "female"]:
+            for name in ["q", "k", "s"]:
+                self.register_buffer(f"{name}_{sex}", torch.empty(0))
+            self.register_buffer(f"s_ba2_{sex}", torch.empty(0))
+
+    def preprocess(self, x):
+        """Apply BioAge's log1p transform to C-reactive protein.
+
+        BioAge fits its ``lncrp`` biomarker against ``log1p(CRP in mg/dL)``, not
+        ``ln`` as phenoage does; users supply the raw measurement so the same
+        column can feed clocks that log it differently.
+
+        Notes
+        -----
+        CRP is clamped to ``CRP_FLOOR_MG_DL`` first, matching ``PhenoAge``. The
+        floor equals the registered lower bound, so any value it moves is already
+        out of range and has already been warned about.
+        """
+        index = self.features.index("c_reactive_protein")
+        crp = torch.clamp(x[:, index : index + 1], min=CRP_FLOOR_MG_DL)
+        return torch.cat([x[:, :index], torch.log1p(crp), x[:, index + 1 :]], dim=1)
+
+    def postprocess(self, x):
+        """Solve the Klemera-Doubal closed form for biological age.
+
+        Notes
+        -----
+        The denominator sums over every biomarker, matching ``kdm_calc``'s
+        deliberate choice not to rescale the estimate for missing markers.
+        """
+        biomarkers, age, female = x[:, :-2], x[:, -2], x[:, -1:]
+
+        def estimate(q, k, s, s_ba2):
+            q, k, s, s_ba2 = (t.to(device=x.device, dtype=x.dtype) for t in (q, k, s, s_ba2))
+            numerator = ((biomarkers - q) * k / s**2).sum(dim=1)
+            denominator = ((k / s) ** 2).sum()
+            return (numerator + age / s_ba2) / (denominator + 1 / s_ba2)
+
+        female_age = estimate(self.q_female, self.k_female, self.s_female, self.s_ba2_female)
+        male_age = estimate(self.q_male, self.k_male, self.s_male, self.s_ba2_male)
+        return torch.where(female.squeeze(-1) == 1, female_age, male_age).unsqueeze(-1)
 
 
 class Knight(pyagingModel):
@@ -1444,12 +1497,6 @@ class Petkovich(pyagingModel):
         age = ((x - c) / a) ** (1 / b)
         age = age / 30.5  # days to months
         return age
-
-
-# Lowest C-reactive protein the log transform will accept, in mg/dL. Matches the
-# registry floor in data/feature_ranges.json so that anything the clamp touches has
-# already been reported by check_feature_ranges.
-CRP_FLOOR_MG_DL = 0.01
 
 
 class PhenoAge(pyagingModel):
