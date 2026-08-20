@@ -162,6 +162,11 @@ def check_features_in_adata(
     may introduce biases if not accounted for in downstream analyses. If reference values are
     provided, then they are used instead of zeros.
 
+    Alongside the missing-feature bookkeeping the function records a boolean mask of the columns
+    that came from the input, under ``.uns["{clock_name}_supplied_features_mask"]``. Substituted
+    values are the pipeline's own, so :func:`check_feature_ranges` uses the mask to judge only
+    what the user actually supplied.
+
     Examples
     --------
     >>> updated_adata = check_features_in_adata(adata, bitage, ["gene1", "gene2"], logger)
@@ -202,6 +207,9 @@ def check_features_in_adata(
     # Add missing features and percent missing values to the clock
     adata.uns[f"{model.metadata['clock_name']}_percent_na"] = percent_missing
     adata.uns[f"{model.metadata['clock_name']}_missing_features"] = missing_features
+    # Which columns hold the user's own data rather than a substituted value.
+    # check_feature_ranges reads this so that it only judges what the user supplied.
+    adata.uns[f"{model.metadata['clock_name']}_supplied_features_mask"] = existing_features_mask
 
     # Raises error if there are no features in the data
     if percent_missing == 100:
@@ -251,6 +259,21 @@ def _describe_range(low: float, high: float) -> str:
     return f"outside [{low:g}, {high:g}]"
 
 
+def _supplied_columns(adata: anndata.AnnData, model: pyagingModel, n_features: int) -> np.ndarray:
+    """Return the indices of the feature columns that came from the input data.
+
+    :func:`check_features_in_adata` substitutes a reference value, or 0, for every
+    feature the input did not carry, so those columns say nothing about the user's
+    units. It leaves behind a mask of the columns it did not substitute, which this
+    reads. A matrix assembled some other way has no mask, and then every column
+    counts as supplied.
+    """
+    mask = adata.uns.get(f"{model.metadata['clock_name']}_supplied_features_mask")
+    if mask is None:
+        return np.arange(n_features)
+    return np.flatnonzero(np.asarray(mask, dtype=bool))
+
+
 @progress("Check feature ranges")
 def check_feature_ranges(
     adata: anndata.AnnData,
@@ -265,6 +288,12 @@ def check_feature_ranges(
     modality default for the clock's ``data_type``). Out-of-range values usually
     mean wrong units or swapped columns, so this warns and never blocks: the
     data is not inspected for clinical abnormality and is never modified.
+
+    Only the features the input actually carried are judged. Everything else in
+    the matrix was put there by :func:`check_features_in_adata`, and several
+    clocks use an out-of-range sentinel such as ``-1`` as their reference value,
+    so including those columns would report the pipeline's own substitutions as
+    if they were the user's data.
 
     Parameters
     ----------
@@ -292,7 +321,8 @@ def check_feature_ranges(
     NaN values are ignored: missing features are handled by
     :func:`check_features_in_adata`, and should not also be reported here. The
     reported percentage is therefore the share of non-NaN values that fall
-    outside the range.
+    outside the range, and the feature counts are out of the supplied features
+    rather than out of all of the clock's features.
     """
     try:
         records = resolve_feature_ranges(
@@ -311,8 +341,10 @@ def check_feature_ranges(
         matrix = cp.asnumpy(matrix)
     matrix = np.asarray(matrix, dtype=float)
 
+    columns = _supplied_columns(adata, model, len(records))
     offenders = []
-    for index, record in enumerate(records):
+    for index in columns:
+        record = records[index]
         observed = matrix[:, index]
         observed = observed[~np.isnan(observed)]
         count = int(((observed < record["low"]) | (observed > record["high"])).sum())
@@ -325,7 +357,7 @@ def check_feature_ranges(
 
     truncated = f" Showing the first {_MAX_REPORTED_FEATURES}." if len(offenders) > _MAX_REPORTED_FEATURES else ""
     logger.warning(
-        f"{len(offenders)} of {len(records)} features have values outside their expected range. "
+        f"{len(offenders)} of {len(columns)} supplied features have values outside their expected range. "
         f"This usually means the data is in different units than the clock expects.{truncated}",
         indent_level=indent_level + 1,
     )

@@ -1,8 +1,9 @@
 import anndata
 import numpy as np
+import pandas as pd
 import pytest
 
-from pyaging.predict._pred_utils import check_feature_ranges
+from pyaging.predict._pred_utils import check_feature_ranges, check_features_in_adata
 
 
 class _RecordingLogger:
@@ -32,10 +33,24 @@ def _adata_for(clock_name, values):
 
 
 class _FakeModel:
-    def __init__(self, features, data_type, feature_units=None):
+    def __init__(self, features, data_type, feature_units=None, reference_values=None):
         self.features = features
         self.metadata = {"clock_name": "fakeclock", "data_type": data_type}
         self.feature_units = feature_units
+        self.reference_values = reference_values
+
+
+def _run_pipeline(model, supplied):
+    """Assemble the clock matrix the way predict_age does, then check its ranges.
+
+    ``supplied`` maps feature name to a single sample's value; every other model
+    feature is left out, so ``check_features_in_adata`` substitutes for it.
+    """
+    adata = anndata.AnnData(pd.DataFrame([supplied], index=["sample"], dtype=float))
+    check_features_in_adata(adata, model, _RecordingLogger())
+    logger = _RecordingLogger()
+    check_feature_ranges(adata, model, logger)
+    return logger.warnings
 
 
 def test_in_range_methylation_produces_no_warning():
@@ -147,6 +162,51 @@ def test_many_offending_features_are_summarized_not_listed_in_full():
     check_feature_ranges(adata, model, logger)
     assert len(logger.warnings) <= 6
     assert "50" in " ".join(logger.warnings)
+
+
+def test_sentinel_reference_values_for_missing_features_are_not_reported():
+    """Eight shipped clocks fill a missing CpG with -1, which is not a beta value.
+
+    Those columns are the pipeline's own substitution, so reporting them blames the
+    user for values they never supplied and crowds a real offender out of the report.
+    """
+    features = [f"cg{index}" for index in range(10)]
+    model = _FakeModel(features, "DNA methylation", reference_values=[-1.0] * 10)
+
+    warnings = _run_pipeline(model, {"cg0": 0.4, "cg1": 0.6})
+
+    assert warnings == []
+
+
+def test_an_out_of_range_value_in_a_supplied_column_is_still_reported():
+    """The counterpart: scoping to supplied columns must not silence a real unit error."""
+    features = [f"cg{index}" for index in range(10)]
+    model = _FakeModel(features, "DNA methylation", reference_values=[-1.0] * 10)
+
+    warnings = _run_pipeline(model, {"cg0": 0.4, "cg1": 62.5})
+
+    joined = " ".join(warnings)
+    assert "cg1" in joined
+    assert "observed 62.5 to 62.5" in joined
+    assert "cg2" not in joined  # a substituted -1 sentinel
+
+
+def test_the_summary_counts_supplied_features_not_every_clock_feature():
+    features = [f"cg{index}" for index in range(10)]
+    model = _FakeModel(features, "DNA methylation", reference_values=[-1.0] * 10)
+
+    warnings = _run_pipeline(model, {"cg0": 5.0, "cg1": 0.5})
+
+    assert "1 of 2 supplied features" in warnings[0]
+
+
+def test_a_zero_filled_missing_feature_is_not_reported_against_a_positive_lower_bound():
+    """With no reference values the fill is 0, which is below most clinical bounds."""
+    model = _FakeModel(["albumin", "glucose"], "clinical biomarkers")
+
+    warnings = _run_pipeline(model, {"albumin": 46.0})
+
+    assert warnings == []
 
 
 @pytest.mark.parametrize("value", [-0.1, 1.1])
