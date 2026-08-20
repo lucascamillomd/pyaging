@@ -1446,6 +1446,12 @@ class Petkovich(pyagingModel):
         return age
 
 
+# Lowest C-reactive protein the log transform will accept, in mg/dL. Matches the
+# registry floor in data/feature_ranges.json so that anything the clamp touches has
+# already been reported by check_feature_ranges.
+CRP_FLOOR_MG_DL = 0.01
+
+
 class PhenoAge(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1456,9 +1462,19 @@ class PhenoAge(pyagingModel):
         The published coefficient is fit against ln(CRP in mg/dL); users supply
         the raw measurement so the same column can feed clocks that log it
         differently.
+
+        Notes
+        -----
+        CRP is clamped to ``CRP_FLOOR_MG_DL`` before the log, so a zero — from a
+        below-detection reading, a constant imputer, or a column the input never
+        had — yields a finite age instead of ``-inf`` propagating into every
+        downstream summary. Clamping is safe precisely because the floor equals
+        the registered lower bound: any value it moves is already out of range
+        and has already been warned about.
         """
         index = self.features.index("c_reactive_protein")
-        return torch.cat([x[:, :index], torch.log(x[:, index : index + 1]), x[:, index + 1 :]], dim=1)
+        crp = torch.clamp(x[:, index : index + 1], min=CRP_FLOOR_MG_DL)
+        return torch.cat([x[:, :index], torch.log(crp), x[:, index + 1 :]], dim=1)
 
     def postprocess(self, x):
         """

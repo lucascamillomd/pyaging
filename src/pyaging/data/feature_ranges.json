@@ -12,7 +12,7 @@
     "albumin": {"unit": "g/L", "low": 10.0, "high": 70.0},
     "alkaline_phosphatase": {"unit": "U/L", "low": 5.0, "high": 5000.0},
     "blood_urea_nitrogen": {"unit": "mmol/L", "low": 0.5, "high": 60.0},
-    "c_reactive_protein": {"unit": "mg/dL", "low": 0.0, "high": 50.0},
+    "c_reactive_protein": {"unit": "mg/dL", "low": 0.01, "high": 50.0},
     "creatinine": {"unit": "umol/L", "low": 10.0, "high": 3000.0},
     "forced_expiratory_volume": {"unit": "L", "low": 0.1, "high": 8.0},
     "glucose": {"unit": "mmol/L", "low": 1.0, "high": 60.0},
