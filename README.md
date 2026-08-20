@@ -58,7 +58,7 @@ If you have recently developed an aging clock and would like it to be integrated
 For coding-related queries, feedback, and discussions, please visit our [GitHub Issues](https://github.com/lucascamillomd/pyaging/issues) page.
 
 ## 📝 Changelog
-Release notes for each version are available on the [GitHub Releases](https://github.com/lucascamillomd/pyaging/releases) page.
+Notable changes, including breaking ones, are recorded in [`CHANGELOG.md`](https://github.com/lucascamillomd/pyaging/blob/main/CHANGELOG.md). Per-version release artifacts and the commit log are on the [GitHub Releases](https://github.com/lucascamillomd/pyaging/releases) page.
 
 ## 📖 Citation
 

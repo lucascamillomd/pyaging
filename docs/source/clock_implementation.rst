@@ -82,15 +82,18 @@ one per clock.
    clock_notebooks/hannum
    clock_notebooks/hep
    clock_notebooks/hepatoxu
+   clock_notebooks/homeostaticdysregulation
    clock_notebooks/horvath2013
    clock_notebooks/hypoclock
    clock_notebooks/hrsinchphenoage
    clock_notebooks/intrinclock
+   clock_notebooks/kdmage
    clock_notebooks/knight
    clock_notebooks/leecontrol
    clock_notebooks/leerefinedrobust
    clock_notebooks/leerobust
    clock_notebooks/lin
+   clock_notebooks/linage2
    clock_notebooks/mammalian1
    clock_notebooks/mammalian2
    clock_notebooks/mammalian3
@@ -126,6 +129,7 @@ one per clock.
    clock_notebooks/pedbe
    clock_notebooks/petkovich
    clock_notebooks/phenoage
+   clock_notebooks/phenoagesaopaulo
    clock_notebooks/pipekelasticnet
    clock_notebooks/pipekfilteredh
    clock_notebooks/pipekretrainedh

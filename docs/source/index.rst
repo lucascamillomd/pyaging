@@ -15,11 +15,11 @@ pyaging
 
    <div class="pyaging-hero">
      <p class="tagline">pyaging is a Python package for biological age prediction. It implements
-     173 published aging clocks spanning DNA methylation, histone marks, chromatin
+     177 published aging clocks spanning DNA methylation, histone marks, chromatin
      accessibility, transcriptomics, and blood chemistry, all through the same
      PyTorch-based interface.</p>
      <div class="pyaging-install"><code>pip install pyaging</code></div>
-     <p class="pyaging-specline">173 clocks · 5 data types · PyTorch · MIT ·
+     <p class="pyaging-specline">177 clocks · 5 data types · PyTorch · MIT ·
      <a href="https://doi.org/10.1093/bioinformatics/btae200">Bioinformatics (2024)</a></p>
    </div>
 
