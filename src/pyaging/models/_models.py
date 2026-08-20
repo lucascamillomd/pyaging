@@ -9,6 +9,39 @@ from ._base_models import pyagingModel
 CRP_FLOOR_MG_DL = 0.01
 
 
+def log1p_crp(features, x):
+    """Apply BioAge's ``lncrp`` transform to the C-reactive protein column alone.
+
+    BioAge fits ``lncrp`` against ``log1p(CRP in mg/dL)``, not the natural log
+    ``PhenoAge`` uses, so every clock ported from that package shares this
+    transform; users supply the raw measurement so one column can feed clocks
+    that log it differently.
+
+    Parameters
+    ----------
+    features : list of str
+        The clock's feature names, used to locate the CRP column.
+
+    x : torch.Tensor
+        A sample-by-feature matrix of raw inputs.
+
+    Returns
+    -------
+    torch.Tensor
+        ``x`` with the CRP column replaced by its ``log1p``.
+
+    Notes
+    -----
+    CRP is clamped to ``CRP_FLOOR_MG_DL`` first, so a below-detection reading
+    coded as ``0``, a constant imputer, or an absent column cannot send ``-inf``
+    downstream. The floor equals the registered lower bound, so any value it
+    moves is already out of range and has already been warned about.
+    """
+    index = features.index("c_reactive_protein")
+    crp = torch.clamp(x[:, index : index + 1], min=CRP_FLOOR_MG_DL)
+    return torch.cat([x[:, :index], torch.log1p(crp), x[:, index + 1 :]], dim=1)
+
+
 class AltumAge(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -416,6 +449,62 @@ class HRSInCHPhenoAge(pyagingModel):
         return x
 
 
+class HomeostaticDysregulation(pyagingModel):
+    """Mahalanobis distance from a young, healthy NHANES III reference cohort."""
+
+    def __init__(self):
+        super().__init__()
+        for sex in ["male", "female"]:
+            for name in ["reference_mean", "reference_sd", "center", "precision", "log_hd_sd"]:
+                self.register_buffer(f"{name}_{sex}", torch.empty(0))
+
+    def preprocess(self, x):
+        """Apply BioAge's log1p transform to C-reactive protein."""
+        return log1p_crp(self.features, x)
+
+    def postprocess(self, x):
+        """Score the log Mahalanobis distance from the sex's reference cohort.
+
+        Notes
+        -----
+        ``center`` is not zero. ``hd_calc`` takes each column's mean and standard
+        deviation with ``na.rm = TRUE`` over the full reference column and drops
+        incomplete rows only afterwards, so the surviving rows' mean is not the
+        centring constant; the residual offset reaches 0.19 standard deviations
+        and is what ``center`` holds.
+
+        The distance is divided by the projection cohort's standard deviation of
+        ``log(distance)``, which is how ``hd_nhanes`` reports it. That constant is
+        stored per sex so a single sample can be scored without a cohort.
+        """
+        biomarkers, female = x[:, :-1], x[:, -1]
+
+        def score(reference_mean, reference_sd, center, precision, log_hd_sd):
+            reference_mean, reference_sd, center, precision, log_hd_sd = (
+                t.to(device=x.device, dtype=x.dtype)
+                for t in (reference_mean, reference_sd, center, precision, log_hd_sd)
+            )
+            deviation = (biomarkers - reference_mean) / reference_sd - center
+            squared = (deviation @ precision * deviation).sum(dim=1)
+            return torch.log(torch.sqrt(squared)) / log_hd_sd
+
+        female_score = score(
+            self.reference_mean_female,
+            self.reference_sd_female,
+            self.center_female,
+            self.precision_female,
+            self.log_hd_sd_female,
+        )
+        male_score = score(
+            self.reference_mean_male,
+            self.reference_sd_male,
+            self.center_male,
+            self.precision_male,
+            self.log_hd_sd_male,
+        )
+        return torch.where(female == 1, female_score, male_score).unsqueeze(-1)
+
+
 class KDMAge(pyagingModel):
     """Klemera-Doubal biological age with sex-specific NHANES III parameters."""
 
@@ -427,21 +516,8 @@ class KDMAge(pyagingModel):
             self.register_buffer(f"s_ba2_{sex}", torch.empty(0))
 
     def preprocess(self, x):
-        """Apply BioAge's log1p transform to C-reactive protein.
-
-        BioAge fits its ``lncrp`` biomarker against ``log1p(CRP in mg/dL)``, not
-        ``ln`` as phenoage does; users supply the raw measurement so the same
-        column can feed clocks that log it differently.
-
-        Notes
-        -----
-        CRP is clamped to ``CRP_FLOOR_MG_DL`` first, matching ``PhenoAge``. The
-        floor equals the registered lower bound, so any value it moves is already
-        out of range and has already been warned about.
-        """
-        index = self.features.index("c_reactive_protein")
-        crp = torch.clamp(x[:, index : index + 1], min=CRP_FLOOR_MG_DL)
-        return torch.cat([x[:, :index], torch.log1p(crp), x[:, index + 1 :]], dim=1)
+        """Apply BioAge's log1p transform to C-reactive protein."""
+        return log1p_crp(self.features, x)
 
     def postprocess(self, x):
         """Solve the Klemera-Doubal closed form for biological age.

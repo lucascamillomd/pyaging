@@ -243,3 +243,181 @@ def test_kdmage_a_missing_column_uses_the_reference_through_the_pipeline(referen
         predicted = model(matrix).squeeze(-1).numpy()[0]
 
     assert math.isclose(predicted, _drop_one_estimate(params, row, model.features, "albumin"), abs_tol=2.0)
+
+
+# --- homeostaticdysregulation ----------------------------------------------
+
+
+def _standardized(model, row, sex):
+    """The row's standardized, centered deviation vector for one sex's reference."""
+    biomarkers = model.features[:-1]
+    values = np.array([math.log1p(row[name]) if name == "c_reactive_protein" else row[name] for name in biomarkers])
+    mean = getattr(model, f"reference_mean_{sex}").numpy()
+    sd = getattr(model, f"reference_sd_{sex}").numpy()
+    return (values - mean) / sd - getattr(model, f"center_{sex}").numpy()
+
+
+def test_homeostaticdysregulation_matches_bioage_reference(reference):
+    model = _weights("homeostaticdysregulation")
+    predicted = _predict(model, reference["rows"], model.features)
+    np.testing.assert_allclose(predicted, reference["expected"]["homeostaticdysregulation"], rtol=0, atol=1e-6)
+
+
+def test_homeostaticdysregulation_is_lowest_at_the_reference_center(reference):
+    model = _weights("homeostaticdysregulation")
+    biomarkers = model.features[:-1]
+    center_row = {name: value.item() for name, value in zip(biomarkers, model.reference_mean_female, strict=True)}
+    center_row["c_reactive_protein"] = math.expm1(center_row["c_reactive_protein"])
+    center_row["female"] = 1.0
+    off_center_row = dict(center_row)
+    off_center_row[biomarkers[0]] = center_row[biomarkers[0]] * 1.5
+
+    at_center = _predict(model, [center_row], model.features)
+    off_center = _predict(model, [off_center_row], model.features)
+    assert at_center < off_center
+
+
+def test_homeostaticdysregulation_output_is_not_in_years():
+    model = _weights("homeostaticdysregulation")
+    assert "not" in model.metadata["notes"].lower()
+    assert "age" not in model.features
+
+
+def test_homeostaticdysregulation_centers_on_a_nonzero_standardized_center():
+    """``hd_calc`` takes column means with ``na.rm = TRUE`` over the full column and
+    only then drops incomplete rows, so the surviving rows' mean is not the centering
+    constant. The residual offset is real and reaches 0.19 standard deviations; a port
+    that treats it as zero is silently wrong by ~1-3% on every subject.
+    """
+    model = _weights("homeostaticdysregulation")
+    assert abs(model.center_male).max().item() > 0.1
+    assert abs(model.center_female).max().item() > 0.05
+
+
+def test_homeostaticdysregulation_center_is_load_bearing_for_the_prediction(reference):
+    """Pin the size of the error a dropped ``center`` would introduce, so the term
+    cannot be removed as a no-op refinement.
+    """
+    model = _weights("homeostaticdysregulation")
+    predicted = _predict(model, reference["rows"], model.features)
+
+    uncentered = []
+    for row in reference["rows"]:
+        sex = "female" if row["female"] == 1 else "male"
+        deviation = _standardized(model, row, sex) + getattr(model, f"center_{sex}").numpy()
+        precision = getattr(model, f"precision_{sex}").numpy()
+        squared = deviation @ precision @ deviation
+        uncentered.append(math.log(math.sqrt(squared)) / getattr(model, f"log_hd_sd_{sex}").item())
+
+    assert np.abs(np.array(uncentered) - predicted).max() > 0.05
+
+
+def test_homeostaticdysregulation_applies_log1p_to_crp_alone():
+    """BioAge's lncrp is log1p(CRP in mg/dL), not ln, and only that column moves."""
+    model = _weights("homeostaticdysregulation")
+    index = model.features.index("c_reactive_protein")
+
+    row = torch.arange(1, len(model.features) + 1, dtype=torch.float64).unsqueeze(0)
+    expected = row.clone()
+    expected[0, index] = np.log1p(expected[0, index].item())
+    assert torch.equal(model.preprocess(row), expected)
+
+
+def test_homeostaticdysregulation_survives_a_zero_crp(reference):
+    model = _weights("homeostaticdysregulation")
+    row = dict(reference["rows"][0], c_reactive_protein=0.0)
+    assert np.isfinite(_predict(model, [row], model.features)).all()
+
+
+def test_homeostaticdysregulation_buffers_are_keyed_by_biomarker_name_not_position():
+    """The JSON happens to list its biomarkers in feature order, so the reindex is a
+    no-op and a positional build would be indistinguishable. Permute the JSON and the
+    shipped buffers must still be reproduced — including the covariance, which has to
+    be permuted on both axes.
+    """
+    model = _weights("homeostaticdysregulation")
+    params = json.loads((PARAMS_DIR / "homeostaticdysregulation.json").read_text())
+    biomarkers = model.features[:-1]
+
+    permuted = copy.deepcopy(params)
+    for sex in ("male", "female"):
+        fit = permuted[sex]
+        order = list(reversed(range(len(fit["biomarkers"]))))
+        fit["biomarkers"] = [fit["biomarkers"][index] for index in order]
+        for key in ("reference_mean", "reference_sd", "standardized_center"):
+            fit[key] = [fit[key][index] for index in order]
+        fit["standardized_covariance"] = [
+            [fit["standardized_covariance"][row][column] for column in order] for row in order
+        ]
+
+    assert permuted["male"]["biomarkers"] != params["male"]["biomarkers"]
+
+    for sex in ("male", "female"):
+        fit = permuted[sex]
+        order = [fit["biomarkers"].index(name) for name in biomarkers]
+        for key, buffer in (
+            ("reference_mean", f"reference_mean_{sex}"),
+            ("reference_sd", f"reference_sd_{sex}"),
+            ("standardized_center", f"center_{sex}"),
+        ):
+            assert [fit[key][index] for index in order] == getattr(model, buffer).tolist(), buffer
+        covariance = np.array(fit["standardized_covariance"])[np.ix_(order, order)]
+        np.testing.assert_allclose(np.linalg.inv(covariance), getattr(model, f"precision_{sex}").numpy(), rtol=1e-9)
+
+
+def test_homeostaticdysregulation_reference_values_sit_at_the_reference_centre():
+    """An absent biomarker should sit where its standardized, centred deviation is zero,
+    so it adds nothing of its own to the distance. The centre is sex-specific and
+    ``reference_values`` is one vector, so the compromise minimises the worst-case
+    residual: the value whose standardized residual is equal and opposite for the two
+    sexes. Creatinine is irreducibly the worst, its two centres being 2.4 standard
+    deviations apart.
+    """
+    model = _weights("homeostaticdysregulation")
+    assert model.reference_values is not None
+    assert len(model.reference_values) == len(model.features)
+
+    row = dict(zip(model.features, model.reference_values, strict=True))
+    male, female = (_standardized(model, row, sex) for sex in ("male", "female"))
+    np.testing.assert_allclose(male, -female, atol=1e-9)
+    assert np.abs(male).max() < 1.3
+    assert model.features[np.abs(male).argmax()] == "creatinine"
+    assert np.abs(np.delete(male, np.abs(male).argmax())).max() < 0.55
+
+    assert model.reference_values[-1] == 0.0  # no sex column means the male parameters
+
+
+def test_homeostaticdysregulation_reference_fill_beats_zero_fill(reference):
+    """Pin both measured bounds over every biomarker and reference subject. A zero assay
+    reads as a measurement 5 to 25 standard deviations from the reference centre, and
+    because the score is a distance, that one column dominates it.
+    """
+    model = _weights("homeostaticdysregulation")
+
+    worst_reference = worst_zero = 0.0
+    for dropped in model.features[:-1]:
+        position = model.features.index(dropped)
+        for row in reference["rows"]:
+            target = _predict(model, [row], model.features)[0]
+            filled = _predict(model, [dict(row, **{dropped: model.reference_values[position]})], model.features)
+            zeroed = _predict(model, [dict(row, **{dropped: 0.0})], model.features)
+            worst_reference = max(worst_reference, abs(filled[0] - target))
+            worst_zero = max(worst_zero, abs(zeroed[0] - target))
+
+    assert worst_reference < 3.0
+    assert worst_zero > 4.5
+
+
+def test_homeostaticdysregulation_zero_filled_crp_is_the_one_benign_omission(reference):
+    """CRP is the exception to the test above, and it is worth pinning so the general
+    claim is not overstated. ``log1p`` compresses a clamped zero to 1.8 standard
+    deviations below a reference centre that already sits near the floor, because the
+    reference cohort was screened to ``crp < 2``.
+    """
+    model = _weights("homeostaticdysregulation")
+    position = model.features.index("c_reactive_protein")
+    centre = (model.reference_mean_male + model.center_male * model.reference_sd_male)[position]
+    floor = (math.log1p(0.01) - centre) / model.reference_sd_male[position]
+
+    assert abs(floor) < 2.0
+    assert 0.15 < model.reference_values[position] < 0.35  # mg/dL, the young-healthy centre

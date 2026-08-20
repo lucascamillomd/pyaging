@@ -2572,6 +2572,40 @@
     "citations_date": "2026-07-05",
     "version": "v0.3.0"
   },
+  "homeostaticdysregulation": {
+    "clock_name": "homeostaticdysregulation",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "⌛",
+    "citation": "Kwon, Dayoon, and Daniel W. Belsky. \"A toolkit for quantification of biological age from blood chemistry and organ function test data: BioAge.\" GeroScience 43.6 (2021): 2795-2808.",
+    "doi": "https://doi.org/10.1007/s11357-021-00480-5",
+    "notes": "Mahalanobis distance from a young, healthy NHANES III reference cohort, fit separately by sex. The output is a log dysregulation score and is NOT expressed in years; larger values mean greater dysregulation. BioAge divides the score by the projection cohort's standard deviation of log(distance), so that NHANES IV constant is baked in per sex to keep single-sample predictions reproducible. C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. Sex is coded female = 1 and male = 0; a dataset with no female column scores every sample with the male reference.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "not applicable"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "Mahalanobis distance composite",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "GeroScience",
+    "last_author": "Daniel W. Belsky",
+    "n_features": 10,
+    "citations": 332,
+    "citations_date": "2026-08-20",
+    "version": "v0.5.0"
+  },
   "horvath2013": {
     "clock_name": "horvath2013",
     "data_type": "DNA methylation",

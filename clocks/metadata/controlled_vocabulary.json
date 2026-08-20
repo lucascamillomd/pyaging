@@ -526,6 +526,7 @@
         "LASSO regression",
         "linear regression",
         "logistic regression",
+        "Mahalanobis distance composite",
         "mean aggregation",
         "mean methylation aggregation",
         "orthologue-transferred ridge logistic regression",
