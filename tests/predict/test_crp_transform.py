@@ -16,7 +16,7 @@ import pytest
 import torch
 
 import pyaging as pya
-from pyaging.models._models import CRP_FLOOR_MG_DL, log1p_crp
+from pyaging.models._models import PHENOAGE_CRP_FLOOR_MG_DL, log1p_crp
 from pyaging.predict._pred_utils import check_feature_ranges, check_features_in_adata
 
 WEIGHTS = Path(__file__).resolve().parents[2] / "clocks" / "weights" / "phenoage.pt"
@@ -198,10 +198,37 @@ def test_crp_is_registered_in_mg_dl():
     assert record["low"] > 0.0
 
 
-def test_the_clamp_floor_matches_the_registered_lower_bound():
-    """The clamp is only safe while it cannot move a value the range check accepts."""
+def test_phenoages_clamp_floor_matches_the_registered_lower_bound():
+    """phenoage is the one clock that still floors CRP, because ln(0) is -inf.
+
+    Its clamp is only safe while it cannot move a value the range check accepts,
+    which is exactly what tying the floor to the registered lower bound buys.
+    """
     (record,) = pya.utils.resolve_feature_ranges(["c_reactive_protein"], "clinical biomarkers")
-    assert record["low"] == CRP_FLOOR_MG_DL
+    assert record["low"] == PHENOAGE_CRP_FLOOR_MG_DL
+
+
+def test_log1p_crp_does_not_floor_a_below_detection_zero():
+    """log1p(0) == 0 is finite and is a point BioAge's fitted preimage includes.
+
+    Flooring it to 0.01 made the three BioAge clocks disagree with the reference
+    for a CRP coded as 0, which is how below-detection readings are usually coded.
+    """
+    features = ["c_reactive_protein", "age"]
+    row = torch.tensor([[0.0, 50.0]], dtype=torch.float64)
+
+    assert log1p_crp(features, row)[0, 0].item() == 0.0
+
+
+def test_log1p_crp_marks_a_crp_outside_the_transforms_domain():
+    """A CRP at or below -1 mg/dL is not a measurement, so do not invent a value for it."""
+    features = ["c_reactive_protein", "age"]
+    row = torch.tensor([[-2.0, 50.0], [0.5, 50.0]], dtype=torch.float64)
+
+    transformed = log1p_crp(features, row)
+
+    assert math.isnan(transformed[0, 0].item())
+    assert math.isclose(transformed[1, 0].item(), math.log1p(0.5), abs_tol=1e-12)
 
 
 def test_a_logged_crp_value_now_falls_outside_the_registered_range():

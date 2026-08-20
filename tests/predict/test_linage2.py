@@ -122,14 +122,14 @@ def test_mortality_rate_doubling_time_is_the_pre_rounded_constant():
         assert stored != unrounded
 
 
-def test_c_reactive_protein_is_not_floored_the_way_the_bioage_clocks_floor_it():
-    """LinAge2 takes a plain log with no floor, so 0 and the shared 0.01 floor differ."""
-    from pyaging.models._models import CRP_FLOOR_MG_DL
+def test_c_reactive_protein_is_not_floored_the_way_phenoage_floors_it():
+    """LinAge2 takes a plain log with no floor, so 0 and phenoage's 0.01 floor differ."""
+    from pyaging.models._models import PHENOAGE_CRP_FLOOR_MG_DL
 
     model = _model()
     row = dict(_validation_rows(model)[0])
     at_zero = _predict(model, [dict(row, c_reactive_protein=0.0)])[0]
-    at_floor = _predict(model, [dict(row, c_reactive_protein=CRP_FLOOR_MG_DL)])[0]
+    at_floor = _predict(model, [dict(row, c_reactive_protein=PHENOAGE_CRP_FLOOR_MG_DL)])[0]
     assert math.isfinite(at_zero)
     assert not math.isclose(at_zero, at_floor)
 

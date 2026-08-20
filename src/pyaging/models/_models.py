@@ -8,10 +8,11 @@ import torch.nn as nn
 from ..predict._inverse_transforms import mortality_to_phenoage_saopaulo
 from ._base_models import pyagingModel
 
-# Lowest C-reactive protein the log transforms will accept, in mg/dL. Matches the
-# registry floor in data/feature_ranges.json so that anything the clamp touches has
-# already been reported by check_feature_ranges.
-CRP_FLOOR_MG_DL = 0.01
+# Lowest C-reactive protein ``PhenoAge`` will take the natural log of, in mg/dL. It is
+# the only transform here that needs a floor, and the value matches the registry floor in
+# data/feature_ranges.json so that anything the clamp touches has already been reported by
+# check_feature_ranges.
+PHENOAGE_CRP_FLOOR_MG_DL = 0.01
 
 
 def crp_index(features):
@@ -52,13 +53,17 @@ def log1p_crp(features, x):
 
     Notes
     -----
-    CRP is clamped to ``CRP_FLOOR_MG_DL`` first, so a below-detection reading
-    coded as ``0``, a constant imputer, or an absent column cannot send ``-inf``
-    downstream. The floor equals the registered lower bound, so any value it
-    moves is already out of range and has already been warned about.
+    CRP is not floored. ``log1p`` is finite everywhere it is defined, and
+    ``log1p(0) == 0`` is a point BioAge's own fitted preimage includes, so a
+    below-detection reading coded as ``0``, a constant imputer, or an absent
+    column all pass through as the reference scores them. Only a value at or
+    below ``-1`` mg/dL is outside the domain, and that is not a measurement;
+    those samples become ``NaN`` so they surface in the output instead of
+    carrying a value the clock made up for them.
     """
     index = crp_index(features)
-    crp = torch.clamp(x[:, index : index + 1], min=CRP_FLOOR_MG_DL)
+    crp = x[:, index : index + 1]
+    crp = torch.where(crp > -1, crp, torch.nan)
     return torch.cat([x[:, :index], torch.log1p(crp), x[:, index + 1 :]], dim=1)
 
 
@@ -1748,15 +1753,16 @@ class PhenoAge(pyagingModel):
 
         Notes
         -----
-        CRP is clamped to ``CRP_FLOOR_MG_DL`` before the log, so a zero — from a
-        below-detection reading, a constant imputer, or a column the input never
-        had — yields a finite age instead of ``-inf`` propagating into every
-        downstream summary. Clamping is safe precisely because the floor equals
-        the registered lower bound: any value it moves is already out of range
-        and has already been warned about.
+        CRP is clamped to ``PHENOAGE_CRP_FLOOR_MG_DL`` before the log, so a zero
+        — from a below-detection reading, a constant imputer, or a column the
+        input never had — yields a finite age instead of ``-inf`` propagating
+        into every downstream summary. Unlike ``log1p_crp``, the natural log
+        genuinely needs the floor: ``log(0)`` is ``-inf``. Clamping is safe
+        precisely because the floor equals the registered lower bound, so any
+        value it moves is already out of range and has already been warned about.
         """
         index = crp_index(self.features)
-        crp = torch.clamp(x[:, index : index + 1], min=CRP_FLOOR_MG_DL)
+        crp = torch.clamp(x[:, index : index + 1], min=PHENOAGE_CRP_FLOOR_MG_DL)
         return torch.cat([x[:, :index], torch.log(crp), x[:, index + 1 :]], dim=1)
 
     def postprocess(self, x):

@@ -82,10 +82,26 @@ def test_bioage_clocks_apply_log1p_to_crp_alone(clock):
 
 @pytest.mark.parametrize("clock", CLOCKS)
 def test_bioage_clocks_survive_a_zero_crp(reference, clock):
-    """A below-detection or constant-imputed 0 must not reach log1p unclamped."""
+    """A below-detection or constant-imputed 0 is a valid input: log1p(0) is 0."""
     model = _weights(clock)
     row = dict(reference["rows"][0], c_reactive_protein=0.0)
     assert np.isfinite(_predict(model, [row], model.features)).all()
+
+
+@pytest.mark.parametrize("clock", CLOCKS)
+def test_a_below_detection_zero_crp_is_scored_as_the_reference_scores_it(clock):
+    """BioAge's fitted preimage includes log1p(0) = 0, so 0 must not be moved to a floor.
+
+    Flooring it at 0.01 mg/dL, as an earlier version of the shared transform did,
+    made these three clocks disagree with BioAge for the commonest way a
+    below-detection reading is coded.
+    """
+    model = _weights(clock)
+    index = model.features.index("c_reactive_protein")
+    row = torch.ones(1, len(model.features), dtype=torch.float64)
+    row[0, index] = 0.0
+
+    assert model.preprocess(row)[0, index].item() == 0.0
 
 
 # --- kdmage ----------------------------------------------------------------
