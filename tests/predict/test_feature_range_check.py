@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pyaging.predict._pred_utils import check_feature_ranges, check_features_in_adata
+from pyaging.predict._pred_utils import _SCAN_BLOCK_COLUMNS, check_feature_ranges, check_features_in_adata
 
 
 class _RecordingLogger:
@@ -207,6 +207,57 @@ def test_a_zero_filled_missing_feature_is_not_reported_against_a_positive_lower_
     warnings = _run_pipeline(model, {"albumin": 46.0})
 
     assert warnings == []
+
+
+def test_offenders_are_found_on_both_sides_of_a_scan_block_boundary():
+    """The scan walks the columns in blocks, so an offender in each block must survive."""
+    width = 2 * _SCAN_BLOCK_COLUMNS + 7
+    model = _FakeModel([f"cg{index}" for index in range(width)], "DNA methylation")
+    values = np.full((1, width), 0.5)
+    values[0, 1] = 5.0
+    values[0, _SCAN_BLOCK_COLUMNS + 1] = 5.0
+    values[0, width - 1] = 5.0
+    logger = _RecordingLogger()
+
+    check_feature_ranges(_adata_for("fakeclock", values), model, logger)
+
+    assert f"3 of {width} supplied features" in logger.warnings[0]
+    assert [warning.split(":")[0] for warning in logger.warnings[1:]] == [
+        "cg1",
+        f"cg{_SCAN_BLOCK_COLUMNS + 1}",
+        f"cg{width - 1}",
+    ]
+
+
+def test_the_vectorised_scan_agrees_with_a_column_by_column_reference():
+    """Property check over random matrices with NaNs, since the scan is now blocked."""
+    generator = np.random.default_rng(7)
+    for _ in range(50):
+        width = int(generator.integers(1, 30))
+        rows = int(generator.integers(1, 6))
+        values = generator.normal(0.5, 0.8, size=(rows, width))
+        values[generator.random(values.shape) < 0.2] = np.nan
+        model = _FakeModel([f"cg{index}" for index in range(width)], "DNA methylation")
+        logger = _RecordingLogger()
+
+        check_feature_ranges(_adata_for("fakeclock", values), model, logger)
+
+        expected = []
+        for index in range(width):
+            column = values[:, index]
+            column = column[~np.isnan(column)]
+            outside = int(((column < 0.0) | (column > 1.0)).sum())
+            if outside:
+                expected.append((f"cg{index}", 100 * outside / column.size, column.min(), column.max()))
+
+        if not expected:
+            assert logger.warnings == []
+            continue
+        assert f"{len(expected)} of {width} supplied features" in logger.warnings[0]
+        for (feature, percent, low, high), warning in zip(expected[:5], logger.warnings[1:], strict=True):
+            assert warning.startswith(f"{feature}: ")
+            assert f"{percent:.2f}%" in warning
+            assert f"observed {low:g} to {high:g}" in warning
 
 
 @pytest.mark.parametrize("value", [-0.1, 1.1])

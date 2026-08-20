@@ -14,7 +14,7 @@ except Exception:
 import gc
 
 from ..models import pyagingModel
-from ..utils._feature_ranges import resolve_feature_ranges
+from ..utils._feature_ranges import resolve_feature_bounds
 from ..utils._hf import PyAgingResourceNotFoundError, download_clock_weights
 from ..utils._utils import progress
 
@@ -274,6 +274,27 @@ def _supplied_columns(adata: anndata.AnnData, model: pyagingModel, n_features: i
     return np.flatnonzero(np.asarray(mask, dtype=bool))
 
 
+# Columns compared per pass. The comparison is vectorised, but a clock with 453,152
+# features against a large cohort would otherwise build a boolean array the size of the
+# whole matrix, so the scan walks the columns in blocks of bounded width.
+_SCAN_BLOCK_COLUMNS = 4096
+
+
+def _find_offenders(matrix: np.ndarray, columns: np.ndarray, low: np.ndarray, high: np.ndarray) -> list:
+    """Return ``(column index, out-of-range count)`` for each offending column.
+
+    NaN compares false against both bounds, so missing values drop out of the
+    count without being tested for separately.
+    """
+    offenders = []
+    for start in range(0, columns.size, _SCAN_BLOCK_COLUMNS):
+        block = columns[start : start + _SCAN_BLOCK_COLUMNS]
+        values = matrix[:, block]
+        counts = ((values < low[block]) | (values > high[block])).sum(axis=0)
+        offenders.extend((int(block[position]), int(counts[position])) for position in np.flatnonzero(counts))
+    return offenders
+
+
 @progress("Check feature ranges")
 def check_feature_ranges(
     adata: anndata.AnnData,
@@ -325,7 +346,7 @@ def check_feature_ranges(
     rather than out of all of the clock's features.
     """
     try:
-        records = resolve_feature_ranges(
+        units, low, high = resolve_feature_bounds(
             model.features,
             model.metadata.get("data_type"),
             getattr(model, "feature_units", None),
@@ -341,15 +362,8 @@ def check_feature_ranges(
         matrix = cp.asnumpy(matrix)
     matrix = np.asarray(matrix, dtype=float)
 
-    columns = _supplied_columns(adata, model, len(records))
-    offenders = []
-    for index in columns:
-        record = records[index]
-        observed = matrix[:, index]
-        observed = observed[~np.isnan(observed)]
-        count = int(((observed < record["low"]) | (observed > record["high"])).sum())
-        if count:
-            offenders.append((record, 100 * count / observed.size, observed.min(), observed.max()))
+    columns = _supplied_columns(adata, model, len(units))
+    offenders = _find_offenders(matrix, columns, low, high)
 
     if not offenders:
         logger.info("All feature values are within their expected ranges.", indent_level=indent_level + 1)
@@ -361,12 +375,14 @@ def check_feature_ranges(
         f"This usually means the data is in different units than the clock expects.{truncated}",
         indent_level=indent_level + 1,
     )
-    for record, percent, observed_low, observed_high in offenders[:_MAX_REPORTED_FEATURES]:
-        unit = f" {record['unit']}" if record["unit"] else ""
+    for index, count in offenders[:_MAX_REPORTED_FEATURES]:
+        observed = matrix[:, index]
+        observed = observed[~np.isnan(observed)]
+        unit = f" {units[index]}" if units[index] else ""
         logger.warning(
-            f"{record['feature']}: {percent:.2f}% of values "
-            f"{_describe_range(record['low'], record['high'])}{unit} "
-            f"(observed {observed_low:g} to {observed_high:g})",
+            f"{model.features[index]}: {100 * count / observed.size:.2f}% of values "
+            f"{_describe_range(low[index], high[index])}{unit} "
+            f"(observed {observed.min():g} to {observed.max():g})",
             indent_level=indent_level + 2,
         )
 
