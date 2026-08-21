@@ -6,6 +6,8 @@ import torch
 from ..logger._live import ClockRunDisplay, DisplayLogger, display_enabled, quiet_hf_bars
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
+    apply_cohort_transform,
+    build_cohort_feature_matrix,
     check_feature_ranges,
     check_features_in_adata,
     load_clock,
@@ -90,6 +92,10 @@ def predict_age(
 
     enabled = display_enabled(verbose)
     display = ClockRunDisplay(clock_names, str(device), enabled=enabled)
+    # Whole-cohort preprocessing, keyed by transform name and computed at most
+    # once per call: tage and tagemortality read the same transformed frame, and
+    # recomputing it per clock would be both slow and pointless.
+    cohort_frames = {}
     with quiet_hf_bars(verbose), display:
         for clock_name in clock_names:
             display.start_clock(clock_name, "loading weights")
@@ -99,14 +105,16 @@ def predict_age(
             # Load and prepare the clock
             model = load_clock(clock_name, device, dir, pipeline_logger)
 
-            # Cohort-relative clocks refuse to run on inputs that were not
-            # prepared for them. Clocks saved before this attribute lack it.
+            # Clocks saved before either attribute existed lack both.
+            transform_name = getattr(model, "cohort_transform", None)
             required_flag = getattr(model, "required_uns_flag", None)
-            if required_flag is not None and not adata.uns.get(required_flag, False):
+            # A clock whose input contract nothing can satisfy for it refuses to
+            # run unmarked input. A declared transform supersedes the flag: it
+            # produces exactly what the flag was there to demand, and weights
+            # built before the transform existed still carry the flag.
+            if transform_name is None and required_flag is not None and not adata.uns.get(required_flag, False):
                 raise ValueError(
-                    f"Clock '{clock_name}' needs cohort-preprocessed input: run "
-                    f"pyaging.preprocess.prepare_tage(...) first "
-                    f"(adata.uns['{required_flag}'] is missing)."
+                    f"Clock '{clock_name}' needs preprocessed input (adata.uns['{required_flag}'] is missing)."
                 )
 
             # Disclaimer for commercial clocks
@@ -114,8 +122,17 @@ def predict_age(
                 display.warn(clock_name, "research use only")
 
             # Check and update adata for missing features
-            display.stage(clock_name, "matching features")
-            check_features_in_adata(adata, model, pipeline_logger)
+            if transform_name is not None:
+                # Cohort-relative clock: its features live in the space the
+                # transform produces, not in adata.X.
+                if transform_name not in cohort_frames:
+                    display.stage(clock_name, "preprocessing the cohort")
+                    cohort_frames[transform_name] = apply_cohort_transform(adata, transform_name, dir, pipeline_logger)
+                display.stage(clock_name, "matching features")
+                build_cohort_feature_matrix(adata, model, cohort_frames[transform_name], pipeline_logger)
+            else:
+                display.stage(clock_name, "matching features")
+                check_features_in_adata(adata, model, pipeline_logger)
 
             # Warn if the input values look implausible for these features
             display.stage(clock_name, "checking feature ranges")

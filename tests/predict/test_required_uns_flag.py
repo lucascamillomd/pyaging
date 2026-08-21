@@ -1,4 +1,11 @@
-"""A clock may demand a cohort-preprocessing marker in ``adata.uns``."""
+"""A clock may demand a preprocessing marker in ``adata.uns``.
+
+No shipped clock uses this any more -- the cohort-relative clocks preprocess
+themselves inside ``predict_age`` (see ``test_cohort_transform.py``) -- but the
+mechanism stays for any future clock whose input contract cannot be satisfied
+automatically, and a ``.pt`` built before the transform existed still carries a
+flag the loader must keep honouring.
+"""
 
 import anndata
 import numpy as np
@@ -12,7 +19,7 @@ from pyaging.models._base_models import pyagingModel
 class _GuardedClock(pyagingModel):
     def __init__(self):
         super().__init__()
-        self.required_uns_flag = "tage_prepared"
+        self.required_uns_flag = "cohort_prepared"
 
     def preprocess(self, x):
         return x
@@ -49,7 +56,7 @@ def test_guard_raises_without_uns_marker(monkeypatch):
     model = _stub_clock(torch.nn.Identity())
     monkeypatch.setattr("pyaging.predict._pred.load_clock", lambda *a, **k: model)
     adata = _minimal_adata()
-    with pytest.raises(ValueError, match="prepare_tage"):
+    with pytest.raises(ValueError, match="cohort_prepared"):
         pya.pred.predict_age(adata, ["guarded"], verbose=False)
 
 
@@ -57,29 +64,6 @@ def test_guard_passes_with_uns_marker(monkeypatch):
     model = _stub_clock(torch.nn.Linear(2, 1).double())
     monkeypatch.setattr("pyaging.predict._pred.load_clock", lambda *a, **k: model)
     adata = _minimal_adata()
-    adata.uns["tage_prepared"] = True
+    adata.uns["cohort_prepared"] = True
     pya.pred.predict_age(adata, ["guarded"], verbose=False)
     assert "guarded" in adata.obs.columns
-
-
-@pytest.mark.parametrize("clock_class", [pya.models.TAge, pya.models.TAgeMortality])
-def test_tage_models_declare_the_guard(clock_class):
-    model = clock_class()
-    assert model.required_uns_flag == "tage_prepared"
-    x = torch.ones(1, 3, dtype=torch.float64)
-    assert torch.equal(model.postprocess(x), x)
-
-
-@pytest.mark.parametrize("clock_class", [pya.models.TAge, pya.models.TAgeMortality])
-def test_tage_preprocess_substitutes_reference_values_for_absent_genes(clock_class):
-    model = clock_class()
-    model.reference_values = [1.0, 2.0, 3.0]
-    x = torch.tensor([[float("nan"), 5.0, float("nan")]], dtype=torch.float64)
-    assert torch.equal(model.preprocess(x), torch.tensor([[1.0, 5.0, 3.0]], dtype=torch.float64))
-
-
-@pytest.mark.parametrize("clock_class", [pya.models.TAge, pya.models.TAgeMortality])
-def test_tage_preprocess_is_a_no_op_without_reference_values(clock_class):
-    model = clock_class()
-    x = torch.tensor([[float("nan"), 5.0]], dtype=torch.float64)
-    assert model.preprocess(x) is x

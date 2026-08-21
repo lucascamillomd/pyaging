@@ -3275,8 +3275,9 @@ class EpiTOC3(epiTOC2):
 class TAge(pyagingModel):
     def __init__(self):
         super().__init__()
-        # Cohort-relative clock: input must come from ``preprocess.prepare_tage``.
-        self.required_uns_flag = "tage_prepared"
+        # Cohort-relative clock: ``predict_age`` runs the tAge cohort
+        # preprocessing on the raw counts before aligning these features.
+        self.cohort_transform = "tage"
 
     def preprocess(self, x):
         """Substitute the fitted imputer statistics for genes absent from the sample.

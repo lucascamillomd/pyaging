@@ -9,7 +9,7 @@ from ._preprocess_utils import (
     load_ensembl_metadata,
     log_data_statistics,
 )
-from ._tage import TAGE_SPECIES, prepare_tage
+from ._tage import TAGE_SPECIES
 
 __all__ = [
     "TAGE_SPECIES",
@@ -22,5 +22,4 @@ __all__ = [
     "impute_missing_values",
     "load_ensembl_metadata",
     "log_data_statistics",
-    "prepare_tage",
 ]

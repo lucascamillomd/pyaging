@@ -25,8 +25,13 @@ class pyagingModel(nn.Module, ABC):
         self.reference_values = None
 
         # Name of an ``adata.uns`` key that must be truthy before this clock may
-        # run; cohort-relative clocks set it so raw inputs fail loudly.
+        # run, for a clock whose input contract nothing can satisfy for it.
         self.required_uns_flag = None
+
+        # Name of a cohort transform ``predict_age`` runs before aligning this
+        # clock's features; cohort-relative clocks set it so their whole-cohort
+        # preprocessing happens automatically, and it supersedes the flag above.
+        self.cohort_transform = None
 
         self.preprocess_name = None
         self.preprocess_dependencies = None

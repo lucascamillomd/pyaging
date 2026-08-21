@@ -17,14 +17,20 @@ approximation only because every ortholog hop is injective on the reference
 tables; the build script asserts that invariant.
 """
 
-import anndata
 import numpy as np
 import pandas as pd
 
-from ..logger._live import live_step
 from ..utils._hf import download_hf_file
 
 TAGE_SPECIES = ("mouse", "rat", "macaque", "human")
+
+# ``var_names`` that carry the cohort's species rather than a gene, one 0/1
+# value per sample. The clocks reuse the mammalian-array idiom, where a
+# covariate such as ``female`` is simply another column of the matrix.
+SPECIES_COLUMNS = TAGE_SPECIES
+
+# ``obs`` column naming the samples to centre against.
+REFERENCE_COLUMN = "tage_reference_group"
 
 # filter_genes' defaults in the reference pipeline (R/preprocessing.R:68).
 COUNT_THRESHOLD = 10
@@ -146,47 +152,92 @@ def _load_mapping(dir: str) -> pd.DataFrame:
     return pd.read_csv(path, dtype=str)
 
 
-def _resolve_reference_group(adata, reference_group) -> list | None:
-    """Turn obs names or a boolean mask into a list of distinct sample labels.
+def _resolve_species(frame: pd.DataFrame, logger) -> tuple[str, pd.DataFrame]:
+    """Read the cohort's species off its indicator columns and drop them.
 
-    A repeated label is dropped rather than kept: naming a sample twice would
-    otherwise double its weight in the per-gene median that centres the cohort.
+    A species indicator is a column of the matrix, not a gene: one 0/1 value per
+    sample, the same for every sample, named after the species. Exactly one
+    indicator set to 1 picks the species; none at all -- or all of them zero --
+    means mouse, which is what the clocks were trained in. Names are matched
+    case-insensitively, so a ``Human`` column can never be read as an unlabelled
+    mouse cohort.
+
+    The indicators are dropped whether or not they were used. The gene mapping
+    would drop them anyway, but only after the gene filter had counted them, and
+    a column of ones is not a gene.
     """
-    if reference_group is None:
+    indicators = [name for name in frame.columns if str(name).strip().lower() in SPECIES_COLUMNS]
+    selected = []
+    for name in indicators:
+        values = frame[name].to_numpy(dtype=float)
+        unique = np.unique(values)
+        if unique.size != 1:
+            raise ValueError(
+                f"the {name!r} species indicator must hold the same value for every sample, "
+                f"got {unique.size} distinct values"
+            )
+        if unique[0] not in (0.0, 1.0):
+            raise ValueError(f"the {name!r} species indicator must be 0 or 1, got {unique[0]:g}")
+        if unique[0] == 1.0:
+            selected.append(str(name).strip().lower())
+
+    if len(selected) > 1:
+        raise ValueError(f"more than one species indicator is set to 1: {sorted(selected)}")
+
+    remaining = frame.drop(columns=indicators)
+    if not selected:
+        logger.warning(
+            "no species indicator column found; defaulting to mouse (add a column named "
+            f"{'/'.join(SPECIES_COLUMNS)}, set to 1 for every sample, to say otherwise)",
+            indent_level=2,
+        )
+        return "mouse", remaining
+    return selected[0], remaining
+
+
+def _resolve_reference_group(adata) -> list | None:
+    """Read the samples to centre against from ``obs[REFERENCE_COLUMN]``.
+
+    Absent, the cohort centres on every sample -- the reference pipeline's own
+    default. Present, the truthy rows are the reference group.
+    """
+    if REFERENCE_COLUMN not in adata.obs.columns:
         return None
-    reference = np.asarray(reference_group)
-    if reference.dtype == bool:
-        if reference.shape[0] != adata.n_obs:
-            raise ValueError("boolean reference_group must have one entry per sample")
-        names = list(adata.obs_names[reference])
+    column = adata.obs[REFERENCE_COLUMN]
+    values = np.asarray(column)
+    if values.dtype == bool:
+        mask = values
+    elif np.issubdtype(values.dtype, np.number):
+        mask = values != 0
     else:
-        names = list(dict.fromkeys(str(name) for name in reference))
-        missing = sorted(set(names) - set(adata.obs_names))
-        if missing:
-            raise ValueError(f"reference_group names not in adata.obs_names: {missing[:5]}")
+        raise ValueError(f"adata.obs[{REFERENCE_COLUMN!r}] must be boolean (or 0/1), got dtype {values.dtype}")
+    names = list(adata.obs_names[mask])
     if len(names) == 0:
-        raise ValueError("reference_group selects no samples")
+        raise ValueError(f"adata.obs[{REFERENCE_COLUMN!r}] selects no samples")
     return names
 
 
-def prepare_tage(
-    adata: anndata.AnnData,
-    species: str,
-    reference_group=None,
-    dir: str = "pyaging_data",
-    verbose: bool = True,
-) -> anndata.AnnData:
+def _prepare_tage(adata, dir: str = "pyaging_data", logger=None) -> pd.DataFrame:
     """
     Run the tAge cohort preprocessing on a matrix of raw RNA-seq counts.
 
     Reproduces the ``scaled_diff`` branch of the reference package's
-    ``tAge_preprocessing()`` (Tyshkovskiy 2026): filter genes -> map to mouse
-    Entrez IDs -> RLE normalise -> ``log10(x + 1)`` -> z-score each sample ->
-    subtract the reference group's per-gene median. Matching the clocks' feature
-    list happens later, inside ``predict_age``.
+    ``tAge_preprocessing()`` (Tyshkovskiy 2026): drop the species indicator
+    columns -> filter genes -> map to mouse Entrez IDs -> RLE normalise ->
+    ``log10(x + 1)`` -> z-score each sample -> subtract the reference group's
+    per-gene median. Matching the clocks' feature lists happens afterwards, back
+    in ``predict_age``.
+
+    ``predict_age`` calls this for any clock declaring ``cohort_transform =
+    "tage"``, once per call however many such clocks are requested; it is not a
+    step users perform themselves. The species and the reference group are read
+    off the input rather than passed as arguments, because by the time this runs
+    there is no user call to pass them to: the species comes from a 0/1
+    indicator column among ``var_names``, and the reference group from
+    ``obs["tage_reference_group"]``.
 
     The tAge clocks are cohort-relative: every stage above uses statistics of the
-    whole input, so predictions depend on which samples are prepared together. A
+    whole input, so predictions depend on which samples are predicted together. A
     single sample cannot be prepared, and a prediction is an age difference
     against the reference group rather than an absolute age.
 
@@ -200,99 +251,93 @@ def prepare_tage(
     Parameters
     ----------
     adata : anndata.AnnData
-        Samples x genes raw counts. ``var_names`` must be gene identifiers of
-        ``species`` (symbols, Ensembl, or Entrez IDs).
-    species : str
-        One of ``pyaging.preprocess.TAGE_SPECIES``.
-    reference_group : list of str or numpy.ndarray or None, optional
-        The samples to centre against, either as ``obs_names`` or as a boolean
-        mask aligned to ``adata.obs_names``. Defaults to None, which centres on
-        every sample.
+        Samples x genes raw counts. ``var_names`` must be gene identifiers
+        (symbols, Ensembl, or Entrez IDs) of the cohort's species, optionally
+        alongside a species indicator column.
     dir : str
         Directory the gene mapping is downloaded to. Defaults to "pyaging_data".
-    verbose : bool
-        Whether to log the output to console with the logger. Defaults to True.
+    logger : optional
+        Internal pipeline logger; warnings surface on the predict display.
 
     Returns
     -------
-    anndata.AnnData
-        A new object holding the centred matrix, with mouse Entrez IDs as
-        ``var_names``, ``obs`` copied from the input, ``uns["tage_prepared"]``
-        set, and the run's parameters in ``uns["tage_preparation"]``.
+    pandas.DataFrame
+        The centred matrix, samples x mouse Entrez IDs. ``adata`` itself is left
+        untouched apart from ``uns["tage_preparation"]``, which records the run's
+        parameters and mapping statistics.
 
     Raises
     ------
     ValueError
-        If ``species`` is unknown, fewer than two samples are given,
-        ``reference_group`` selects no samples or names samples not in the
-        input, or no gene survives filtering and mapping.
+        If the species indicators are inconsistent, fewer than two samples are
+        given, the reference column selects no samples, or no gene survives
+        filtering and mapping.
 
     Notes
     -----
     One deliberate divergence from the reference: when its ``control_group_label``
     matches no sample, ``control_subtraction`` falls back to centring on the whole
     cohort with only a printed message. That silently answers a different question
-    than the one asked, so an empty or unrecognised ``reference_group`` raises here
-    instead.
-
-    Examples
-    --------
-    >>> adata = pya.pp.prepare_tage(counts, species="mouse")  # doctest: +SKIP
-    >>> pya.pred.predict_age(adata, "tage")  # doctest: +SKIP
-
+    than the one asked, so an empty reference column raises here instead.
     """
-    if species not in TAGE_SPECIES:
-        raise ValueError(f"species must be one of {TAGE_SPECIES}, got {species!r}")
+    if logger is None:
+        logger = _NullLogger()
     if adata.n_obs < 2:
-        raise ValueError("prepare_tage needs at least two samples: the tAge clocks are cohort-relative")
-    reference_index = _resolve_reference_group(adata, reference_group)
+        raise ValueError("the tAge clocks are cohort-relative and need at least two samples")
 
-    with live_step("preparing tAge input", verbose) as (step, pipeline_logger):
-        if species != "mouse":
-            pipeline_logger.warning(
-                f"tage is calibrated in months of mouse age; a {species} cohort needs rescaling by its own "
-                "maximum lifespan over 48 months (tagemortality, a log hazard ratio, is never rescaled)",
-                indent_level=2,
-            )
+    reference_index = _resolve_reference_group(adata)
 
-        frame = pd.DataFrame(np.asarray(adata.X, dtype=np.float64), index=adata.obs_names, columns=adata.var_names)
-        filtered = _filter_genes(frame)
-        if filtered.shape[1] == 0:
-            raise ValueError(
-                f"no gene reached {COUNT_THRESHOLD} counts in {PERCENT_THRESHOLD}% of samples; "
-                "prepare_tage expects raw RNA-seq counts, not normalized expression"
-            )
+    # ``to_df`` densifies a sparse matrix and labels the axes; the ``astype``
+    # copies, so nothing downstream can reach the caller's counts and the other
+    # clocks in the same predict_age call still see the original data.
+    frame = adata.to_df().astype(np.float64)
+    species, frame = _resolve_species(frame, logger)
+    if species != "mouse":
+        logger.warning(
+            f"tage is calibrated in months of mouse age; a {species} cohort needs rescaling by its own "
+            "maximum lifespan over 48 months (tagemortality, a log hazard ratio, is never rescaled)",
+            indent_level=2,
+        )
 
-        step.update("mapping genes to mouse Entrez IDs")
-        mapped = _map_to_mouse_entrez(filtered, species, _load_mapping(dir))
-        if mapped.shape[1] == 0:
-            raise ValueError(f"no input gene could be mapped to a mouse Entrez ID for species {species!r}")
-        # Overlap is judged against the filtered genes, not the raw input: an
-        # RNA-seq matrix carries tens of thousands of unexpressed genes that the
-        # filter drops, so the raw fraction says more about annotation size than
-        # about how well the input matches the mapping table.
-        if mapped.shape[1] < 0.5 * filtered.shape[1]:
-            pipeline_logger.warning(
-                f"only {mapped.shape[1]} of {filtered.shape[1]} expressed genes mapped to mouse "
-                f"Entrez IDs; check that var_names are {species} gene identifiers",
-                indent_level=2,
-            )
+    filtered = _filter_genes(frame)
+    if filtered.shape[1] == 0:
+        raise ValueError(
+            f"no gene reached {COUNT_THRESHOLD} counts in {PERCENT_THRESHOLD}% of samples; "
+            "the tAge clocks expect raw RNA-seq counts, not normalized expression"
+        )
 
-        step.update("normalizing and centering")
-        centered = _center_against_reference(_scale_samples(_log_transform(_rle_normalize(mapped))), reference_index)
+    mapped = _map_to_mouse_entrez(filtered, species, _load_mapping(dir))
+    if mapped.shape[1] == 0:
+        raise ValueError(f"no input gene could be mapped to a mouse Entrez ID for species {species!r}")
+    # Overlap is judged against the filtered genes, not the raw input: an
+    # RNA-seq matrix carries tens of thousands of unexpressed genes that the
+    # filter drops, so the raw fraction says more about annotation size than
+    # about how well the input matches the mapping table.
+    if mapped.shape[1] < 0.5 * filtered.shape[1]:
+        logger.warning(
+            f"only {mapped.shape[1]} of {filtered.shape[1]} expressed genes mapped to mouse "
+            f"Entrez IDs; check that var_names are {species} gene identifiers",
+            indent_level=2,
+        )
 
-        out = anndata.AnnData(X=centered.to_numpy(dtype=np.float64), obs=adata.obs.copy())
-        out.obs_names = adata.obs_names
-        out.var_names = centered.columns
-        out.uns["tage_prepared"] = True
-        out.uns["tage_preparation"] = {
-            "species": species,
-            "n_input_genes": int(frame.shape[1]),
-            "n_filtered_genes": int(filtered.shape[1]),
-            "n_mapped_genes": int(mapped.shape[1]),
-            "n_reference_samples": len(reference_index) if reference_index is not None else int(adata.n_obs),
-            "reference_group": list(reference_index) if reference_index is not None else "all_samples",
-        }
-        step.done(f"tAge input: {out.n_obs} samples × {out.n_vars} genes")
+    centered = _center_against_reference(_scale_samples(_log_transform(_rle_normalize(mapped))), reference_index)
 
-    return out
+    adata.uns["tage_preparation"] = {
+        "species": species,
+        "n_input_genes": int(frame.shape[1]),
+        "n_filtered_genes": int(filtered.shape[1]),
+        "n_mapped_genes": int(mapped.shape[1]),
+        "n_reference_samples": len(reference_index) if reference_index is not None else int(adata.n_obs),
+        "reference_group": list(reference_index) if reference_index is not None else "all_samples",
+    }
+    return centered
+
+
+class _NullLogger:
+    """Swallow the pipeline log when the transform is called without a display."""
+
+    def __getattr__(self, name):
+        def _noop(*args, **kwargs):
+            return None
+
+        return _noop

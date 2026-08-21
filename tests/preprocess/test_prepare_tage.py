@@ -1,26 +1,29 @@
-"""Tests for the public ``prepare_tage`` entry point and its gene filter.
+"""Tests for the internal tAge cohort transform and its gene filter.
 
 The numeric parity of each individual stage is covered by
 ``test_tage_transforms.py`` against the authors' R fixtures; what is checked
-here is that ``prepare_tage`` composes those stages in the reference order
-(filter -> map -> RLE -> log -> scale -> center), resolves the reference group,
-and stamps the provenance the predict pipeline reads back.
+here is that ``_prepare_tage`` composes those stages in the reference order
+(filter -> map -> RLE -> log -> scale -> center), reads the species indicator
+and reference-group columns off the input, and records the provenance the
+predict pipeline reports back.
+
+``_prepare_tage`` is no longer a public entry point: ``predict_age`` calls it
+for the cohort-relative clocks. It returns the transformed samples x
+mouse-Entrez frame and never touches the caller's matrix.
 
 The mapping asset is monkeypatched to a four-gene table, so nothing here
 touches the network.
 """
 
-import io
 from pathlib import Path
 
 import anndata
 import numpy as np
 import pandas as pd
 import pytest
-from rich.console import Console
 
 import pyaging as pya
-import pyaging.logger._live as live_module
+from pyaging.logger._live import DisplayLogger
 from pyaging.preprocess import _tage
 
 FIXTURES = Path(__file__).resolve().parents[2] / "tests/data/tage"
@@ -41,18 +44,14 @@ def _local_mapping(monkeypatch):
 
 
 @pytest.fixture
-def display_output(monkeypatch):
-    """Point the live display at a buffer this test can read back.
+def warnings():
+    """Collect what the transform logs, the way the predict display would."""
+    messages = []
+    return messages
 
-    ``tests/conftest.py`` already swaps the module console for a silent one; the
-    warning tests need the same treatment but with the buffer in hand. The width
-    is set wide so a wrapped line cannot hide the asserted text.
-    """
-    buffer = io.StringIO()
-    monkeypatch.setattr(
-        live_module, "_console", Console(file=buffer, force_terminal=False, force_jupyter=False, width=200)
-    )
-    return buffer
+
+def _logger(messages):
+    return DisplayLogger(messages.append)
 
 
 def _adata(n_obs=4):
@@ -64,25 +63,45 @@ def _adata(n_obs=4):
     return a
 
 
-def test_prepare_stamps_uns_and_maps_names():
-    out = pya.pp.prepare_tage(_adata(), species="mouse", verbose=False)
-    assert out.uns["tage_prepared"] is True
-    assert list(out.var_names) == ["101", "102", "103", "104"]
-    assert out.uns["tage_preparation"]["reference_group"] == "all_samples"
-    assert out.uns["tage_preparation"]["species"] == "mouse"
-    assert out.uns["tage_preparation"]["n_input_genes"] == 4
-    assert out.uns["tage_preparation"]["n_mapped_genes"] == 4
-    assert out.uns["tage_preparation"]["n_reference_samples"] == 4
+def _with_species(adata, species, values=None):
+    """Append a 0/1 species indicator column to a samples x genes AnnData."""
+    if values is None:
+        values = np.ones(adata.n_obs)
+    frame = pd.DataFrame(adata.X, index=adata.obs_names, columns=list(adata.var_names))
+    frame[species] = np.asarray(values, dtype=float)
+    out = anndata.AnnData(X=frame.to_numpy(dtype=np.float64), obs=adata.obs.copy())
+    out.obs_names = adata.obs_names
+    out.var_names = frame.columns
+    return out
+
+
+def _prepare(adata, messages=None, **kwargs):
+    return _tage._prepare_tage(adata, logger=_logger(messages if messages is not None else []), **kwargs)
+
+
+# --- composition and provenance --------------------------------------------
+
+
+def test_prepare_returns_mapped_columns_and_records_provenance():
+    a = _adata()
+    out = _prepare(a)
+    assert list(out.columns) == ["101", "102", "103", "104"]
+    provenance = a.uns["tage_preparation"]
+    assert provenance["reference_group"] == "all_samples"
+    assert provenance["species"] == "mouse"
+    assert provenance["n_input_genes"] == 4
+    assert provenance["n_mapped_genes"] == 4
+    assert provenance["n_reference_samples"] == 4
 
 
 def test_prepare_pipeline_matches_composed_helpers():
     a = _adata()
-    out = pya.pp.prepare_tage(a, species="mouse", verbose=False)
+    out = _prepare(a)
     frame = pd.DataFrame(a.X, index=a.obs_names, columns=list(a.var_names))
     filtered = _tage._filter_genes(frame)
     mapped = _tage._map_to_mouse_entrez(filtered, "mouse", MAPPING)
     expected = _tage._center_against_reference(_tage._scale_samples(_tage._log_transform(_tage._rle_normalize(mapped))))
-    np.testing.assert_allclose(out.X, expected.values, atol=1e-12)
+    np.testing.assert_allclose(out.to_numpy(), expected.to_numpy(), atol=1e-12)
 
 
 def test_prepare_applies_the_gene_filter_before_mapping():
@@ -90,116 +109,190 @@ def test_prepare_applies_the_gene_filter_before_mapping():
     # not reach the mapper (and so not appear among the output columns).
     a = _adata()
     a.X[:, 3] = 0.0
-    out = pya.pp.prepare_tage(a, species="mouse", verbose=False)
-    assert list(out.var_names) == ["101", "102", "103"]
-    assert out.uns["tage_preparation"]["n_input_genes"] == 4
-    assert out.uns["tage_preparation"]["n_mapped_genes"] == 3
+    out = _prepare(a)
+    assert list(out.columns) == ["101", "102", "103"]
+    assert a.uns["tage_preparation"]["n_input_genes"] == 4
+    assert a.uns["tage_preparation"]["n_mapped_genes"] == 3
 
 
-def test_obs_and_names_are_carried_through():
+def test_sample_names_are_carried_through_and_the_input_is_untouched():
     a = _adata()
-    a.obs["group"] = ["a", "a", "b", "b"]
-    out = pya.pp.prepare_tage(a, species="mouse", verbose=False)
-    assert list(out.obs_names) == list(a.obs_names)
-    assert list(out.obs["group"]) == ["a", "a", "b", "b"]
-    assert out.X.dtype == np.float64
+    original = a.X.copy()
+    out = _prepare(a)
+    assert list(out.index) == list(a.obs_names)
+    assert out.to_numpy().dtype == np.float64
+    np.testing.assert_array_equal(a.X, original)
+    assert list(a.var_names) == ["G1", "G2", "G3", "G4"]
 
 
-def test_reference_group_by_name_and_mask_agree():
+# --- species indicator columns ---------------------------------------------
+
+
+@pytest.mark.parametrize("species", ["mouse", "rat", "macaque", "human"])
+def test_species_column_selects_the_mapping_species(species, monkeypatch):
+    monkeypatch.setattr(_tage, "_load_mapping", lambda dir: MAPPING.assign(species=species))
+    a = _with_species(_adata(), species)
+    out = _prepare(a)
+    assert a.uns["tage_preparation"]["species"] == species
+    # The indicator is not a gene: it never reaches the mapped columns.
+    assert list(out.columns) == ["101", "102", "103", "104"]
+
+
+def test_species_column_is_case_insensitive(monkeypatch):
+    monkeypatch.setattr(_tage, "_load_mapping", lambda dir: MAPPING.assign(species="human"))
+    a = _with_species(_adata(), "Human")
+    _prepare(a)
+    assert a.uns["tage_preparation"]["species"] == "human"
+
+
+def test_missing_species_column_defaults_to_mouse_with_a_warning(warnings):
     a = _adata()
-    by_name = pya.pp.prepare_tage(a, species="mouse", reference_group=["s0", "s1"], verbose=False)
-    mask = np.array([True, True, False, False])
-    by_mask = pya.pp.prepare_tage(a, species="mouse", reference_group=mask, verbose=False)
-    np.testing.assert_allclose(by_name.X, by_mask.X)
-    assert by_name.uns["tage_preparation"]["n_reference_samples"] == 2
-    assert by_name.uns["tage_preparation"]["reference_group"] == ["s0", "s1"]
+    _prepare(a, messages=warnings)
+    assert a.uns["tage_preparation"]["species"] == "mouse"
+    assert any("defaulting to mouse" in message for message in warnings)
 
 
-def test_reference_group_centres_on_that_group_only():
+def test_all_zero_species_columns_default_to_mouse_with_a_warning(warnings):
+    a = _with_species(_adata(), "human", values=np.zeros(4))
+    _prepare(a, messages=warnings)
+    assert a.uns["tage_preparation"]["species"] == "mouse"
+    assert any("defaulting to mouse" in message for message in warnings)
+
+
+def test_species_column_set_to_one_does_not_warn(warnings):
+    a = _with_species(_adata(), "mouse")
+    _prepare(a, messages=warnings)
+    assert not any("defaulting to mouse" in message for message in warnings)
+
+
+def test_two_species_columns_set_raises():
+    a = _with_species(_with_species(_adata(), "mouse"), "human")
+    with pytest.raises(ValueError, match="more than one species"):
+        _prepare(a)
+
+
+def test_species_column_that_varies_across_samples_raises():
+    a = _with_species(_adata(), "mouse", values=[1.0, 1.0, 0.0, 1.0])
+    with pytest.raises(ValueError, match="same value for every sample"):
+        _prepare(a)
+
+
+def test_species_column_with_a_value_other_than_zero_or_one_raises():
+    a = _with_species(_adata(), "mouse", values=np.full(4, 2.0))
+    with pytest.raises(ValueError, match="0 or 1"):
+        _prepare(a)
+
+
+def test_species_indicator_never_reaches_the_gene_filter(monkeypatch):
+    # A column of ones would fail the count filter anyway; assert the stronger
+    # property that the filter is not even asked about it.
+    seen = {}
+
+    original = _tage._filter_genes
+
+    def spy(df, *args, **kwargs):
+        seen["columns"] = list(df.columns)
+        return original(df, *args, **kwargs)
+
+    monkeypatch.setattr(_tage, "_filter_genes", spy)
+    _prepare(_with_species(_adata(), "mouse", values=np.full(4, 1.0)))
+    assert seen["columns"] == ["G1", "G2", "G3", "G4"]
+
+
+# --- reference group --------------------------------------------------------
+
+
+def test_reference_group_obs_column_centres_on_that_group_only():
     a = _adata()
-    out = pya.pp.prepare_tage(a, species="mouse", reference_group=["s0", "s1"], verbose=False)
+    a.obs["tage_reference_group"] = [True, True, False, False]
+    out = _prepare(a)
     # The median of the two reference samples is their mean, so the two rows are
     # equal and opposite after centring.
-    np.testing.assert_allclose(out.X[0], -out.X[1], atol=1e-12)
+    np.testing.assert_allclose(out.to_numpy()[0], -out.to_numpy()[1], atol=1e-12)
+    assert a.uns["tage_preparation"]["n_reference_samples"] == 2
+    assert a.uns["tage_preparation"]["reference_group"] == ["s0", "s1"]
+
+
+def test_numeric_reference_group_column_is_accepted():
+    a = _adata()
+    a.obs["tage_reference_group"] = [1, 1, 0, 0]
+    boolean = _adata()
+    boolean.obs["tage_reference_group"] = [True, True, False, False]
+    np.testing.assert_allclose(_prepare(a).to_numpy(), _prepare(boolean).to_numpy(), atol=1e-12)
+
+
+def test_absent_reference_group_column_centres_on_every_sample():
+    a = _adata()
+    everything = _adata()
+    everything.obs["tage_reference_group"] = [True] * 4
+    np.testing.assert_allclose(_prepare(a).to_numpy(), _prepare(everything).to_numpy(), atol=1e-12)
+
+
+def test_empty_reference_group_column_raises():
+    a = _adata()
+    a.obs["tage_reference_group"] = [False] * 4
+    with pytest.raises(ValueError, match="selects no samples"):
+        _prepare(a)
+
+
+def test_non_numeric_reference_group_column_raises():
+    a = _adata()
+    a.obs["tage_reference_group"] = ["yes", "no", "yes", "no"]
+    with pytest.raises(ValueError, match="boolean"):
+        _prepare(a)
+
+
+# --- errors and warnings ----------------------------------------------------
 
 
 def test_single_sample_raises():
     with pytest.raises(ValueError, match="at least two samples"):
-        pya.pp.prepare_tage(_adata(n_obs=1), species="mouse", verbose=False)
-
-
-def test_empty_reference_group_raises():
-    with pytest.raises(ValueError, match="reference_group"):
-        pya.pp.prepare_tage(_adata(), species="mouse", reference_group=[], verbose=False)
-
-
-def test_unknown_reference_group_name_raises():
-    with pytest.raises(ValueError, match="reference_group"):
-        pya.pp.prepare_tage(_adata(), species="mouse", reference_group=["nope"], verbose=False)
-
-
-def test_wrong_length_boolean_mask_raises():
-    with pytest.raises(ValueError, match="one entry per sample"):
-        pya.pp.prepare_tage(_adata(), species="mouse", reference_group=np.array([True, False]), verbose=False)
-
-
-def test_unknown_species_raises():
-    with pytest.raises(ValueError, match="species"):
-        pya.pp.prepare_tage(_adata(), species="ferret", verbose=False)
+        _prepare(_adata(n_obs=1))
 
 
 def test_no_mappable_gene_raises():
     a = _adata()
     a.var_names = ["X1", "X2", "X3", "X4"]
     with pytest.raises(ValueError, match="mapped"):
-        pya.pp.prepare_tage(a, species="mouse", verbose=False)
+        _prepare(a)
 
 
 def test_everything_filtered_out_raises():
     a = _adata()
     a.X[:] = 1.0
     with pytest.raises(ValueError, match="raw RNA-seq counts"):
-        pya.pp.prepare_tage(a, species="mouse", verbose=False)
+        _prepare(a)
 
 
-def test_low_overlap_warns(display_output):
+def test_low_overlap_warns(warnings):
     # One of six retained genes maps, well under the 50% threshold.
     rng = np.random.default_rng(1)
     a = anndata.AnnData(X=rng.integers(10, 1000, size=(4, 6)).astype(float))
     a.var_names = ["G1", "U1", "U2", "U3", "U4", "U5"]
     a.obs_names = [f"s{i}" for i in range(4)]
-    pya.pp.prepare_tage(a, species="mouse", verbose=True)
-    assert "1 of 6 expressed genes mapped" in display_output.getvalue()
+    _prepare(a, messages=warnings)
+    assert any("1 of 6 expressed genes mapped" in message for message in warnings)
 
 
-def test_good_overlap_does_not_warn(display_output):
-    pya.pp.prepare_tage(_adata(), species="mouse", verbose=True)
-    assert "mouse Entrez" not in display_output.getvalue()
+def test_good_overlap_does_not_warn(warnings):
+    _prepare(_adata(), messages=warnings)
+    assert not any("mouse Entrez" in message for message in warnings)
 
 
-def test_non_mouse_species_warns_about_the_mouse_calibration(display_output, monkeypatch):
-    human_mapping = MAPPING.assign(species="human")
-    monkeypatch.setattr(_tage, "_load_mapping", lambda dir: human_mapping)
-    pya.pp.prepare_tage(_adata(), species="human", verbose=True)
-    assert "months of mouse age" in display_output.getvalue()
+def test_non_mouse_species_warns_about_the_mouse_calibration(warnings, monkeypatch):
+    monkeypatch.setattr(_tage, "_load_mapping", lambda dir: MAPPING.assign(species="human"))
+    _prepare(_with_species(_adata(), "human"), messages=warnings)
+    assert any("months of mouse age" in message for message in warnings)
 
 
-def test_mouse_cohort_does_not_warn_about_calibration(display_output):
-    pya.pp.prepare_tage(_adata(), species="mouse", verbose=True)
-    assert "months of mouse age" not in display_output.getvalue()
+def test_mouse_cohort_does_not_warn_about_calibration(warnings):
+    _prepare(_with_species(_adata(), "mouse"), messages=warnings)
+    assert not any("months of mouse age" in message for message in warnings)
 
 
-def test_duplicate_reference_names_do_not_double_weight_a_sample():
-    a = _adata()
-    unique = pya.pp.prepare_tage(a, species="mouse", reference_group=["s0", "s1"], verbose=False)
-    duplicated = pya.pp.prepare_tage(a, species="mouse", reference_group=["s0", "s1", "s0"], verbose=False)
-    np.testing.assert_allclose(duplicated.X, unique.X, atol=1e-12)
-    assert duplicated.uns["tage_preparation"]["n_reference_samples"] == 2
-    assert duplicated.uns["tage_preparation"]["reference_group"] == ["s0", "s1"]
-
-
-def test_public_export():
-    assert "prepare_tage" in pya.pp.__all__
+def test_prepare_tage_is_not_public():
+    assert "prepare_tage" not in pya.pp.__all__
+    assert not hasattr(pya.pp, "prepare_tage")
 
 
 # --- gene filter semantics -------------------------------------------------

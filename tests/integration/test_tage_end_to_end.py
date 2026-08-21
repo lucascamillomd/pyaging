@@ -2,15 +2,25 @@
 
 ``tests/data/tage`` holds predictions produced by the reference R preprocessing
 and the published sklearn models (see its README); nothing there came from a
-pyaging code path, so a pass here means the whole chain -- ``prepare_tage``,
-feature alignment, the imputer substitution, and the ported weights -- lands on
-the reference numbers rather than merely agreeing with itself.
+pyaging code path, so a pass here means the whole chain -- the in-predict cohort
+transform, feature alignment, the imputer substitution, and the ported weights
+-- lands on the reference numbers rather than merely agreeing with itself.
 
-Two assets that production fetches from the Hub are read locally instead: the
+The entry point is ``predict_age`` on raw counts: the cohort preprocessing is no
+longer a separate call the user makes.
+
+Three assets that production fetches from the Hub are read locally instead: the
 gene mapping (``_tage._load_mapping``) and the clock weights
 (``download_clock_weights``, patched where ``load_clock`` looks it up). The
 weights are build artifacts of ``clocks/*.ipynb`` and are gitignored, so the
 whole module skips when they are absent and CI without them stays green.
+
+The committed ``.pt`` files predate the in-predict transform: they still carry
+``required_uns_flag`` and no ``cohort_transform``. Until the notebooks are
+re-executed the seam sets ``cohort_transform`` on the freshly loaded model, so
+these tests exercise the new path against the real weights -- and, because the
+stale flag is left in place, they also pin that a declared transform supersedes
+it.
 """
 
 import gzip
@@ -53,8 +63,8 @@ def counts():
     """The example cohort as samples x genes, from the genes x samples fixture.
 
     Every stage CSV is written in R orientation (README, "Matrix orientation"),
-    so the transpose is what makes ``var_names`` the mouse Ensembl gene IDs
-    ``prepare_tage`` expects.
+    so the transpose is what makes ``var_names`` the mouse Ensembl gene IDs the
+    cohort transform expects.
     """
     with gzip.open(DATA / "input_expression.csv.gz", "rt") as handle:
         frame = pd.read_csv(handle, index_col=0)
@@ -66,12 +76,23 @@ def mapping():
     return pd.read_csv(MAPPING_ASSET, dtype=str)
 
 
+def _adata_from(frame):
+    out = anndata.AnnData(X=frame.to_numpy(dtype=np.float64))
+    out.obs_names = frame.index.astype(str)
+    out.var_names = frame.columns.astype(str)
+    return out
+
+
 @pytest.fixture
 def adata(counts):
-    out = anndata.AnnData(X=counts.to_numpy(dtype=np.float64))
-    out.obs_names = counts.index.astype(str)
-    out.var_names = counts.columns.astype(str)
-    return out
+    """Raw counts with no species indicator: the default-mouse path."""
+    return _adata_from(counts)
+
+
+@pytest.fixture
+def adata_mouse(counts):
+    """The same counts with an explicit ``mouse`` indicator column."""
+    return _adata_from(counts.assign(mouse=1.0))
 
 
 @pytest.fixture(autouse=True)
@@ -84,6 +105,17 @@ def local_assets(monkeypatch, mapping):
 
     monkeypatch.setattr(_pred_utils, "download_clock_weights", local_weights)
 
+    # The committed weights predate the attribute; Task B's notebook run bakes
+    # it in and this shim goes away.
+    real_load_clock = _pred_utils.load_clock
+
+    def load_with_transform(*args, **kwargs):
+        model = real_load_clock(*args, **kwargs)
+        model.cohort_transform = "tage"
+        return model
+
+    monkeypatch.setattr("pyaging.predict._pred.load_clock", load_with_transform)
+
 
 def test_input_fixture_is_mouse_ensembl_samples_by_genes(adata, expected):
     assert list(adata.obs_names) == expected["sample_ids"]
@@ -92,13 +124,13 @@ def test_input_fixture_is_mouse_ensembl_samples_by_genes(adata, expected):
 
 
 @pytest.mark.parametrize("clock_name", CLOCKS)
-def test_cohort_centered_predictions_match_reference(adata, expected, clock_name):
-    prepared = pya.pp.prepare_tage(adata, species="mouse", verbose=False)
-    pya.pred.predict_age(prepared, [clock_name], verbose=False)
+def test_cohort_centered_predictions_match_reference(adata_mouse, expected, clock_name):
+    pya.pred.predict_age(adata_mouse, [clock_name], verbose=False)
 
-    assert list(prepared.obs_names) == expected["sample_ids"]
+    assert adata_mouse.uns["tage_preparation"]["species"] == "mouse"
+    assert list(adata_mouse.obs_names) == expected["sample_ids"]
     np.testing.assert_allclose(
-        prepared.obs[clock_name].to_numpy(),
+        adata_mouse.obs[clock_name].to_numpy(),
         np.asarray(expected[f"{clock_name}_center_all"]),
         rtol=0,
         atol=TOL,
@@ -106,50 +138,78 @@ def test_cohort_centered_predictions_match_reference(adata, expected, clock_name
 
 
 @pytest.mark.parametrize("clock_name", CLOCKS)
-def test_reference_group_centered_predictions_match_reference(adata, expected, clock_name):
-    prepared = pya.pp.prepare_tage(
-        adata,
-        species="mouse",
-        reference_group=expected["reference_group_sample_ids"],
-        verbose=False,
-    )
-    pya.pred.predict_age(prepared, [clock_name], verbose=False)
+def test_predictions_are_the_same_without_a_species_column(adata, expected, clock_name):
+    # No indicator at all: the transform defaults to mouse, which is what this
+    # cohort is, so the numbers must not move.
+    pya.pred.predict_age(adata, [clock_name], verbose=False)
 
+    assert adata.uns["tage_preparation"]["species"] == "mouse"
     np.testing.assert_allclose(
-        prepared.obs[clock_name].to_numpy(),
+        adata.obs[clock_name].to_numpy(),
+        np.asarray(expected[f"{clock_name}_center_all"]),
+        rtol=0,
+        atol=TOL,
+    )
+
+
+@pytest.mark.parametrize("clock_name", CLOCKS)
+def test_reference_group_centered_predictions_match_reference(adata_mouse, expected, clock_name):
+    adata_mouse.obs["tage_reference_group"] = [
+        name in set(expected["reference_group_sample_ids"]) for name in adata_mouse.obs_names
+    ]
+    pya.pred.predict_age(adata_mouse, [clock_name], verbose=False)
+
+    assert adata_mouse.uns["tage_preparation"]["n_reference_samples"] == len(expected["reference_group_sample_ids"])
+    np.testing.assert_allclose(
+        adata_mouse.obs[clock_name].to_numpy(),
         np.asarray(expected[f"{clock_name}_center_refgroup"]),
         rtol=0,
         atol=TOL,
     )
 
 
-def test_prediction_writes_the_standard_clock_metadata(adata):
-    prepared = pya.pp.prepare_tage(adata, species="mouse", verbose=False)
-    pya.pred.predict_age(prepared, list(CLOCKS), verbose=False)
+def test_prediction_writes_the_standard_clock_metadata(adata_mouse):
+    pya.pred.predict_age(adata_mouse, list(CLOCKS), verbose=False)
 
     for clock_name in CLOCKS:
-        assert clock_name in prepared.obs.columns
-        metadata = prepared.uns[f"{clock_name}_metadata"]
+        assert clock_name in adata_mouse.obs.columns
+        metadata = adata_mouse.uns[f"{clock_name}_metadata"]
         assert metadata["clock_name"] == clock_name
         assert metadata["data_type"] == "transcriptomics (relative)"
-        assert prepared.uns[f"{clock_name}_missing_features"] is not None
-        assert 0 <= prepared.uns[f"{clock_name}_percent_na"] < 100
+        assert adata_mouse.uns[f"{clock_name}_missing_features"] is not None
+        assert 0 <= adata_mouse.uns[f"{clock_name}_percent_na"] < 100
 
 
-def test_batch_size_does_not_change_predictions(adata):
-    prepared = pya.pp.prepare_tage(adata, species="mouse", verbose=False)
-    batched = prepared.copy()
-    pya.pred.predict_age(prepared, ["tage"], verbose=False)
+def test_the_cohort_transform_runs_once_for_both_clocks(adata_mouse, monkeypatch):
+    calls = []
+    real = _pred_utils.COHORT_TRANSFORMS["tage"]
+
+    def counting(*args, **kwargs):
+        calls.append(args)
+        return real(*args, **kwargs)
+
+    monkeypatch.setitem(_pred_utils.COHORT_TRANSFORMS, "tage", counting)
+    pya.pred.predict_age(adata_mouse, list(CLOCKS), verbose=False)
+
+    assert len(calls) == 1
+
+
+def test_the_raw_counts_are_not_mutated(adata_mouse):
+    original = adata_mouse.X.copy()
+    pya.pred.predict_age(adata_mouse, list(CLOCKS), verbose=False)
+
+    np.testing.assert_array_equal(adata_mouse.X, original)
+    assert list(adata_mouse.var_names)[-1] == "mouse"
+
+
+def test_batch_size_does_not_change_predictions(adata_mouse):
+    batched = adata_mouse.copy()
+    pya.pred.predict_age(adata_mouse, ["tage"], verbose=False)
     pya.pred.predict_age(batched, ["tage"], batch_size=2, verbose=False)
 
     np.testing.assert_allclose(
-        prepared.obs["tage"].to_numpy(),
+        adata_mouse.obs["tage"].to_numpy(),
         batched.obs["tage"].to_numpy(),
         rtol=0,
         atol=1e-12,
     )
-
-
-def test_predict_without_prepare_raises(adata):
-    with pytest.raises(ValueError, match="prepare_tage"):
-        pya.pred.predict_age(adata, ["tage"], verbose=False)

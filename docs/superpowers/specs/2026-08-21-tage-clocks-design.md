@@ -32,11 +32,37 @@ preprocessing function must not preclude adding them later.
    non-commercial academic use only. The clocks are flagged research-only in
    metadata; pyaging itself remains MIT.
 
-## Architecture (Approach A — approved)
+## Architecture (Approach A — approved; superseded, amended at user direction post-review)
 
-A public preprocessing helper does the entire tAge pipeline on the full
-cohort; the clocks themselves are plain linear models flowing through the
-standard predict path unchanged.
+> **Amendment (2026-08-21).** Approach A shipped as described below and was
+> then replaced: the public `pa.pp.prepare_tage()` step is gone, and
+> `predict_age` performs the cohort preprocessing itself. A model declares
+> `cohort_transform = "tage"`; `predict_age` resolves that name against a
+> registry of transforms, runs the transform over the whole input **once per
+> call** (both tAge clocks share one cached frame), and builds each clock's
+> `obsm["X_{clock}"]` from the transformed frame instead of from `adata.X` —
+> same reference-value substitution and missing-feature bookkeeping as the
+> ordinary path, which is why both share one implementation. The raw matrix is
+> never mutated, so other clocks in the same call still see the original data,
+> and all cohort math still happens before batching.
+>
+> The two arguments the public helper took are now read off the input, since
+> there is no user call left to pass them to: the species from a 0/1 indicator
+> column among `var_names` (`mouse`/`rat`/`macaque`/`human`, the mammalian-clock
+> covariate idiom, dropped before the gene filter; absent or all-zero means
+> mouse with a warning, two set or one varying between samples is an error), and
+> the reference group from a boolean `obs["tage_reference_group"]` (absent means
+> centre on every sample). `prepare_tage` survives as the private
+> `_prepare_tage`, returning the transformed frame and stamping provenance into
+> `uns["tage_preparation"]`.
+>
+> The `required_uns_flag` guard in "Error handling" below is therefore obsolete
+> for these clocks: the failure mode it existed to catch — raw counts reaching a
+> centred clock — can no longer happen. The attribute and its mechanism stay for
+> any future clock whose contract cannot be satisfied automatically, and a
+> declared `cohort_transform` supersedes it so that `.pt` files built before the
+> change keep working. Parity against the reference fixtures is unchanged at
+> ~1e-12.
 
 ### Component 1: `pa.pp.prepare_tage()`
 
@@ -92,11 +118,14 @@ assets). `prepare_tage` loads them at call time.
 
 ## Data flow
 
+Superseded by the amendment above; the flow is now:
+
 ```
-user AnnData (genes as var; mouse/rat/macaque/human; Symbol/Ensembl/Entrez)
-  → pa.pp.prepare_tage(adata, species=..., reference_group=...)
-  → transformed AnnData (mouse Entrez space, uns marker)
-  → pa.pred.predict_age(adata, ["tage", "tagemortality"])   # standard path
+user AnnData (raw counts; optional species indicator column and
+              obs["tage_reference_group"])
+  → pa.pred.predict_age(adata, ["tage", "tagemortality"])
+      → cohort transform, once per call → frame in mouse Entrez space
+      → per clock: align features → predict
 ```
 
 ## Error handling

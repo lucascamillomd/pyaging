@@ -14,9 +14,37 @@ except Exception:
 import gc
 
 from ..models import pyagingModel
+from ..preprocess._tage import _prepare_tage
 from ..utils._feature_ranges import resolve_feature_bounds
 from ..utils._hf import PyAgingResourceNotFoundError, download_clock_weights
 from ..utils._utils import progress
+
+# Whole-cohort preprocessing a clock can ask ``predict_age`` to run for it, by
+# name. A transform takes the raw AnnData and returns a samples x features
+# frame; it must not write to ``adata.X``, since the other clocks in the same
+# call still read the original matrix.
+COHORT_TRANSFORMS = {"tage": _prepare_tage}
+
+
+@progress("Run the cohort transform")
+def apply_cohort_transform(
+    adata: anndata.AnnData,
+    transform_name: str,
+    dir: str,
+    logger,
+    indent_level: int = 2,
+):
+    """Run the named cohort transform over the whole input and return its frame."""
+    try:
+        transform = COHORT_TRANSFORMS[transform_name]
+    except KeyError:
+        message = (
+            f"This clock asks for a cohort transform named {transform_name!r}, which this version of "
+            f"pyaging does not provide. Known transforms: {sorted(COHORT_TRANSFORMS)}."
+        )
+        logger.error(message, indent_level=indent_level + 1)
+        raise ValueError(message) from None
+    return transform(adata, dir=dir, logger=logger)
 
 
 def load_clock(
@@ -174,6 +202,61 @@ def check_features_in_adata(
     Index(['gene1', 'gene2', ...], dtype='object')
 
     """
+    _align_features_into_obsm(adata, model, adata.X, adata.var_names, logger, indent_level)
+
+
+@progress("Build the cohort feature matrix")
+def build_cohort_feature_matrix(
+    adata: anndata.AnnData,
+    model: pyagingModel,
+    frame,
+    logger,
+    indent_level: int = 2,
+) -> None:
+    """
+    Assemble a cohort-relative clock's feature matrix from its transformed frame.
+
+    A clock declaring ``cohort_transform`` is not scored against ``adata.X``: its
+    features live in the space the transform produces (for tAge, cohort-centred
+    mouse Entrez columns), so alignment reads that frame instead. Everything else
+    -- reference-value substitution for features the transform did not yield, the
+    missing-feature bookkeeping, and the supplied-features mask that
+    :func:`check_feature_ranges` reads -- is identical to
+    :func:`check_features_in_adata`, which is why both share one implementation.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The object the matrix and the bookkeeping are written to. Its ``.X`` is
+        only read by the transform, never here.
+
+    model : pyagingModel
+        The clock being aligned.
+
+    frame : pandas.DataFrame
+        Samples x transformed-features, in the row order of ``adata``.
+
+    logger : Logger
+        A logger object used for logging information about the process.
+
+    indent_level : int, optional
+        The indentation level for the logger, by default 2.
+
+    Returns
+    -------
+    None
+        The AnnData object is updated in place.
+    """
+    _align_features_into_obsm(adata, model, frame.to_numpy(), frame.columns, logger, indent_level)
+
+
+def _align_features_into_obsm(adata, model, source_values, source_features, logger, indent_level: int) -> None:
+    """Fill ``obsm["X_{clock}"]`` from ``source_values``, one column per model feature.
+
+    Features the source does not carry take the model's reference value (or 0
+    when it has none), and the substitutions are recorded so downstream checks
+    can tell the input's own values apart from the pipeline's.
+    """
 
     # Preallocate the data matrix
     adata.obsm[f"X_{model.metadata['clock_name']}"] = (
@@ -182,8 +265,8 @@ def check_features_in_adata(
         else np.empty((adata.n_obs, len(model.features)), order="F")
     )
 
-    # Find indices of matching features in adata.var_names
-    feature_indices = {feature: i for i, feature in enumerate(adata.var_names)}
+    # Find indices of matching features among the source's own feature names
+    feature_indices = {feature: i for i, feature in enumerate(source_features)}
     model_feature_indices = np.array([feature_indices.get(feature, -1) for feature in model.features])
 
     # Identify missing features
@@ -193,7 +276,9 @@ def check_features_in_adata(
     # Assign values for existing features
     existing_features_mask = ~missing_features_mask
     existing_features_indices = model_feature_indices[existing_features_mask]
-    adata.obsm[f"X_{model.metadata['clock_name']}"][:, existing_features_mask] = adata.X[:, existing_features_indices]
+    adata.obsm[f"X_{model.metadata['clock_name']}"][:, existing_features_mask] = source_values[
+        :, existing_features_indices
+    ]
 
     # Handle missing features
     adata.obsm[f"X_{model.metadata['clock_name']}"][:, missing_features_mask] = (
