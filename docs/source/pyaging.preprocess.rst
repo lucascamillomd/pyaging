@@ -14,6 +14,11 @@ sample cannot be prepared on its own. Because of this, these clocks refuse any i
 that :func:`pyaging.preprocess.prepare_tage` did not produce; passing a raw matrix to
 ``predict_age`` raises rather than silently returning a meaningless number.
 
+The flip side of cohort statistics is that they need a cohort. Two samples pass the
+minimum ``prepare_tage`` enforces, but normalisation and centring estimated from fewer
+than roughly ten samples — or from a reference group that small — are statistically
+weak, and the predictions inherit that noise.
+
 .. code-block:: python
 
    import pyaging as pya

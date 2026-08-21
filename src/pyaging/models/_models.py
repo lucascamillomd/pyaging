@@ -3284,7 +3284,7 @@ class TAge(pyagingModel):
         ``reference_values`` holds the published pipeline's ``SimpleImputer`` fill
         values, so a gene the aligned list carries but the sample does not gets the
         exact value the model was fitted to expect. For a cohort-centered clock that
-        is the least-biased choice available: the gene contributes its training mean
+        is the least-biased choice available: the gene contributes its training median
         rather than pulling the score toward zero or toward this cohort's center.
         """
         if self.reference_values is None:
