@@ -13,7 +13,7 @@ this working tree rather than whatever is currently published on HuggingFace.
 
 Usage
 -----
-    uv run python scripts/generate_boundary_gold.py
+    uv run python clocks/generate_boundary_gold.py
 
 Writes ``boundary_gold.json``; paste its contents into the test's
 ``boundary_gold_standard_dict`` and delete the file.
