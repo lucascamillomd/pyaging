@@ -2,8 +2,10 @@
 
 Each clock gets its own model repo (``pyaging/<clock_name>``) containing the
 weight file, a ``config.json`` with the audited clock metadata (also the file
-the Hub counts as a download), and a generated model card. Per-repo download
-counters are what power the docs' popularity ranking.
+the Hub counts as a download), and a generated model card. A clock whose
+preprocessing needs a companion asset -- ``tage`` and its gene mapping, say --
+also gets every ``clocks/weights/<clock_name>_*.csv.gz`` sidecar. Per-repo
+download counters are what power the docs' popularity ranking.
 
 Usage:
     python clocks/hf_repo_sync.py                 # sync every clock
@@ -76,12 +78,21 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _remote_weight_sha(api: HfApi, repo_id: str, filename: str) -> str | None:
+def _remote_file_sha(api: HfApi, repo_id: str, filename: str) -> str | None:
     with suppress(Exception):
         paths = api.get_paths_info(repo_id, [filename])
         if paths and paths[0].lfs is not None:
             return paths[0].lfs.sha256
     return None
+
+
+def _sidecar_assets(clock_name: str, weights_dir: Path = WEIGHTS_DIR) -> list[Path]:
+    """Companion data files a clock's preprocessing downloads from its own repo.
+
+    The prefix is the clock name followed by an underscore, so ``tage`` claims
+    ``tage_gene_mapping.csv.gz`` without also claiming ``tagemortality``'s files.
+    """
+    return sorted(weights_dir.glob(f"{clock_name}_*.csv.gz"))
 
 
 def _display_name(metadata: dict) -> str:
@@ -125,11 +136,11 @@ def sync_clock(api: HfApi, clock_name: str, metadata: dict, tag: str | None, tag
             CommitOperationAdd("config.json", json.dumps(metadata, indent=1, sort_keys=True).encode()),
             CommitOperationAdd("README.md", _build_card(metadata).encode()),
         ]
-        weight_current = _remote_weight_sha(api, repo_id, weight_path.name) == _sha256(weight_path)
-        if not weight_current:
-            operations.append(CommitOperationAdd(weight_path.name, str(weight_path)))
+        payload = [weight_path, *_sidecar_assets(clock_name)]
+        stale = [path for path in payload if _remote_file_sha(api, repo_id, path.name) != _sha256(path)]
+        operations.extend(CommitOperationAdd(path.name, str(path)) for path in stale)
         api.create_commit(repo_id, operations=operations, commit_message=f"Sync {clock_name}")
-        outcome = "uploaded" if not weight_current else "metadata-only"
+        outcome = f"uploaded ({', '.join(path.name for path in stale)})" if stale else "metadata-only"
 
     if tag:
         with suppress(RevisionNotFoundError, HfHubHTTPError):
