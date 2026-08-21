@@ -39,6 +39,7 @@ FIELDS = [
     "postprocess",
     "reference_values",
     "approved_by_author",
+    "research_only",
 ]
 ARRAY_FIELDS = {"predicts", "training_target", "unit", "tissue", "platform"}
 
@@ -66,6 +67,7 @@ LABELS = {
     "postprocess": "Postprocess",
     "reference_values": "Reference values",
     "approved_by_author": "Verified",
+    "research_only": "Research use only",
 }
 
 
@@ -81,6 +83,12 @@ def _approval(v):
     # Upstream marks author verification with an emoji (✅ verified, ⌛ pending);
     # normalize to a searchable/filterable public label for the Explorer + CSV.
     return "By authors" if str(v).strip() == "✅" else "Not yet"
+
+
+def _research_only(v):
+    # Only the restriction is worth showing; an unrestricted clock leaves the row
+    # blank (rendered as an em dash) rather than saying "No" 150 times.
+    return "Yes" if v is True else None
 
 
 def _json_safe(o):
@@ -134,6 +142,7 @@ def generate(metadata_path=None):
             value = m.get(f)
             row[f] = _finite(_as_array(value)) if f in ARRAY_FIELDS else _finite(_shorten(value))
         row["approved_by_author"] = _approval(m.get("approved_by_author"))
+        row["research_only"] = _research_only(m.get("research_only"))
         row["notebook"] = f"clock_notebooks/{name}.html"
         rows.append(row)
     # Author-verified clocks first, then alphabetical by name.

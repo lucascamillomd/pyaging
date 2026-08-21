@@ -67,3 +67,7 @@ tmp/
 # directory. Only the gzipped copies are committed.
 tests/data/tage/*.csv
 !tests/data/tage/input_metadata.csv
+
+# Published tAge model pickles: regenerating the fixtures re-downloads them from
+# Zenodo into the same directory. They are inputs, never committed artifacts.
+tests/data/tage/*.pkl

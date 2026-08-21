@@ -6,6 +6,12 @@ import pyaging as pya
 
 pytestmark = pytest.mark.full_catalog
 
+# tage and tagemortality are absent by construction, not by oversight. This suite
+# feeds each clock a seeded random frame through pya.pred.predict_age, and the two
+# cohort-relative clocks refuse any input that prepare_tage did not mark, so a
+# random frame is exactly what they are built to reject. Their equivalent pinning
+# lives in test_boundary_gold_standard.py, which drives the model directly, and in
+# tests/integration/test_tage_end_to_end.py, which pins the prepared-cohort path.
 gold_standard_dict = {
     "altumage": 91.64974762567451,
     "bitage": -76.70067243278027,

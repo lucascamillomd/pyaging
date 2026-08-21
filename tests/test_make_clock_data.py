@@ -68,6 +68,7 @@ EXPECTED_CSV_HEADER = [
     "Postprocess",
     "Reference values",
     "Verified",
+    "Research use only",
 ]
 
 
@@ -186,7 +187,7 @@ def test_main_passes_metadata_path_from_cli(monkeypatch, capsys):
 def test_committed_clocks_json_is_valid():
     rows = _load_rows()
     assert isinstance(rows, list)
-    assert len(rows) == 177, f"expected 177 clocks, got {len(rows)}"
+    assert len(rows) == 179, f"expected 179 clocks, got {len(rows)}"
     array_fields = ("tissue", "platform", "predicts", "training_target", "unit")
 
     # required keys present on every row

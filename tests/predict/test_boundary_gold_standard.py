@@ -287,6 +287,8 @@ boundary_gold_standard_dict: dict[str, list[float]] = {
     "systemsagelung": [200.34704598357675, 248.66307302698888],
     "systemsagemetabolic": [-176.01932701244797, 170.0061444508523],
     "systemsagemusculoskeletal": [75.90920716267941, 142.2183778075208],
+    "tage": [-0.10731654413942193, -147.99358763393388],
+    "tagemortality": [-0.016780892841450207, -0.9625543611501612],
     "thompson": [30.31719970703125, 162.6196001644057],
     "twelvecelldeconvolutebloodepicbas": [0.08333333333333333, 0.0],
     "twelvecelldeconvolutebloodepicbmem": [0.08333333333333333, 0.0],

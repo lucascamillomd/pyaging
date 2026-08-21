@@ -38,6 +38,7 @@
     ["n_features", "N features"], ["year", "Year"], ["citations", "Citations"], ["downloads", "Downloads"],
     ["last_author", "Last author"], ["journal", "Journal"], ["species", "Species"],
     ["data_type", "Data type"], ["approved_by_author", "Verified"],
+    ["research_only", "Research use only"],
   ];
   // Every sortable table column is offered in the quick-sort dropdown so a
   // column-header click always has a matching option and render() can re-sync

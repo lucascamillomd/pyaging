@@ -162,6 +162,8 @@ one per clock.
    clock_notebooks/systemsagelung
    clock_notebooks/systemsagemetabolic
    clock_notebooks/systemsagemusculoskeletal
+   clock_notebooks/tage
+   clock_notebooks/tagemortality
    clock_notebooks/thompson
    clock_notebooks/twelvecelldeconvolutebloodepicbas
    clock_notebooks/twelvecelldeconvolutebloodepicbmem

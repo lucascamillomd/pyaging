@@ -5443,6 +5443,76 @@
     "version": "0.5.0",
     "reference_values": true
   },
+  "tage": {
+    "clock_name": "tage",
+    "data_type": "transcriptomics (relative)",
+    "species": "multiple species",
+    "year": 2026,
+    "approved_by_author": "⌛",
+    "citation": "Tyshkovskiy, Alexander, et al. \"Universal transcriptomic hallmarks of mammalian ageing and mortality.\" Nature 654 (2026): 173-188.",
+    "doi": "https://doi.org/10.1038/s41586-026-10542-3",
+    "notes": "Elastic Net over 10,487 mouse-Entrez genes, multispecies multi-tissue, scaleddiff variant. Cohort-relative: inputs must come from pyaging.preprocess.prepare_tage, and a prediction is an age difference against the chosen reference group, not an absolute age -- zero means \"looks like the reference\", negative means younger-looking. The published pipeline's SimpleImputer, mean-only StandardScaler and pass-through SelectKBest are folded into the packaged linear layer, and the imputer medians are carried as reference_values so a gene the sample does not measure contributes its training median. Output is months of mouse age: the Elastic Net predicts a fraction of species maximum lifespan and the mouse factor of 48 months is baked into the weights, so a cohort of another species must be rescaled by its own maximum lifespan over 48 (human 122.5 years, rat 50.4 months, macaque 39 years); those constants come from the authors' released tAge package and differ slightly from the paper's Methods, which report 4, 3.8, 39 and 122 years. Released under the MGB Open Access License 1.0: non-commercial academic research use only.",
+    "research_only": true,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "relative age"
+    ],
+    "training_target": [
+      "relative age"
+    ],
+    "unit": [
+      "months"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "RNA-seq"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10487,
+    "citations": 0,
+    "citations_date": "2026-08-21",
+    "version": "0.5.0",
+    "reference_values": true
+  },
+  "tagemortality": {
+    "clock_name": "tagemortality",
+    "data_type": "transcriptomics (relative)",
+    "species": "multiple species",
+    "year": 2026,
+    "approved_by_author": "⌛",
+    "citation": "Tyshkovskiy, Alexander, et al. \"Universal transcriptomic hallmarks of mammalian ageing and mortality.\" Nature 654 (2026): 173-188.",
+    "doi": "https://doi.org/10.1038/s41586-026-10542-3",
+    "notes": "Elastic Net over 10,487 mouse-Entrez genes, multispecies multi-tissue, scaleddiff variant. Cohort-relative: inputs must come from pyaging.preprocess.prepare_tage, and a prediction is a hazard shift against the chosen reference group, not an absolute risk. The published pipeline's SimpleImputer, mean-only StandardScaler and pass-through SelectKBest are folded into the packaged linear layer, and the imputer medians are carried as reference_values so a gene the sample does not measure contributes its training median. Output is log10(hazard ratio) -- base 10, not the natural log the 'log hazard' unit label usually implies -- and unlike the chronological clocks it is never rescaled by species maximum lifespan, so it is directly comparable across species. Released under the MGB Open Access License 1.0: non-commercial academic research use only.",
+    "research_only": true,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "RNA-seq"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10487,
+    "citations": 0,
+    "citations_date": "2026-08-21",
+    "version": "0.5.0",
+    "reference_values": true
+  },
   "thompson": {
     "clock_name": "thompson",
     "data_type": "DNA methylation",
