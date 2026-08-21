@@ -111,6 +111,7 @@ def local_assets(monkeypatch, mapping):
 
     def load_with_transform(*args, **kwargs):
         model = real_load_clock(*args, **kwargs)
+        assert getattr(model, "cohort_transform", None) is None, "shim obsolete — remove it (Task B landed)"
         model.cohort_transform = "tage"
         return model
 

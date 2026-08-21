@@ -72,6 +72,20 @@ def predict_age(
     It is important that the input AnnData object's .X attribute contains data suitable for age
     prediction.
 
+    A few clocks are cohort-relative: they read a sample only in the context of the samples
+    predicted alongside it, so their preprocessing is computed here, over the whole input, before
+    any batching. The tAge clocks (`tage`, `tagemortality`) work this way. Pass them raw RNA-seq
+    counts and at least two samples; .X itself is never modified, and what the preprocessing did is
+    recorded in .uns["tage_preparation"]. Two optional columns steer it:
+
+    - Species: a column named `mouse`, `rat`, `macaque`, or `human` among .var_names, set to 1 for
+      every sample, the same idiom the mammalian clocks use for covariates such as `female`. Only
+      one may be set, and it is dropped before the gene pipeline rather than read as a gene. With
+      no such column the cohort is taken to be mouse and a warning says so.
+    - Reference group: a boolean .obs["tage_reference_group"], whose true rows are the samples to
+      centre against. Without it the cohort centres on every sample. Predictions are differences
+      against that reference, not absolute values.
+
     The function automatically handles the transfer of data and models to the appropriate compute
     device (CPU or GPU) based on system configuration.
 

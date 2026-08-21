@@ -136,6 +136,38 @@ def test_bookkeeping_reflects_the_transformed_gene_set(monkeypatch, fake_transfo
     )
 
 
+def test_a_reordered_frame_is_realigned_to_obs_names(monkeypatch):
+    # The matrix is filled positionally, so a transform that returns the cohort
+    # in another order must be matched back by label, not trusted row by row.
+    shuffled = TRANSFORMED.loc[["s2", "s0", "s1"]]
+    monkeypatch.setitem(_pred_utils.COHORT_TRANSFORMS, "fake", lambda adata, dir=None, logger=None: shuffled)
+    model = _stub_clock("cohort", ["101"])
+    _patch_clocks(monkeypatch, [model])
+    adata = _raw_adata()
+
+    pya.pred.predict_age(adata, ["cohort"], clean=False, verbose=False)
+
+    np.testing.assert_array_equal(adata.obsm["X_cohort"][:, 0], TRANSFORMED["101"].to_numpy())
+
+
+@pytest.mark.parametrize(
+    "index",
+    [
+        pytest.param(["s0", "s1", "s9"], id="different-samples"),
+        pytest.param(["s0", "s0", "s1"], id="duplicated-label"),
+        pytest.param(["s0", "s1"], id="too-few-rows"),
+    ],
+)
+def test_a_frame_that_is_not_the_cohort_raises(monkeypatch, index):
+    frame = pd.DataFrame(TRANSFORMED.to_numpy()[: len(index)], index=index, columns=TRANSFORMED.columns)
+    monkeypatch.setitem(_pred_utils.COHORT_TRANSFORMS, "fake", lambda adata, dir=None, logger=None: frame)
+    model = _stub_clock("cohort", ["101"])
+    _patch_clocks(monkeypatch, [model])
+
+    with pytest.raises(ValueError, match="not this cohort's"):
+        pya.pred.predict_age(_raw_adata(), ["cohort"], verbose=False)
+
+
 def test_transform_runs_once_for_two_clocks_sharing_it(monkeypatch, fake_transform):
     models = [_stub_clock("cohort_a", ["101"]), _stub_clock("cohort_b", ["102"])]
     _patch_clocks(monkeypatch, models)

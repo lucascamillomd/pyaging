@@ -246,7 +246,27 @@ def build_cohort_feature_matrix(
     -------
     None
         The AnnData object is updated in place.
+
+    Raises
+    ------
+    ValueError
+        If the frame's rows are not the cohort's samples. The matrix is filled
+        positionally, so a frame holding different samples -- or the same ones
+        under duplicated labels -- would attach one sample's expression to
+        another's predicted age, which is worse than not predicting at all. A
+        frame that merely orders the same samples differently is reordered to
+        match rather than rejected.
     """
+    if not frame.index.equals(adata.obs_names):
+        if frame.index.has_duplicates or set(frame.index) != set(adata.obs_names):
+            message = (
+                f"The cohort transform returned {len(frame.index)} rows that are not this cohort's "
+                f"{adata.n_obs} samples, so its values cannot be matched to them."
+            )
+            logger.error(message, indent_level=indent_level + 1)
+            raise ValueError(message)
+        frame = frame.reindex(adata.obs_names)
+
     _align_features_into_obsm(adata, model, frame.to_numpy(), frame.columns, logger, indent_level)
 
 
