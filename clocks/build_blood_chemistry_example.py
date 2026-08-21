@@ -122,6 +122,10 @@ def main() -> None:
         raise SystemExit("The selected rows are all one sex; the sex-specific clocks need both")
 
     frame.to_csv(HERE / "blood_chemistry_example.csv")
+    # pandas 3 defaults to a pyarrow-backed string dtype; pyaging does not depend on
+    # pyarrow, so an arrow-backed index would make the pickle unreadable on a clean install.
+    frame.index = frame.index.astype(object)
+    frame.columns = frame.columns.astype(object)
     frame.to_pickle(HERE / "blood_chemistry_example.pkl")
     (HERE / "nhanes4_complete_cases.csv").unlink()
 
