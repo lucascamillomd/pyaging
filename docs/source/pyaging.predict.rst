@@ -26,11 +26,3 @@ pyaging.predict._transforms
    :members:
    :undoc-members:
    :show-inheritance:
-
-pyaging.predict._inverse_transforms
------------------------------------
-
-.. automodule:: pyaging.predict._inverse_transforms
-   :members:
-   :undoc-members:
-   :show-inheritance:

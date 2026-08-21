@@ -1,15 +1,5 @@
 # pyaging/predict/__init__.py
 
-from ._inverse_transforms import (
-    anti_log,
-    anti_log_linear,
-    anti_log_log,
-    anti_logp2,
-    mortality_to_phenoage,
-    mortality_to_phenoage_saopaulo,
-    petkovichblood,
-    stubbsmultitissue,
-)
 from ._pred import predict_age
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
@@ -22,6 +12,7 @@ from ._pred_utils import (
 )
 from ._transforms import (
     binarize,
+    mortality_to_phenoage_saopaulo,
     quantile_normalize_with_gold_standard,
     scale,
     scale_row,
@@ -31,18 +22,12 @@ from ._transforms import (
 
 __all__ = [
     "add_pred_ages_and_clock_metadata_adata",
-    "anti_log",
-    "anti_log_linear",
-    "anti_log_log",
-    "anti_logp2",
     "binarize",
     "check_feature_ranges",
     "check_features_in_adata",
     "cleanup_clock_memory",
     "load_clock",
-    "mortality_to_phenoage",
     "mortality_to_phenoage_saopaulo",
-    "petkovichblood",
     "predict_age",
     "predict_ages_with_model",
     "quantile_normalize_with_gold_standard",
@@ -50,6 +35,5 @@ __all__ = [
     "scale_row",
     "scale_with_gold_standard",
     "set_torch_device",
-    "stubbsmultitissue",
     "tpm_norm_log1p",
 ]

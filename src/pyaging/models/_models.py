@@ -7,8 +7,7 @@ import torch.nn as nn
 # It holds because ``_pred_utils`` only takes names ``models/__init__`` has already bound
 # from ``_base_models`` by the time this module runs; importing a name defined here would
 # break it.
-from ..predict._inverse_transforms import mortality_to_phenoage_saopaulo
-from ..predict._transforms import PHENOAGE_CRP_FLOOR_MG_DL, crp_index, log1p_crp
+from ..predict._transforms import PHENOAGE_CRP_FLOOR_MG_DL, crp_index, log1p_crp, mortality_to_phenoage_saopaulo
 from ._base_models import pyagingModel
 
 # LinAge2's ``foldOutliers`` cap, in MAD-scaled z units, applied to every feature.

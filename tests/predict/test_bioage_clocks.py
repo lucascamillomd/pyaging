@@ -491,6 +491,14 @@ def test_phenoagesaopaulo_has_no_sex_term():
     assert "female" not in model.features
 
 
+def mortality_to_phenoage(x):
+    """Convert a Gompertz mortality CDF to phenotypic age using Levine's
+    published 2018 constants, kept here as an independent oracle."""
+    lambda_ = 0.0192
+    mortality_score = 1 - math.exp(-math.exp(x) * (math.exp(120 * lambda_) - 1) / lambda_)
+    return 141.50225 + math.log(-0.00553 * math.log(1 - mortality_score)) / 0.090165
+
+
 def test_phenoagesaopaulo_uses_its_own_refit_gompertz_constants():
     """The refit's mortality-to-age constants are fit alongside the coefficients and
     are not Levine's published ones, so reusing ``mortality_to_phenoage`` would be
@@ -501,8 +509,6 @@ def test_phenoagesaopaulo_uses_its_own_refit_gompertz_constants():
     assert not math.isclose(model.ba_i.item(), 141.50225, abs_tol=0.1)
     assert not math.isclose(model.ba_d.item(), 0.090165, abs_tol=1e-3)
     assert not math.isclose(model.ba_n.item(), -0.00553, abs_tol=1e-4)
-
-    from pyaging.predict._inverse_transforms import mortality_to_phenoage
 
     linear_predictor = torch.tensor([-6.0], dtype=torch.float64)
     assert not math.isclose(
