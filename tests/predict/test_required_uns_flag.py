@@ -60,3 +60,26 @@ def test_guard_passes_with_uns_marker(monkeypatch):
     adata.uns["tage_prepared"] = True
     pya.pred.predict_age(adata, ["guarded"], verbose=False)
     assert "guarded" in adata.obs.columns
+
+
+@pytest.mark.parametrize("clock_class", [pya.models.TAge, pya.models.TAgeMortality])
+def test_tage_models_declare_the_guard(clock_class):
+    model = clock_class()
+    assert model.required_uns_flag == "tage_prepared"
+    x = torch.ones(1, 3, dtype=torch.float64)
+    assert torch.equal(model.postprocess(x), x)
+
+
+@pytest.mark.parametrize("clock_class", [pya.models.TAge, pya.models.TAgeMortality])
+def test_tage_preprocess_substitutes_reference_values_for_absent_genes(clock_class):
+    model = clock_class()
+    model.reference_values = [1.0, 2.0, 3.0]
+    x = torch.tensor([[float("nan"), 5.0, float("nan")]], dtype=torch.float64)
+    assert torch.equal(model.preprocess(x), torch.tensor([[1.0, 5.0, 3.0]], dtype=torch.float64))
+
+
+@pytest.mark.parametrize("clock_class", [pya.models.TAge, pya.models.TAgeMortality])
+def test_tage_preprocess_is_a_no_op_without_reference_values(clock_class):
+    model = clock_class()
+    x = torch.tensor([[float("nan"), 5.0]], dtype=torch.float64)
+    assert model.preprocess(x) is x

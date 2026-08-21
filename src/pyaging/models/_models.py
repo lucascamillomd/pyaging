@@ -3270,3 +3270,34 @@ class EpiCMITHypo(epiTOC1):
 
 class EpiTOC3(epiTOC2):
     pass
+
+
+class TAge(pyagingModel):
+    def __init__(self):
+        super().__init__()
+        # Cohort-relative clock: input must come from ``preprocess.prepare_tage``.
+        self.required_uns_flag = "tage_prepared"
+
+    def preprocess(self, x):
+        """Substitute the fitted imputer statistics for genes absent from the sample.
+
+        ``reference_values`` holds the published pipeline's ``SimpleImputer`` fill
+        values, so a gene the aligned list carries but the sample does not gets the
+        exact value the model was fitted to expect. For a cohort-centered clock that
+        is the least-biased choice available: the gene contributes its training mean
+        rather than pulling the score toward zero or toward this cohort's center.
+        """
+        if self.reference_values is None:
+            return x
+        if isinstance(self.reference_values, torch.Tensor):
+            reference = self.reference_values.to(device=x.device, dtype=x.dtype)
+        else:
+            reference = torch.tensor(self.reference_values, device=x.device, dtype=x.dtype)
+        return torch.where(torch.isnan(x), reference, x)
+
+    def postprocess(self, x):
+        return x
+
+
+class TAgeMortality(TAge):
+    """Mortality head of the same pipeline family, with the same cohort-relative input contract."""

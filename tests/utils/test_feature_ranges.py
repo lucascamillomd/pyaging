@@ -178,3 +178,16 @@ def test_registry_bounds_are_ordered():
         low = -math.inf if entry["low"] is None else entry["low"]
         high = math.inf if entry["high"] is None else entry["high"]
         assert low < high, name
+
+
+def test_relative_transcriptomics_is_unbounded():
+    """A cohort-centered expression value is legitimately negative and has no ceiling.
+
+    The modality has to be declared rather than left to the unknown-modality fallback:
+    the registry is what documents that the silence is deliberate, not an oversight.
+    """
+    assert "transcriptomics (relative)" in load_feature_range_registry()["modality_defaults"]
+
+    (record,) = resolve_feature_ranges(["12575"], "transcriptomics (relative)")
+    assert record["unit"] is None
+    assert math.isinf(-record["low"]) and math.isinf(record["high"])
