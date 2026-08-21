@@ -11,19 +11,36 @@
    ancestor's overflow would trap it anyway). */
 .ce-controls { padding-bottom: 4px; }
 
-/* Popular-clocks strip: rank in sand, compact chips, one row above the tools. */
-.ce-popular { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 12px; }
-.ce-popular-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--ce-muted); margin-right: 3px; }
-.ce-popular-chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 10px 4px 6px;
+/* Most-downloaded leaderboard: one labeled row of ranked chips per data type.
+   Ranks in sand, download counts in teal — the package's signature tri-color. */
+.ce-lead { margin-bottom: 14px; }
+.ce-lead-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--ce-muted); margin-bottom: 8px; }
+.ce-lead-typerow { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+.ce-lead-typerow + .ce-lead-typerow { border-top: 1px dashed var(--ce-border); }
+.ce-lead-type { flex: none; width: 12.5rem; font-size: 0.78rem; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ce-lead-chips { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: wrap;
+  align-items: center; gap: 5px; }
+.ce-lead-chip { display: inline-flex; align-items: center; gap: 7px; padding: 3px 5px;
   border: 1px solid var(--ce-border); border-radius: 999px; background: var(--color-background-primary, #fff);
-  cursor: pointer; font-size: 0.8rem; color: inherit; }
-.ce-popular-chip:hover { border-color: var(--ce-primary); }
-.ce-popular-rank { display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
-  height: 18px; border-radius: 50%; background: #efc53f; color: #132238; font-weight: 700;
-  font-size: 0.68rem; align-self: center; }
-.ce-popular-name { font-weight: 600; }
-.ce-popular-metric { color: var(--ce-muted); font-variant-numeric: tabular-nums; font-size: 0.72rem; }
+  cursor: pointer; font-size: 0.78rem; color: inherit; }
+.ce-lead-chip:hover { border-color: var(--ce-primary); }
+.ce-lead-rank { flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 17px; height: 17px; border-radius: 50%; background: #efc53f; color: #132238;
+  font-weight: 700; font-size: 0.62rem; font-variant-numeric: tabular-nums; }
+.ce-lead-name { font-weight: 600; }
+.ce-lead-metric { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px;
+  background: rgba(23, 143, 160, 0.14); color: #106574; font-weight: 700;
+  font-variant-numeric: tabular-nums; font-size: 0.7rem; }
+body[data-theme="dark"] .ce-lead-metric { background: rgba(53, 176, 192, 0.18); color: #6fd3e0; }
+@media (prefers-color-scheme: dark) {
+  body[data-theme="auto"] .ce-lead-metric { background: rgba(53, 176, 192, 0.18); color: #6fd3e0; }
+}
+@media (max-width: 820px) {
+  .ce-lead-typerow { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .ce-lead-type { width: auto; }
+}
 /* Signature tri-color rule closes the controls block, echoing the page titles. */
 .ce-controls::after {
   content: ""; display: block; height: 3px; border-radius: 2px; margin-bottom: 10px;

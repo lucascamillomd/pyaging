@@ -216,36 +216,59 @@
     activeChipsEl.style.display = activeChipsEl.childNodes.length ? "flex" : "none";
   }
 
-  // ---------- popular strip ----------
-  // Top clocks by Hub downloads, with citations breaking ties (counters start
-  // at zero on new repos and aggregate daily, so early on the tiebreak decides
-  // the order). Clicking a chip filters the table to that clock.
-  function buildPopular() {
-    var top = state.clocks
-      .slice()
-      .sort(function (a, b) {
-        return (b.downloads || 0) - (a.downloads || 0) || (b.citations || 0) - (a.citations || 0);
-      })
-      .slice(0, 8);
-    if (!top.length) return el("span");
-    var wrap = el("div", "ce-popular");
-    wrap.appendChild(el("span", "ce-popular-label", "Most downloaded"));
-    top.forEach(function (c, i) {
-      var chip = el("button", "ce-popular-chip");
-      chip.type = "button";
-      chip.title = "Show " + c.clock_name + " in the table";
-      chip.appendChild(el("span", "ce-popular-rank", String(i + 1)));
-      chip.appendChild(el("span", "ce-popular-name", c.clock_name));
-      if ((c.downloads || 0) > 0) {
-        chip.appendChild(el("span", "ce-popular-metric", core.formatValue(c.downloads)));
-      }
-      chip.addEventListener("click", function () {
-        state.search = c.clock_name;
-        state.expanded = {};
-        state.expanded[c.clock_name] = true;
-        buildAll();
+  // ---------- most-downloaded leaderboard ----------
+  // Top 10 clocks by Hub downloads within each data type, one tab per data
+  // type; citations break ties (download counters start at zero on new repos
+  // and aggregate daily, so early on the tiebreak decides the order).
+  // Clicking an entry filters the table to that clock and expands its row.
+  function byDownloads(a, b) {
+    return (b.downloads || 0) - (a.downloads || 0) || (b.citations || 0) - (a.citations || 0);
+  }
+  function buildLeaderboard() {
+    var groups = {}, order = [];
+    state.clocks.forEach(function (c) {
+      var dt = c.data_type || "other";
+      if (!groups[dt]) { groups[dt] = []; order.push(dt); }
+      groups[dt].push(c);
+    });
+    if (!order.length) return el("span");
+    // Columns ordered by catalogue size, largest data type first (stable
+    // whether or not the async download counts have arrived yet).
+    order.sort(function (a, b) {
+      return groups[b].length - groups[a].length || a.localeCompare(b);
+    });
+
+    // Rows ordered by catalogue size, largest data type first (stable whether
+    // or not the async download counts have arrived yet).
+    order.sort(function (a, b) {
+      return groups[b].length - groups[a].length || a.localeCompare(b);
+    });
+
+    var wrap = el("div", "ce-lead");
+    wrap.appendChild(el("div", "ce-lead-label", "Most downloaded"));
+    order.forEach(function (dt) {
+      var rowEl = el("div", "ce-lead-typerow");
+      rowEl.appendChild(el("span", "ce-lead-type", dt));
+
+      var chips = el("span", "ce-lead-chips");
+      groups[dt].slice().sort(byDownloads).slice(0, 10).forEach(function (c, i) {
+        var chip = el("button", "ce-lead-chip");
+        chip.type = "button";
+        var n = c.downloads || 0;
+        chip.title = "Show " + c.clock_name + " in the table";
+        chip.appendChild(el("span", "ce-lead-rank", String(i + 1)));
+        chip.appendChild(el("span", "ce-lead-name", c.clock_name));
+        if (n > 0) chip.appendChild(el("span", "ce-lead-metric", core.formatValue(n)));
+        chip.addEventListener("click", function () {
+          state.search = c.clock_name;
+          state.expanded = {};
+          state.expanded[c.clock_name] = true;
+          buildAll();
+        });
+        chips.appendChild(chip);
       });
-      wrap.appendChild(chip);
+      rowEl.appendChild(chips);
+      wrap.appendChild(rowEl);
     });
     return wrap;
   }
@@ -410,7 +433,7 @@
     // chips into one block above the bounded, self-scrolling table (.ce-scroll),
     // so they stay reachable while the 170+ rows scroll inside their box.
     var controls = el("div", "ce-controls");
-    controls.appendChild(buildPopular());
+    controls.appendChild(buildLeaderboard());
     controls.appendChild(buildToolbar());
     controls.appendChild(buildFilterBar());
     controls.appendChild(buildActiveChips());
