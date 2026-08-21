@@ -177,6 +177,27 @@ def test_good_overlap_does_not_warn(display_output):
     assert "mouse Entrez" not in display_output.getvalue()
 
 
+def test_non_mouse_species_warns_about_the_mouse_calibration(display_output, monkeypatch):
+    human_mapping = MAPPING.assign(species="human")
+    monkeypatch.setattr(_tage, "_load_mapping", lambda dir: human_mapping)
+    pya.pp.prepare_tage(_adata(), species="human", verbose=True)
+    assert "months of mouse age" in display_output.getvalue()
+
+
+def test_mouse_cohort_does_not_warn_about_calibration(display_output):
+    pya.pp.prepare_tage(_adata(), species="mouse", verbose=True)
+    assert "months of mouse age" not in display_output.getvalue()
+
+
+def test_duplicate_reference_names_do_not_double_weight_a_sample():
+    a = _adata()
+    unique = pya.pp.prepare_tage(a, species="mouse", reference_group=["s0", "s1"], verbose=False)
+    duplicated = pya.pp.prepare_tage(a, species="mouse", reference_group=["s0", "s1", "s0"], verbose=False)
+    np.testing.assert_allclose(duplicated.X, unique.X, atol=1e-12)
+    assert duplicated.uns["tage_preparation"]["n_reference_samples"] == 2
+    assert duplicated.uns["tage_preparation"]["reference_group"] == ["s0", "s1"]
+
+
 def test_public_export():
     assert "prepare_tage" in pya.pp.__all__
 

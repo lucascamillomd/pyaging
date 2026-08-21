@@ -147,7 +147,11 @@ def _load_mapping(dir: str) -> pd.DataFrame:
 
 
 def _resolve_reference_group(adata, reference_group) -> list | None:
-    """Turn obs names or a boolean mask into a list of sample labels."""
+    """Turn obs names or a boolean mask into a list of distinct sample labels.
+
+    A repeated label is dropped rather than kept: naming a sample twice would
+    otherwise double its weight in the per-gene median that centres the cohort.
+    """
     if reference_group is None:
         return None
     reference = np.asarray(reference_group)
@@ -156,7 +160,7 @@ def _resolve_reference_group(adata, reference_group) -> list | None:
             raise ValueError("boolean reference_group must have one entry per sample")
         names = list(adata.obs_names[reference])
     else:
-        names = [str(name) for name in reference]
+        names = list(dict.fromkeys(str(name) for name in reference))
         missing = sorted(set(names) - set(adata.obs_names))
         if missing:
             raise ValueError(f"reference_group names not in adata.obs_names: {missing[:5]}")
@@ -185,6 +189,13 @@ def prepare_tage(
     whole input, so predictions depend on which samples are prepared together. A
     single sample cannot be prepared, and a prediction is an age difference
     against the reference group rather than an absolute age.
+
+    Two samples clear the hard minimum but are not enough to normalise against:
+    the RLE factors, the reference median, and the gene filter are all cohort
+    statistics, so a very small cohort (roughly fewer than ten samples, or a
+    reference group that small) makes them noisy and the resulting predictions
+    correspondingly unstable. Nothing here rejects such an input; interpret it
+    with that in mind.
 
     Parameters
     ----------
@@ -237,6 +248,13 @@ def prepare_tage(
     reference_index = _resolve_reference_group(adata, reference_group)
 
     with live_step("preparing tAge input", verbose) as (step, pipeline_logger):
+        if species != "mouse":
+            pipeline_logger.warning(
+                f"tage is calibrated in months of mouse age; a {species} cohort needs rescaling by its own "
+                "maximum lifespan over 48 months (tagemortality, a log hazard ratio, is never rescaled)",
+                indent_level=2,
+            )
+
         frame = pd.DataFrame(np.asarray(adata.X, dtype=np.float64), index=adata.obs_names, columns=adata.var_names)
         filtered = _filter_genes(frame)
         if filtered.shape[1] == 0:
