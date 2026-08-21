@@ -18,7 +18,7 @@ from pyaging.preprocess._tage import (
     _center_against_reference,
     _log_transform,
     _rle_normalize,
-    _scale_genes,
+    _scale_samples,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -68,7 +68,7 @@ def test_log_matches_reference(stages):
 
 
 def test_scale_matches_reference(stages):
-    ours = _scale_genes(stages["after_log"])
+    ours = _scale_samples(stages["after_log"])
     np.testing.assert_allclose(ours.values, stages["after_scale"].values, rtol=0, atol=TOL)
 
 
@@ -123,7 +123,7 @@ def test_scale_is_per_sample():
     # R's scale() works down the columns of a genes x samples matrix, i.e. one
     # z-score per sample across its genes.
     frame = pd.DataFrame([[1.0, 2.0, 3.0], [10.0, 20.0, 60.0]], index=["s1", "s2"])
-    scaled = _scale_genes(frame)
+    scaled = _scale_samples(frame)
     np.testing.assert_allclose(scaled.mean(axis=1).values, [0.0, 0.0], atol=1e-12)
     np.testing.assert_allclose(scaled.std(axis=1, ddof=1).values, [1.0, 1.0], atol=1e-12)
     np.testing.assert_allclose(scaled.loc["s1"].values, [-1.0, 0.0, 1.0])
