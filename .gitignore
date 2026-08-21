@@ -36,6 +36,8 @@ example_data/
 # Generated clock weights and aggregate metadata (published to Hugging Face)
 clocks/weights/
 clocks/metadata/all_clock_metadata.pt
+clocks/blood_chemistry_example.pkl
+clocks/blood_chemistry_example.csv
 
 # Source datasets downloaded during clock-notebook execution; only the
 # notebooks themselves are tracked
