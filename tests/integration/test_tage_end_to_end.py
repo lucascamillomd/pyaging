@@ -15,12 +15,9 @@ gene mapping (``_tage._load_mapping``) and the clock weights
 weights are build artifacts of ``clocks/*.ipynb`` and are gitignored, so the
 whole module skips when they are absent and CI without them stays green.
 
-The committed ``.pt`` files predate the in-predict transform: they still carry
-``required_uns_flag`` and no ``cohort_transform``. Until the notebooks are
-re-executed the seam sets ``cohort_transform`` on the freshly loaded model, so
-these tests exercise the new path against the real weights -- and, because the
-stale flag is left in place, they also pin that a declared transform supersedes
-it.
+Nothing about the models is patched: the shipped ``.pt`` files declare
+``cohort_transform = "tage"`` themselves, so what runs here is the real loaded
+attribute rather than one a fixture put there.
 """
 
 import gzip
@@ -104,18 +101,6 @@ def local_assets(monkeypatch, mapping):
         return str(WEIGHTS / f"{clock_name}.pt")
 
     monkeypatch.setattr(_pred_utils, "download_clock_weights", local_weights)
-
-    # The committed weights predate the attribute; Task B's notebook run bakes
-    # it in and this shim goes away.
-    real_load_clock = _pred_utils.load_clock
-
-    def load_with_transform(*args, **kwargs):
-        model = real_load_clock(*args, **kwargs)
-        assert getattr(model, "cohort_transform", None) is None, "shim obsolete — remove it (Task B landed)"
-        model.cohort_transform = "tage"
-        return model
-
-    monkeypatch.setattr("pyaging.predict._pred.load_clock", load_with_transform)
 
 
 def test_input_fixture_is_mouse_ensembl_samples_by_genes(adata, expected):
