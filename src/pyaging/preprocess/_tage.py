@@ -17,6 +17,8 @@ approximation only because every ortholog hop is injective on the reference
 tables; the build script asserts that invariant.
 """
 
+import warnings
+
 import numpy as np
 import pandas as pd
 
@@ -35,6 +37,24 @@ REFERENCE_COLUMN = "tage_reference_group"
 # filter_genes' defaults in the reference pipeline (R/preprocessing.R:68).
 COUNT_THRESHOLD = 10
 PERCENT_THRESHOLD = 20
+
+
+def _warn(logger, message: str) -> None:
+    """Raise a warning on both the predict display and Python's warnings channel.
+
+    The display logger renders nothing at ``verbose=False``, so a warning that
+    only went there would be invisible in exactly the scripted runs where it
+    matters most -- notably the silent default to mouse, which can score a human
+    cohort as a mouse one. Both channels are fed from one string so their
+    wording cannot drift apart.
+
+    ``stacklevel=2`` blames the pipeline stage that called this, not this line.
+    Reaching the user's ``predict_age`` call would mean hard-coding the depth of
+    ``predict_age -> apply_cohort_transform -> _prepare_tage``, which is more
+    fragile than it is worth.
+    """
+    logger.warning(message, indent_level=2)
+    warnings.warn(message, UserWarning, stacklevel=2)
 
 
 def _filter_genes(
@@ -186,10 +206,10 @@ def _resolve_species(frame: pd.DataFrame, logger) -> tuple[str, pd.DataFrame]:
 
     remaining = frame.drop(columns=indicators)
     if not selected:
-        logger.warning(
+        _warn(
+            logger,
             "no species indicator column found; defaulting to mouse (add a column named "
             f"{'/'.join(SPECIES_COLUMNS)}, set to 1 for every sample, to say otherwise)",
-            indent_level=2,
         )
         return "mouse", remaining
     return selected[0], remaining
@@ -257,7 +277,10 @@ def _prepare_tage(adata, dir: str = "pyaging_data", logger=None) -> pd.DataFrame
     dir : str
         Directory the gene mapping is downloaded to. Defaults to "pyaging_data".
     logger : optional
-        Internal pipeline logger; warnings surface on the predict display.
+        Internal pipeline logger; warnings surface on the predict display, and
+        the two that would otherwise pass unnoticed -- the default to mouse and
+        a poor gene overlap -- are also raised as ``UserWarning`` so they survive
+        ``verbose=False``.
 
     Returns
     -------
@@ -314,10 +337,10 @@ def _prepare_tage(adata, dir: str = "pyaging_data", logger=None) -> pd.DataFrame
     # filter drops, so the raw fraction says more about annotation size than
     # about how well the input matches the mapping table.
     if mapped.shape[1] < 0.5 * filtered.shape[1]:
-        logger.warning(
+        _warn(
+            logger,
             f"only {mapped.shape[1]} of {filtered.shape[1]} expressed genes mapped to mouse "
             f"Entrez IDs; check that var_names are {species} gene identifiers",
-            indent_level=2,
         )
 
     centered = _center_against_reference(_scale_samples(_log_transform(_rle_normalize(mapped))), reference_index)

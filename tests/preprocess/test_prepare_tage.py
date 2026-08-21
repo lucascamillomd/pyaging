@@ -165,6 +165,37 @@ def test_species_column_set_to_one_does_not_warn(warnings):
     assert not any("defaulting to mouse" in message for message in warnings)
 
 
+def test_missing_species_column_also_raises_a_userwarning():
+    # The display logger renders nothing at verbose=False, so the default to
+    # mouse has to reach Python's warnings channel too or a human cohort can be
+    # scored as a mouse one in silence.
+    with pytest.warns(UserWarning, match="defaulting to mouse"):
+        _tage._prepare_tage(_adata())
+
+
+def test_low_overlap_also_raises_a_userwarning():
+    rng = np.random.default_rng(1)
+    a = anndata.AnnData(X=rng.integers(10, 1000, size=(4, 6)).astype(float))
+    a.var_names = ["G1", "U1", "U2", "U3", "U4", "U5"]
+    a.obs_names = [f"s{i}" for i in range(4)]
+    with pytest.warns(UserWarning, match="1 of 6 expressed genes mapped"):
+        _tage._prepare_tage(a)
+
+
+def test_declared_species_raises_no_userwarning(recwarn):
+    # A well-formed mouse cohort must stay quiet on both channels.
+    _tage._prepare_tage(_with_species(_adata(), "mouse"))
+    assert [w for w in recwarn.list if issubclass(w.category, UserWarning)] == []
+
+
+def test_both_channels_carry_the_same_warning_text(warnings):
+    # One string feeds the logger and warnings.warn, so the two cannot drift.
+    with pytest.warns(UserWarning) as raised:
+        _prepare(_adata(), messages=warnings)
+    logged = next(message for message in warnings if "defaulting to mouse" in message)
+    assert str(raised[0].message) in logged
+
+
 def test_two_species_columns_set_raises():
     a = _with_species(_with_species(_adata(), "mouse"), "human")
     with pytest.raises(ValueError, match="more than one species"):

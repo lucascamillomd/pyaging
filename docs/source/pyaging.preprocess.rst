@@ -38,8 +38,9 @@ The name is matched case-insensitively, so ``Human`` counts. Exactly one may be 
 The column is dropped before the gene pipeline, so it is never mistaken for a gene.
 With no such column — or with the columns present but zero everywhere — the cohort is
 taken to be mouse and a warning says so; setting two, or letting one vary between
-samples, is an error. That warning is the only signal, and ``verbose=False`` suppresses
-it, so name the species explicitly in scripted runs.
+samples, is an error. The warning goes both to the predict display and to Python's
+``warnings`` channel as a ``UserWarning``, so ``verbose=False`` does not hide it — but
+name the species explicitly in scripted runs rather than relying on the warning.
 
 **Reference group.** Add ``adata.obs["tage_reference_group"]``, boolean or numeric
 ``0``/``1``; the truthy rows are the samples to centre against. Without the column the
