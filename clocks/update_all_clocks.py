@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import os
+import sys
 import tempfile
 from collections import namedtuple
 from contextlib import suppress
@@ -10,12 +11,14 @@ from pathlib import Path
 
 import torch
 
-RUNTIME_METADATA_FIELDS = (
-    "version",
-    "preprocess",
-    "postprocess",
-    "reference_values",
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from validate_metadata import (  # noqa: E402
+    RUNTIME_METADATA_FIELDS,
+    _reject_duplicate_keys,
+    _reject_non_finite,
 )
+
 CURATED_REGISTRY_FIELDS = (
     "clock_name",
     "data_type",
@@ -85,19 +88,6 @@ def merge_clock_metadata(generated_metadata, curated_metadata):
         merged_metadata[clock_name] = merged_entry
 
     return merged_metadata
-
-
-def _reject_non_finite(value):
-    raise ValueError(f"non-finite JSON number {value!r} is not allowed")
-
-
-def _reject_duplicate_keys(pairs):
-    result = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f"duplicate key {key!r} is not allowed")
-        result[key] = value
-    return result
 
 
 def _validate_registry_entry(clock_name, entry):

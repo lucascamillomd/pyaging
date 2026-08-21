@@ -10,10 +10,11 @@ import torch
 from pyaging.utils import resolve_feature_ranges
 
 ROOT = Path(__file__).resolve().parents[1]
+CLOCKS_DIR = Path(__file__).resolve().parents[1] / "clocks"
 METADATA_DIR = ROOT / "clocks" / "metadata"
 WEIGHTS_DIR = ROOT / "clocks" / "weights"
 
-_spec = importlib.util.spec_from_file_location("validate_metadata", METADATA_DIR / "validate_metadata.py")
+_spec = importlib.util.spec_from_file_location("validate_metadata", CLOCKS_DIR / "validate_metadata.py")
 _validate_metadata = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_validate_metadata)
 
