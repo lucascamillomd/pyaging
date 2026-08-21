@@ -52,6 +52,8 @@ GENE_TABLES = {
 # Column in Table_of_orthologs.csv holding each species' own Entrez ID.
 ORTHOLOG_COLUMNS = {"rat": "Entrez.Rat", "human": "Entrez.Human"}
 SOURCE_COLUMNS = {"ensembl": "Ensembl", "symbol": "Gene.Symbol", "entrez": "Entrez"}
+# Clock features with no row in Gene_table_mouse.csv, as of the pinned clone.
+EXPECTED_SEEDED_FEATURES = 189
 
 
 def _first_wins(frame: pd.DataFrame, key: str, value: str) -> pd.Series:
@@ -76,7 +78,8 @@ def _macaque_map(meta: Path) -> pd.Series:
     return _first_wins(orthologs, "Ensembl.macaca", "Entrez.mouse")
 
 
-def build(clone: Path, gene_list: list[str]) -> pd.DataFrame:
+def build(clone: Path, gene_list: list[str]) -> tuple[pd.DataFrame, list[str]]:
+    """Return the mapping frame and the clock features the mouse gene table misses."""
     meta = clone / "inst/extdata/metadata"
     frames = []
     for species, fname in GENE_TABLES.items():
@@ -116,6 +119,10 @@ def build(clone: Path, gene_list: list[str]) -> pd.DataFrame:
 
     # A mouse Entrez ID is its own mouse Entrez ID even when the gene table has
     # no row for it, which is true of 189 of the clock's features.
+    from_tables = pd.concat(frames, ignore_index=True)
+    covered = set(from_tables.query("species == 'mouse' and source_type == 'entrez'")["source_id"])
+    seeded = [gene for gene in gene_list if gene not in covered]
+
     frames.append(
         pd.DataFrame(
             {
@@ -130,7 +137,7 @@ def build(clone: Path, gene_list: list[str]) -> pd.DataFrame:
     mapping = pd.concat(frames, ignore_index=True).dropna(subset=["mouse_entrez"])
     mapping["source_id"] = mapping["source_id"].str.upper()
     mapping = mapping.drop_duplicates(subset=["species", "source_id", "source_type"], keep="first")
-    return mapping.reset_index(drop=True)
+    return mapping.reset_index(drop=True), seeded
 
 
 def main() -> None:
@@ -138,17 +145,22 @@ def main() -> None:
     gene_list = [line.strip().strip('"') for line in (clone / "inst/extdata/Gene_list_all_4.6.txt").read_text().split()]
     gene_list = [gene for gene in gene_list if gene and gene != "x"]
 
-    mapping = build(clone, gene_list)
+    mapping, seeded = build(clone, gene_list)
 
     # One lookup dict per species requires source_id to be unambiguous across types.
     clashes = mapping.duplicated(subset=["species", "source_id"]).sum()
     assert clashes == 0, f"{clashes} source_id values are ambiguous within a species"
 
-    # Every clock feature must be reachable when a user supplies mouse Entrez IDs.
-    identity = mapping.query("species == 'mouse' and source_type == 'entrez'")
-    identity = dict(zip(identity["source_id"], identity["mouse_entrez"], strict=True))
-    unreachable = [gene for gene in gene_list if identity.get(gene) != gene]
-    assert not unreachable, f"{len(unreachable)} clock features do not self-map: {unreachable[:5]}"
+    # How far the mouse gene table falls short of the clock's feature list, measured
+    # before the identity seed above papers over the gap (seeding first would make
+    # this vacuous). A wider gap means a table revision dropped clock genes, which
+    # costs users the Ensembl and Symbol routes to those features -- so fail loudly
+    # and re-derive the number rather than nudging the constant.
+    print(f"clock features absent from Gene_table_mouse.csv (identity-seeded): {len(seeded)}")
+    assert len(seeded) <= EXPECTED_SEEDED_FEATURES, (
+        f"{len(seeded)} clock features are missing from Gene_table_mouse.csv, "
+        f"up from {EXPECTED_SEEDED_FEATURES}: {seeded[:5]}"
+    )
 
     out.parent.mkdir(parents=True, exist_ok=True)
     mapping.to_csv(out, index=False, compression="gzip")
