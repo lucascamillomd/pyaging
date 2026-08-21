@@ -329,7 +329,7 @@ def test_every_built_clock_carries_the_registry_feature_units():
 
     assert not stale, (
         f"{len(stale)} of {len(paths)} clocks have feature_units that disagree with the registry: "
-        f"{', '.join(stale)}. Re-run 'uv run python clocks/patch_clocks_v050.py clocks/weights'."
+        f"{', '.join(stale)}. Re-run the clock's notebook to rebuild it."
     )
 
 
