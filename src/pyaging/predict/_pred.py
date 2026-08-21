@@ -99,6 +99,16 @@ def predict_age(
             # Load and prepare the clock
             model = load_clock(clock_name, device, dir, pipeline_logger)
 
+            # Cohort-relative clocks refuse to run on inputs that were not
+            # prepared for them. Clocks saved before this attribute lack it.
+            required_flag = getattr(model, "required_uns_flag", None)
+            if required_flag is not None and not adata.uns.get(required_flag, False):
+                raise ValueError(
+                    f"Clock '{clock_name}' needs cohort-preprocessed input: run "
+                    f"pyaging.preprocess.prepare_tage(...) first "
+                    f"(adata.uns['{required_flag}'] is missing)."
+                )
+
             # Disclaimer for commercial clocks
             if model.metadata.get("research_only", False):
                 display.warn(clock_name, "research use only")
