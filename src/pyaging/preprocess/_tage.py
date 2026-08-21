@@ -60,6 +60,9 @@ def _rle_normalize(df: pd.DataFrame) -> pd.DataFrame:
     counts = df.to_numpy(dtype=float)
     if counts.shape[1] == 0:
         raise ValueError("RLE normalization needs at least one gene")
+    if np.isnan(counts).any():
+        # calcNormFactors stops on NA counts rather than propagating them.
+        raise ValueError("RLE normalization needs counts without missing values")
 
     library_sizes = counts.sum(axis=1)
     with np.errstate(divide="ignore"):
@@ -90,8 +93,7 @@ def _scale_genes(df: pd.DataFrame) -> pd.DataFrame:
     the sample standard deviation (``ddof=1``). A sample with no variation
     yields ``NaN`` here exactly as it does in R; nothing fills it in.
     """
-    with np.errstate(invalid="ignore"):
-        return df.sub(df.mean(axis=1), axis=0).div(df.std(axis=1, ddof=1), axis=0)
+    return df.sub(df.mean(axis=1), axis=0).div(df.std(axis=1, ddof=1), axis=0)
 
 
 def _center_against_reference(df: pd.DataFrame, reference_index=None) -> pd.DataFrame:

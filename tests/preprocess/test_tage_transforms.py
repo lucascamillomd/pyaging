@@ -99,6 +99,19 @@ def test_center_rejects_unknown_reference_samples(stages):
         _center_against_reference(stages["after_align"].iloc[:4], reference_index=["not_a_sample"])
 
 
+def test_rle_rejects_missing_counts():
+    frame = pd.DataFrame([[1.0, np.nan], [3.0, 4.0]])
+    with pytest.raises(ValueError, match="missing values"):
+        _rle_normalize(frame)
+
+
+def test_rle_rejects_a_cohort_with_no_shared_gene():
+    # Every gene is zero somewhere, so no gene has a nonzero geometric mean.
+    frame = pd.DataFrame([[0.0, 5.0], [7.0, 0.0]])
+    with pytest.raises(ValueError, match="expressed in every sample"):
+        _rle_normalize(frame)
+
+
 def test_log_transform_is_base_ten():
     frame = pd.DataFrame({"a": [0.0, 9.0], "b": [99.0, 999.0]})
     np.testing.assert_allclose(_log_transform(frame).values, [[0.0, 2.0], [1.0, 3.0]])
