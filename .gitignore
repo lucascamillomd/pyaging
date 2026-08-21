@@ -62,3 +62,8 @@ docs/source/clock_notebooks/
 # Local scratch
 tmp/
 /data/
+
+# Uncompressed tAge fixtures: regenerating writes ~50 MB of .csv into a tracked
+# directory. Only the gzipped copies are committed.
+tests/data/tage/*.csv
+!tests/data/tage/input_metadata.csv

@@ -16,8 +16,14 @@ pass by agreeing with themselves.
 | Input data | `inst/extdata/Exprs_example.csv` + `Metadata_example.csv` from the clone |
 | Generators | `clocks/generate_tage_fixtures.R`, then `clocks/generate_tage_fixtures.py` |
 
-Both generators are deterministic: re-running them regenerates every file here
-byte-for-byte.
+Both generators are deterministic: re-running them regenerates identical
+contents for every file here. The uncompressed stage CSVs, `input_metadata.csv`,
+and `expected_predictions.json` come back byte-for-byte. The `.csv.gz`
+artifacts are produced by a separate `gzip -9n` step (see "Regenerating"), which
+the generators do not perform themselves; `-n` is required because gzip
+otherwise embeds the source filename and mtime in the header, which would make
+the committed bytes irreproducible. With `-n` the compressed bytes are
+reproducible too, as the header timestamp is zeroed.
 
 The example dataset is 24 mouse samples — kidney and skeletal muscle, Klotho KO
 and wild type, 6 per cell — with raw counts for 57 010 mouse Ensembl gene IDs.
@@ -216,7 +222,22 @@ git clone https://github.com/Gladyshev-Lab/tAge "$SCRATCH/tAge"
 git -C "$SCRATCH/tAge" checkout 0dba58fba356fecfbbb7c6f0cb27ced59ee6f99f
 Rscript clocks/generate_tage_fixtures.R "$SCRATCH/tAge" tests/data/tage
 uv run python clocks/generate_tage_fixtures.py tests/data/tage
+
+# Compress. -9n is required, not just -9: -n omits the source filename and
+# mtime from the gzip header, without which the committed bytes are not
+# reproducible. Do not drop it.
+cd tests/data/tage
+gzip -9n input_expression.csv after_*.csv
 ```
+
+The R script writes uncompressed `.csv` and neither generator compresses
+anything, so the `gzip -9n` step above is a required part of regenerating —
+without it the R script's output does not match what is committed here.
+
+The uncompressed stage CSVs are about 50 MB in total and are deliberately not
+committed. `.gitignore` carries `tests/data/tage/*.csv` with an exception for
+`input_metadata.csv`, so leaving them in place after a regeneration cannot
+accidentally commit them; delete them or leave them, either is safe.
 
 The R script installs missing Bioconductor/CRAN dependencies (`Biobase`,
 `edgeR`, `reticulate`, `ggplot2`) into a local library beside the clone. It
