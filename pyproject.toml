@@ -100,7 +100,7 @@ only-include = ["src/pyaging", "README.md", "LICENSE", "pyproject.toml"]
 
 [tool.ruff]
 line-length = 120
-extend-exclude = ["*.ipynb", "dev"]
+extend-exclude = ["*.ipynb", "dev", "docs/superpowers"]
 
 [tool.ruff.lint]
 select = [
