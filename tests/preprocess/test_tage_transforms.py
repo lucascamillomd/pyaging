@@ -23,6 +23,8 @@ from pyaging.preprocess._tage import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = REPO_ROOT / "tests/data/tage"
+# Paired with rtol=0 at every use: numpy's default rtol of 1e-7 would dominate on
+# the RLE stage, whose values reach ~1e6, and let deviations of ~0.1 pass.
 TOL = 1e-6
 
 STAGES = (
@@ -57,27 +59,27 @@ def test_rle_matches_reference(stages):
     expected = stages["after_rle"]
     assert list(ours.index) == list(expected.index)
     assert list(ours.columns) == list(expected.columns)
-    np.testing.assert_allclose(ours.values, expected.values, atol=TOL)
+    np.testing.assert_allclose(ours.values, expected.values, rtol=0, atol=TOL)
 
 
 def test_log_matches_reference(stages):
     ours = _log_transform(stages["after_rle"])
-    np.testing.assert_allclose(ours.values, stages["after_log"].values, atol=TOL)
+    np.testing.assert_allclose(ours.values, stages["after_log"].values, rtol=0, atol=TOL)
 
 
 def test_scale_matches_reference(stages):
     ours = _scale_genes(stages["after_log"])
-    np.testing.assert_allclose(ours.values, stages["after_scale"].values, atol=TOL)
+    np.testing.assert_allclose(ours.values, stages["after_scale"].values, rtol=0, atol=TOL)
 
 
 def test_center_all_matches_reference(stages):
     ours = _center_against_reference(stages["after_align"])
-    np.testing.assert_allclose(ours.values, stages["after_center_all"].values, atol=TOL)
+    np.testing.assert_allclose(ours.values, stages["after_center_all"].values, rtol=0, atol=TOL)
 
 
 def test_center_refgroup_matches_reference(stages, reference_ids):
     ours = _center_against_reference(stages["after_align"], reference_index=reference_ids)
-    np.testing.assert_allclose(ours.values, stages["after_center_refgroup"].values, atol=TOL)
+    np.testing.assert_allclose(ours.values, stages["after_center_refgroup"].values, rtol=0, atol=TOL)
 
 
 def test_center_keeps_padded_genes_missing(stages):
