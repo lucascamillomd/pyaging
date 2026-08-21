@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import os
+import sys
 import tempfile
 from collections import namedtuple
 from contextlib import suppress
@@ -10,12 +11,14 @@ from pathlib import Path
 
 import torch
 
-RUNTIME_METADATA_FIELDS = (
-    "version",
-    "preprocess",
-    "postprocess",
-    "reference_values",
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from validate_metadata import (  # noqa: E402
+    RUNTIME_METADATA_FIELDS,
+    _reject_duplicate_keys,
+    _reject_non_finite,
 )
+
 CURATED_REGISTRY_FIELDS = (
     "clock_name",
     "data_type",
@@ -60,6 +63,10 @@ _REGISTRY_STRING_FIELDS = (
     "last_author",
     "citations_date",
 )
+_CLOCKS_DIR = Path(__file__).resolve().parent
+_DEFAULT_WEIGHTS_DIR = _CLOCKS_DIR / "weights"
+_DEFAULT_REGISTRY_PATH = _CLOCKS_DIR / "metadata" / "clock_metadata.json"
+_DEFAULT_METADATA_PATH = _CLOCKS_DIR / "metadata" / "all_clock_metadata.pt"
 _TargetRecord = namedtuple(
     "_TargetRecord",
     ("logical_path", "target_path", "logical_state", "target_state"),
@@ -81,19 +88,6 @@ def merge_clock_metadata(generated_metadata, curated_metadata):
         merged_metadata[clock_name] = merged_entry
 
     return merged_metadata
-
-
-def _reject_non_finite(value):
-    raise ValueError(f"non-finite JSON number {value!r} is not allowed")
-
-
-def _reject_duplicate_keys(pairs):
-    result = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f"duplicate key {key!r} is not allowed")
-        result[key] = value
-    return result
 
 
 def _validate_registry_entry(clock_name, entry):
@@ -185,16 +179,37 @@ def load_curated_metadata(registry_path):
     return metadata
 
 
-def _generated_metadata_entry(clock):
+def _generated_clock_name(clock):
+    """Return the clock_name recorded in a loaded clock's metadata."""
     if not isinstance(clock.metadata, dict):
         raise ValueError("Clock metadata must be a dictionary")
 
     key = clock.metadata.get("clock_name")
     if not isinstance(key, str) or not key:
         raise ValueError("Clock metadata must contain a non-empty string clock_name")
+    return key
+
+
+def _generated_metadata_entry(clock, version):
+    """Build the runtime metadata entry for one clock at a pyaging release version.
+
+    Parameters
+    ----------
+    clock : pyaging.models.pyagingModel
+        Clock loaded from its built weight file.
+    version : str
+        The pyaging release version being stamped onto every clock.
+
+    Returns
+    -------
+    tuple of (str, dict)
+        The clock name and its non-null runtime metadata fields, in the
+        canonical ``RUNTIME_METADATA_FIELDS`` order.
+    """
+    key = _generated_clock_name(clock)
 
     runtime_values = {
-        "version": clock.version,
+        "version": version,
         "preprocess": clock.preprocess_name,
         "postprocess": clock.postprocess_name,
         "reference_values": (True if clock.reference_values is not None else None),
@@ -351,88 +366,75 @@ def _cleanup_backup(backup):
 
 
 class _CommittedRegenerationError(ValueError):
-    """Cleanup failed after every canonical target crossed the commit boundary."""
+    """Cleanup failed after a target crossed its commit boundary."""
 
 
-def _transactional_publish(staged_targets):
-    targets = [staged.target_record.target_path for staged in staged_targets]
-    if len(set(targets)) != len(targets):
-        raise ValueError("Regeneration transaction targets must be distinct")
+def _publish_staged_target(staged, index):
+    """Swap one staged file over its target, rolling back if the swap fails.
 
-    backups = {}
-    originally_missing = set()
-    published = []
-    rollback_failed_backups = set()
+    A hard-link backup of the target is taken, ``os.replace`` makes the staged
+    bytes visible in a single step, and the published bytes are re-hashed
+    before the backup is dropped. Anything that fails up to and including that
+    hash check restores the original bytes; anything that fails after it leaves
+    the new bytes in place.
+
+    Parameters
+    ----------
+    staged : _StagedTarget
+        Staged replacement produced by ``_stage_torch_object``.
+    index : int
+        Position in the run, used only to name temporary files.
+
+    Returns
+    -------
+    tuple of (list of str, list of str)
+        Descriptions of post-commit cleanup failures, and the paths of any
+        backups they left behind. Both are empty on a clean publish.
+
+    Raises
+    ------
+    ValueError
+        The target did not commit and holds its original bytes again.
+    """
+    record = staged.target_record
+    target = record.target_path
+    backup = None
+    published = False
     committed = False
+    retain_backup = False
     try:
-        for staged in staged_targets:
-            record = staged.target_record
-            if _logical_path_state(record.logical_path) != record.logical_state:
-                raise ValueError(f"Logical path changed during staging: {record.logical_path}")
-            if _target_path_state(record.target_path) != record.target_state:
-                raise ValueError(f"Backing target changed during staging: {record.target_path}")
+        if _logical_path_state(record.logical_path) != record.logical_state:
+            raise ValueError(f"Logical path changed during staging: {record.logical_path}")
+        if _target_path_state(target) != record.target_state:
+            raise ValueError(f"Backing target changed during staging: {target}")
 
-        for index, staged in enumerate(staged_targets, start=1):
-            record = staged.target_record
-            target = record.target_path
-            if record.target_state is not None:
-                backups[target] = _backup_target(target, index)
-            else:
-                originally_missing.add(target)
-        _fsync_directories(targets)
+        if record.target_state is not None:
+            backup = _backup_target(target, index)
+        _fsync_directories([target])
 
-        for staged in staged_targets:
-            target = staged.target_record.target_path
-            _publish_replace(staged.stage_path, target)
-            published.append(target)
-        _fsync_directories(targets)
+        _publish_replace(staged.stage_path, target)
+        published = True
+        _fsync_directories([target])
 
-        for staged in staged_targets:
-            target = staged.target_record.target_path
-            digest, size = _stream_sha256_and_size(target)
-            if digest != staged.sha256 or size != staged.size:
-                raise ValueError(f"Post-publish validation failed for {target}")
+        digest, size = _stream_sha256_and_size(target)
+        if digest != staged.sha256 or size != staged.size:
+            raise ValueError(f"Post-publish validation failed for {target}")
         committed = True
-
-        cleanup_errors = []
-        recovery_artifacts = []
-        for backup in backups.values():
-            try:
-                _cleanup_backup(backup)
-            except Exception as cleanup_error:
-                cleanup_errors.append(f"{backup}: {cleanup_error}")
-                recovery_artifacts.append(str(backup))
-        try:
-            _fsync_directories(targets)
-        except Exception as cleanup_error:
-            cleanup_errors.append(f"directory fsync: {cleanup_error}")
-        if cleanup_errors:
-            message = "regeneration targets committed; post-commit cleanup failed: " + "; ".join(cleanup_errors)
-            if recovery_artifacts:
-                message += "; recovery artifact(s) retained: " + ", ".join(recovery_artifacts)
-            raise _CommittedRegenerationError(message)
     except Exception as primary_error:
-        if committed:
-            if isinstance(primary_error, _CommittedRegenerationError):
-                raise
-            raise _CommittedRegenerationError(
-                f"regeneration targets committed; post-commit cleanup failed: {primary_error}"
-            ) from primary_error
-
         rollback_errors = []
-        for target in reversed(published):
+        if published:
             try:
-                if target in originally_missing:
+                if backup is None:
                     with suppress(FileNotFoundError):
                         target.unlink()
                 else:
-                    os.replace(str(backups[target]), str(target))
+                    os.replace(str(backup), str(target))
+                    backup = None
             except Exception as rollback_error:
                 rollback_errors.append(f"{target}: {rollback_error}")
-                if target in backups:
-                    rollback_failed_backups.add(backups[target])
+                retain_backup = backup is not None
         try:
-            _fsync_directories(targets)
+            _fsync_directories([target])
         except Exception as rollback_error:
             rollback_errors.append(f"directory fsync: {rollback_error}")
         message = f"regeneration transaction failed: {primary_error}"
@@ -440,23 +442,105 @@ def _transactional_publish(staged_targets):
             message += f"; rollback failure: {'; '.join(rollback_errors)}"
         raise ValueError(message) from primary_error
     finally:
-        for staged in staged_targets:
+        with suppress(FileNotFoundError):
+            staged.stage_path.unlink()
+        if not committed and backup is not None and not retain_backup:
             with suppress(FileNotFoundError):
-                staged.stage_path.unlink()
-        if not committed:
-            for backup in backups.values():
-                if backup not in rollback_failed_backups:
-                    with suppress(FileNotFoundError):
-                        backup.unlink()
+                backup.unlink()
+
+    cleanup_errors = []
+    recovery_artifacts = []
+    if backup is not None:
+        try:
+            _cleanup_backup(backup)
+        except Exception as cleanup_error:
+            cleanup_errors.append(f"{backup}: {cleanup_error}")
+            recovery_artifacts.append(str(backup))
+    try:
+        _fsync_directories([target])
+    except Exception as cleanup_error:
+        cleanup_errors.append(f"directory fsync: {cleanup_error}")
+    return cleanup_errors, recovery_artifacts
+
+
+def _stage_stamped_clock(record, curated_dictionary, version, index):
+    """Load one clock, restamp its metadata, and stage the rewritten weight file.
+
+    The loaded clock is released before returning, so the caller never holds
+    two clocks at once.
+
+    Parameters
+    ----------
+    record : _TargetRecord
+        Preflight record for the weight file.
+    curated_dictionary : dict
+        Curated registry entries, keyed by clock name.
+    version : str
+        The pyaging release version to stamp.
+    index : int
+        Position in the run, used only to name temporary files.
+
+    Returns
+    -------
+    tuple of (str, dict, _StagedTarget)
+        The clock name, its runtime metadata fields, and the staged file.
+    """
+    clock = torch.load(record.logical_path, weights_only=False)
+    try:
+        clock_name = _generated_clock_name(clock)
+        expected_name = record.logical_path.stem
+        if clock_name != expected_name:
+            raise ValueError(
+                "Generated clock names do not match weight filenames: "
+                f"expected {expected_name!r}, generated {clock_name!r}"
+            )
+        clock.version = version
+        clock_name, runtime_metadata = _generated_metadata_entry(clock, version)
+        clock.metadata = merge_clock_metadata(
+            {clock_name: runtime_metadata},
+            {clock_name: curated_dictionary[clock_name]},
+        )[clock_name]
+        stage_path, digest, size = _stage_torch_object(record.target_path, clock, index)
+    finally:
+        del clock
+    return clock_name, runtime_metadata, _StagedTarget(record, stage_path, digest, size)
 
 
 def regenerate_clock_metadata(
     version,
-    weights_dir=Path("weights"),
-    registry_path=Path("metadata/clock_metadata.json"),
-    metadata_path=Path("metadata/all_clock_metadata.pt"),
+    weights_dir=_DEFAULT_WEIGHTS_DIR,
+    registry_path=_DEFAULT_REGISTRY_PATH,
+    metadata_path=_DEFAULT_METADATA_PATH,
 ):
-    """Regenerate all weights and metadata as one registry-backed transaction."""
+    """Restamp every clock and rebuild the aggregate metadata, one clock at a time.
+
+    Each weight file is loaded, stamped, staged, published and released before
+    the next one is opened, so peak disk and memory are bounded by the largest
+    single clock rather than by the whole catalogue.
+
+    Atomicity is per file, not per run: every ``.pt`` is either its old bytes
+    or its complete new bytes, never a torn mixture. A failure part-way through
+    therefore leaves the earlier clocks restamped, the rest untouched, and the
+    aggregate file stale, because it is published last. Re-running the script
+    is the recovery: restamping an already-restamped clock is a no-op.
+
+    Parameters
+    ----------
+    version : str
+        The pyaging release version stamped onto every clock and aggregate entry.
+    weights_dir : pathlib.Path, optional
+        Directory of built ``.pt`` weights. Defaults to ``clocks/weights``
+        resolved relative to this script, not the working directory.
+    registry_path : pathlib.Path, optional
+        Curated JSON metadata registry.
+    metadata_path : pathlib.Path, optional
+        Aggregate ``.pt`` metadata file to write.
+
+    Returns
+    -------
+    dict
+        The merged aggregate metadata, keyed by clock name.
+    """
     weights_dir = Path(weights_dir)
     registry_path = Path(registry_path)
     metadata_path = Path(metadata_path)
@@ -469,63 +553,51 @@ def regenerate_clock_metadata(
         raise ValueError("Distinct logical paths must not resolve to the same backing target")
 
     generated_dictionary = {}
-    staged_targets = []
+    cleanup_errors = []
+    recovery_artifacts = []
+    for index, record in enumerate(weight_records, start=1):
+        try:
+            clock_name, runtime_metadata, staged = _stage_stamped_clock(record, curated_dictionary, version, index)
+        except Exception as error:
+            raise ValueError(f"regeneration staging failed: {error}") from error
+        errors, artifacts = _publish_staged_target(staged, index)
+        cleanup_errors += errors
+        recovery_artifacts += artifacts
+        generated_dictionary[clock_name] = runtime_metadata
+
+    generated_clock_names = set(generated_dictionary)
+    if len(generated_dictionary) != len(weight_records) or generated_clock_names != registry_clock_names:
+        raise ValueError(
+            "Generated clock names changed during staging: "
+            f"expected {sorted(registry_clock_names)}, "
+            f"generated {sorted(generated_clock_names)}"
+        )
+
+    combined_dictionary = merge_clock_metadata(generated_dictionary, curated_dictionary)
+    if set(combined_dictionary) != registry_clock_names:
+        raise ValueError("Merged aggregate clock names do not match registry")
+
+    aggregate_index = len(weight_records) + 1
     try:
-        for index, record in enumerate(weight_records, start=1):
-            clock = torch.load(record.logical_path, weights_only=False)
-            try:
-                clock_name, _ = _generated_metadata_entry(clock)
-                expected_name = record.logical_path.stem
-                if clock_name != expected_name:
-                    raise ValueError(
-                        "Generated clock names do not match weight filenames: "
-                        f"expected {expected_name!r}, generated {clock_name!r}"
-                    )
-                clock.version = version
-                clock_name, runtime_metadata = _generated_metadata_entry(clock)
-                synchronized_metadata = merge_clock_metadata(
-                    {clock_name: runtime_metadata},
-                    {clock_name: curated_dictionary[clock_name]},
-                )[clock_name]
-                clock.metadata = synchronized_metadata
-                stage_path, digest, size = _stage_torch_object(record.target_path, clock, index)
-            finally:
-                del clock
-            generated_dictionary[clock_name] = runtime_metadata
-            staged_targets.append(_StagedTarget(record, stage_path, digest, size))
-
-        generated_clock_names = set(generated_dictionary)
-        if len(generated_dictionary) != len(weight_records) or generated_clock_names != registry_clock_names:
-            raise ValueError(
-                "Generated clock names changed during staging: "
-                f"expected {sorted(registry_clock_names)}, "
-                f"generated {sorted(generated_clock_names)}"
-            )
-
-        combined_dictionary = merge_clock_metadata(generated_dictionary, curated_dictionary)
-        if set(combined_dictionary) != registry_clock_names:
-            raise ValueError("Merged aggregate clock names do not match registry")
-
         aggregate_stage, aggregate_digest, aggregate_size = _stage_torch_object(
             metadata_record.target_path,
             combined_dictionary,
-            len(weight_records) + 1,
-        )
-        staged_targets.append(
-            _StagedTarget(
-                metadata_record,
-                aggregate_stage,
-                aggregate_digest,
-                aggregate_size,
-            )
+            aggregate_index,
         )
     except Exception as error:
-        for staged in staged_targets:
-            with suppress(FileNotFoundError):
-                staged.stage_path.unlink()
         raise ValueError(f"regeneration staging failed: {error}") from error
+    errors, artifacts = _publish_staged_target(
+        _StagedTarget(metadata_record, aggregate_stage, aggregate_digest, aggregate_size),
+        aggregate_index,
+    )
+    cleanup_errors += errors
+    recovery_artifacts += artifacts
 
-    _transactional_publish(staged_targets)
+    if cleanup_errors:
+        message = "regeneration targets committed; post-commit cleanup failed: " + "; ".join(cleanup_errors)
+        if recovery_artifacts:
+            message += "; recovery artifact(s) retained: " + ", ".join(recovery_artifacts)
+        raise _CommittedRegenerationError(message)
     return combined_dictionary
 
 
@@ -535,4 +607,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     regenerate_clock_metadata(args.version)
-    print("Metadata dictionary saved to 'metadata/all_clock_metadata.pt'.")
+    print(f"Metadata dictionary saved to '{_DEFAULT_METADATA_PATH}'.")

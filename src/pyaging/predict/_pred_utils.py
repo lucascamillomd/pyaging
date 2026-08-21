@@ -14,6 +14,7 @@ except Exception:
 import gc
 
 from ..models import pyagingModel
+from ..utils._feature_ranges import resolve_feature_bounds
 from ..utils._hf import PyAgingResourceNotFoundError, download_clock_weights
 from ..utils._utils import progress
 
@@ -161,6 +162,11 @@ def check_features_in_adata(
     may introduce biases if not accounted for in downstream analyses. If reference values are
     provided, then they are used instead of zeros.
 
+    Alongside the missing-feature bookkeeping the function records a boolean mask of the columns
+    that came from the input, under ``.uns["{clock_name}_supplied_features_mask"]``. Substituted
+    values are the pipeline's own, so :func:`check_feature_ranges` uses the mask to judge only
+    what the user actually supplied.
+
     Examples
     --------
     >>> updated_adata = check_features_in_adata(adata, bitage, ["gene1", "gene2"], logger)
@@ -201,6 +207,8 @@ def check_features_in_adata(
     # Add missing features and percent missing values to the clock
     adata.uns[f"{model.metadata['clock_name']}_percent_na"] = percent_missing
     adata.uns[f"{model.metadata['clock_name']}_missing_features"] = missing_features
+    # Columns the input carried; check_feature_ranges judges only these.
+    adata.uns[f"{model.metadata['clock_name']}_supplied_features_mask"] = existing_features_mask
 
     # Raises error if there are no features in the data
     if percent_missing == 100:
@@ -235,6 +243,146 @@ def check_features_in_adata(
         logger.info(
             "All features are present in adata.var_names.",
             indent_level=indent_level + 1,
+        )
+
+
+_MAX_REPORTED_FEATURES = 5
+
+
+def _describe_range(low: float, high: float) -> str:
+    """Phrase a violated range, keeping half-bounded ranges readable."""
+    if np.isinf(low):
+        return f"above {high:g}"
+    if np.isinf(high):
+        return f"below {low:g}"
+    return f"outside [{low:g}, {high:g}]"
+
+
+def _supplied_columns(adata: anndata.AnnData, model: pyagingModel, n_features: int) -> np.ndarray:
+    """Return the indices of the feature columns that came from the input data.
+
+    :func:`check_features_in_adata` substitutes a reference value, or 0, for every
+    feature the input did not carry, so those columns say nothing about the user's
+    units. It leaves behind a mask of the columns it did not substitute, which this
+    reads. A matrix assembled some other way has no mask, and then every column
+    counts as supplied.
+    """
+    mask = adata.uns.get(f"{model.metadata['clock_name']}_supplied_features_mask")
+    if mask is None:
+        return np.arange(n_features)
+    return np.flatnonzero(np.asarray(mask, dtype=bool))
+
+
+# Columns compared per pass. The comparison is vectorised, but a clock with 453,152
+# features against a large cohort would otherwise build a boolean array the size of the
+# whole matrix, so the scan walks the columns in blocks of bounded width.
+_SCAN_BLOCK_COLUMNS = 4096
+
+
+def _find_offenders(matrix: np.ndarray, columns: np.ndarray, low: np.ndarray, high: np.ndarray) -> list:
+    """Return ``(column index, out-of-range count)`` for each offending column.
+
+    NaN compares false against both bounds, so missing values drop out of the
+    count without being tested for separately.
+    """
+    offenders = []
+    for start in range(0, columns.size, _SCAN_BLOCK_COLUMNS):
+        block = columns[start : start + _SCAN_BLOCK_COLUMNS]
+        values = matrix[:, block]
+        counts = ((values < low[block]) | (values > high[block])).sum(axis=0)
+        offenders.extend((int(block[position]), int(counts[position])) for position in np.flatnonzero(counts))
+    return offenders
+
+
+@progress("Check feature ranges")
+def check_feature_ranges(
+    adata: anndata.AnnData,
+    model: pyagingModel,
+    logger,
+    indent_level: int = 2,
+) -> None:
+    """
+    Warn when input values fall outside a feature's plausible range.
+
+    Ranges come from the package-wide registry (per-feature entry, else the
+    modality default for the clock's ``data_type``). Out-of-range values usually
+    mean wrong units or swapped columns, so this warns and never blocks: the
+    data is not inspected for clinical abnormality and is never modified.
+
+    Only the features the input actually carried are judged. Everything else in
+    the matrix was put there by :func:`check_features_in_adata`, and several
+    clocks use an out-of-range sentinel such as ``-1`` as their reference value,
+    so including those columns would report the pipeline's own substitutions as
+    if they were the user's data.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The AnnData object whose ``.obsm["X_{clock_name}"]`` matrix holds the
+        clock's feature values, one column per model feature.
+
+    model : pyagingModel
+        The pyagingModel of the aging clock of interest. Clocks saved before the
+        ``feature_units`` attribute existed are supported.
+
+    logger : Logger
+        A logger object used to report the out-of-range features.
+
+    indent_level : int, optional
+        The indentation level for the logger, by default 2.
+
+    Returns
+    -------
+    None
+        Nothing is returned and nothing is modified; the findings are logged.
+
+    Notes
+    -----
+    NaN values are ignored: missing features are handled by
+    :func:`check_features_in_adata`, and should not also be reported here. The
+    reported percentage is therefore the share of non-NaN values that fall
+    outside the range, and the feature counts are out of the supplied features
+    rather than out of all of the clock's features.
+    """
+    try:
+        units, low, high = resolve_feature_bounds(
+            model.features,
+            model.metadata.get("data_type"),
+            getattr(model, "feature_units", None),
+        )
+    except Exception as exc:
+        # Deliberately broad: one clock whose stored feature_units disagree with its
+        # features must not abort predict_age for every user.
+        logger.warning(f"Could not resolve feature ranges: {exc}", indent_level=indent_level + 1)
+        return
+
+    matrix = adata.obsm[f"X_{model.metadata['clock_name']}"]
+    if CUPY_AVAILABLE and isinstance(matrix, cp.ndarray):
+        matrix = cp.asnumpy(matrix)
+    matrix = np.asarray(matrix, dtype=float)
+
+    columns = _supplied_columns(adata, model, len(units))
+    offenders = _find_offenders(matrix, columns, low, high)
+
+    if not offenders:
+        logger.info("All feature values are within their expected ranges.", indent_level=indent_level + 1)
+        return
+
+    truncated = f" Showing the first {_MAX_REPORTED_FEATURES}." if len(offenders) > _MAX_REPORTED_FEATURES else ""
+    logger.warning(
+        f"{len(offenders)} of {len(columns)} supplied features have values outside their expected range. "
+        f"This usually means the data is in different units than the clock expects.{truncated}",
+        indent_level=indent_level + 1,
+    )
+    for index, count in offenders[:_MAX_REPORTED_FEATURES]:
+        observed = matrix[:, index]
+        observed = observed[~np.isnan(observed)]
+        unit = f" {units[index]}" if units[index] else ""
+        logger.warning(
+            f"{model.features[index]}: {100 * count / observed.size:.2f}% of values "
+            f"{_describe_range(low[index], high[index])}{unit} "
+            f"(observed {observed.min():g} to {observed.max():g})",
+            indent_level=indent_level + 2,
         )
 
 

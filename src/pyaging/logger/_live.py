@@ -100,11 +100,6 @@ class Shimmer:
         return Measurement(width, width)
 
 
-def get_console() -> Console:
-    """The console the live display prints to (theme-aware in notebooks)."""
-    return _console
-
-
 def display_enabled(verbose) -> bool:
     """Whether the display should render at all (False means fully silent)."""
     return bool(verbose)

@@ -59,4 +59,4 @@ docs/source/clock_notebooks/
 
 # Local scratch
 tmp/
-data/
+/data/

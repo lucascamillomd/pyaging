@@ -57,8 +57,6 @@ class Logger:
         self.warning_logged = False
         self.report_hook_percent_state = None
         self.indent_level = 1
-        # TODO add file handler in future
-        # e.g. logging.StreamHandler(None) if log_file_path is None else logging.FileHandler(name)
 
         # ensure only one stream handler exists in one logger instance
         if len(self.logger.handlers) == 0:
@@ -265,7 +263,7 @@ class Logger:
         saved_terminator = self.logger_stream_handler.terminator
         self.logger_stream_handler.terminator = ""
         self.logger_stream_handler.flush()
-        self.logger_stream_handler.terminator = saved_terminator  #
+        self.logger_stream_handler.terminator = saved_terminator
 
         token = "⚠️" if self.warning_logged else "✅"
 
@@ -281,9 +279,8 @@ class Logger:
             )
         else:
             raise NotImplementedError
-        # self.logger.info("|")
         self.logger_stream_handler.flush()
-        self.warning_logged = False  #
+        self.warning_logged = False
 
     def request_report_hook(self, bn: int, rs: int, ts: int) -> None:
         """A callback required by the request lib:
@@ -313,7 +310,6 @@ class Logger:
         if rs * bn >= ts:
             self.report_hook_percent_state = None
             self.report_progress(count=100, total=100, indent_level=self.indent_level)  # 100%
-            # self.finish_progress(progress_name="download")
 
 
 class LoggerManager:
@@ -358,7 +354,6 @@ class LoggerManager:
                 )
                 prev_progress_percent = new_progress_percent
             yield next(iterator)
-        # logger.finish_progress(progress_name=progress_name, indent_level=indent_level)
 
 
 def main_info(message, indent_level=1):

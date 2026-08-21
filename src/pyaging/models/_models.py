@@ -1,7 +1,46 @@
+import math
+
 import torch
 import torch.nn as nn
 
+# ``predict/_pred_utils`` imports ``..models`` in turn, so these two lines close a cycle.
+# It holds because ``_pred_utils`` only takes names ``models/__init__`` has already bound
+# from ``_base_models`` by the time this module runs; importing a name defined here would
+# break it.
+from ..predict._inverse_transforms import mortality_to_phenoage_saopaulo
+from ..predict._transforms import PHENOAGE_CRP_FLOOR_MG_DL, crp_index, log1p_crp
 from ._base_models import pyagingModel
+
+# LinAge2's ``foldOutliers`` cap, in MAD-scaled z units, applied to every feature.
+LINAGE2_FOLD_CAP = 6
+
+# The 22 yes/no items ``popPCFIfs1`` sums into fs1Score, which is also the denominator.
+# ``told_congestive_heart_failure`` (MCQ160B) is read by the reference and then never
+# used, so it is absent here on purpose and the divisor stays 22.
+LINAGE2_COMORBIDITY_ITEMS = (
+    "told_high_blood_pressure",
+    "told_diabetes",
+    "told_weak_or_failing_kidneys",
+    "told_asthma",
+    "treated_for_anemia_past_3_months",
+    "told_arthritis",
+    "told_coronary_heart_disease",
+    "told_angina",
+    "told_heart_attack",
+    "told_stroke",
+    "told_emphysema",
+    "told_thyroid_disease",
+    "told_overweight",
+    "told_chronic_bronchitis",
+    "told_liver_condition",
+    "told_cancer",
+    "fractured_hip",
+    "fractured_wrist",
+    "fractured_spine",
+    "told_osteoporosis",
+    "confusion_or_memory_problems",
+    "hospital_overnight_past_year",
+)
 
 
 class AltumAge(pyagingModel):
@@ -411,6 +450,81 @@ class HRSInCHPhenoAge(pyagingModel):
         return x
 
 
+class HomeostaticDysregulation(pyagingModel):
+    """Mahalanobis distance from a young, healthy NHANES III reference cohort."""
+
+    def __init__(self):
+        super().__init__()
+        for sex in ["male", "female"]:
+            for name in ["reference_mean", "reference_sd", "center", "precision", "log_hd_sd"]:
+                self.register_buffer(f"{name}_{sex}", torch.empty(0))
+
+    def preprocess(self, x):
+        return log1p_crp(self.features, x)
+
+    def postprocess(self, x):
+        """Score the log Mahalanobis distance from the sex's reference cohort.
+
+        Notes
+        -----
+        ``center`` is not zero. ``hd_calc`` takes each column's mean and standard
+        deviation with ``na.rm = TRUE`` over the full reference column and drops
+        incomplete rows only afterwards, so the surviving rows' mean is not the
+        centring constant; the residual offset reaches 0.19 standard deviations
+        and is what ``center`` holds.
+
+        The distance is divided by the projection cohort's standard deviation of
+        ``log(distance)``, which is how ``hd_nhanes`` reports it. That constant is
+        stored per sex so a single sample can be scored without a cohort.
+        """
+        biomarkers, female = x[:, :-1], x[:, -1]
+
+        def score(sex):
+            mean, sd, center, precision, log_hd_sd = (
+                getattr(self, f"{name}_{sex}").to(device=x.device, dtype=x.dtype)
+                for name in ("reference_mean", "reference_sd", "center", "precision", "log_hd_sd")
+            )
+            deviation = (biomarkers - mean) / sd - center
+            squared = (deviation @ precision * deviation).sum(dim=1)
+            return torch.log(torch.sqrt(squared)) / log_hd_sd
+
+        return torch.where(female == 1, score("female"), score("male")).unsqueeze(-1)
+
+
+class KDMAge(pyagingModel):
+    """Klemera-Doubal biological age with sex-specific NHANES III parameters."""
+
+    def __init__(self):
+        super().__init__()
+        for sex in ["male", "female"]:
+            for name in ["q", "k", "s"]:
+                self.register_buffer(f"{name}_{sex}", torch.empty(0))
+            self.register_buffer(f"s_ba2_{sex}", torch.empty(0))
+
+    def preprocess(self, x):
+        return log1p_crp(self.features, x)
+
+    def postprocess(self, x):
+        """Solve the Klemera-Doubal closed form for biological age.
+
+        Notes
+        -----
+        The denominator sums over every biomarker, matching ``kdm_calc``'s
+        deliberate choice not to rescale the estimate for missing markers.
+        """
+        biomarkers, age, female = x[:, :-2], x[:, -2], x[:, -1]
+
+        def estimate(sex):
+            q, k, s, s_ba2 = (
+                getattr(self, f"{name}_{sex}").to(device=x.device, dtype=x.dtype) for name in ("q", "k", "s", "s_ba2")
+            )
+            numerator = ((biomarkers - q) * k / s**2).sum(dim=1)
+            denominator = ((k / s) ** 2).sum()
+            return (numerator + age / s_ba2) / (denominator + 1 / s_ba2)
+
+        return torch.where(female == 1, estimate("female"), estimate("male")).unsqueeze(-1)
+
+
 class Knight(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -494,6 +608,128 @@ class Lin(pyagingModel):
 
     def postprocess(self, x):
         return x
+
+
+class LinAge2(pyagingModel):
+    """Principal-component clinical clock trained on NHANES IV mortality (Fong et al. 2025)."""
+
+    def __init__(self):
+        super().__init__()
+        # The 59 names the loadings, medians and MADs are indexed by, in SVD row order.
+        # Set from the constants clocks/notebooks/linage2.ipynb derives when the clock is built.
+        self.model_features = None
+        for sex in ["male", "female"]:
+            for name in ["median", "mad", "loadings", "beta", "means", "beta_null", "mean_null", "mrdt"]:
+                self.register_buffer(f"{name}_{sex}", torch.empty(0))
+            self.register_buffer(f"pc_index_{sex}", torch.empty(0, dtype=torch.long))
+        self.register_buffer("log_mask", torch.empty(0, dtype=torch.bool))
+        self.register_buffer("skip_mask", torch.empty(0, dtype=torch.bool))
+
+    def preprocess(self, x):
+        return x
+
+    def _model_vector(self, x):
+        """Assemble the 59-feature vector from the user-facing inputs.
+
+        Notes
+        -----
+        Every missing-value default the reference implementation applies falls out
+        of the comparisons themselves: a NaN questionnaire code never equals 1, so
+        it counts as "no" in ``comorbidity_index``, and it never equals 4, 5, 1 or 2,
+        so ``self_reported_health_index`` collapses to 0 — which is what ``popPCFIfs1``
+        and ``popPCFIfs2`` get from their explicit NA defaults of "no" and "same".
+        Those defaults are the *healthiest* profile, so an absent questionnaire block
+        biases the biological age downward; the registry notes say so.
+        """
+
+        def column(name):
+            return x[:, self.features.index(name)]
+
+        # digiCot: a four-level step function on raw cotinine in ng/mL. NaN has no bin
+        # in the reference either, so it propagates rather than reading as a non-smoker.
+        cotinine = column("cotinine")
+        smoking = (cotinine >= 10).to(x.dtype) + (cotinine >= 100).to(x.dtype) + (cotinine >= 200).to(x.dtype)
+        smoking = torch.where(torch.isnan(cotinine), cotinine, smoking)
+
+        yes_count = sum((column(item) == 1).to(x.dtype) for item in LINAGE2_COMORBIDITY_ITEMS)
+        # DIQ010 == 3 is borderline diabetes and counts alongside DIQ010 == 1.
+        comorbidity = (yes_count + (column("told_diabetes") == 3).to(x.dtype)) / len(LINAGE2_COMORBIDITY_ITEMS)
+
+        health = column("general_health_condition")
+        versus = column("health_compared_to_one_year_ago")
+        severity = (health == 4).to(x.dtype) * 2 + (health == 5).to(x.dtype) * 4
+        trend = 1 - (versus == 1).to(x.dtype) * 0.5 + (versus == 2).to(x.dtype)
+
+        # The raw HUQ050 visit-count code used as a number; 77 (refused), 99 (don't
+        # know) and missing all become 0.
+        visits = column("healthcare_visits_past_year")
+        healthcare = torch.where(
+            (visits == 77) | (visits == 99) | torch.isnan(visits), torch.zeros_like(visits), visits
+        )
+
+        # Friedewald, with the reference's mg/dL divisor applied to mmol/L inputs.
+        # ``populateLDL`` substitutes a hard 0 mmol/L when any of the three lipids is
+        # missing, which z-scores to roughly -3.6 for a male; reference_values keep an
+        # absent column away from that path, but a NaN within a present column reaches it.
+        ldl = column("total_cholesterol") - column("triglycerides") / 5 - column("hdl_cholesterol")
+        ldl = torch.where(torch.isnan(ldl), torch.zeros_like(ldl), ldl)
+
+        # 1.1312e-4 converts urine creatinine from µmol/L to g/L, giving mg albumin per g.
+        albumin_creatinine = column("urine_albumin") / (column("urine_creatinine") * 1.1312e-4)
+
+        derived = {
+            "smoking_intensity": smoking,
+            "comorbidity_index": comorbidity,
+            "self_reported_health_index": severity * trend,
+            "healthcare_use_index": healthcare,
+            "ldl_cholesterol": ldl,
+            "urine_albumin_creatinine_ratio": albumin_creatinine,
+        }
+        columns = [derived[name] if name in derived else column(name) for name in self.model_features]
+        return torch.stack(columns, dim=1)
+
+    def postprocess(self, x):
+        """Score the sex-specific Cox model on the folded principal components.
+
+        Notes
+        -----
+        The 13 log-transformed features take a plain ``log`` with no floor. The
+        reference lets ``log(0)`` reach the fold as ``-inf``, where it becomes exactly
+        ``-6``; clamping the input first — as ``PhenoAge.preprocess`` does before its
+        natural log — would land a below-detection reading on a different z-score, so
+        this clock deliberately does not floor.
+
+        The ±6 fold covers all 59 features, including the five that skip z-scoring:
+        ``self_reported_health_index`` and ``healthcare_use_index`` both run 0-8 raw
+        and saturate at 6.
+
+        ``chronAge`` enters both the full and the null Cox model in months, and the two
+        age coefficients differ, so age is a genuine covariate of the delta rather than
+        an offset that cancels.
+        """
+        vector = self._model_vector(x)
+        age_months = x[:, self.features.index("age")] * 12
+        female = x[:, self.features.index("female")]
+
+        transformed = torch.where(self.log_mask, torch.log(vector), vector)
+
+        def estimate(sex):
+            median, mad, loadings, beta, means, beta_null, mean_null, mrdt = (
+                getattr(self, f"{name}_{sex}").to(device=x.device, dtype=x.dtype)
+                for name in ("median", "mad", "loadings", "beta", "means", "beta_null", "mean_null", "mrdt")
+            )
+            normalized = torch.where(self.skip_mask, transformed, (transformed - median) / mad)
+            folded = normalized.clamp(-LINAGE2_FOLD_CAP, LINAGE2_FOLD_CAP)
+            components = folded @ loadings
+
+            # The stored indices are the Cox formula's 1-based PC labels.
+            selected = components[:, getattr(self, f"pc_index_{sex}") - 1]
+            terms = torch.cat([age_months.unsqueeze(1), selected], dim=1)
+            risk = ((terms - means) * beta).sum(dim=1)
+            null_risk = beta_null * (age_months - mean_null)
+            return (age_months + (risk - null_risk) / math.log(2) * mrdt) / 12
+
+        return torch.where(female == 1, estimate("female"), estimate("male")).unsqueeze(-1)
 
 
 class Mammalian1(pyagingModel):
@@ -1451,7 +1687,22 @@ class PhenoAge(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        return x
+        """Apply Levine's natural-log transform to C-reactive protein.
+
+        The published coefficient is fit against ln(CRP in mg/dL); users supply
+        the raw measurement so the same column can feed clocks that log it
+        differently.
+
+        Notes
+        -----
+        CRP is clamped to ``PHENOAGE_CRP_FLOOR_MG_DL`` before the log, so a zero
+        — from a below-detection reading, a constant imputer, or a column the
+        input never had — yields a finite age instead of ``-inf`` propagating
+        into every downstream summary.
+        """
+        index = crp_index(self.features)
+        crp = torch.clamp(x[:, index : index + 1], min=PHENOAGE_CRP_FLOOR_MG_DL)
+        return torch.cat([x[:, :index], torch.log(crp), x[:, index + 1 :]], dim=1)
 
     def postprocess(self, x):
         """
@@ -1463,6 +1714,33 @@ class PhenoAge(pyagingModel):
         mortality_score = 1 - torch.exp(-torch.exp(x) * (torch.exp(120 * lambda_) - 1) / lambda_)
         age = 141.50225 + torch.log(-0.00553 * torch.log(1 - mortality_score)) / 0.090165
         return age
+
+
+class PhenoAgeSaoPaulo(pyagingModel):
+    """PhenoAge refit without creatinine, albumin, and alkaline phosphatase."""
+
+    def __init__(self):
+        super().__init__()
+        for name in ["m_n", "m_d", "ba_n", "ba_d", "ba_i"]:
+            self.register_buffer(name, torch.empty(0))
+
+    def preprocess(self, x):
+        """Apply BioAge's log1p transform to C-reactive protein, not ``PhenoAge``'s ``ln``."""
+        return log1p_crp(self.features, x)
+
+    def postprocess(self, x):
+        """Convert the Gompertz mortality score to phenotypic age.
+
+        Notes
+        -----
+        The constants are refit alongside the coefficients and differ from
+        Levine's published ones.
+        """
+        m_n, m_d, ba_n, ba_d, ba_i = (
+            buffer.to(device=x.device, dtype=x.dtype)
+            for buffer in (self.m_n, self.m_d, self.ba_n, self.ba_d, self.ba_i)
+        )
+        return mortality_to_phenoage_saopaulo(x, m_n, m_d, ba_n, ba_d, ba_i)
 
 
 class RepliTali(pyagingModel):

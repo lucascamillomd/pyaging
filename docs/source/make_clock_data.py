@@ -148,6 +148,8 @@ def generate(metadata_path=None):
             separators=(",", ":"),
             allow_nan=False,
         )
+        # Trailing newline so the committed artifact survives pre-commit unchanged.
+        fh.write("\n")
 
     # CSV mirror (human-friendly column order + headers) for download + no-JS fallback
     csv_rows = [{key: _csv_value(value) for key, value in row.items()} for row in rows]

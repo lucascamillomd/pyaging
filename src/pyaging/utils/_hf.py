@@ -2,8 +2,8 @@
 
 Clock weights live in one repository per clock under the ``pyaging``
 organization (``pyaging/<clock_name>``); shared assets (example data, the
-aggregate metadata file) live in the legacy data repository, which also
-serves as a fallback for clocks that have not been migrated yet.
+aggregate metadata file) live in the legacy data repository, which is also
+the fallback whenever a clock's own repository cannot be read.
 
 Set the ``PYAGING_DATA_REVISION`` environment variable to pin downloads to a
 specific revision of the data repositories (e.g. a release tag such as
@@ -95,7 +95,7 @@ def download_clock_weights(clock_name: str, dir: str = "pyaging_data", logger=No
     """Download a clock's weight file, preferring its dedicated repository.
 
     Each clock lives in ``pyaging/<clock_name>``; the legacy shared data
-    repository is used as a fallback for clocks that are not migrated yet.
+    repository is the fallback when the per-clock repository cannot be read.
     The repo's ``config.json`` is fetched alongside the weights - it carries
     the audited clock metadata and is the file the Hub counts as a download.
     """

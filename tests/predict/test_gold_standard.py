@@ -53,7 +53,7 @@ gold_standard_dict = {
     "pcskinandblood": 55.508428118217466,
     "pedbe": 5.947250020578089,
     "petkovich": 24.47996061655825,
-    "phenoage": -64.36037459874132,
+    "phenoage": -65.7553566561792,
     "replitali": 94.8332866338199,
     "skinandblood": 104.75113267297903,
     "stubbs": 1.7329077738158296,
@@ -180,6 +180,10 @@ gold_standard_dict = {
     "wu": -0.0831811425679023,
     "cvdwesterman": 0.5282845773841061,
     "adbahadosingh": 0.16751476786659578,
+    "kdmage": 50.1544854808129,
+    "homeostaticdysregulation": 7.483602152825977,
+    "phenoagesaopaulo": 18.401865240846007,
+    "linage2": 41.668947619228355,
 }
 
 

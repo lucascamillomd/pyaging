@@ -31,7 +31,7 @@
     "n_features": 1695,
     "citations": 21,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "adbahadosingh": {
     "clock_name": "adbahadosingh",
@@ -65,8 +65,8 @@
     "n_features": 4,
     "citations": 33,
     "citations_date": "2026-07-05",
-    "postprocess": "sigmoid",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "sigmoid"
   },
   "altumage": {
     "clock_name": "altumage",
@@ -101,9 +101,9 @@
     "n_features": 20318,
     "citations": 145,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "scale"
+    "version": "0.5.0",
+    "preprocess": "scale",
+    "reference_values": true
   },
   "bitage": {
     "clock_name": "bitage",
@@ -137,7 +137,7 @@
     "n_features": 576,
     "citations": 173,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0",
+    "version": "0.5.0",
     "preprocess": "binarize"
   },
   "bocklandt": {
@@ -172,7 +172,7 @@
     "n_features": 1,
     "citations": 1057,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "bohlin": {
     "clock_name": "bohlin",
@@ -206,8 +206,8 @@
     "n_features": 251,
     "citations": 237,
     "citations_date": "2026-07-05",
-    "postprocess": "days_to_weeks",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "days_to_weeks"
   },
   "cabec": {
     "clock_name": "cabec",
@@ -242,7 +242,7 @@
     "n_features": 1892,
     "citations": 21,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "camilloh3k27ac": {
     "clock_name": "camilloh3k27ac",
@@ -276,7 +276,7 @@
     "n_features": 1275,
     "citations": 4,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "camilloh3k27me3": {
     "clock_name": "camilloh3k27me3",
@@ -310,7 +310,7 @@
     "n_features": 922,
     "citations": 4,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "camilloh3k36me3": {
     "clock_name": "camilloh3k36me3",
@@ -344,7 +344,7 @@
     "n_features": 870,
     "citations": 4,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "camilloh3k4me1": {
     "clock_name": "camilloh3k4me1",
@@ -378,7 +378,7 @@
     "n_features": 892,
     "citations": 4,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "camilloh3k4me3": {
     "clock_name": "camilloh3k4me3",
@@ -412,7 +412,7 @@
     "n_features": 1240,
     "citations": 4,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "camilloh3k9ac": {
     "clock_name": "camilloh3k9ac",
@@ -446,7 +446,7 @@
     "n_features": 102,
     "citations": 4,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "camilloh3k9me3": {
     "clock_name": "camilloh3k9me3",
@@ -480,7 +480,7 @@
     "n_features": 341,
     "citations": 4,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "camillopanhistone": {
     "clock_name": "camillopanhistone",
@@ -514,7 +514,7 @@
     "n_features": 3739,
     "citations": 4,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "cellpopage": {
     "clock_name": "cellpopage",
@@ -548,7 +548,7 @@
     "n_features": 42,
     "citations": 6,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "compil6": {
     "clock_name": "compil6",
@@ -582,7 +582,7 @@
     "n_features": 35,
     "citations": 55,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "corticalclock": {
     "clock_name": "corticalclock",
@@ -616,9 +616,9 @@
     "n_features": 347,
     "citations": 206,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "cpgptgrimage3": {
     "clock_name": "cpgptgrimage3",
@@ -653,9 +653,9 @@
     "n_features": 24,
     "citations": 30,
     "citations_date": "2026-07-05",
-    "postprocess": "cox_to_years",
-    "version": "v0.3.0",
-    "preprocess": "scale"
+    "version": "0.5.0",
+    "preprocess": "scale",
+    "postprocess": "cox_to_years"
   },
   "cpgptpcgrimage3": {
     "clock_name": "cpgptpcgrimage3",
@@ -690,9 +690,9 @@
     "n_features": 31,
     "citations": 30,
     "citations_date": "2026-07-05",
-    "postprocess": "cox_to_years",
-    "version": "v0.3.0",
-    "preprocess": "scale"
+    "version": "0.5.0",
+    "preprocess": "scale",
+    "postprocess": "cox_to_years"
   },
   "ctsliver": {
     "clock_name": "ctsliver",
@@ -726,7 +726,7 @@
     "n_features": 90,
     "citations": 25,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "cvdwesterman": {
     "clock_name": "cvdwesterman",
@@ -760,8 +760,8 @@
     "n_features": 235,
     "citations": 53,
     "citations_date": "2026-07-05",
-    "postprocess": "sigmoid",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "sigmoid"
   },
   "deconvolutebloodepicbcell": {
     "clock_name": "deconvolutebloodepicbcell",
@@ -795,9 +795,9 @@
     "n_features": 600,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "deconvolutebloodepiccd4tcell": {
     "clock_name": "deconvolutebloodepiccd4tcell",
@@ -831,9 +831,9 @@
     "n_features": 600,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "deconvolutebloodepiccd8tcell": {
     "clock_name": "deconvolutebloodepiccd8tcell",
@@ -867,9 +867,9 @@
     "n_features": 600,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "deconvolutebloodepicmonocyte": {
     "clock_name": "deconvolutebloodepicmonocyte",
@@ -903,9 +903,9 @@
     "n_features": 600,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "deconvolutebloodepicneutrophil": {
     "clock_name": "deconvolutebloodepicneutrophil",
@@ -939,9 +939,9 @@
     "n_features": 600,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "deconvolutebloodepicnkcell": {
     "clock_name": "deconvolutebloodepicnkcell",
@@ -975,9 +975,9 @@
     "n_features": 600,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "depressionbarbu": {
     "clock_name": "depressionbarbu",
@@ -1011,7 +1011,7 @@
     "n_features": 196,
     "citations": 93,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "dnamfili": {
     "clock_name": "dnamfili",
@@ -1046,7 +1046,7 @@
     "n_features": 20,
     "citations": 22,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "dnamfitage": {
     "clock_name": "dnamfitage",
@@ -1080,8 +1080,8 @@
     "n_features": 630,
     "citations": 99,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "dnamfitagegaitf": {
     "clock_name": "dnamfitagegaitf",
@@ -1115,8 +1115,8 @@
     "n_features": 53,
     "citations": 99,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "dnamfitagegaitm": {
     "clock_name": "dnamfitagegaitm",
@@ -1150,8 +1150,8 @@
     "n_features": 59,
     "citations": 99,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "dnamfitagegripf": {
     "clock_name": "dnamfitagegripf",
@@ -1185,8 +1185,8 @@
     "n_features": 91,
     "citations": 99,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "dnamfitagegripm": {
     "clock_name": "dnamfitagegripm",
@@ -1220,8 +1220,8 @@
     "n_features": 93,
     "citations": 99,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "dnamfitagevo2max": {
     "clock_name": "dnamfitagevo2max",
@@ -1255,8 +1255,8 @@
     "n_features": 41,
     "citations": 99,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "dnamic": {
     "clock_name": "dnamic",
@@ -1290,7 +1290,7 @@
     "n_features": 91,
     "citations": 34,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "dnamphenoage": {
     "clock_name": "dnamphenoage",
@@ -1326,7 +1326,7 @@
     "n_features": 513,
     "citations": 3594,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "dnamstress": {
     "clock_name": "dnamstress",
@@ -1360,7 +1360,7 @@
     "n_features": 211,
     "citations": 27,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "dnamtl": {
     "clock_name": "dnamtl",
@@ -1395,7 +1395,7 @@
     "n_features": 140,
     "citations": 461,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "downsyndrome": {
     "clock_name": "downsyndrome",
@@ -1429,7 +1429,7 @@
     "n_features": 652,
     "citations": 62,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "dunedinpace": {
     "clock_name": "dunedinpace",
@@ -1463,9 +1463,9 @@
     "n_features": 20000,
     "citations": 967,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "quantile_normalization_with_gold_standard"
+    "version": "0.5.0",
+    "preprocess": "quantile_normalization_with_gold_standard",
+    "reference_values": true
   },
   "dunedinpoam38": {
     "clock_name": "dunedinpoam38",
@@ -1499,7 +1499,7 @@
     "n_features": 46,
     "citations": 666,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "eabec": {
     "clock_name": "eabec",
@@ -1533,7 +1533,7 @@
     "n_features": 1791,
     "citations": 21,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "encen100": {
     "clock_name": "encen100",
@@ -1570,7 +1570,7 @@
     "n_features": 198,
     "citations": 45,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "encen40": {
     "clock_name": "encen40",
@@ -1607,7 +1607,7 @@
     "n_features": 559,
     "citations": 45,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "ensembleagehumanmouse": {
     "clock_name": "ensembleagehumanmouse",
@@ -1642,7 +1642,7 @@
     "n_features": 100,
     "citations": 3,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "ensembleagestatic": {
     "clock_name": "ensembleagestatic",
@@ -1677,7 +1677,7 @@
     "n_features": 288,
     "citations": 3,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "ensembleagestatictop": {
     "clock_name": "ensembleagestatictop",
@@ -1712,7 +1712,7 @@
     "n_features": 431,
     "citations": 3,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "epicga": {
     "clock_name": "epicga",
@@ -1746,8 +1746,8 @@
     "n_features": 176,
     "citations": 54,
     "citations_date": "2026-07-05",
-    "postprocess": "days_to_weeks",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "days_to_weeks"
   },
   "epicmithyper": {
     "clock_name": "epicmithyper",
@@ -1782,9 +1782,9 @@
     "n_features": 184,
     "citations": 104,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "mean"
+    "version": "0.5.0",
+    "preprocess": "mean",
+    "reference_values": true
   },
   "epicmithypo": {
     "clock_name": "epicmithypo",
@@ -1819,9 +1819,9 @@
     "n_features": 1164,
     "citations": 104,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "mean"
+    "version": "0.5.0",
+    "preprocess": "mean",
+    "reference_values": true
   },
   "epitoc1": {
     "clock_name": "epitoc1",
@@ -1856,9 +1856,9 @@
     "n_features": 385,
     "citations": 357,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "mean"
+    "version": "0.5.0",
+    "preprocess": "mean",
+    "reference_values": true
   },
   "epitoc2": {
     "clock_name": "epitoc2",
@@ -1892,9 +1892,9 @@
     "n_features": 163,
     "citations": 155,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "nan_to_zero"
+    "version": "0.5.0",
+    "preprocess": "nan_to_zero",
+    "reference_values": true
   },
   "epitoc3": {
     "clock_name": "epitoc3",
@@ -1932,9 +1932,9 @@
     "n_features": 170,
     "citations": 155,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "nan_to_zero"
+    "version": "0.5.0",
+    "preprocess": "nan_to_zero",
+    "reference_values": true
   },
   "garagnani": {
     "clock_name": "garagnani",
@@ -1968,7 +1968,7 @@
     "n_features": 1,
     "citations": 500,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "gliasin": {
     "clock_name": "gliasin",
@@ -2002,7 +2002,7 @@
     "n_features": 220,
     "citations": 25,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "grimage": {
     "clock_name": "grimage",
@@ -2036,9 +2036,9 @@
     "n_features": 1032,
     "citations": 2610,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2": {
     "clock_name": "grimage2",
@@ -2072,9 +2072,9 @@
     "n_features": 1032,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2adm": {
     "clock_name": "grimage2adm",
@@ -2108,9 +2108,9 @@
     "n_features": 187,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2b2m": {
     "clock_name": "grimage2b2m",
@@ -2144,9 +2144,9 @@
     "n_features": 92,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2cystatinc": {
     "clock_name": "grimage2cystatinc",
@@ -2180,9 +2180,9 @@
     "n_features": 88,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2gdf15": {
     "clock_name": "grimage2gdf15",
@@ -2216,9 +2216,9 @@
     "n_features": 138,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2leptin": {
     "clock_name": "grimage2leptin",
@@ -2252,9 +2252,9 @@
     "n_features": 187,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2loga1c": {
     "clock_name": "grimage2loga1c",
@@ -2288,9 +2288,9 @@
     "n_features": 87,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2logcrp": {
     "clock_name": "grimage2logcrp",
@@ -2324,9 +2324,9 @@
     "n_features": 132,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2packyrs": {
     "clock_name": "grimage2packyrs",
@@ -2360,9 +2360,9 @@
     "n_features": 173,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "grimage2pai1": {
     "clock_name": "grimage2pai1",
@@ -2396,8 +2396,8 @@
     "n_features": 211,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "grimage2timp1": {
     "clock_name": "grimage2timp1",
@@ -2431,9 +2431,9 @@
     "n_features": 43,
     "citations": 291,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "cox_to_years",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "han": {
     "clock_name": "han",
@@ -2467,8 +2467,8 @@
     "n_features": 65,
     "citations": 102,
     "citations_date": "2026-07-05",
-    "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "anti_log_linear"
   },
   "hannum": {
     "clock_name": "hannum",
@@ -2502,7 +2502,7 @@
     "n_features": 71,
     "citations": 4501,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "hep": {
     "clock_name": "hep",
@@ -2536,7 +2536,7 @@
     "n_features": 70,
     "citations": 25,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "hepatoxu": {
     "clock_name": "hepatoxu",
@@ -2570,7 +2570,44 @@
     "n_features": 10,
     "citations": 884,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
+  },
+  "homeostaticdysregulation": {
+    "clock_name": "homeostaticdysregulation",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "⌛",
+    "citation": "Kwon, Dayoon, and Daniel W. Belsky. \"A toolkit for quantification of biological age from blood chemistry and organ function test data: BioAge.\" GeroScience 43.6 (2021): 2795-2808.",
+    "doi": "https://doi.org/10.1007/s11357-021-00480-5",
+    "notes": "Mahalanobis distance from a young, healthy NHANES III reference cohort, fit separately by sex. The output is a log dysregulation score and is NOT expressed in years; larger values mean greater dysregulation. BioAge divides the score by the projection cohort's standard deviation of log(distance), so that NHANES IV constant is baked in per sex to keep single-sample predictions reproducible. C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. Sex is coded female = 1 and male = 0; a dataset with no female column scores every sample with the male reference. An incomplete panel biases the score downward: the score is a distance, so filling an absent biomarker with its reference value removes that marker's own contribution, which lowered the score for every one of the nine markers on average across the reference subjects and by as much as 2.9 on a 1.98-6.76 range. An incomplete panel therefore reads as healthier than it is, so the missing-feature warning the prediction pipeline emits should be heeded.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "not applicable"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "Mahalanobis distance composite",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "GeroScience",
+    "last_author": "Daniel W. Belsky",
+    "n_features": 10,
+    "citations": 332,
+    "citations_date": "2026-08-20",
+    "version": "0.5.0",
+    "preprocess": "log1p_crp",
+    "postprocess": "log_mahalanobis_distance",
+    "reference_values": true
   },
   "horvath2013": {
     "clock_name": "horvath2013",
@@ -2605,9 +2642,9 @@
     "n_features": 353,
     "citations": 7318,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "hrsinchphenoage": {
     "clock_name": "hrsinchphenoage",
@@ -2642,7 +2679,7 @@
     "n_features": 959,
     "citations": 497,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "hypoclock": {
     "clock_name": "hypoclock",
@@ -2676,10 +2713,10 @@
     "n_features": 678,
     "citations": 452,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
+    "preprocess": "mean",
     "postprocess": "one_minus",
-    "version": "v0.3.0",
-    "preprocess": "mean"
+    "reference_values": true
   },
   "intrinclock": {
     "clock_name": "intrinclock",
@@ -2714,8 +2751,45 @@
     "n_features": 380,
     "citations": 53,
     "citations_date": "2026-07-05",
-    "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "anti_log_linear"
+  },
+  "kdmage": {
+    "clock_name": "kdmage",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "⌛",
+    "citation": "Kwon, Dayoon, and Daniel W. Belsky. \"A toolkit for quantification of biological age from blood chemistry and organ function test data: BioAge.\" GeroScience 43.6 (2021): 2795-2808.",
+    "doi": "https://doi.org/10.1007/s11357-021-00480-5",
+    "notes": "Klemera-Doubal biological age, trained sex-specifically on NHANES III adults aged 30-75 who were not pregnant, using the BioAge package defaults. Biomarker parameters were fit on SI-unit variants so they are natively in pyaging's unit convention, and C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. Sex is coded female = 1 and male = 0; a dataset with no female column scores every sample with the male parameters.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "Klemera–Doubal composite",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "GeroScience",
+    "last_author": "Daniel W. Belsky",
+    "n_features": 11,
+    "citations": 332,
+    "citations_date": "2026-08-20",
+    "version": "0.5.0",
+    "preprocess": "log1p_crp",
+    "postprocess": "klemera_doubal",
+    "reference_values": true
   },
   "knight": {
     "clock_name": "knight",
@@ -2751,8 +2825,8 @@
     "n_features": 148,
     "citations": 312,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "leecontrol": {
     "clock_name": "leecontrol",
@@ -2787,7 +2861,7 @@
     "n_features": 546,
     "citations": 170,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "leerefinedrobust": {
     "clock_name": "leerefinedrobust",
@@ -2822,7 +2896,7 @@
     "n_features": 395,
     "citations": 170,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "leerobust": {
     "clock_name": "leerobust",
@@ -2857,7 +2931,7 @@
     "n_features": 558,
     "citations": 170,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "lin": {
     "clock_name": "lin",
@@ -2892,7 +2966,44 @@
     "n_features": 99,
     "citations": 256,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
+  },
+  "linage2": {
+    "clock_name": "linage2",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Fong, Sheng, et al. \"LinAge2: providing actionable insights and benchmarking with epigenetic clocks.\" npj Aging 11.1 (2025): 29.",
+    "doi": "https://doi.org/10.1038/s41514-025-00221-4",
+    "notes": "Principal-component clinical clock trained on 20-year mortality in the NHANES IV 1999-2000 wave and tested in the 2001-2002 wave. The 59 model features are log transformed where the reference specifies, robustly z-scored by sex against a healthy 40-50 year old NHANES reference, and folded at 6 MAD-scaled units; the folded vector is projected onto sex-specific singular vectors and scored by a sex-specific Cox model, so male and female samples run through entirely separate parameter sets. Chronological age is supplied in years and enters the Cox terms in months, where it is a genuine covariate rather than a cancelling offset. Sex is coded female = 1 and male = 0; a dataset with no female column scores every sample with the male parameters. C-reactive protein is supplied raw in mg/dL and takes a plain natural log with no floor, so a reading below detection coded as 0 folds to the -6 cap instead of being clamped the way the BioAge clocks clamp it. The input contract is wider than the 59 model features: total cholesterol, HDL cholesterol and triglycerides are consumed only by the Friedewald LDL and are not features themselves, and 26 questionnaire codes feed the comorbidity, self-reported-health and healthcare-use indices. An absent questionnaire block is the main hazard and it biases the estimate downward. The substituted values are the reference cohort's median profile everywhere except the comorbidity index: answering no to all 22 conditions gives 0 where the cohort's median is 1/22, so that one feature is substituted marginally healthier than the median. It costs almost nothing, because the index's entire 0 to 1 range moves the estimate by only 0.06 years. The self-reported-health index is what does the damage: its substitute of good, unchanged health is exactly the cohort median, and a subject who would have reported poor and worsening health reads about 5.3 years younger than they should. The healthcare-use index pushes the other way, by about 0.5 years for a subject who made 16 or more visits. An absent lipid panel substitutes a total cholesterol chosen so that the derived LDL lands on the reference median, avoiding the reference implementation's hard 0 mmol/L substitution; a NaN inside a lipid column that is present still takes that hard 0 path and lowers the estimate by roughly 0.35 years. The range check cannot see this at all: it resolves ranges over the clock's declared input features, and the comorbidity, self-reported-health and healthcare-use indices are derived inside the model rather than supplied, so no range check ever applies to them. Heed the missing-feature warning the prediction pipeline emits; for this clock it is the only signal that the questionnaire block was absent.",
+    "research_only": null,
+    "tissue": [
+      "blood",
+      "urine"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + Cox regression",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "npj Aging",
+    "last_author": "Jan Gruber",
+    "n_features": 85,
+    "citations": 6,
+    "citations_date": "2026-08-20",
+    "version": "0.5.0",
+    "postprocess": "linage2",
+    "reference_values": true
   },
   "mammalian1": {
     "clock_name": "mammalian1",
@@ -2926,8 +3037,8 @@
     "n_features": 335,
     "citations": 390,
     "citations_date": "2026-07-05",
-    "postprocess": "anti_logp2",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "anti_logp2"
   },
   "mammalian2": {
     "clock_name": "mammalian2",
@@ -2961,9 +3072,9 @@
     "n_features": 2572,
     "citations": 390,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "mammalian2",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "mammalian3": {
     "clock_name": "mammalian3",
@@ -2997,9 +3108,9 @@
     "n_features": 2467,
     "citations": 390,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "mammalian3",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "mammalianblood2": {
     "clock_name": "mammalianblood2",
@@ -3033,9 +3144,9 @@
     "n_features": 2257,
     "citations": 390,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "mammalian2",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "mammalianblood3": {
     "clock_name": "mammalianblood3",
@@ -3069,9 +3180,9 @@
     "n_features": 2097,
     "citations": 390,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "mammalian3",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "mammalianfemale": {
     "clock_name": "mammalianfemale",
@@ -3105,8 +3216,8 @@
     "n_features": 101,
     "citations": 5,
     "citations_date": "2026-07-05",
-    "postprocess": "sigmoid",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "sigmoid"
   },
   "mammalianlifespan": {
     "clock_name": "mammalianlifespan",
@@ -3140,9 +3251,9 @@
     "n_features": 152,
     "citations": 5,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "anti_log",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "mammalianskin2": {
     "clock_name": "mammalianskin2",
@@ -3176,9 +3287,9 @@
     "n_features": 2240,
     "citations": 390,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "mammalian2",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "mammalianskin3": {
     "clock_name": "mammalianskin3",
@@ -3212,9 +3323,9 @@
     "n_features": 2055,
     "citations": 390,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "mammalian3",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "mayne": {
     "clock_name": "mayne",
@@ -3249,7 +3360,7 @@
     "n_features": 62,
     "citations": 150,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "mccartneyalcohol": {
     "clock_name": "mccartneyalcohol",
@@ -3283,7 +3394,7 @@
     "n_features": 450,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "mccartneybmi": {
     "clock_name": "mccartneybmi",
@@ -3317,8 +3428,8 @@
     "n_features": 1109,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "postprocess": "sigmoid",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "sigmoid"
   },
   "mccartneybodyfat": {
     "clock_name": "mccartneybodyfat",
@@ -3352,8 +3463,8 @@
     "n_features": 968,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "postprocess": "sigmoid",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "sigmoid"
   },
   "mccartneyeducation": {
     "clock_name": "mccartneyeducation",
@@ -3387,8 +3498,8 @@
     "n_features": 373,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "postprocess": "sigmoid",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "sigmoid"
   },
   "mccartneyhdlcholesterol": {
     "clock_name": "mccartneyhdlcholesterol",
@@ -3422,8 +3533,8 @@
     "n_features": 737,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "postprocess": "sigmoid",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "sigmoid"
   },
   "mccartneyldlcholesterol": {
     "clock_name": "mccartneyldlcholesterol",
@@ -3457,8 +3568,8 @@
     "n_features": 233,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "postprocess": "sigmoid",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "sigmoid"
   },
   "mccartneysmoking": {
     "clock_name": "mccartneysmoking",
@@ -3492,7 +3603,7 @@
     "n_features": 233,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "mccartneytotalcholesterol": {
     "clock_name": "mccartneytotalcholesterol",
@@ -3526,8 +3637,8 @@
     "n_features": 204,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "postprocess": "sigmoid",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "sigmoid"
   },
   "mccartneytotalhdlratio": {
     "clock_name": "mccartneytotalhdlratio",
@@ -3561,7 +3672,7 @@
     "n_features": 412,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "mccartneywhr": {
     "clock_name": "mccartneywhr",
@@ -3595,7 +3706,7 @@
     "n_features": 226,
     "citations": 301,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "meer": {
     "clock_name": "meer",
@@ -3629,7 +3740,7 @@
     "n_features": 435,
     "citations": 203,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "neusin": {
     "clock_name": "neusin",
@@ -3663,7 +3774,7 @@
     "n_features": 672,
     "citations": 25,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "ocampoatac1": {
     "clock_name": "ocampoatac1",
@@ -3697,7 +3808,7 @@
     "n_features": 228,
     "citations": 49,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0",
+    "version": "0.5.0",
     "preprocess": "tpm_norm_log1p"
   },
   "ocampoatac2": {
@@ -3732,7 +3843,7 @@
     "n_features": 380,
     "citations": 49,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0",
+    "version": "0.5.0",
     "preprocess": "tpm_norm_log1p"
   },
   "pasta": {
@@ -3768,10 +3879,10 @@
     "n_features": 8113,
     "citations": 1,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
+    "preprocess": "median_fill_and_rank_normalization",
     "postprocess": "scale_and_shift",
-    "version": "v0.3.0",
-    "preprocess": "median_fill_and_rank_normalization"
+    "reference_values": true
   },
   "pastamouse": {
     "clock_name": "pastamouse",
@@ -3806,10 +3917,10 @@
     "n_features": 1600,
     "citations": 1,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
+    "preprocess": "median_fill_and_rank_normalization",
     "postprocess": "scale_and_shift",
-    "version": "v0.3.0",
-    "preprocess": "median_fill_and_rank_normalization"
+    "reference_values": true
   },
   "pcdnamtl": {
     "clock_name": "pcdnamtl",
@@ -3843,8 +3954,8 @@
     "n_features": 78464,
     "citations": 497,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "pcgrimage": {
     "clock_name": "pcgrimage",
@@ -3878,8 +3989,8 @@
     "n_features": 78466,
     "citations": 497,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "pchannum": {
     "clock_name": "pchannum",
@@ -3913,8 +4024,8 @@
     "n_features": 78464,
     "citations": 497,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "pchorvath2013": {
     "clock_name": "pchorvath2013",
@@ -3949,9 +4060,9 @@
     "n_features": 78464,
     "citations": 497,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "pcphenoage": {
     "clock_name": "pcphenoage",
@@ -3986,8 +4097,8 @@
     "n_features": 78464,
     "citations": 497,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "pcskinandblood": {
     "clock_name": "pcskinandblood",
@@ -4024,9 +4135,9 @@
     "n_features": 78464,
     "citations": 497,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
     "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "reference_values": true
   },
   "pedbe": {
     "clock_name": "pedbe",
@@ -4061,8 +4172,8 @@
     "n_features": 94,
     "citations": 292,
     "citations_date": "2026-07-05",
-    "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "anti_log_linear"
   },
   "petkovich": {
     "clock_name": "petkovich",
@@ -4096,8 +4207,8 @@
     "n_features": 90,
     "citations": 441,
     "citations_date": "2026-07-05",
-    "postprocess": "petkovich",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "petkovich"
   },
   "phenoage": {
     "clock_name": "phenoage",
@@ -4107,7 +4218,7 @@
     "approved_by_author": "⌛",
     "citation": "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591.",
     "doi": "https://doi.org/10.18632/aging.101414",
-    "notes": "Clinical Phenotypic Age combines chronological age with nine blood biomarkers selected by penalized mortality regression and expresses mortality risk as an equivalent age in years.",
+    "notes": "Clinical Phenotypic Age combines chronological age with nine blood biomarkers selected by penalized mortality regression and expresses mortality risk as an equivalent age in years. C-reactive protein is supplied raw in mg/dL and natural-log-transformed inside the clock, with readings at or below 0.01 mg/dL clamped to that floor; before pyaging 0.5.0 the feature was named log_crp and the caller had to supply the log. Continuing to pass a pre-logged value biases the estimate downward: any pre-logged CRP below 1.01 mg/dL, which covers most healthy adults, lands on the clamp floor and returns the same answer as omitting CRP entirely — about four years younger than the correct value for a typical adult, so the estimate reads healthier than it is.",
     "research_only": null,
     "tissue": [
       "blood"
@@ -4131,8 +4242,49 @@
     "n_features": 10,
     "citations": 3594,
     "citations_date": "2026-07-05",
-    "postprocess": "mortality_to_phenoage",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "preprocess": "natural_log_crp",
+    "postprocess": "mortality_to_phenoage"
+  },
+  "phenoagesaopaulo": {
+    "clock_name": "phenoagesaopaulo",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "⌛",
+    "citation": [
+      "Kwon, Dayoon, and Daniel W. Belsky. \"A toolkit for quantification of biological age from blood chemistry and organ function test data: BioAge.\" GeroScience 43.6 (2021): 2795-2808.",
+      "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
+    ],
+    "doi": "https://doi.org/10.1007/s11357-021-00480-5",
+    "notes": "PhenoAge refit on NHANES III adults aged 20-84 with BioAge::phenoage_calc(), dropping creatinine, albumin, and alkaline phosphatase and keeping the remaining six biomarkers plus chronological age. The coefficients and the mortality-to-age constants are refit, so they differ from the published PhenoAge and its constants do not apply. Biomarkers are on BioAge's SI-unit variants, which are natively pyaging's unit convention, and C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. The refit is pooled across sexes, so unlike kdmage and homeostaticdysregulation this clock takes no female column. The refit has no publication of its own: it was produced for pyaging 0.5.0 by clocks/notebooks/phenoagesaopaulo.ipynb with the BioAge toolkit, so the DOI, journal, last author and citation count are the toolkit's, and Levine 2018 is listed beside it as the method reference that defines PhenoAge.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "phenotypic age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "Gompertz hazards regression with age calibration",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "GeroScience",
+    "last_author": "Daniel W. Belsky",
+    "n_features": 7,
+    "citations": 332,
+    "citations_date": "2026-08-20",
+    "version": "0.5.0",
+    "preprocess": "log1p_crp",
+    "postprocess": "mortality_to_phenoage_saopaulo",
+    "reference_values": true
   },
   "pipekelasticnet": {
     "clock_name": "pipekelasticnet",
@@ -4168,8 +4320,8 @@
     "n_features": 239,
     "citations": 2,
     "citations_date": "2026-07-05",
-    "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "anti_log_linear"
   },
   "pipekfilteredh": {
     "clock_name": "pipekfilteredh",
@@ -4205,8 +4357,8 @@
     "n_features": 272,
     "citations": 2,
     "citations_date": "2026-07-05",
-    "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "anti_log_linear"
   },
   "pipekretrainedh": {
     "clock_name": "pipekretrainedh",
@@ -4242,8 +4394,8 @@
     "n_features": 308,
     "citations": 2,
     "citations_date": "2026-07-05",
-    "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "anti_log_linear"
   },
   "prostatecancerkirby": {
     "clock_name": "prostatecancerkirby",
@@ -4277,7 +4429,7 @@
     "n_features": 3,
     "citations": 61,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "reedbmi": {
     "clock_name": "reedbmi",
@@ -4312,7 +4464,7 @@
     "n_features": 135,
     "citations": 86,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "reg": {
     "clock_name": "reg",
@@ -4347,10 +4499,10 @@
     "n_features": 8113,
     "citations": 1,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
+    "preprocess": "median_fill_and_rank_normalization",
     "postprocess": "add_constant",
-    "version": "v0.3.0",
-    "preprocess": "median_fill_and_rank_normalization"
+    "reference_values": true
   },
   "replitali": {
     "clock_name": "replitali",
@@ -4384,7 +4536,7 @@
     "n_features": 87,
     "citations": 86,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "replitalinorm": {
     "clock_name": "replitalinorm",
@@ -4418,7 +4570,7 @@
     "n_features": 218,
     "citations": 86,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "retroelementagev1": {
     "clock_name": "retroelementagev1",
@@ -4452,7 +4604,7 @@
     "n_features": 1317,
     "citations": 26,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "retroelementagev2": {
     "clock_name": "retroelementagev2",
@@ -4486,7 +4638,7 @@
     "n_features": 1378,
     "citations": 26,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "senchronoage": {
     "clock_name": "senchronoage",
@@ -4521,7 +4673,7 @@
     "n_features": 187,
     "citations": 0,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "sencultureage": {
     "clock_name": "sencultureage",
@@ -4557,7 +4709,7 @@
     "n_features": 142,
     "citations": 0,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "senmortalityage": {
     "clock_name": "senmortalityage",
@@ -4592,7 +4744,7 @@
     "n_features": 91,
     "citations": 0,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "skinandblood": {
     "clock_name": "skinandblood",
@@ -4632,8 +4784,8 @@
     "n_features": 391,
     "citations": 853,
     "citations_date": "2026-07-05",
-    "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "anti_log_linear"
   },
   "stemtoc": {
     "clock_name": "stemtoc",
@@ -4671,9 +4823,9 @@
     "n_features": 371,
     "citations": 24,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "0.95 quantile"
+    "version": "0.5.0",
+    "preprocess": "0.95 quantile",
+    "reference_values": true
   },
   "stemtocvitro": {
     "clock_name": "stemtocvitro",
@@ -4709,9 +4861,9 @@
     "n_features": 629,
     "citations": 24,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "0.95 quantile"
+    "version": "0.5.0",
+    "preprocess": "0.95 quantile",
+    "reference_values": true
   },
   "stoch": {
     "clock_name": "stoch",
@@ -4745,7 +4897,7 @@
     "n_features": 353,
     "citations": 66,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "stocp": {
     "clock_name": "stocp",
@@ -4779,7 +4931,7 @@
     "n_features": 513,
     "citations": 66,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "stocz": {
     "clock_name": "stocz",
@@ -4813,7 +4965,7 @@
     "n_features": 514,
     "citations": 66,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "stubbs": {
     "clock_name": "stubbs",
@@ -4854,10 +5006,10 @@
     "n_features": 17992,
     "citations": 430,
     "citations_date": "2026-07-05",
-    "reference_values": true,
+    "version": "0.5.0",
+    "preprocess": "quantile_normalization_and_scale_with_gold_standard",
     "postprocess": "stubbs",
-    "version": "v0.3.0",
-    "preprocess": "quantile_normalization_and_scale_with_gold_standard"
+    "reference_values": true
   },
   "systemsage": {
     "clock_name": "systemsage",
@@ -4892,8 +5044,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsageblood": {
     "clock_name": "systemsageblood",
@@ -4928,8 +5080,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsagebrain": {
     "clock_name": "systemsagebrain",
@@ -4964,8 +5116,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsageheart": {
     "clock_name": "systemsageheart",
@@ -5000,8 +5152,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsagehormone": {
     "clock_name": "systemsagehormone",
@@ -5036,8 +5188,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsageimmune": {
     "clock_name": "systemsageimmune",
@@ -5072,8 +5224,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsageinflammation": {
     "clock_name": "systemsageinflammation",
@@ -5108,8 +5260,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsagekidney": {
     "clock_name": "systemsagekidney",
@@ -5144,8 +5296,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsageliver": {
     "clock_name": "systemsageliver",
@@ -5180,8 +5332,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsagelung": {
     "clock_name": "systemsagelung",
@@ -5216,8 +5368,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsagemetabolic": {
     "clock_name": "systemsagemetabolic",
@@ -5252,8 +5404,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "systemsagemusculoskeletal": {
     "clock_name": "systemsagemusculoskeletal",
@@ -5288,8 +5440,8 @@
     "n_features": 125175,
     "citations": 41,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "reference_values": true
   },
   "thompson": {
     "clock_name": "thompson",
@@ -5332,7 +5484,7 @@
     "n_features": 582,
     "citations": 236,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "twelvecelldeconvolutebloodepicbas": {
     "clock_name": "twelvecelldeconvolutebloodepicbas",
@@ -5366,9 +5518,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepicbmem": {
     "clock_name": "twelvecelldeconvolutebloodepicbmem",
@@ -5402,9 +5554,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepicbnv": {
     "clock_name": "twelvecelldeconvolutebloodepicbnv",
@@ -5438,9 +5590,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepiccd4mem": {
     "clock_name": "twelvecelldeconvolutebloodepiccd4mem",
@@ -5474,9 +5626,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepiccd4nv": {
     "clock_name": "twelvecelldeconvolutebloodepiccd4nv",
@@ -5510,9 +5662,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepiccd8mem": {
     "clock_name": "twelvecelldeconvolutebloodepiccd8mem",
@@ -5546,9 +5698,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepiccd8nv": {
     "clock_name": "twelvecelldeconvolutebloodepiccd8nv",
@@ -5582,9 +5734,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepiceos": {
     "clock_name": "twelvecelldeconvolutebloodepiceos",
@@ -5618,9 +5770,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepicmono": {
     "clock_name": "twelvecelldeconvolutebloodepicmono",
@@ -5654,9 +5806,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepicneu": {
     "clock_name": "twelvecelldeconvolutebloodepicneu",
@@ -5690,9 +5842,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepicnk": {
     "clock_name": "twelvecelldeconvolutebloodepicnk",
@@ -5726,9 +5878,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "twelvecelldeconvolutebloodepictreg": {
     "clock_name": "twelvecelldeconvolutebloodepictreg",
@@ -5762,9 +5914,9 @@
     "n_features": 240,
     "citations": 13,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "fill_with_reference_means"
+    "version": "0.5.0",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
   },
   "vidalbralo": {
     "clock_name": "vidalbralo",
@@ -5798,7 +5950,7 @@
     "n_features": 8,
     "citations": 145,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "weidner": {
     "clock_name": "weidner",
@@ -5833,7 +5985,7 @@
     "n_features": 3,
     "citations": 973,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "wu": {
     "clock_name": "wu",
@@ -5868,8 +6020,8 @@
     "n_features": 111,
     "citations": 82,
     "citations_date": "2026-07-05",
-    "postprocess": "anti_log_linear",
-    "version": "v0.3.0"
+    "version": "0.5.0",
+    "postprocess": "anti_log_linear"
   },
   "xchrom": {
     "clock_name": "xchrom",
@@ -5904,9 +6056,9 @@
     "n_features": 4047,
     "citations": 38,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "sex_estimation_autosomal_zscore"
+    "version": "0.5.0",
+    "preprocess": "sex_estimation_autosomal_zscore",
+    "reference_values": true
   },
   "ychrom": {
     "clock_name": "ychrom",
@@ -5941,9 +6093,9 @@
     "n_features": 284,
     "citations": 38,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "sex_estimation_autosomal_zscore"
+    "version": "0.5.0",
+    "preprocess": "sex_estimation_autosomal_zscore",
+    "reference_values": true
   },
   "yingadaptage": {
     "clock_name": "yingadaptage",
@@ -5977,7 +6129,7 @@
     "n_features": 999,
     "citations": 183,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "yingcausage": {
     "clock_name": "yingcausage",
@@ -6011,7 +6163,7 @@
     "n_features": 585,
     "citations": 183,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "yingdamage": {
     "clock_name": "yingdamage",
@@ -6045,7 +6197,7 @@
     "n_features": 1089,
     "citations": 183,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   },
   "zhangblup": {
     "clock_name": "zhangblup",
@@ -6081,9 +6233,9 @@
     "n_features": 319607,
     "citations": 519,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "scale_row"
+    "version": "0.5.0",
+    "preprocess": "scale_row",
+    "reference_values": true
   },
   "zhangen": {
     "clock_name": "zhangen",
@@ -6119,9 +6271,9 @@
     "n_features": 514,
     "citations": 519,
     "citations_date": "2026-07-05",
-    "reference_values": true,
-    "version": "v0.3.0",
-    "preprocess": "scale_row"
+    "version": "0.5.0",
+    "preprocess": "scale_row",
+    "reference_values": true
   },
   "zhangmortality": {
     "clock_name": "zhangmortality",
@@ -6155,6 +6307,6 @@
     "n_features": 10,
     "citations": 404,
     "citations_date": "2026-07-05",
-    "version": "v0.3.0"
+    "version": "0.5.0"
   }
 }

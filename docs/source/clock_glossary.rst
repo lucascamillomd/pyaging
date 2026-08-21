@@ -3,7 +3,7 @@
 Clock Catalogue
 ===============
 
-All 173 clocks currently implemented in ``pyaging``. Search by name or author,
+All 177 clocks currently implemented in ``pyaging``. Search by name or author,
 filter any column, and click a row for the full metadata, the reference, and
 the notebook that constructed the clock. Citation counts come from the
 original publications; download counts come from each clock's repository on

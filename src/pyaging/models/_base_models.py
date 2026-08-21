@@ -31,6 +31,7 @@ class pyagingModel(nn.Module, ABC):
         self.postprocess_dependencies = None
 
         self.features = None
+        self.feature_units = None
         self.base_model_features = self.features
 
         self.base_model = None

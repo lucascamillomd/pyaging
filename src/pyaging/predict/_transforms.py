@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 
 def scale(x, scaler):
@@ -96,3 +97,59 @@ def quantile_normalize_with_gold_standard(x, gold_standard_means):
         x_normalized[i, :] = normalized_data[original_order_indices]
 
     return x_normalized
+
+
+# Lowest C-reactive protein ``PhenoAge`` will take the natural log of, in mg/dL. Its
+# clamp is the only CRP transform that needs a floor, and the value matches the registry
+# floor in data/feature_ranges.json so that anything the clamp touches has already been
+# reported by check_feature_ranges.
+PHENOAGE_CRP_FLOOR_MG_DL = 0.01
+
+
+def crp_index(features):
+    """Locate the C-reactive protein column, or explain why there is not one.
+
+    pyaging 0.5.0 renamed this feature from ``log_crp`` and moved the log into the
+    clock, so 0.5.0 code cannot run a weight file built before it.
+
+    Raises
+    ------
+    ValueError
+        If ``features`` has no ``c_reactive_protein`` entry.
+    """
+    try:
+        return features.index("c_reactive_protein")
+    except ValueError:
+        pass
+    legacy = " Its features call it 'log_crp', the name pyaging used before 0.5.0." if "log_crp" in features else ""
+    raise ValueError(
+        "This clock has no 'c_reactive_protein' feature, so its C-reactive protein transform "
+        f"cannot be applied.{legacy} Weights built before pyaging 0.5.0 do not work with "
+        "pyaging 0.5.0 or later. Unset PYAGING_DATA_REVISION, or pin it to v0.5.0 or a later "
+        "tag, to download weights that match the installed version; pin pyaging itself to "
+        "<0.5.0 to keep using the older weights."
+    )
+
+
+def log1p_crp(features, x):
+    """Apply BioAge's ``lncrp`` transform to the C-reactive protein column alone.
+
+    BioAge fits ``lncrp`` against ``log1p(CRP in mg/dL)``, not the natural log
+    ``PhenoAge`` uses, so every clock ported from that package shares this
+    transform; users supply the raw measurement so one column can feed clocks
+    that log it differently.
+
+    Notes
+    -----
+    CRP is not floored. ``log1p`` is finite everywhere it is defined, and
+    ``log1p(0) == 0`` is a point BioAge's own fitted preimage includes, so a
+    below-detection reading coded as ``0``, a constant imputer, or an absent
+    column all pass through as the reference scores them. Only a value at or
+    below ``-1`` mg/dL is outside the domain, and that is not a measurement;
+    those samples become ``NaN`` so they surface in the output instead of
+    carrying a value the clock made up for them.
+    """
+    index = crp_index(features)
+    crp = x[:, index : index + 1]
+    crp = torch.where(crp > -1, crp, torch.nan)
+    return torch.cat([x[:, :index], torch.log1p(crp), x[:, index + 1 :]], dim=1)

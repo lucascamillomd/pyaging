@@ -86,10 +86,6 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
-    verbose : bool
-        Whether to show the progress display and warnings. Animated in
-        notebooks and terminals, a plain summary when output is captured,
-        and fully silent when False. Defaults to True.
     logger : object
         Logger object used for logging information, warnings, and errors.
     indent_level : int, optional
@@ -275,7 +271,10 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data", verbose: bool = True)
         clock_dict = all_clock_metadata.get(clock_name)
         citation = clock_dict.get("citation") if clock_dict else None
         if citation:
-            step.payload(f"  {citation}")
+            # A derived clock can carry more than one: the work that produced it and
+            # the method reference it starts from. Give each its own line.
+            for entry in [citation] if isinstance(citation, str) else citation:
+                step.payload(f"  {entry}")
             step.payload(Text(f"  Please also consider citing pyaging: {pyaging_citation}", style=MUTED))
             step.done(f"citation for {clock_name}")
         elif clock_dict:
