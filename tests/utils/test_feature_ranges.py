@@ -114,6 +114,24 @@ def test_get_feature_ranges_falls_back_to_the_registry_without_stored_units(monk
     assert list(frame["unit"]) == expected
 
 
+def test_get_feature_ranges_uses_a_models_internal_range_profile(monkeypatch):
+    class _CenteredTranscriptomicsClock:
+        features = ["12575"]
+        feature_units = None
+        feature_range_data_type = "transcriptomics (relative)"
+        metadata = {"data_type": "transcriptomics"}
+
+    monkeypatch.setattr(
+        "pyaging.predict.load_clock",
+        lambda clock_name, **kwargs: _CenteredTranscriptomicsClock(),
+        raising=True,
+    )
+
+    record = get_feature_ranges("centered-transcriptomics").iloc[0]
+
+    assert math.isinf(-record["low"]) and math.isinf(record["high"])
+
+
 @pytest.mark.parametrize(
     ("feature", "value"),
     [

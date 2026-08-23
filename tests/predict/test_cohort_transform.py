@@ -49,7 +49,7 @@ def _raw_adata():
 def _stub_clock(clock_name, features, reference_values=None):
     model = _CohortClock()
     model.metadata["clock_name"] = clock_name
-    model.metadata["data_type"] = "transcriptomics (relative)"
+    model.metadata["data_type"] = "transcriptomics"
     model.features = features
     model.reference_values = reference_values
     model.base_model = torch.nn.Linear(len(features), 1).double()
@@ -89,6 +89,7 @@ def test_base_model_defaults_to_no_cohort_transform():
 def test_tage_models_declare_the_tage_transform(clock_class):
     model = clock_class()
     assert model.cohort_transform == "tage"
+    assert model.feature_range_data_type == "transcriptomics (relative)"
     assert model.required_uns_flag is None
 
 

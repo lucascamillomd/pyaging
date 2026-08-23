@@ -41,6 +41,10 @@ class pyagingModel(nn.Module, ABC):
 
         self.features = None
         self.feature_units = None
+        # Optional internal range profile when the model consumes values that
+        # differ from the public assay modality (for example, cohort-centered
+        # transcriptomic values derived from raw RNA-seq counts).
+        self.feature_range_data_type = None
         self.base_model_features = self.features
 
         self.base_model = None

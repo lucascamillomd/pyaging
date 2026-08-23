@@ -323,7 +323,11 @@ def test_every_built_clock_carries_the_registry_feature_units():
     for path in paths:
         model = torch.load(path, weights_only=False)
         expected = [
-            record["unit"] for record in resolve_feature_ranges(model.features, model.metadata.get("data_type"))
+            record["unit"]
+            for record in resolve_feature_ranges(
+                model.features,
+                getattr(model, "feature_range_data_type", None) or model.metadata.get("data_type"),
+            )
         ]
         if getattr(model, "feature_units", None) != expected:
             stale.append(path.stem)

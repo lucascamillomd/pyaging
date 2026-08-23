@@ -161,7 +161,7 @@ def test_prediction_writes_the_standard_clock_metadata(adata_mouse):
         assert clock_name in adata_mouse.obs.columns
         metadata = adata_mouse.uns[f"{clock_name}_metadata"]
         assert metadata["clock_name"] == clock_name
-        assert metadata["data_type"] == "transcriptomics (relative)"
+        assert metadata["data_type"] == "transcriptomics"
         assert adata_mouse.uns[f"{clock_name}_missing_features"] is not None
         assert 0 <= adata_mouse.uns[f"{clock_name}_percent_na"] < 100
 

@@ -5445,7 +5445,7 @@
   },
   "tage": {
     "clock_name": "tage",
-    "data_type": "transcriptomics (relative)",
+    "data_type": "transcriptomics",
     "species": "multiple species",
     "year": 2026,
     "approved_by_author": "⌛",
@@ -5480,7 +5480,7 @@
   },
   "tagemortality": {
     "clock_name": "tagemortality",
-    "data_type": "transcriptomics (relative)",
+    "data_type": "transcriptomics",
     "species": "multiple species",
     "year": 2026,
     "approved_by_author": "⌛",

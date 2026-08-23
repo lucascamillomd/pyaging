@@ -159,7 +159,7 @@ def get_feature_ranges(clock_name: str):
         raise ValueError(f"clock {clock_name!r} has no feature list, so its feature ranges cannot be resolved")
     records = resolve_feature_ranges(
         model.features,
-        model.metadata.get("data_type"),
+        getattr(model, "feature_range_data_type", None) or model.metadata.get("data_type"),
         getattr(model, "feature_units", None),
     )
     return pd.DataFrame.from_records(records)

@@ -3278,6 +3278,7 @@ class TAge(pyagingModel):
         # Cohort-relative clock: ``predict_age`` runs the tAge cohort
         # preprocessing on the raw counts before aligning these features.
         self.cohort_transform = "tage"
+        self.feature_range_data_type = "transcriptomics (relative)"
 
     def preprocess(self, x):
         """Substitute the fitted imputer statistics for genes absent from the sample.

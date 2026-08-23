@@ -139,6 +139,17 @@ def test_half_bounded_range_is_phrased_as_below_the_bound():
     assert "inf" not in joined
 
 
+def test_internal_range_profile_can_override_the_public_modality():
+    model = _FakeModel(["gene1"], "transcriptomics")
+    model.feature_range_data_type = "transcriptomics (relative)"
+    adata = _adata_for("fakeclock", [[-3.0], [5.0]])
+    logger = _RecordingLogger()
+
+    check_feature_ranges(adata, model, logger)
+
+    assert logger.warnings == []
+
+
 def test_check_does_not_mutate_the_matrix():
     model = _FakeModel(["cg1"], "DNA methylation")
     adata = _adata_for("fakeclock", [[5.0]])

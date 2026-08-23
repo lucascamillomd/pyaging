@@ -452,7 +452,7 @@ def check_feature_ranges(
     try:
         units, low, high = resolve_feature_bounds(
             model.features,
-            model.metadata.get("data_type"),
+            getattr(model, "feature_range_data_type", None) or model.metadata.get("data_type"),
             getattr(model, "feature_units", None),
         )
     except Exception as exc:

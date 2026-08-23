@@ -484,8 +484,7 @@
         "clinical biomarkers",
         "DNA methylation",
         "histone modification",
-        "transcriptomics",
-        "transcriptomics (relative)"
+        "transcriptomics"
       ],
       "aliases": {
         "atac": "chromatin accessibility",
