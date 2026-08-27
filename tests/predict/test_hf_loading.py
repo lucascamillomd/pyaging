@@ -37,6 +37,13 @@ def test_load_clock_translates_only_missing_resource_to_chained_name_error(monke
     with pytest.raises(NameError, match="Clock horvath2013 is not available") as error:
         load_clock("Horvath2013", "cpu", str(tmp_path), logger, indent_level=2)
 
+    message = str(error.value)
+    from pyaging import __version__
+
+    assert f"Clock horvath2013 is not available on pyaging {__version__}" in message
+    assert "may require a newer pyaging release" in message
+    assert "check PyPI" in message
+    assert "pip install --upgrade pyaging" in message
     assert error.value.__cause__ is missing_error
     logger.error.assert_called_once()
     assert "Clock horvath2013 is not available on pyaging" in logger.error.call_args.args[0]

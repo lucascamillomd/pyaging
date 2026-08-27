@@ -122,8 +122,12 @@ def _load_clock_impl(clock_name: str, device: str, dir: str, logger, indent_leve
     try:
         weights_path = download_clock_weights(clock_name, dir, logger, indent_level=indent_level)
     except PyAgingResourceNotFoundError as exc:
+        from pyaging import __version__
+
         message = (
-            f"Clock {clock_name} is not available on pyaging. "
+            f"Clock {clock_name} is not available on pyaging {__version__}. "
+            "This clock may require a newer pyaging release; check PyPI and run "
+            "`pip install --upgrade pyaging` if a newer version is available. "
             "Please refer to the clock names in the clock glossary table "
             "in the package documentation page: pyaging.readthedocs.io"
         )
