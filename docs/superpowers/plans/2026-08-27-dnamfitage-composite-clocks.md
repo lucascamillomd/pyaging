@@ -909,6 +909,13 @@ git commit -m "chore: prepare DNAmFitAge clocks for v0.5.2"
 
 Run the gait, grip, and final DNAmFitAge notebooks in dependency order with a 600-second cell timeout. Record the SHA256 of each generated weight, execute the same notebook a second time, and require the weight SHA256 to be identical before proceeding. Execution counts or captured command output may change notebook JSON, but weight-byte variance is a failure.
 
+Every command that executes any of these three construction notebooks replaces
+its corresponding release weight with a versionless construction artifact.
+Immediately after **each** notebook-execution command, run the exact selected
+restamp, aggregate rebuild, static regeneration, and version verification from
+Step 2. Compare reproducibility hashes only at the same post-restamp point in
+each pass. Never defer a restamp across another verification or upload step.
+
 - [ ] **Step 2: Narrowly restamp the three notebook outputs and rebuild aggregate/static metadata**
 
 Notebook construction deliberately leaves release versions unset. Immediately
@@ -979,7 +986,34 @@ uv run pytest --nbmake \
 Expected: exactly 12 focused catalogue/composite tests pass and all three
 changed notebooks pass.
 
-- [ ] **Step 6: Build and inspect distributions**
+- [ ] **Step 6: Re-run the final post-notebook restamp and pre-upload artifact gate**
+
+The `--nbmake` command in Step 5 executes the construction notebooks and
+therefore overwrites the three stamped weights. Immediately after that command,
+run the narrow release preparation again:
+
+```bash
+uv run python clocks/update_all_clocks.py v0.5.2 \
+  --clock dnamfitage \
+  --clock dnamfitagegait \
+  --clock dnamfitagegrip
+uv run python docs/source/make_clock_data.py \
+  --metadata-path clocks/metadata/all_clock_metadata.pt
+```
+
+Load each of the three changed weights and require its expected class, feature
+count, feature units, `model.version == "v0.5.2"`, and
+`model.metadata["version"] == "v0.5.2"`. Require the aggregate and generated
+static assets to contain 177 clocks, with exact versions `174 × v0.5.1` /
+`3 × v0.5.2` and exactly the three changed names at `v0.5.2`. Require an
+all-174 checksum comparison against the base checkout to remain empty.
+
+This is the final pre-upload artifact gate. Any later command that executes
+`dnamfitage.ipynb`, `dnamfitagegait.ipynb`, or `dnamfitagegrip.ipynb`
+invalidates the gate and requires this complete Step 6 sequence again. Do not
+run another construction-notebook command before Task 8 upload.
+
+- [ ] **Step 7: Build and inspect distributions**
 
 Run:
 
@@ -991,7 +1025,7 @@ uv run pytest tests/test_release_configuration.py -q
 
 Inspect wheel and sdist filenames and metadata; both must say 0.5.2 and must not contain ignored clock weights.
 
-- [ ] **Step 7: Verify exact repository state before Hub work**
+- [ ] **Step 8: Verify exact repository state before Hub work**
 
 Run:
 
@@ -1023,7 +1057,16 @@ Expected: only intentional tracked changes/commits are present; ignored weights 
 > for those unchanged artifacts and uses `v0.5.2` only for the three changed
 > clocks.
 
-- [ ] **Step 1: Verify authentication, ownership, public aggregate repository, and exact local candidates**
+- [ ] **Step 1: Verify current local stamps, then authentication, ownership, public aggregate repository, and exact local candidates**
+
+Before any authentication or network command, confirm no construction notebook
+has executed since Task 7's final Step 6 gate. Load the exact local files
+`dnamfitage.pt`, `dnamfitagegait.pt`, and `dnamfitagegrip.pt`; require expected
+classes, feature counts, feature units, and both version fields equal
+`v0.5.2`. Require the aggregate to have 177 entries with exact versions
+`174 × v0.5.1` / `3 × v0.5.2`, exactly those three keys at `v0.5.2`, and no
+retired keys. Require the all-174 checksum comparison against the base checkout
+to be empty. Stop before upload if any local assertion fails.
 
 Run:
 

@@ -659,7 +659,7 @@ def regenerate_selected_clock_metadata(
     records_by_name = {record.logical_path.stem: record for record in weight_records}
     selected_records = [records_by_name[name] for name in selected_names]
     metadata_record = _resolve_target(metadata_path, require_existing=False)
-    target_paths = [record.target_path for record in selected_records] + [metadata_record.target_path]
+    target_paths = [record.target_path for record in weight_records] + [metadata_record.target_path]
     if len(set(target_paths)) != len(target_paths):
         raise ValueError("Distinct logical paths must not resolve to the same backing target")
 
@@ -710,7 +710,7 @@ def regenerate_selected_clock_metadata(
     return combined_dictionary
 
 
-if __name__ == "__main__":
+def _parse_args(argv=None):
     parser = argparse.ArgumentParser(description="Merge PT files metadata.")
     parser.add_argument("version", type=str, help="Version number to be added to the metadata.")
     parser.add_argument(
@@ -719,7 +719,11 @@ if __name__ == "__main__":
         dest="clock_names",
         help="Restamp only this clock (repeatable) and preserve other embedded versions.",
     )
-    args = parser.parse_args()
+    return parser.parse_args(argv)
+
+
+if __name__ == "__main__":
+    args = _parse_args()
 
     if args.clock_names:
         regenerate_selected_clock_metadata(args.version, args.clock_names)

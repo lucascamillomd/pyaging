@@ -954,6 +954,63 @@ def test_selected_regeneration_restamps_only_selected_and_preserves_other_versio
     assert _transaction_residue(tmp_path) == []
 
 
+def test_selected_regeneration_rejects_aggregate_alias_to_unselected_weight_without_mutation(tmp_path):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
+    metadata_path.unlink()
+    metadata_path.symlink_to(weights_dir / "beta.pt")
+    snapshot = _snapshot(sorted(weights_dir.glob("*.pt")))
+
+    with pytest.raises(ValueError, match="Distinct logical paths must not resolve to the same backing target"):
+        update_all_clocks.regenerate_selected_clock_metadata(
+            "0.3.0",
+            ("alpha",),
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=metadata_path,
+        )
+
+    _assert_snapshot(snapshot)
+    assert metadata_path.is_symlink()
+    assert _transaction_residue(tmp_path) == []
+
+
+def test_selected_regeneration_cli_collects_repeated_clock_options():
+    update_all_clocks = _load_update_all_clocks_module()
+
+    args = update_all_clocks._parse_args(
+        ["v0.5.2", "--clock", "dnamfitage", "--clock", "dnamfitagegait", "--clock", "dnamfitagegrip"]
+    )
+
+    assert args.version == "v0.5.2"
+    assert args.clock_names == ["dnamfitage", "dnamfitagegait", "dnamfitagegrip"]
+
+
+@pytest.mark.parametrize(
+    ("selected_names", "message"),
+    [
+        (("alpha", "alpha"), "Selected clock names must be unique"),
+        (("missing",), "Selected clock names are not in the registry: \\['missing'\\]"),
+    ],
+)
+def test_selected_regeneration_rejects_invalid_selections_without_mutation(tmp_path, selected_names, message):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
+    snapshot = _snapshot([*sorted(weights_dir.glob("*.pt")), metadata_path])
+
+    with pytest.raises(ValueError, match=message):
+        update_all_clocks.regenerate_selected_clock_metadata(
+            "0.3.0",
+            selected_names,
+            weights_dir=weights_dir,
+            registry_path=registry_path,
+            metadata_path=metadata_path,
+        )
+
+    _assert_snapshot(snapshot)
+    assert _transaction_residue(tmp_path) == []
+
+
 class _ConcreteClock(pyagingModel):
     """Minimal concrete ``pyagingModel`` standing in for a built clock.
 
