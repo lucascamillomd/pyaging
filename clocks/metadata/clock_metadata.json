@@ -1083,6 +1083,41 @@
     "version": "0.5.0",
     "reference_values": true
   },
+  "dnamfitagegait": {
+    "clock_name": "dnamfitagegait",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "⌛",
+    "citation": "McGreevy, K. M., et al. “DNAmFitAge: biological age indicator incorporating physical fitness.” Aging 15(10): 3904–3938 (2023).",
+    "doi": "https://doi.org/10.18632/aging.204538",
+    "notes": "Sex-gated blood DNAm gait-speed estimator using the published female and male regressions selected by the female input.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "gait speed"
+    ],
+    "training_target": [
+      "gait speed"
+    ],
+    "unit": [
+      "meters per second"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 111,
+    "citations": 99,
+    "citations_date": "2026-07-05",
+    "version": "0.5.0",
+    "reference_values": true
+  },
   "dnamfitagegaitf": {
     "clock_name": "dnamfitagegaitf",
     "data_type": "DNA methylation",
@@ -1148,6 +1183,41 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 59,
+    "citations": 99,
+    "citations_date": "2026-07-05",
+    "version": "0.5.0",
+    "reference_values": true
+  },
+  "dnamfitagegrip": {
+    "clock_name": "dnamfitagegrip",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "⌛",
+    "citation": "McGreevy, K. M., et al. “DNAmFitAge: biological age indicator incorporating physical fitness.” Aging 15(10): 3904–3938 (2023).",
+    "doi": "https://doi.org/10.18632/aging.204538",
+    "notes": "Sex-gated blood DNAm maximum-handgrip-strength estimator using the published female and male regressions selected by the female input.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "grip strength"
+    ],
+    "training_target": [
+      "grip strength"
+    ],
+    "unit": [
+      "kilograms"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 183,
     "citations": 99,
     "citations_date": "2026-07-05",
     "version": "0.5.0",
