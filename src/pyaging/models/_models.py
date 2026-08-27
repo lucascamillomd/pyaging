@@ -2190,6 +2190,45 @@ class DNAmFitAge(pyagingModel):
         return x
 
 
+def _fill_dnamfitage_references(x, reference_values):
+    reference = torch.as_tensor(reference_values, device=x.device, dtype=x.dtype)
+    return torch.where(torch.isnan(x), reference, x)
+
+
+class _DNAmFitAgeSexGated(pyagingModel):
+    def __init__(self):
+        super().__init__()
+        self.female_model = None
+        self.male_model = None
+        self.female_feature_indices = None
+        self.male_feature_indices = None
+        self.female_reference_values = None
+        self.male_reference_values = None
+        self.female_index = None
+
+    def forward(self, x):
+        female = x[:, self.female_index].unsqueeze(1)
+        female_x = _fill_dnamfitage_references(x[:, self.female_feature_indices], self.female_reference_values)
+        male_x = _fill_dnamfitage_references(x[:, self.male_feature_indices], self.male_reference_values)
+        female_prediction = self.female_model(female_x)
+        male_prediction = self.male_model(male_x)
+        return male_prediction + female * (female_prediction - male_prediction)
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        return x
+
+
+class DNAmFitAgeGait(_DNAmFitAgeSexGated):
+    pass
+
+
+class DNAmFitAgeGrip(_DNAmFitAgeSexGated):
+    pass
+
+
 class StocH(pyagingModel):
     def __init__(self):
         super().__init__()
