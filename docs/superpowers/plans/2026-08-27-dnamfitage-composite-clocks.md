@@ -738,12 +738,22 @@ Run: `uv run python -c 'import pyaging; assert pyaging.__version__ == "0.5.2"'`
 
 - [ ] **Step 2: Restamp only the three changed weights and regenerate truthful aggregate metadata**
 
-Do not run the exhaustive `clocks/update_all_clocks.py` command. Rebuild or
-narrowly restamp only `dnamfitage`, `dnamfitagegait`, and `dnamfitagegrip` as
-`v0.5.2`. Restore the other 174 weights byte-for-byte from the base checkout and
-require an all-174 checksum comparison to produce no differences. Generate
-`all_clock_metadata.pt` by merging the current registry with each local
-artifact's own runtime metadata and version without resaving the 174 survivors.
+Do not run the exhaustive form of `clocks/update_all_clocks.py`. After the three
+changed notebooks have generated their weights, run this exact narrow command
+from the repository root:
+
+```bash
+uv run python clocks/update_all_clocks.py v0.5.2 \
+  --clock dnamfitage \
+  --clock dnamfitagegait \
+  --clock dnamfitagegrip
+```
+
+The selected mode uses the same staged serialization and registry merge as the
+full updater, but resaves only those three weights and rebuilds aggregate
+metadata from every artifact's embedded version. Restore the other 174 weights
+byte-for-byte from the base checkout and require an all-174 checksum comparison
+to produce no differences.
 
 Expected: the weight filenames exactly match all 177 registry keys; the three
 changed weights carry `v0.5.2`; the 174 unaffected weights remain byte-identical
@@ -899,7 +909,28 @@ git commit -m "chore: prepare DNAmFitAge clocks for v0.5.2"
 
 Run the gait, grip, and final DNAmFitAge notebooks in dependency order with a 600-second cell timeout. Record the SHA256 of each generated weight, execute the same notebook a second time, and require the weight SHA256 to be identical before proceeding. Execution counts or captured command output may change notebook JSON, but weight-byte variance is a failure.
 
-- [ ] **Step 2: Run formatting and lint checks without unrelated rewrites**
+- [ ] **Step 2: Narrowly restamp the three notebook outputs and rebuild aggregate/static metadata**
+
+Notebook construction deliberately leaves release versions unset. Immediately
+after the reproducibility run, and before any artifact verification or upload,
+run from the repository root:
+
+```bash
+uv run python clocks/update_all_clocks.py v0.5.2 \
+  --clock dnamfitage \
+  --clock dnamfitagegait \
+  --clock dnamfitagegrip
+uv run python docs/source/make_clock_data.py \
+  --metadata-path clocks/metadata/all_clock_metadata.pt
+```
+
+Require both `model.version` and `model.metadata["version"]` to equal
+`v0.5.2` for exactly those three weights. Require the aggregate to contain 177
+keys with versions `174 × v0.5.1` / `3 × v0.5.2`, and require an all-174
+checksum comparison against the base checkout to remain empty. This selected
+mode must not stage or resave an unaffected weight.
+
+- [ ] **Step 3: Run formatting and lint checks without unrelated rewrites**
 
 Run:
 
@@ -911,7 +942,7 @@ git diff --check
 
 Expected: all exit 0.
 
-- [ ] **Step 3: Run the focused non-catalogue regression subset**
+- [ ] **Step 4: Run the focused non-catalogue regression subset**
 
 Run:
 
@@ -926,7 +957,7 @@ uv run pytest \
 
 Expected: exactly 14 focused tests pass.
 
-- [ ] **Step 4: Run focused full-catalog and notebook tests**
+- [ ] **Step 5: Run focused full-catalog and notebook tests**
 
 Run:
 
@@ -948,7 +979,7 @@ uv run pytest --nbmake \
 Expected: exactly 12 focused catalogue/composite tests pass and all three
 changed notebooks pass.
 
-- [ ] **Step 5: Build and inspect distributions**
+- [ ] **Step 6: Build and inspect distributions**
 
 Run:
 
@@ -960,7 +991,7 @@ uv run pytest tests/test_release_configuration.py -q
 
 Inspect wheel and sdist filenames and metadata; both must say 0.5.2 and must not contain ignored clock weights.
 
-- [ ] **Step 6: Verify exact repository state before Hub work**
+- [ ] **Step 7: Verify exact repository state before Hub work**
 
 Run:
 
@@ -1019,7 +1050,13 @@ Create the cache with `tempfile.mkdtemp(prefix="pyaging-hf-verify-")` and pass i
 - `pyaging/dnamfitagegait/dnamfitagegait.pt`
 - `pyaging/dnamfitagegrip/dnamfitagegrip.pt`
 
-Load each file with current source, assert class names, feature counts 1343/111/183, metadata version `v0.5.2`, and run the deterministic oracle inputs from `tests/predict/test_dnamfitage_composites.py`. Require the same expected outputs before continuing. Audit the upload commits and require that only these three per-clock repositories plus the aggregate repository changed; the other 174 per-clock repositories must be untouched.
+Load each file with current source; assert class names, feature counts
+1343/111/183, and both `model.version` and `model.metadata["version"]` equal
+`v0.5.2`; then run the deterministic oracle inputs from
+`tests/predict/test_dnamfitage_composites.py`. Require the same expected outputs
+before continuing. Audit the upload commits and require that only these three
+per-clock repositories plus the aggregate repository changed; the other 174
+per-clock repositories must be untouched.
 
 - [ ] **Step 4: Verify aggregate metadata on `main`**
 
@@ -1191,6 +1228,8 @@ for name, count in {
 }.items():
     model = pya.pred.load_clock(name, verbose=False)
     assert len(model.features) == count
+    assert model.version == "v0.5.2"
+    assert model.metadata["version"] == "v0.5.2"
 
 for retired in (
     "dnamfitagegaitf",

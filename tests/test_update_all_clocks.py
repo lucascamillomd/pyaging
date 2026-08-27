@@ -927,6 +927,33 @@ def test_successful_regeneration_publishes_valid_registry_backed_transaction(tmp
     assert _transaction_residue(tmp_path) == []
 
 
+def test_selected_regeneration_restamps_only_selected_and_preserves_other_versions(tmp_path):
+    update_all_clocks = _load_update_all_clocks_module()
+    weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta", "gamma"))
+    for path in weights_dir.glob("*.pt"):
+        clock = torch.load(path, weights_only=False)
+        clock.metadata["version"] = clock.version
+        torch.save(clock, path)
+
+    untouched = _snapshot([weights_dir / "beta.pt"])
+    result = update_all_clocks.regenerate_selected_clock_metadata(
+        "0.3.0",
+        ("alpha", "gamma"),
+        weights_dir=weights_dir,
+        registry_path=registry_path,
+        metadata_path=metadata_path,
+    )
+
+    _assert_snapshot(untouched)
+    for clock_name in ("alpha", "gamma"):
+        clock = torch.load(weights_dir / f"{clock_name}.pt", weights_only=False)
+        assert clock.version == "0.3.0"
+        assert clock.metadata == result[clock_name]
+    assert result["beta"]["version"] == "0.2.0"
+    assert torch.load(metadata_path, weights_only=False) == result
+    assert _transaction_residue(tmp_path) == []
+
+
 class _ConcreteClock(pyagingModel):
     """Minimal concrete ``pyagingModel`` standing in for a built clock.
 

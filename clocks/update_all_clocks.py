@@ -506,6 +506,31 @@ def _stage_stamped_clock(record, curated_dictionary, version, index):
     return clock_name, runtime_metadata, _StagedTarget(record, stage_path, digest, size)
 
 
+def _existing_runtime_metadata_entry(record):
+    """Read one unchanged clock's runtime metadata without resaving it."""
+    clock = torch.load(record.logical_path, weights_only=False)
+    try:
+        clock_name = _generated_clock_name(clock)
+        expected_name = record.logical_path.stem
+        if clock_name != expected_name:
+            raise ValueError(
+                "Generated clock names do not match weight filenames: "
+                f"expected {expected_name!r}, generated {clock_name!r}"
+            )
+        version = getattr(clock, "version", None)
+        metadata_version = clock.metadata.get("version")
+        if not isinstance(version, str) or not version:
+            raise ValueError(f"Unchanged clock '{clock_name}' has no embedded release version")
+        if metadata_version != version:
+            raise ValueError(
+                f"Unchanged clock '{clock_name}' has inconsistent versions: "
+                f"attribute {version!r}, metadata {metadata_version!r}"
+            )
+        return _generated_metadata_entry(clock, version)
+    finally:
+        del clock
+
+
 def regenerate_clock_metadata(
     version,
     weights_dir=_DEFAULT_WEIGHTS_DIR,
@@ -601,10 +626,103 @@ def regenerate_clock_metadata(
     return combined_dictionary
 
 
+def regenerate_selected_clock_metadata(
+    version,
+    clock_names,
+    weights_dir=_DEFAULT_WEIGHTS_DIR,
+    registry_path=_DEFAULT_REGISTRY_PATH,
+    metadata_path=_DEFAULT_METADATA_PATH,
+):
+    """Restamp selected clocks and rebuild a mixed-version aggregate.
+
+    Selected weights use the same staged serialization and registry merge as
+    :func:`regenerate_clock_metadata`. Every other weight is loaded only long
+    enough to validate and read its existing runtime metadata; it is never
+    staged or resaved.
+    """
+    weights_dir = Path(weights_dir)
+    registry_path = Path(registry_path)
+    metadata_path = Path(metadata_path)
+    selected_names = tuple(clock_names)
+    if not selected_names:
+        raise ValueError("At least one clock name is required for selected regeneration")
+    if len(set(selected_names)) != len(selected_names):
+        raise ValueError("Selected clock names must be unique")
+
+    curated_dictionary = load_curated_metadata(registry_path)
+    registry_clock_names = set(curated_dictionary)
+    unknown_names = set(selected_names) - registry_clock_names
+    if unknown_names:
+        raise ValueError(f"Selected clock names are not in the registry: {sorted(unknown_names)}")
+
+    weight_records = preflight_weight_files(weights_dir, registry_clock_names)
+    records_by_name = {record.logical_path.stem: record for record in weight_records}
+    selected_records = [records_by_name[name] for name in selected_names]
+    metadata_record = _resolve_target(metadata_path, require_existing=False)
+    target_paths = [record.target_path for record in selected_records] + [metadata_record.target_path]
+    if len(set(target_paths)) != len(target_paths):
+        raise ValueError("Distinct logical paths must not resolve to the same backing target")
+
+    cleanup_errors = []
+    recovery_artifacts = []
+    for index, record in enumerate(selected_records, start=1):
+        try:
+            _, _, staged = _stage_stamped_clock(record, curated_dictionary, version, index)
+        except Exception as error:
+            raise ValueError(f"selected regeneration staging failed: {error}") from error
+        errors, artifacts = _publish_staged_target(staged, index)
+        cleanup_errors += errors
+        recovery_artifacts += artifacts
+
+    generated_dictionary = {}
+    for record in weight_records:
+        try:
+            clock_name, runtime_metadata = _existing_runtime_metadata_entry(record)
+        except Exception as error:
+            raise ValueError(f"selected aggregate generation failed: {error}") from error
+        generated_dictionary[clock_name] = runtime_metadata
+
+    if set(generated_dictionary) != registry_clock_names:
+        raise ValueError("Generated clock names changed while rebuilding selected aggregate metadata")
+    combined_dictionary = merge_clock_metadata(generated_dictionary, curated_dictionary)
+
+    aggregate_index = len(selected_records) + 1
+    try:
+        aggregate_stage, aggregate_digest, aggregate_size = _stage_torch_object(
+            metadata_record.target_path,
+            combined_dictionary,
+            aggregate_index,
+        )
+    except Exception as error:
+        raise ValueError(f"selected regeneration staging failed: {error}") from error
+    errors, artifacts = _publish_staged_target(
+        _StagedTarget(metadata_record, aggregate_stage, aggregate_digest, aggregate_size),
+        aggregate_index,
+    )
+    cleanup_errors += errors
+    recovery_artifacts += artifacts
+
+    if cleanup_errors:
+        message = "selected regeneration targets committed; post-commit cleanup failed: " + "; ".join(cleanup_errors)
+        if recovery_artifacts:
+            message += "; recovery artifact(s) retained: " + ", ".join(recovery_artifacts)
+        raise _CommittedRegenerationError(message)
+    return combined_dictionary
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Merge PT files metadata.")
     parser.add_argument("version", type=str, help="Version number to be added to the metadata.")
+    parser.add_argument(
+        "--clock",
+        action="append",
+        dest="clock_names",
+        help="Restamp only this clock (repeatable) and preserve other embedded versions.",
+    )
     args = parser.parse_args()
 
-    regenerate_clock_metadata(args.version)
+    if args.clock_names:
+        regenerate_selected_clock_metadata(args.version, args.clock_names)
+    else:
+        regenerate_clock_metadata(args.version)
     print(f"Metadata dictionary saved to '{_DEFAULT_METADATA_PATH}'.")
