@@ -1056,7 +1056,7 @@
     "approved_by_author": "⌛",
     "citation": "McGreevy, K. M., et al. “DNAmFitAge: biological age indicator incorporating physical fitness.” Aging 15(10): 3904–3938 (2023).",
     "doi": "https://doi.org/10.18632/aging.204538",
-    "notes": "Sex-specific Klemera–Doubal biological-age composite combining DNAm gait speed, grip strength, VO2max, and DNAmGrimAge.",
+    "notes": "Sex-specific Klemera–Doubal biological-age composite that calculates DNAm gait speed, grip strength, VO2max, and original DNAmGrimAge internally from methylation, age, and female inputs.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -1077,7 +1077,7 @@
     "population": "adults",
     "journal": "Aging",
     "last_author": "Steve Horvath",
-    "n_features": 630,
+    "n_features": 1343,
     "citations": 99,
     "citations_date": "2026-07-05",
     "version": "0.5.0",

@@ -465,7 +465,7 @@ def test_dnamfitage_embeds_grimage_and_matches_retired_two_stage_oracle():
     with torch.no_grad():
         predictions = model(values).ravel().tolist()
     assert predictions == pytest.approx(
-        [142.54565133821592, 140.8062005846434], abs=1e-10
+        [131.19968704579992, 133.55199017157764], abs=1e-10
     )
 
 
@@ -599,7 +599,7 @@ Then run:
 uv run pytest tests/models/test_dnamfitage_composites.py tests/predict/test_dnamfitage_composites.py -q
 ```
 
-Expected: all tests pass; self-contained outputs equal `[142.54565133821592, 140.8062005846434]` within `1e-10`.
+Expected: all tests pass; self-contained outputs equal `[131.19968704579992, 133.55199017157764]` within `1e-10`. These values were independently reproduced through the retained old two-stage workflow with original GrimAge outputs `[178.42414594960613, 176.52173460278965]`; the earlier planned values were not backward-equivalent.
 
 - [ ] **Step 7: Commit source, notebook, metadata, evidence, and tests**
 

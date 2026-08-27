@@ -2116,66 +2116,50 @@ class DNAmFitAge(pyagingModel):
     def __init__(self):
         super().__init__()
 
-        self.GaitF = None
-        self.GripF = None
-        self.GaitM = None
-        self.GripM = None
+        self.Gait = None
+        self.Grip = None
         self.VO2Max = None
+        self.GrimAge = None
 
-        self.features_GaitF = None
-        self.features_GripF = None
-        self.features_GaitM = None
-        self.features_GripM = None
+        self.features_Gait = None
+        self.features_Grip = None
         self.features_VO2Max = None
+        self.features_GrimAge = None
+        self.female_index = None
+        self.age_index = None
+
+    def _component_input(self, x, indices, component):
+        values = x[:, indices]
+        return _fill_dnamfitage_references(values, component.reference_values)
 
     def forward(self, x):
-        Female = x[:, -3]  # .unsqueeze(1)
-        GrimAge = x[:, -1].unsqueeze(1)
+        female = x[:, self.female_index].unsqueeze(1)
+        gait = self.Gait(self._component_input(x, self.features_Gait, self.Gait))
+        grip = self.Grip(self._component_input(x, self.features_Grip, self.Grip))
+        vo2max = self.VO2Max(self._component_input(x, self.features_VO2Max, self.VO2Max))
+        grimage = self.GrimAge(self._component_input(x, self.features_GrimAge, self.GrimAge))
 
-        is_female = Female == 1
-        is_male = Female == 0
-
-        x_f = x[is_female]
-        x_m = x[is_male]
-
-        GaitF = self.GaitF(x_f[:, self.features_GaitF])
-        GripF = self.GripF(x_f[:, self.features_GripF])
-        VO2MaxF = self.VO2Max(x_f[:, self.features_VO2Max])
-        GrimAgeF = GrimAge[is_female, :]
-
-        GaitM = self.GaitM(x_m[:, self.features_GaitM])
-        GripM = self.GripM(x_m[:, self.features_GripM])
-        VO2MaxM = self.VO2Max(x_m[:, self.features_VO2Max])
-        GrimAgeM = GrimAge[is_male, :]
-
-        x_f = torch.concat(
+        female_components = torch.concat(
             [
-                (VO2MaxF - 46.825091) / (-0.13620215),
-                (GripF - 39.857718) / (-0.22074456),
-                (GaitF - 2.508547) / (-0.01245682),
-                (GrimAgeF - 7.978487) / (0.80928530),
+                (vo2max - 46.825091) / -0.13620215,
+                (grip - 39.857718) / -0.22074456,
+                (gait - 2.508547) / -0.01245682,
+                (grimage - 7.978487) / 0.80928530,
             ],
             dim=1,
         )
-
-        x_m = torch.concat(
+        male_components = torch.concat(
             [
-                (VO2MaxM - 49.836389) / (-0.141862925),
-                (GripM - 57.514016) / (-0.253179827),
-                (GaitM - 2.349080) / (-0.009380061),
-                (GrimAgeM - 9.549733) / (0.835120557),
+                (vo2max - 49.836389) / -0.141862925,
+                (grip - 57.514016) / -0.253179827,
+                (gait - 2.349080) / -0.009380061,
+                (grimage - 9.549733) / 0.835120557,
             ],
             dim=1,
         )
-
-        y_f = self.base_model_f(x_f)
-        y_m = self.base_model_m(x_m)
-
-        y = torch.zeros((x.size(0), 1), dtype=x.dtype, device=x.device)
-        y[is_female] = y_f
-        y[is_male] = y_m
-
-        return y
+        female_prediction = self.base_model_f(female_components)
+        male_prediction = self.base_model_m(male_components)
+        return male_prediction + female * (female_prediction - male_prediction)
 
     def preprocess(self, x):
         if self.reference_values is None:
