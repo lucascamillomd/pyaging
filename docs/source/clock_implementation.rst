@@ -40,10 +40,8 @@ one per clock.
    clock_notebooks/depressionbarbu
    clock_notebooks/dnamfili
    clock_notebooks/dnamfitage
-   clock_notebooks/dnamfitagegaitf
-   clock_notebooks/dnamfitagegaitm
-   clock_notebooks/dnamfitagegripf
-   clock_notebooks/dnamfitagegripm
+   clock_notebooks/dnamfitagegait
+   clock_notebooks/dnamfitagegrip
    clock_notebooks/dnamfitagevo2max
    clock_notebooks/dnamphenoage
    clock_notebooks/dnamic
