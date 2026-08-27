@@ -705,16 +705,16 @@ git commit -m "refactor(clocks): remove sex-specific DNAmFitAge names"
 - Modify: `tests/predict/test_gold_standard.py`
 - Modify: `tests/predict/test_boundary_gold_standard.py`
 - Regenerate locally, ignored: `clocks/metadata/all_clock_metadata.pt`
-- Restamp locally, ignored: every `clocks/weights/*.pt`
+- Restamp locally, ignored: only `clocks/weights/{dnamfitage,dnamfitagegait,dnamfitagegrip}.pt`
 - Modify: `docs/_static/clocks.json`
 - Modify: `docs/_static/clock_glossary.csv`
 
 **Interfaces:**
 - Consumes: final 177-clock registry, notebooks, and local weight set.
-- Produces: version-stamped 0.5.2 weights/aggregate, new seeded and boundary golds, and public catalogue assets with only the replacement names.
+- Produces: three `v0.5.2` changed weights, 174 byte-identical `v0.5.1` survivor weights, a truthful mixed-version aggregate, new seeded and boundary golds, and public catalogue assets with only the replacement names.
 
-> **User-authorized focused scope (2026-08-27):** This amendment supersedes
-> exhaustive language in Task 6 below. Stamp only `dnamfitage`,
+> **User-authorized focused scope (2026-08-27):** This is the binding scope for
+> Tasks 6–10. Stamp only `dnamfitage`,
 > `dnamfitagegait`, and `dnamfitagegrip` as `v0.5.2`; keep the 174 unaffected
 > survivor weights byte-for-byte identical to the base checkout and verify that
 > identity with an all-174 checksum comparison. Build the final 177-entry
@@ -736,11 +736,19 @@ __version__ = "0.5.2"
 
 Run: `uv run python -c 'import pyaging; assert pyaging.__version__ == "0.5.2"'`
 
-- [ ] **Step 2: Restamp every local weight and regenerate aggregate metadata**
+- [ ] **Step 2: Restamp only the three changed weights and regenerate truthful aggregate metadata**
 
-Run: `uv run python clocks/update_all_clocks.py v0.5.2`
+Do not run the exhaustive `clocks/update_all_clocks.py` command. Rebuild or
+narrowly restamp only `dnamfitage`, `dnamfitagegait`, and `dnamfitagegrip` as
+`v0.5.2`. Restore the other 174 weights byte-for-byte from the base checkout and
+require an all-174 checksum comparison to produce no differences. Generate
+`all_clock_metadata.pt` by merging the current registry with each local
+artifact's own runtime metadata and version without resaving the 174 survivors.
 
-Expected: every local weight loads under current source, every registry key has exactly one weight, and `clocks/metadata/all_clock_metadata.pt` contains 177 entries stamped `0.5.2`.
+Expected: the weight filenames exactly match all 177 registry keys; the three
+changed weights carry `v0.5.2`; the 174 unaffected weights remain byte-identical
+`v0.5.1`; and `all_clock_metadata.pt` has exact version counts
+`174 × v0.5.1` and `3 × v0.5.2`.
 
 - [ ] **Step 3: Make the seeded catalogue suite consume local release weights**
 
@@ -797,31 +805,43 @@ for clock_name in ("dnamfitage", "dnamfitagegait", "dnamfitagegrip"):
 
 Remove the four retired entries. Review that no unrelated dictionary value changes.
 
-- [ ] **Step 5: Regenerate and review boundary golds**
+- [ ] **Step 5: Calculate and review the three changed boundary golds**
 
-Run: `uv run python clocks/generate_boundary_gold.py`
+Import `predict_at_boundaries` from
+`tests/predict/test_boundary_gold_standard.py` and print predictions only for
+`dnamfitage`, `dnamfitagegait`, and `dnamfitagegrip`. Do not run the exhaustive
+boundary generator.
 
-From `boundary_gold.json`, replace only the entries for `dnamfitage`, `dnamfitagegait`, and `dnamfitagegrip`; remove the four retired entries. Assert all unrelated generated values equal their existing dictionary values before deleting `boundary_gold.json`.
+Replace only those three entries, remove the four retired entries, and use an
+AST comparison against the parent revision to prove every unrelated dictionary
+literal is unchanged.
 
-- [ ] **Step 6: Run both full-catalog gold suites**
-
-Run:
-
-```bash
-uv run pytest tests/predict/test_gold_standard.py tests/predict/test_boundary_gold_standard.py -q
-```
-
-Expected: all 177 clocks pass; no test references a retired name.
-
-- [ ] **Step 7: Validate notebook, registry, weight, and aggregate consistency**
+- [ ] **Step 6: Run the exact focused full-catalog gold cases**
 
 Run:
 
 ```bash
-uv run pytest tests/test_clock_metadata.py::test_local_runtime_artifacts_match_registry tests/test_clock_metadata.py::test_every_built_clock_carries_the_registry_feature_units -q
+uv run pytest -m full_catalog \
+  'tests/predict/test_gold_standard.py::test_all_clocks[dnamfitage]' \
+  'tests/predict/test_gold_standard.py::test_all_clocks[dnamfitagegait]' \
+  'tests/predict/test_gold_standard.py::test_all_clocks[dnamfitagegrip]' \
+  'tests/predict/test_boundary_gold_standard.py::test_boundary_predictions_match_gold[dnamfitage]' \
+  'tests/predict/test_boundary_gold_standard.py::test_boundary_predictions_match_gold[dnamfitagegait]' \
+  'tests/predict/test_boundary_gold_standard.py::test_boundary_predictions_match_gold[dnamfitagegrip]' \
+  tests/predict/test_dnamfitage_composites.py -q
 ```
 
-Expected: both pass across all local weights.
+Expected: exactly 12 focused tests pass; no selected test references a retired
+name. The explicit `-m full_catalog` is required because project defaults
+otherwise deselect both gold modules.
+
+- [ ] **Step 7: Validate focused weight and aggregate consistency**
+
+Load only the three changed weights and assert their feature counts are
+1,343/111/183, their `version` and `metadata["version"]` are `v0.5.2`, and
+their stored `feature_units` equal `resolve_feature_ranges(...)`. Separately
+assert the aggregate key set exactly equals the 177-key registry, excludes the
+four retired names, and has versions `174 × v0.5.1` plus `3 × v0.5.2`.
 
 - [ ] **Step 8: Regenerate committed Clock Explorer assets from local aggregate metadata**
 
@@ -839,10 +859,14 @@ Run:
 
 ```bash
 uv run make -C docs html
-uv run pytest tests/test_clock_metadata.py tests/predict/test_dnamfitage_composites.py -q
+uv run pytest \
+  tests/test_clock_metadata.py::test_registry_has_every_implementation_notebook \
+  tests/test_clock_metadata.py::test_registry_uses_controlled_arrays \
+  tests/test_clock_metadata.py::test_evidence_is_complete_and_resolved -q
 ```
 
-Expected: Sphinx exits 0, metadata tests pass, and generated docs contain the three current DNAmFitAge pages.
+Expected: Sphinx exits 0, the three metadata tests pass, and generated docs
+contain the three current DNAmFitAge pages.
 
 - [ ] **Step 10: Commit version, golds, and generated public catalogue assets**
 
@@ -887,22 +911,42 @@ git diff --check
 
 Expected: all exit 0.
 
-- [ ] **Step 3: Run the release workflow's local test subset**
-
-Run: `uv run pytest -m "not full_catalog and not online"`
-
-Expected: all tests pass.
-
-- [ ] **Step 4: Run all local full-catalog and notebook tests**
+- [ ] **Step 3: Run the focused non-catalogue regression subset**
 
 Run:
 
 ```bash
-uv run pytest -m full_catalog
-uv run pytest --nbmake tutorials/
+uv run pytest \
+  tests/models/test_dnamfitage_composites.py \
+  tests/predict/test_hf_loading.py \
+  tests/test_clock_metadata.py::test_registry_has_every_implementation_notebook \
+  tests/test_clock_metadata.py::test_registry_uses_controlled_arrays \
+  tests/test_clock_metadata.py::test_evidence_is_complete_and_resolved -q
 ```
 
-Expected: all pass, except only existing explicitly documented exclusions invoked by project configuration.
+Expected: exactly 14 focused tests pass.
+
+- [ ] **Step 4: Run focused full-catalog and notebook tests**
+
+Run:
+
+```bash
+uv run pytest -m full_catalog \
+  'tests/predict/test_gold_standard.py::test_all_clocks[dnamfitage]' \
+  'tests/predict/test_gold_standard.py::test_all_clocks[dnamfitagegait]' \
+  'tests/predict/test_gold_standard.py::test_all_clocks[dnamfitagegrip]' \
+  'tests/predict/test_boundary_gold_standard.py::test_boundary_predictions_match_gold[dnamfitage]' \
+  'tests/predict/test_boundary_gold_standard.py::test_boundary_predictions_match_gold[dnamfitagegait]' \
+  'tests/predict/test_boundary_gold_standard.py::test_boundary_predictions_match_gold[dnamfitagegrip]' \
+  tests/predict/test_dnamfitage_composites.py -q
+uv run pytest --nbmake \
+  clocks/notebooks/dnamfitagegait.ipynb \
+  clocks/notebooks/dnamfitagegrip.ipynb \
+  clocks/notebooks/dnamfitage.ipynb
+```
+
+Expected: exactly 12 focused catalogue/composite tests pass and all three
+changed notebooks pass.
 
 - [ ] **Step 5: Build and inspect distributions**
 
@@ -933,7 +977,7 @@ Expected: only intentional tracked changes/commits are present; ignored weights 
 ### Task 8: Upload and verify replacement Hugging Face artifacts
 
 **Files:**
-- External update: all 177 surviving per-clock repositories under the `pyaging` Hugging Face organization
+- External update: only `pyaging/dnamfitage`, `pyaging/dnamfitagegait`, and `pyaging/dnamfitagegrip`
 - External update: `lucascamillomd/pyaging-data` aggregate metadata
 - Modify after upload: `tutorials/tutorial_utils.ipynb` output only
 
@@ -975,11 +1019,15 @@ Create the cache with `tempfile.mkdtemp(prefix="pyaging-hf-verify-")` and pass i
 - `pyaging/dnamfitagegait/dnamfitagegait.pt`
 - `pyaging/dnamfitagegrip/dnamfitagegrip.pt`
 
-Load each file with current source, assert class names, feature counts 1343/111/183, metadata version 0.5.2, and run the deterministic oracle inputs from `tests/predict/test_dnamfitage_composites.py`. Require the same expected outputs before continuing.
+Load each file with current source, assert class names, feature counts 1343/111/183, metadata version `v0.5.2`, and run the deterministic oracle inputs from `tests/predict/test_dnamfitage_composites.py`. Require the same expected outputs before continuing. Audit the upload commits and require that only these three per-clock repositories plus the aggregate repository changed; the other 174 per-clock repositories must be untouched.
 
 - [ ] **Step 4: Verify aggregate metadata on `main`**
 
-Download `all_clock_metadata.pt` anonymously with a fresh cache. Assert it has 177 keys, includes the three current names/counts, excludes all four retired names, and stamps every entry `0.5.2`.
+Download `all_clock_metadata.pt` anonymously with a fresh cache. Assert it has
+177 keys, includes the three current names/counts, excludes all four retired
+names, and has exact version counts `174 × v0.5.1` and `3 × v0.5.2`. Require
+the three `v0.5.2` keys to be exactly `dnamfitage`, `dnamfitagegait`, and
+`dnamfitagegrip`.
 
 - [ ] **Step 5: Refresh the utility tutorial against live aggregate metadata**
 
@@ -1004,7 +1052,7 @@ git commit -m "docs: refresh clock catalogue tutorial"
 **Files:**
 - Permanently delete external repositories: `pyaging/dnamfitagegaitf`, `pyaging/dnamfitagegaitm`, `pyaging/dnamfitagegripf`, `pyaging/dnamfitagegripm`
 - Delete four files from external aggregate repository `main`
-- Create/update external tag: `v0.5.2` on every surviving per-clock repository and aggregate repository
+- Create/update external tag: `v0.5.2` only on the three changed per-clock repositories and aggregate repository
 
 **Interfaces:**
 - Consumes: successful fresh-download verification from Task 8 and the user's explicit authorization to delete all four repositories including history and tags.
@@ -1051,7 +1099,12 @@ With `PYAGING_DATA_REVISION=v0.5.2` and a fresh cache:
 1. Load and run `dnamfitage`, `dnamfitagegait`, and `dnamfitagegrip` through `pya.pred.load_clock`/`predict_age`.
 2. Assert feature counts and deterministic oracle outputs.
 3. Attempt each retired name and assert `NameError` contains installed version 0.5.2, `check PyPI`, and the upgrade command.
-4. Assert the aggregate tagged metadata excludes all four retired keys.
+4. Assert the aggregate tagged metadata excludes all four retired keys and has
+   exact version counts `174 × v0.5.1` and `3 × v0.5.2`, with only the three
+   changed keys at `v0.5.2`.
+5. Audit tags/commits and require that only the three changed per-clock
+   repositories plus aggregate metadata received `v0.5.2`; the other 174
+   repositories remain untouched.
 
 Do not proceed to GitHub publication unless every pinned check passes.
 
@@ -1156,6 +1209,18 @@ for retired in (
 
 Repeat with `PYAGING_DATA_REVISION=v0.5.2`. Run deterministic inference for the three current clocks using the oracle helper and require the pinned expected outputs.
 
+For both live `main` and pinned `v0.5.2`, anonymously download aggregate
+metadata and assert 177 keys, no retired keys, exact versions
+`174 × v0.5.1` / `3 × v0.5.2`, and that the `v0.5.2` keys are exactly the
+three changed clocks. Confirm the release audit shows mutations only in those
+three per-clock repositories plus `lucascamillomd/pyaging-data`; the other 174
+per-clock repositories must be unchanged.
+
 - [ ] **Step 7: Report final immutable state**
 
-Report the GitHub release link, PyPI 0.5.2 link, final Git SHA, Hub tag, three verified replacement repositories, four permanently deleted repository IDs, test/build results, and the clean-install verification. Confirm `CHANGELOG.md` was not changed.
+Report the GitHub release link, PyPI 0.5.2 link, final Git SHA, the four exact
+Hub tags (three changed repositories plus aggregate), confirmation that the
+other 174 repositories were untouched, aggregate version counts
+`174 × v0.5.1` / `3 × v0.5.2`, three verified replacement repositories, four
+permanently deleted repository IDs, test/build results, and the clean-install
+verification. Confirm `CHANGELOG.md` was not changed.
