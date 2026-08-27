@@ -713,6 +713,19 @@ git commit -m "refactor(clocks): remove sex-specific DNAmFitAge names"
 - Consumes: final 177-clock registry, notebooks, and local weight set.
 - Produces: version-stamped 0.5.2 weights/aggregate, new seeded and boundary golds, and public catalogue assets with only the replacement names.
 
+> **User-authorized focused scope (2026-08-27):** This amendment supersedes
+> exhaustive language in Task 6 below. Stamp only `dnamfitage`,
+> `dnamfitagegait`, and `dnamfitagegrip` as `v0.5.2`; keep the 174 unaffected
+> survivor weights byte-for-byte identical to the base checkout and verify that
+> identity with an all-174 checksum comparison. Build the final 177-entry
+> aggregate from that mixed local set, preserving each artifact's actual version
+> (`174 × v0.5.1`, `3 × v0.5.2`). Calculate and test only the three changed
+> seeded/boundary golds, remove the four retired entries, keep every unrelated
+> gold literal unchanged, and run focused DNAmFitAge, registry/evidence, docs,
+> catalogue, and representative artifact checks. The initial all-177 local
+> restamp completed before this scope change was received; it must be reversed
+> for the 174 unaffected weights and must not be carried into publication.
+
 - [ ] **Step 1: Bump the package source version with `apply_patch`**
 
 Change only:
@@ -736,7 +749,7 @@ The replacement names are deliberately not live on Hugging Face yet. Refactor `t
 ```python
 check_features_in_adata(random_adata, clock, logger, indent_level=indent_level)
 predictions = predict_ages_with_model(
-    random_adata, clock, device, batch_size=1024, logger=logger, indent_level=indent_level
+    random_adata, clock, device, 1024, logger, indent_level=indent_level
 )
 pred = float(np.asarray(predictions).ravel()[0])
 ```
@@ -753,9 +766,14 @@ import pandas as pd
 import torch
 
 import pyaging as pya
+from pyaging.predict._pred_utils import (
+    check_features_in_adata,
+    predict_ages_with_model,
+)
 
 for clock_name in ("dnamfitage", "dnamfitagegait", "dnamfitagegrip"):
     clock = torch.load(f"clocks/weights/{clock_name}.pt", weights_only=False)
+    clock.to(torch.float64).to("cpu").eval()
     partial = clock.features[: max(1, len(clock.features) * 2 // 3)]
     np.random.seed(42)
     frame = pd.DataFrame(
@@ -763,8 +781,18 @@ for clock_name in ("dnamfitage", "dnamfitagegait", "dnamfitagegrip"):
         columns=partial,
     )
     adata = pya.pp.df_to_adata(frame, imputer_strategy="constant", verbose=False)
-    pya.pred.predict_age(adata, clock_name, verbose=False)
-    print(clock_name, repr(float(adata.obs[clock_name].iloc[0])))
+    logger = pya.logger.Logger("task6_seeded_gold")
+    pya.logger.silence_logger("task6_seeded_gold")
+    check_features_in_adata(adata, clock, logger, indent_level=1)
+    predictions = predict_ages_with_model(
+        adata,
+        clock,
+        "cpu",
+        1024,
+        logger,
+        indent_level=1,
+    )
+    print(clock_name, repr(float(np.asarray(predictions).ravel()[0])))
 ```
 
 Remove the four retired entries. Review that no unrelated dictionary value changes.
@@ -835,6 +863,14 @@ git commit -m "chore: prepare DNAmFitAge clocks for v0.5.2"
 - Consumes: completed source, notebooks, local weights, metadata aggregate, docs, and version 0.5.2.
 - Produces: a clean, tested release candidate ready for reversible Hub upload; no external state changes occur in this task.
 
+> **Focused verification amendment (2026-08-27):** Do not run all-177
+> inference, all local full-catalog tests, or all notebook tests. Verification is
+> limited to the three changed DNAmFitAge artifacts/notebooks, registry and
+> evidence consistency, generated static catalogue assertions, documentation,
+> Ruff/format/diff checks, configured hooks, and representative unchanged
+> artifacts. Distribution/release checks remain local and non-mutating when
+> requested separately.
+
 - [ ] **Step 1: Execute the three changed conversion notebooks from a clean temporary working directory context**
 
 Run the gait, grip, and final DNAmFitAge notebooks in dependency order with a 600-second cell timeout. Record the SHA256 of each generated weight, execute the same notebook a second time, and require the weight SHA256 to be identical before proceeding. Execution counts or captured command output may change notebook JSON, but weight-byte variance is a failure.
@@ -903,7 +939,14 @@ Expected: only intentional tracked changes/commits are present; ignored weights 
 
 **Interfaces:**
 - Consumes: authenticated Hugging Face user `lucascamillomd`, final 177 local weight files, curated registry, and aggregate metadata.
-- Produces: live replacement repositories and aggregate metadata on `main`, verified through token-free fresh downloads; no deletion occurs until every check passes.
+- Produces: live updates to the three replacement repositories and aggregate metadata on `main`, verified through token-free fresh downloads; no deletion occurs until every check passes.
+
+> **Focused upload amendment (2026-08-27):** Upload only
+> `dnamfitage.pt`, `dnamfitagegait.pt`, `dnamfitagegrip.pt`, and
+> `all_clock_metadata.pt`. Do not upload or retag the other 174 per-clock
+> repositories during this release. The aggregate truthfully retains `v0.5.1`
+> for those unchanged artifacts and uses `v0.5.2` only for the three changed
+> clocks.
 
 - [ ] **Step 1: Verify authentication, ownership, public aggregate repository, and exact local candidates**
 
@@ -916,11 +959,13 @@ make verify-hf-data-repo-public
 
 Require user `lucascamillomd`. Confirm the local files `dnamfitage.pt`, `dnamfitagegait.pt`, and `dnamfitagegrip.pt` exist and the four retired files do not.
 
-- [ ] **Step 2: Sync every surviving per-clock repository and aggregate metadata**
+- [ ] **Step 2: Sync the three changed repositories and aggregate metadata**
 
-Run: `make upload-clocks-to-hf VERSION=v0.5.2`
-
-This intentionally uploads all restamped clocks, not only the three changed ones, so the eventual `v0.5.2` tags point to artifacts whose embedded metadata also says 0.5.2.
+Upload the exact local files for `dnamfitage`, `dnamfitagegait`, and
+`dnamfitagegrip` to their corresponding repositories, then upload
+`clocks/metadata/all_clock_metadata.pt` to `lucascamillomd/pyaging-data`.
+Do not use the all-clock upload target and do not mutate the other 174
+repositories.
 
 - [ ] **Step 3: Verify replacement artifacts through fresh anonymous downloads**
 
@@ -963,7 +1008,7 @@ git commit -m "docs: refresh clock catalogue tutorial"
 
 **Interfaces:**
 - Consumes: successful fresh-download verification from Task 8 and the user's explicit authorization to delete all four repositories including history and tags.
-- Produces: retired names unavailable from live Hub state and current names reproducibly available at revision `v0.5.2`.
+- Produces: retired names unavailable from live Hub state and the three changed names plus aggregate metadata reproducibly available at revision `v0.5.2`.
 
 - [ ] **Step 1: Re-run the destructive-operation preflight immediately before deletion**
 
@@ -992,11 +1037,12 @@ uv run hf repos delete pyaging/dnamfitagegripm --type model --no-missing-ok --ye
 
 After each command, confirm `HfApi.repo_exists(repo_id, repo_type="model")` is false. Report that repository history and tags are no longer recoverable from Hugging Face.
 
-- [ ] **Step 4: Tag surviving repositories and aggregate data**
+- [ ] **Step 4: Tag the three changed repositories and aggregate data**
 
-Run: `make tag-hf-data-repo VERSION=v0.5.2`
-
-Expected: aggregate and all 177 surviving per-clock repositories receive or repoint tag `v0.5.2`; deleted names are not included because their local weights are absent.
+Create or repoint `v0.5.2` only for `pyaging/dnamfitage`,
+`pyaging/dnamfitagegait`, `pyaging/dnamfitagegrip`, and
+`lucascamillomd/pyaging-data`. Do not use the all-clock tag target and do not
+retag the other 174 per-clock repositories.
 
 - [ ] **Step 5: Verify pinned replacement resolution and removed-name error behavior**
 

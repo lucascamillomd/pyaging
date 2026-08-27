@@ -1,13 +1,38 @@
+"""Seeded predictions pinned to the current local release artifacts.
+
+The catalogue replacements are not required to exist on the live Hub while a
+release candidate is being prepared, so this suite loads ``clocks/weights``
+directly and runs the same feature-check and model-prediction boundary used by
+the public prediction path.
+"""
+
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
+import torch
 
 import pyaging as pya
+from pyaging.predict._pred_utils import check_features_in_adata, predict_ages_with_model
 
 pytestmark = pytest.mark.full_catalog
 
+WEIGHTS_DIR = Path(__file__).resolve().parents[2] / "clocks" / "weights"
+
+
+def load_gold_clock(clock_name):
+    """Load a local release weight as float64 on CPU in evaluation mode."""
+    path = WEIGHTS_DIR / f"{clock_name}.pt"
+    if not path.is_file():
+        pytest.skip(f"{path} is build output; generate it by running clocks/notebooks/{clock_name}.ipynb")
+    clock = torch.load(path, weights_only=False, map_location="cpu")
+    clock.to(torch.float64).to("cpu").eval()
+    return clock
+
+
 # tage and tagemortality are absent by construction, not by oversight. This suite
-# feeds each clock a seeded random frame through pya.pred.predict_age, and the two
+# feeds each clock a seeded random frame through the prediction pipeline, and the two
 # cohort-relative clocks read that frame as raw RNA-seq counts to be filtered,
 # mapped to mouse Entrez IDs and centred across the cohort -- so a random frame in
 # the shared feature space is not an input they can score. Their equivalent pinning
@@ -68,7 +93,7 @@ gold_standard_dict = {
     "zhangblup": 78.76779185124363,
     "zhangen": 37.404900683228966,
     "zhangmortality": 2.8135717975793475,
-    "dnamfitage": 91.03008383895092,
+    "dnamfitage": 161.47495365307145,
     "yingcausage": 195.3013578758023,
     "yingadaptage": 173.48314231920278,
     "yingdamage": -53.509282005508,
@@ -96,10 +121,8 @@ gold_standard_dict = {
     "grimage2timp1": 20804.937333281927,
     "grimage2loga1c": 1.537083052058008,
     "grimage2logcrp": -4.207680335391776,
-    "dnamfitagegaitf": 1.0263311720289643,
-    "dnamfitagegaitm": 3.39326294831507,
-    "dnamfitagegripf": 28.87088040680318,
-    "dnamfitagegripm": 54.219201014679555,
+    "dnamfitagegait": 1.6244355601726839,
+    "dnamfitagegrip": 18.156017023565305,
     "dnamfitagevo2max": 24.758115337489876,
     "cpgptgrimage3": -61.534670670311925,
     "cpgptpcgrimage3": -121.7127507600637,
@@ -194,35 +217,37 @@ gold_standard_dict = {
 }
 
 
-def test_all_clocks():
-    all_clocks = list(gold_standard_dict.keys())
-
+@pytest.mark.parametrize("clock_name", gold_standard_dict)
+def test_all_clocks(clock_name):
     logger = pya.logger.Logger("test_logger")
     pya.logger.silence_logger("test_logger")
     device = "cpu"
-    dir = "pyaging_data"
     indent_level = 1
     tolerance = 0.01
-    for clock_name in all_clocks:
-        clock = pya.pred.load_clock(clock_name, device, dir, logger, indent_level=indent_level)
-        partial_clock_features = clock.features[
-            0 : max(1, len(clock.features) * 2 // 3)
-        ]  # 1/3 dropout to simulate missing features (keep >=1 for tiny clocks)
-        np.random.seed(42)
-        random_df = pd.DataFrame(
-            np.abs(np.random.normal(loc=0.5, scale=1, size=(1, len(partial_clock_features)))),
-            columns=partial_clock_features,
-        )
-        random_adata = pya.pp.df_to_adata(random_df, imputer_strategy="constant", verbose=False)
-        pya.pred.predict_age(random_adata, clock_name, verbose=False)
-        pred = random_adata.obs.iloc[0, 0]
-        gold_pred = gold_standard_dict[clock_name]
+    clock = load_gold_clock(clock_name)
+    partial_clock_features = clock.features[
+        0 : max(1, len(clock.features) * 2 // 3)
+    ]  # 1/3 dropout to simulate missing features (keep >=1 for tiny clocks)
+    np.random.seed(42)
+    random_df = pd.DataFrame(
+        np.abs(np.random.normal(loc=0.5, scale=1, size=(1, len(partial_clock_features)))),
+        columns=partial_clock_features,
+    )
+    random_adata = pya.pp.df_to_adata(random_df, imputer_strategy="constant", verbose=False)
+    check_features_in_adata(random_adata, clock, logger, indent_level=indent_level)
+    predictions = predict_ages_with_model(
+        random_adata,
+        clock,
+        device,
+        1024,
+        logger,
+        indent_level=indent_level,
+    )
+    pred = float(np.asarray(predictions).ravel()[0])
+    gold_pred = gold_standard_dict[clock_name]
 
-        assert abs(pred - gold_pred) <= tolerance, (
-            f"Items {pred} and {gold_pred} differ by more than {tolerance} for clock {clock_name}"
-        )
+    assert abs(pred - gold_pred) <= tolerance, (
+        f"Items {pred} and {gold_pred} differ by more than {tolerance} for clock {clock_name}"
+    )
 
-        # Explicit memory and disk cleanup after each clock test
-        pya.pred._pred_utils.cleanup_clock_memory(
-            model=clock, clock_name=clock_name, dir=dir, random_adata=random_adata, random_df=random_df
-        )
+    del clock, random_adata, random_df, predictions
