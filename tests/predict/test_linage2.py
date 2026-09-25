@@ -135,7 +135,11 @@ def test_c_reactive_protein_is_not_floored_the_way_phenoage_floors_it():
 
 
 def test_the_fold_covers_the_features_that_skip_z_scoring():
-    """``healthcare_use_index`` is never z-scored but is still capped at 6, so 7 and 8 tie."""
+    """``healthcare_use_index`` is never z-scored but is still capped at 6.
+
+    The 1999-2000 HUQ050 code runs 0 to 5, so no valid input reaches the cap. Out-of-scale
+    values, such as codes 6 to 8 from the later HUQ051 scale, all tie at 6.
+    """
     model = _model()
     row = dict(_validation_rows(model)[0])
     at = {
@@ -209,7 +213,7 @@ def test_an_absent_questionnaire_block_biases_the_estimate_downward():
         told_diabetes=1.0,
         general_health_condition=5.0,  # poor
         health_compared_to_one_year_ago=2.0,  # worse than a year ago
-        healthcare_visits_past_year=8.0,  # 16 or more visits
+        healthcare_visits_past_year=5.0,  # 13 or more visits, the top of the 1999-2000 HUQ050 scale
     )
     questionnaire = PARAMS["inputs"]["questionnaire"]
 

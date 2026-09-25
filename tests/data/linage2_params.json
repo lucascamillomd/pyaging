@@ -290,7 +290,7 @@
       "inputs": [
         "healthcare_visits_past_year"
       ],
-      "recipe": "the raw HUQ050 visit-count code used as a number, with 77, 99 and missing mapped to 0. Skips z-scoring but NOT the fold: codes 7 and 8 are both clipped to 6"
+      "recipe": "the raw NHANES 1999-2000 HUQ050 visit-count code used as a number (0 = none, 1 = 1, 2 = 2-3, 3 = 4-9, 4 = 10-12, 5 = 13 or more), with 77, 99 and missing mapped to 0. Skips z-scoring but NOT the fold; valid codes stay below the 6 cap, so only out-of-scale values such as the 0-8 HUQ051 codes of later NHANES cycles are clipped"
     },
     "ldl_cholesterol": {
       "nhanes": "LDLV",
@@ -313,7 +313,7 @@
   "fold": {
     "cap": 6,
     "applies_to": "all 59 features, including the five in skip_mask",
-    "note": "clip(value, -6, +6) after z-scoring. The five skip_mask columns are never z-scored but are still clipped, so their raw scale meets the same cap: self_reported_health_index and healthcare_use_index both range 0-8 and are capped at 6, and log(0) reaches the vector as -inf and folds to exactly -6. Do not infer that skipping normalization means skipping the fold -- the registry bounds for those two features are their input range, not their post-fold range."
+    "note": "clip(value, -6, +6) after z-scoring. The five skip_mask columns are never z-scored but are still clipped, so their raw scale meets the same cap: self_reported_health_index ranges 0-8 and is capped at 6, healthcare_use_index ranges 0-5 on the NHANES 1999-2000 HUQ050 scale and never reaches the cap, and log(0) reaches the vector as -inf and folds to exactly -6. Do not infer that skipping normalization means skipping the fold -- the registry bounds for those two features are their input range, not their post-fold range."
   },
   "log_mask": [
     false,
