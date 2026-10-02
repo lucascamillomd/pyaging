@@ -31,8 +31,7 @@ OWNER = "pyaging"
 DOCS_URL = "https://pyaging.readthedocs.io"
 
 CARD_TEMPLATE = """---
-license: mit
-library_name: pyaging
+{license_header}library_name: pyaging
 tags:
 - pyaging
 - aging-clock
@@ -42,6 +41,8 @@ tags:
 # {display_name}
 
 {notes}
+
+{license_note}
 
 | | |
 |---|---|
@@ -92,14 +93,20 @@ def _sidecar_assets(clock_name: str, weights_dir: Path = WEIGHTS_DIR) -> list[Pa
     The prefix is the clock name followed by an underscore, so ``tage`` claims
     ``tage_gene_mapping.csv.gz`` without also claiming ``tagemortality``'s files.
     """
-    return sorted(weights_dir.glob(f"{clock_name}_*.csv.gz"))
+    assets = list(weights_dir.glob(f"{clock_name}_*.csv.gz"))
+    assets.extend(
+        path
+        for suffix in (".LICENSE.txt", ".provenance.json")
+        if (path := weights_dir / f"{clock_name}{suffix}").is_file()
+    )
+    return sorted(assets)
 
 
 def _display_name(metadata: dict) -> str:
     return metadata.get("display_name") or metadata["clock_name"]
 
 
-def _build_card(metadata: dict) -> str:
+def _build_card(metadata: dict, *, has_author_license: bool = False) -> str:
     def join(field):
         value = metadata.get(field)
         if isinstance(value, list):
@@ -110,7 +117,20 @@ def _build_card(metadata: dict) -> str:
     if metadata.get("data_type"):
         slug = str(metadata["data_type"]).lower().replace(" ", "-")
         extra_tags = f"- {slug}\n"
+    license_header = ""
+    license_note = (
+        "Model weights retain the original authors' terms; the pyaging software license does not relicense them."
+    )
+    if has_author_license:
+        filename = f"{metadata['clock_name']}.LICENSE.txt"
+        license_url = f"https://huggingface.co/{OWNER}/{metadata['clock_name']}/blob/main/{filename}"
+        license_header = f"license: other\nlicense_name: original-author-license\nlicense_link: {license_url}\n"
+        license_note += f" See the [original author license]({filename})."
+    if metadata.get("research_only"):
+        license_note += " These weights are restricted to research use under the authors' terms."
     return CARD_TEMPLATE.format(
+        license_header=license_header,
+        license_note=license_note,
         extra_tags=extra_tags,
         display_name=_display_name(metadata),
         notes=metadata.get("notes") or "",
@@ -134,7 +154,12 @@ def sync_clock(api: HfApi, clock_name: str, metadata: dict, tag: str | None, tag
         api.create_repo(repo_id, repo_type="model", exist_ok=True)
         operations = [
             CommitOperationAdd("config.json", json.dumps(metadata, indent=1, sort_keys=True).encode()),
-            CommitOperationAdd("README.md", _build_card(metadata).encode()),
+            CommitOperationAdd(
+                "README.md",
+                _build_card(
+                    metadata, has_author_license=(WEIGHTS_DIR / f"{clock_name}.LICENSE.txt").is_file()
+                ).encode(),
+            ),
         ]
         payload = [weight_path, *_sidecar_assets(clock_name)]
         stale = [path for path in payload if _remote_file_sha(api, repo_id, path.name) != _sha256(path)]

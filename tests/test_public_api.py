@@ -4,7 +4,7 @@ import inspect
 import pytest
 
 import pyaging
-from pyaging.models import _base_models, _models
+from pyaging.models import _author_extensions, _base_models, _models, _organage, _pc_extensions, _replication
 
 SUBPACKAGES = ["data", "logger", "models", "predict", "preprocess", "utils"]
 
@@ -28,7 +28,8 @@ def _public_classes(module):
 
 
 def test_models_all_matches_defined_model_classes():
-    expected = _public_classes(_models) | _public_classes(_base_models)
+    modules = (_models, _base_models, _author_extensions, _organage, _pc_extensions, _replication)
+    expected = set().union(*(_public_classes(module) for module in modules))
 
     assert set(pyaging.models.__all__) == expected
 

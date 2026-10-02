@@ -1,0 +1,317 @@
+{
+  "pcbrainage": {
+    "clock_name": "pcbrainage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Thrush, K. L., Bennett, D. A., Gaiteri, C., Horvath, S., van Dyck, C. H., Higgins-Chen, A. T., and Levine, M. E. (2022). Aging the brain: multi-region methylation principal component based clock in the context of Alzheimer’s disease. Aging 14(14), 5641–5668.",
+    "doi": "https://doi.org/10.18632/aging.204196",
+    "notes": "Brain chronological-age clock trained in dorsolateral prefrontal cortex. The original PCA and regression are composed algebraically without retraining; missing CpGs use the authors’ GSE74193 adult brain means. No age-acceleration residualization is performed.",
+    "research_only": null,
+    "tissue": [
+      "brain cortex"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 357852,
+    "citations": 40,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimageadm": {
+    "clock_name": "pcgrimageadm",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm adrenomedullin score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "adrenomedullin"
+    ],
+    "training_target": [
+      "DNAm adrenomedullin output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimageb2m": {
+    "clock_name": "pcgrimageb2m",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm beta-2-microglobulin score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "beta-2-microglobulin"
+    ],
+    "training_target": [
+      "DNAm beta-2-microglobulin output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78465,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagecystatinc": {
+    "clock_name": "pcgrimagecystatinc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm cystatin C score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "cystatin C"
+    ],
+    "training_target": [
+      "DNAm cystatin C output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagegdf15": {
+    "clock_name": "pcgrimagegdf15",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm GDF15 score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "GDF-15"
+    ],
+    "training_target": [
+      "DNAm GDF15 output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78465,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimageleptin": {
+    "clock_name": "pcgrimageleptin",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm leptin score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "leptin"
+    ],
+    "training_target": [
+      "DNAm leptin output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagepackyrs": {
+    "clock_name": "pcgrimagepackyrs",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm smoking pack-years score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "smoking exposure"
+    ],
+    "training_target": [
+      "DNAm smoking pack-years output"
+    ],
+    "unit": [
+      "pack-years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagepai1": {
+    "clock_name": "pcgrimagepai1",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm PAI1 score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "PAI-1"
+    ],
+    "training_target": [
+      "DNAm PAI1 output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78465,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagetimp1": {
+    "clock_name": "pcgrimagetimp1",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm TIMP1 score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "TIMP-1"
+    ],
+    "training_target": [
+      "DNAm TIMP1 output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  }
+}

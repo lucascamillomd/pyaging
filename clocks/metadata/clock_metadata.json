@@ -516,6 +516,42 @@
     "citations_date": "2026-07-05",
     "version": "0.5.0"
   },
+  "celldrift": {
+    "clock_name": "celldrift",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "⌛",
+    "citation": "Minteer, C. J., et al. (2023). More than bad luck: Cancer and aging are linked to replication-driven changes to the epigenome. Science Advances, 9(29), eadf4163.",
+    "doi": "https://doi.org/10.1126/sciadv.adf4163",
+    "notes": "Replication signature trained on 31 serially passaged hTERT-immortalized human astrocyte samples. The released 62-PC elastic-net predictor over 2,322 CpGs is folded algebraically into a single linear score. Output is calibrated to cumulative population doublings, not years. Original-author missingness is preserved: supplied NaNs become zero, whereas absent CpGs use module means. GitHub commit 066b3e816795f3c0b372ff8d33f59185a490bd8b; DOI 10.5281/zenodo.7693699. Upstream software license is unspecified (Zenodo: Other (Open)).",
+    "research_only": null,
+    "tissue": [
+      "cultured human cells"
+    ],
+    "predicts": [
+      "mitotic age"
+    ],
+    "training_target": [
+      "population doublings"
+    ],
+    "unit": [
+      "population doublings"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "human cell cultures",
+    "journal": "Science Advances",
+    "last_author": "Morgan E. Levine",
+    "n_features": 2322,
+    "citations": 29,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "preprocess": "supplied NaNs to zero; absent CpGs to module means",
+    "reference_values": true
+  },
   "cellpopage": {
     "clock_name": "cellpopage",
     "data_type": "DNA methylation",
@@ -1257,6 +1293,86 @@
     "citations": 3594,
     "citations_date": "2026-07-05",
     "version": "0.5.0"
+  },
+  "dnamphenoagenonprc": {
+    "clock_name": "dnamphenoagenonprc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": [
+      "Rozenblit, M., et al. Evidence of accelerated epigenetic aging of breast tissues in patients with breast cancer is driven by CpGs associated with polycomb-related genes. Clinical Epigenetics 14, 30 (2022).",
+      "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
+    ],
+    "doi": "https://doi.org/10.1186/s13148-022-01249-z",
+    "notes": "Original Levine-lab non-polycomb PhenoAge contribution using 458 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "non-polycomb PhenoAge contribution"
+    ],
+    "training_target": [
+      "phenotypic age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "weighted linear score",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Clinical Epigenetics",
+    "last_author": "Morgan Levine",
+    "n_features": 458,
+    "citations": 22,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "preprocess": "missing_beta_zero_contribution"
+  },
+  "dnamphenoageprc": {
+    "clock_name": "dnamphenoageprc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": [
+      "Rozenblit, M., et al. Evidence of accelerated epigenetic aging of breast tissues in patients with breast cancer is driven by CpGs associated with polycomb-related genes. Clinical Epigenetics 14, 30 (2022).",
+      "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
+    ],
+    "doi": "https://doi.org/10.1186/s13148-022-01249-z",
+    "notes": "Original Levine-lab polycomb-related PhenoAge contribution using 55 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "polycomb-related PhenoAge contribution"
+    ],
+    "training_target": [
+      "phenotypic age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "weighted linear score",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Clinical Epigenetics",
+    "last_author": "Morgan Levine",
+    "n_features": 55,
+    "citations": 22,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "preprocess": "missing_beta_zero_contribution"
   },
   "dnamstress": {
     "clock_name": "dnamstress",
@@ -2684,6 +2800,42 @@
     "version": "0.5.0",
     "postprocess": "anti_log_linear"
   },
+  "intrinclock370": {
+    "clock_name": "intrinclock370",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "⌛",
+    "citation": "Tomusiak, A., et al. “Development of an epigenetic clock resistant to changes in immune cell composition.” Communications Biology 7, 934 (2024).",
+    "doi": "https://doi.org/10.1038/s42003-024-06609-4",
+    "notes": "Author-demo IntrinClock at lambda.1se: 370 nonzero CpGs from the original serialized cv.glmnet fit. Predicts chronological age resistant to immune-cell-composition changes. This is a separately fitted regularization column, not the existing 380-CpG lambda.min model with ten sites removed. Returns years using the author's inverse Horvath transform.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "two-stage elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Communications Biology",
+    "last_author": "Eric Verdin",
+    "n_features": 370,
+    "citations": 64,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "postprocess": "anti_log_linear"
+  },
   "kdmage": {
     "clock_name": "kdmage",
     "data_type": "clinical biomarkers",
@@ -3672,6 +3824,42 @@
     "citations_date": "2026-07-05",
     "version": "0.5.0"
   },
+  "miage": {
+    "clock_name": "miage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "⌛",
+    "citation": "Youn, A., and Wang, S. (2018). The MiAge Calculator: a DNA methylation-based mitotic age calculator of human tissue types. Epigenetics, 13(2), 192–206.",
+    "doi": "https://doi.org/10.1080/15592294.2017.1389361",
+    "notes": "Mitotic-age estimator using the authors’ 268-CpG fitted b/c/d parameters and five-start bounded L-BFGS-B least squares (bounds of 10–10,000 on the relative-mitotic-age scale). The scale is identifiable only up to an unknown common factor, so scores are not absolute division counts. The scalar optimizer runs on CPU in float64, including when other clocks run on CUDA. Missing CpGs and supplied NaNs are omitted from each sample’s objective. The original all-NaN tie returns 2,008; this is an optimizer starting value with no biological meaning, so measured clock CpGs are required for interpretation. Original author function_library.r and site_specific_parameters.Rdata are preserved by an archived mirror at anilpsori/DNAm_pipelines_and_biomarkers commit d84d6adfc039355d5f9c962fc5faa7d1054f56b2; the original Columbia download returned HTTP403 during verification. All 268 CpG IDs and shared annotation fields match the original publisher supplement in order. No software/weight license is declared by the archived author files; the separate publisher supplement is CC BY4.0.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "mitotic age"
+    ],
+    "training_target": [
+      "replicative history"
+    ],
+    "unit": [
+      "relative cell divisions"
+    ],
+    "model_type": "dynamic methylation transmission model",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "human, age unspecified",
+    "journal": "Epigenetics",
+    "last_author": "Shuang Wang",
+    "n_features": 268,
+    "citations": 98,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "preprocess": "omit missing CpGs and supplied NaNs from the least-squares objective",
+    "reference_values": true
+  },
   "neusin": {
     "clock_name": "neusin",
     "data_type": "DNA methylation",
@@ -3776,6 +3964,3156 @@
     "version": "0.5.0",
     "preprocess": "tpm_norm_log1p"
   },
+  "organagechronologicalolink1500adipose": {
+    "clock_name": "organagechronologicalolink1500adipose",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adipose OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500adrenal": {
+    "clock_name": "organagechronologicalolink1500adrenal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adrenal OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 3,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500artery": {
+    "clock_name": "organagechronologicalolink1500artery",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Artery OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500brain": {
+    "clock_name": "organagechronologicalolink1500brain",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Brain OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 46,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500conventional": {
+    "clock_name": "organagechronologicalolink1500conventional",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Conventional OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 1451,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500esophagus": {
+    "clock_name": "organagechronologicalolink1500esophagus",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Esophagus OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 1,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500female": {
+    "clock_name": "organagechronologicalolink1500female",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Female OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 3,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500heart": {
+    "clock_name": "organagechronologicalolink1500heart",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Heart OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 3,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500immune": {
+    "clock_name": "organagechronologicalolink1500immune",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Immune OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 85,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500intestine": {
+    "clock_name": "organagechronologicalolink1500intestine",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Intestine OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 17,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500kidney": {
+    "clock_name": "organagechronologicalolink1500kidney",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Kidney OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500liver": {
+    "clock_name": "organagechronologicalolink1500liver",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Liver OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 28,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500lung": {
+    "clock_name": "organagechronologicalolink1500lung",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Lung OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 9,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500male": {
+    "clock_name": "organagechronologicalolink1500male",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Male OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 11,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500multiorgan": {
+    "clock_name": "organagechronologicalolink1500multiorgan",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Multi-organ OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 279,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500muscle": {
+    "clock_name": "organagechronologicalolink1500muscle",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Muscle OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500organismal": {
+    "clock_name": "organagechronologicalolink1500organismal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Organismal OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 1172,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500pancreas": {
+    "clock_name": "organagechronologicalolink1500pancreas",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pancreas OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 20,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500pituitary": {
+    "clock_name": "organagechronologicalolink1500pituitary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pituitary OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 8,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500salivary": {
+    "clock_name": "organagechronologicalolink1500salivary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Salivary OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500skin": {
+    "clock_name": "organagechronologicalolink1500skin",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Skin OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 11,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink1500stomach": {
+    "clock_name": "organagechronologicalolink1500stomach",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Stomach OrganAge chronological model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 7,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000adipose": {
+    "clock_name": "organagechronologicalolink3000adipose",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adipose OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000adrenal": {
+    "clock_name": "organagechronologicalolink3000adrenal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adrenal OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000artery": {
+    "clock_name": "organagechronologicalolink3000artery",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Artery OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 14,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000brain": {
+    "clock_name": "organagechronologicalolink3000brain",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Brain OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 118,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000conventional": {
+    "clock_name": "organagechronologicalolink3000conventional",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Conventional OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2916,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000esophagus": {
+    "clock_name": "organagechronologicalolink3000esophagus",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Esophagus OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000female": {
+    "clock_name": "organagechronologicalolink3000female",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Female OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 6,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000heart": {
+    "clock_name": "organagechronologicalolink3000heart",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Heart OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 7,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000immune": {
+    "clock_name": "organagechronologicalolink3000immune",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Immune OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 124,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000intestine": {
+    "clock_name": "organagechronologicalolink3000intestine",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Intestine OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 31,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000kidney": {
+    "clock_name": "organagechronologicalolink3000kidney",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Kidney OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 9,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000liver": {
+    "clock_name": "organagechronologicalolink3000liver",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Liver OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 79,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000lung": {
+    "clock_name": "organagechronologicalolink3000lung",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Lung OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 11,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000male": {
+    "clock_name": "organagechronologicalolink3000male",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Male OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 55,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000multiorgan": {
+    "clock_name": "organagechronologicalolink3000multiorgan",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Multi-organ OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 569,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000muscle": {
+    "clock_name": "organagechronologicalolink3000muscle",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Muscle OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 20,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000organismal": {
+    "clock_name": "organagechronologicalolink3000organismal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Organismal OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2347,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000pancreas": {
+    "clock_name": "organagechronologicalolink3000pancreas",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pancreas OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 28,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000pituitary": {
+    "clock_name": "organagechronologicalolink3000pituitary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pituitary OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 12,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000salivary": {
+    "clock_name": "organagechronologicalolink3000salivary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Salivary OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000skin": {
+    "clock_name": "organagechronologicalolink3000skin",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Skin OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 17,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000stomach": {
+    "clock_name": "organagechronologicalolink3000stomach",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Stomach OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 12,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagechronologicalolink3000thyroid": {
+    "clock_name": "organagechronologicalolink3000thyroid",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Thyroid OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is predicted age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500adipose": {
+    "clock_name": "organagemortalityolink1500adipose",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adipose OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500adrenal": {
+    "clock_name": "organagemortalityolink1500adrenal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adrenal OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 3,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500artery": {
+    "clock_name": "organagemortalityolink1500artery",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Artery OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500brain": {
+    "clock_name": "organagemortalityolink1500brain",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Brain OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 46,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500conventional": {
+    "clock_name": "organagemortalityolink1500conventional",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Conventional OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 1451,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500esophagus": {
+    "clock_name": "organagemortalityolink1500esophagus",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Esophagus OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 1,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500female": {
+    "clock_name": "organagemortalityolink1500female",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Female OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 3,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500heart": {
+    "clock_name": "organagemortalityolink1500heart",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Heart OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 3,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500immune": {
+    "clock_name": "organagemortalityolink1500immune",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Immune OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 85,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500intestine": {
+    "clock_name": "organagemortalityolink1500intestine",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Intestine OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 17,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500kidney": {
+    "clock_name": "organagemortalityolink1500kidney",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Kidney OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500liver": {
+    "clock_name": "organagemortalityolink1500liver",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Liver OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 28,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500lung": {
+    "clock_name": "organagemortalityolink1500lung",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Lung OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 9,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500male": {
+    "clock_name": "organagemortalityolink1500male",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Male OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 11,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500multiorgan": {
+    "clock_name": "organagemortalityolink1500multiorgan",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Multi-organ OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 279,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500muscle": {
+    "clock_name": "organagemortalityolink1500muscle",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Muscle OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500organismal": {
+    "clock_name": "organagemortalityolink1500organismal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Organismal OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 1172,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500pancreas": {
+    "clock_name": "organagemortalityolink1500pancreas",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pancreas OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 20,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500pituitary": {
+    "clock_name": "organagemortalityolink1500pituitary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pituitary OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 8,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500salivary": {
+    "clock_name": "organagemortalityolink1500salivary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Salivary OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500skin": {
+    "clock_name": "organagemortalityolink1500skin",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Skin OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 11,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink1500stomach": {
+    "clock_name": "organagemortalityolink1500stomach",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Stomach OrganAge mortality model for Olink Explore 1536, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 1536"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 7,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000adipose": {
+    "clock_name": "organagemortalityolink3000adipose",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adipose OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000adrenal": {
+    "clock_name": "organagemortalityolink3000adrenal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adrenal OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000artery": {
+    "clock_name": "organagemortalityolink3000artery",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Artery OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 14,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000brain": {
+    "clock_name": "organagemortalityolink3000brain",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Brain OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 118,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000conventional": {
+    "clock_name": "organagemortalityolink3000conventional",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Conventional OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2916,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000esophagus": {
+    "clock_name": "organagemortalityolink3000esophagus",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Esophagus OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000female": {
+    "clock_name": "organagemortalityolink3000female",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Female OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 6,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000heart": {
+    "clock_name": "organagemortalityolink3000heart",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Heart OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 7,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000immune": {
+    "clock_name": "organagemortalityolink3000immune",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Immune OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 124,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000intestine": {
+    "clock_name": "organagemortalityolink3000intestine",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Intestine OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 31,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000kidney": {
+    "clock_name": "organagemortalityolink3000kidney",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Kidney OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 9,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000liver": {
+    "clock_name": "organagemortalityolink3000liver",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Liver OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 79,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000lung": {
+    "clock_name": "organagemortalityolink3000lung",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Lung OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 11,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000male": {
+    "clock_name": "organagemortalityolink3000male",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Male OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 55,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000multiorgan": {
+    "clock_name": "organagemortalityolink3000multiorgan",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Multi-organ OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 569,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000muscle": {
+    "clock_name": "organagemortalityolink3000muscle",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Muscle OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 20,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000organismal": {
+    "clock_name": "organagemortalityolink3000organismal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Organismal OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2347,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000pancreas": {
+    "clock_name": "organagemortalityolink3000pancreas",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pancreas OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 28,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000pituitary": {
+    "clock_name": "organagemortalityolink3000pituitary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pituitary OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 12,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000salivary": {
+    "clock_name": "organagemortalityolink3000salivary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Salivary OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000skin": {
+    "clock_name": "organagemortalityolink3000skin",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Skin OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 17,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000stomach": {
+    "clock_name": "organagemortalityolink3000stomach",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Stomach OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 12,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "organagemortalityolink3000thyroid": {
+    "clock_name": "organagemortalityolink3000thyroid",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Thyroid OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Input columns are the original case-sensitive protein symbols and values are Olink NPX, already normalized. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, prepare and rescale protein values according to the author guidance before prediction. Output is relative natural-log mortality hazard, not age in years. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
   "pasta": {
     "clock_name": "pasta",
     "data_type": "transcriptomics",
@@ -3852,6 +7190,41 @@
     "postprocess": "scale_and_shift",
     "reference_values": true
   },
+  "pcbrainage": {
+    "clock_name": "pcbrainage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Thrush, K. L., Bennett, D. A., Gaiteri, C., Horvath, S., van Dyck, C. H., Higgins-Chen, A. T., and Levine, M. E. (2022). Aging the brain: multi-region methylation principal component based clock in the context of Alzheimer’s disease. Aging 14(14), 5641–5668.",
+    "doi": "https://doi.org/10.18632/aging.204196",
+    "notes": "Brain chronological-age clock trained in dorsolateral prefrontal cortex. The original PCA and regression are composed algebraically without retraining; missing CpGs use the authors’ GSE74193 adult brain means. No age-acceleration residualization is performed.",
+    "research_only": null,
+    "tissue": [
+      "brain cortex"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 357852,
+    "citations": 40,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
   "pcdnamtl": {
     "clock_name": "pcdnamtl",
     "data_type": "DNA methylation",
@@ -3920,6 +7293,286 @@
     "citations": 497,
     "citations_date": "2026-07-05",
     "version": "0.5.0",
+    "reference_values": true
+  },
+  "pcgrimageadm": {
+    "clock_name": "pcgrimageadm",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm adrenomedullin score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "adrenomedullin"
+    ],
+    "training_target": [
+      "DNAm adrenomedullin output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimageb2m": {
+    "clock_name": "pcgrimageb2m",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm beta-2-microglobulin score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "beta-2-microglobulin"
+    ],
+    "training_target": [
+      "DNAm beta-2-microglobulin output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78465,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagecystatinc": {
+    "clock_name": "pcgrimagecystatinc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm cystatin C score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "cystatin C"
+    ],
+    "training_target": [
+      "DNAm cystatin C output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagegdf15": {
+    "clock_name": "pcgrimagegdf15",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm GDF15 score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "GDF-15"
+    ],
+    "training_target": [
+      "DNAm GDF15 output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78465,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimageleptin": {
+    "clock_name": "pcgrimageleptin",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm leptin score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "leptin"
+    ],
+    "training_target": [
+      "DNAm leptin output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagepackyrs": {
+    "clock_name": "pcgrimagepackyrs",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm smoking pack-years score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "smoking exposure"
+    ],
+    "training_target": [
+      "DNAm smoking pack-years output"
+    ],
+    "unit": [
+      "pack-years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagepai1": {
+    "clock_name": "pcgrimagepai1",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm PAI1 score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "PAI-1"
+    ],
+    "training_target": [
+      "DNAm PAI1 output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78465,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagetimp1": {
+    "clock_name": "pcgrimagetimp1",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm TIMP1 score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "TIMP-1"
+    ],
+    "training_target": [
+      "DNAm TIMP1 output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
     "reference_values": true
   },
   "pchannum": {

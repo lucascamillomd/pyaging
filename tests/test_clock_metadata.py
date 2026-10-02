@@ -57,7 +57,7 @@ def test_registry_has_every_implementation_notebook(registry):
         "dnamfitagegripf",
         "dnamfitagegripm",
     }
-    assert len(registry) == 177
+    assert len(registry) == 281
     assert retired.isdisjoint(registry)
     assert set(registry) == notebook_names
 
