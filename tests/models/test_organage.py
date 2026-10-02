@@ -56,7 +56,7 @@ def test_builder_preserves_fold_one_protein_symbols_and_license(tmp_path, monkey
     )
     (source / "LICENSE").write_bytes((FIXTURES / "LICENSE.author").read_bytes())
     monkeypatch.setitem(builder.SOURCE_SHA256, relative, hashlib.sha256(coefficient_file.read_bytes()).hexdigest())
-    model = builder.build_clock("organagechronologicalolink3000adipose", source_dir=source)
+    model = builder.build_clock("organagechronologicaladipose", source_dir=source)
     assert model.features == ["ADIPOQ", "HLA-DRA", "NTproBNP", "LEP", "PLIN1"]
     x = torch.tensor([[0, 0, 0, 0, 0], [-1, 0, 1, 2, -2]], dtype=torch.float64)
     np.testing.assert_allclose(
@@ -66,7 +66,7 @@ def test_builder_preserves_fold_one_protein_symbols_and_license(tmp_path, monkey
     assert "Non-Commercial" in model.license_text
     coefficient_file.write_text(coefficient_file.read_text().replace("57.1044228722264", "1"))
     with pytest.raises(ValueError, match="checksum mismatch"):
-        builder.build_clock("organagechronologicalolink3000adipose", source_dir=source)
+        builder.build_clock("organagechronologicaladipose", source_dir=source)
 
 
 def _author_fixture_model(name):
@@ -74,7 +74,9 @@ def _author_fixture_model(name):
     from pyaging.models._organage import OrganAge
 
     with gzip.open(FIXTURES / "author_fold_one.json.gz", "rt") as stream:
-        parameters = json.load(stream)[name]
+        parameters = json.load(stream)[
+            name.replace("chronological", "chronologicalolink3000").replace("mortality", "mortalityolink3000")
+        ]
     model = OrganAge()
     model.features = parameters["features"]
     model.base_model_features = list(model.features)
@@ -92,7 +94,10 @@ def _author_fixture_model(name):
 def oracle():
     import pandas as pd
 
-    return pd.read_csv(FIXTURES / "expected_predictions.csv")
+    rows = pd.read_csv(FIXTURES / "expected_predictions.csv")
+    rows = rows.loc[rows.clock.str.contains("olink3000")].copy()
+    rows["clock"] = rows.clock.str.replace("olink3000", "", regex=False)
+    return rows
 
 
 @pytest.fixture(scope="module")
@@ -104,12 +109,12 @@ def npx():
 
 @pytest.mark.parametrize("case", ["complete", "omitted_proteins", "present_na"])
 @pytest.mark.parametrize("source", ["author_fixture", "local_artifact"])
-def test_all_90_models_match_original_author_r(oracle, npx, case, source):
+def test_all_46_models_match_original_author_r(oracle, npx, case, source):
     """Catch wrong folds, protein alignments, altered input scale, or NA handling."""
     from tests.helpers import load_local_clock
 
     expected = oracle.loc[oracle.case.eq(case)]
-    assert expected.clock.nunique() == 90
+    assert expected.clock.nunique() == 46
     for name, rows in expected.groupby("clock", sort=False):
         model = _author_fixture_model(name) if source == "author_fixture" else load_local_clock(name)
         frame = npx.copy()
@@ -124,14 +129,13 @@ def test_all_90_models_match_original_author_r(oracle, npx, case, source):
 
 
 @pytest.mark.parametrize("target", ["chronological", "mortality"])
-@pytest.mark.parametrize("panel", ["1500", "3000"])
-def test_predict_age_omission_and_batching_match_author_r(tmp_path, monkeypatch, oracle, npx, target, panel):
+def test_predict_age_omission_and_batching_match_author_r(tmp_path, monkeypatch, oracle, npx, target):
     """Exercise real alignment and batch scoring on absent and reordered proteins."""
     import anndata
 
     import pyaging as pya
 
-    name = f"organage{target}olink{panel}conventional"
+    name = f"organage{target}conventional"
     model = _author_fixture_model(name)
     artifact = tmp_path / f"{name}.pt"
     torch.save(model, artifact)
@@ -143,3 +147,15 @@ def test_predict_age_omission_and_batching_match_author_r(tmp_path, monkeypatch,
         pya.pred.predict_age(adata, name, batch_size=batch_size, verbose=False)
         np.testing.assert_allclose(adata.obs[name], expected, rtol=0, atol=1e-10)
         assert set(adata.uns[f"{name}_missing_features"]) == set(model.features).difference(frame.columns)
+
+
+def test_catalogue_only_builds_full_panel_with_short_names():
+    spec = importlib.util.spec_from_file_location(
+        "build_organage", Path(__file__).resolve().parents[2] / "clocks" / "build_organage.py"
+    )
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    clocks = builder.source_specifications()
+    assert len(clocks) == 46
+    assert all("olink" not in name for name in clocks)
+    assert all("/instance_0/" in entry["path"] for entry in clocks.values())

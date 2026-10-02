@@ -1,0 +1,35 @@
+{
+  "pac": {
+    "clock_name": "pac",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "⌛",
+    "citation": "Kuo, C.-L., et al. \"Proteomic aging clock (PAC) predicts age-related outcomes in middle-aged and older adults.\" Aging Cell 23, e14195 (2024).",
+    "doi": "https://doi.org/10.1111/acel.14195",
+    "notes": "Mortality-equivalent proteomic age from the original Kuo et al. R release, using all 128 Olink Explore 3072 plasma protein NPX values plus chronological age in years. Supply original lowercase identifiers, including fut3_fut5 and ntprobnp; there is no sex covariate. NPX is assay-normalized log2 relative abundance, not raw counts, concentrations, linear abundances or z-scores. NPX labeling alone does not establish comparability across panels, batches, plasma and serum. No cohort scaling, normalization, or imputation is applied during scoring. Every predictor column is required; supplied NaNs propagate. The paper used k-nearest-neighbor imputation (k=10) before model fitting; any upstream imputation is a separate caller decision. The full-precision original Gompertz constants are retained, without the later Insilico wrapper's rounding or optional distribution matching. Output is mortality-equivalent age in years, not a clinical diagnosis or an age-acceleration residual. Development cohort: UK Biobank adults aged 39-70. The original repository specifies no code license; the publication is CC BY 4.0. No author approval of this conversion is claimed.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "Gompertz proportional hazards model",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Aging Cell",
+    "last_author": "Breno S. Diniz",
+    "n_features": 129,
+    "citations": 68,
+    "citations_date": "2026-10-02"
+  }
+}
