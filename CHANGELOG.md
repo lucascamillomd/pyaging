@@ -14,9 +14,8 @@
 - Validate the additions against native R author-code fixtures, including missing
   features and batching; publish the new artifacts and data snapshot `v0.5.4`.
 
-See [the clock guide](docs/source/clocks_0_5_4.md) for input requirements and score
-interpretation, and [release validation](docs/development/release-0.5.4.md) for
-source and comparison details.
+See [release validation](docs/development/release-0.5.4.md) for source and
+comparison details.
 
 ## 0.5.3
 

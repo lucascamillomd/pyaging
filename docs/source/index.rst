@@ -65,7 +65,6 @@ pyaging
 
    installation
    clock_glossary
-   clocks_0_5_4
 
 .. toctree::
    :hidden:

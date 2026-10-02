@@ -48,7 +48,7 @@ pya.pred.predict_age(adata, ["Horvath2013", "AltumAge", "DunedinPACE"])
 adata.obs.head()
 ```
 
-Clock weights are downloaded on demand from per-clock repositories under the [`pyaging` Hugging Face organization](https://huggingface.co/pyaging) (example data comes from [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data)). Set `PYAGING_DATA_REVISION` to an existing data release tag, such as `v0.5.4`, to pin downloads; it defaults to `main`. Version 0.5.4 adds CellDRIFT, MiAge, PCBrainAge, IntrinClock370, PhenoAge partitions, standalone PCGrimAge proxies, and 90 proteomic OrganAge outputs. See the [input and output guide](https://pyaging.readthedocs.io/en/latest/clocks_0_5_4.html). Model weights retain the original authors’ licensing terms.
+Clock weights are downloaded on demand from per-clock repositories under the [`pyaging` Hugging Face organization](https://huggingface.co/pyaging) (example data comes from [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data)). Set `PYAGING_DATA_REVISION` to an existing data release tag, such as `v0.5.4`, to pin downloads; it defaults to `main`. Version 0.5.4 adds CellDRIFT, MiAge, PCBrainAge, IntrinClock370, PhenoAge partitions, standalone PCGrimAge proxies, and 90 proteomic OrganAge outputs. Model weights retain the original authors’ licensing terms.
 
 ### Run the same clocks across datasets
 
