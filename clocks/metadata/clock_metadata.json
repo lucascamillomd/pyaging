@@ -6360,7 +6360,7 @@
     "approved_by_author": "⌛",
     "citation": "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591.",
     "doi": "https://doi.org/10.18632/aging.101414",
-    "notes": "Clinical Phenotypic Age combines chronological age with nine blood biomarkers selected by penalized mortality regression and expresses mortality risk as an equivalent age in years. C-reactive protein is supplied raw in mg/dL and natural-log-transformed inside the clock, with readings at or below 0.01 mg/dL clamped to that floor; before pyaging 0.5.0 the feature was named log_crp and the caller had to supply the log. Continuing to pass a pre-logged value biases the estimate downward: any pre-logged CRP below 1.01 mg/dL, which covers most healthy adults, lands on the clamp floor and returns the same answer as omitting CRP entirely — about four years younger than the correct value for a typical adult, so the estimate reads healthier than it is.",
+    "notes": "Clinical Phenotypic Age combines chronological age with nine blood biomarkers and expresses modeled mortality risk as an equivalent age in years. Supply raw C-reactive protein in mg/dL; pyaging applies its natural logarithm, flooring values at 0.01 mg/dL. Before 0.5.0, callers supplied log_crp instead. Starting in pyaging 0.5.7, Gompertz gamma is 0.0076927 as specified in the original supplementary methods; earlier versions incorrectly used the Cox selection penalty 0.0192, inflating finite estimates by approximately 9.619365 years for otherwise identical inputs. This correction applies to clinical phenoage, not the separately fitted DNA-methylation clocks. Use pyaging >=0.5.7 with this artifact because the formula is implemented in the package class.",
     "research_only": null,
     "tissue": [
       "blood"
@@ -6384,7 +6384,7 @@
     "n_features": 10,
     "citations": 3594,
     "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "version": "0.5.7",
     "preprocess": "natural_log_crp",
     "postprocess": "mortality_to_phenoage"
   },

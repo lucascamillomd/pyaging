@@ -1721,14 +1721,14 @@ class PhenoAge(pyagingModel):
         return torch.cat([x[:, :index], torch.log(crp), x[:, index + 1 :]], dim=1)
 
     def postprocess(self, x):
-        """
-        Applies a convertion from a CDF of the mortality score from a Gompertz
-        distribution to phenotypic age.
-        """
+        """Convert the fitted log hazard to clinical Phenotypic Age in years."""
         # log(1 - mortality) equals the negative Gompertz hazard exactly.
         # Cancel the nested exp/log terms before finite precision rounds the
         # mortality to zero or one, preserving the published constants.
-        log_scale = math.log(0.00553 * math.expm1(120 * 0.0192) / 0.0192)
+        # Levine 2018 supplementary methods, p. 2: gamma = 0.0076927.
+        # The 0.0192 on p. 1 is the Cox variable-selection penalty, not gamma.
+        gamma = 0.0076927
+        log_scale = math.log(0.00553 * math.expm1(120 * gamma) / gamma)
         return 141.50225 + (x + log_scale) / 0.090165
 
 

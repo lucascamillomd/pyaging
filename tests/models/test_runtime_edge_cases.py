@@ -120,16 +120,27 @@ def test_phenoage_extreme_finite_predictors_do_not_overflow():
     x = torch.tensor([[-50.0], [0.0], [1000.0]], dtype=torch.float64)
     result = PhenoAge().postprocess(x)
     assert torch.isfinite(result).all()
-    assert result[:2].flatten().tolist() == pytest.approx([-402.4552267456826, 152.08367415821596])
+    assert result[:2].flatten().tolist() == pytest.approx([-412.07459164738657, 142.464309256512])
     assert result[2].item() - result[1].item() == pytest.approx(1000 / 0.090165)
 
 
 def test_phenoage_matches_original_expression_at_regular_predictors():
     x = torch.linspace(-12.0, -4.0, 17, dtype=torch.float64)
-    hazard = torch.exp(x) * math.expm1(120 * 0.0192) / 0.0192
+    # Levine 2018 supplementary methods, p. 2: Gompertz gamma, not the
+    # 0.0192 penalty used only for Cox variable selection on p. 1.
+    hazard = torch.exp(x) * math.expm1(120 * 0.0076927) / 0.0076927
     mortality = 1 - torch.exp(-hazard)
     original = 141.50225 + torch.log(-0.00553 * torch.log1p(-mortality)) / 0.090165
     torch.testing.assert_close(PhenoAge().postprocess(x), original, atol=1e-10, rtol=0)
+
+
+def test_phenoage_matches_independent_published_formula_reference():
+    # Evaluated separately in R 4.5.3 from Levine 2018 SD1, pp. 1-2.
+    # Fixed outputs avoid letting a shared, erroneous constant update both
+    # sides of a test unnoticed. No weight downloads are required in CI.
+    x = torch.tensor([-12.0, -9.0, -6.0], dtype=torch.float64)
+    expected = torch.tensor([9.37497303957636, 42.64730709381026, 75.91964114804416], dtype=torch.float64)
+    torch.testing.assert_close(PhenoAge().postprocess(x), expected, atol=1e-12, rtol=0)
 
 
 def test_saopaulo_extreme_finite_predictors_do_not_overflow():
