@@ -57,7 +57,7 @@ def test_registry_has_every_implementation_notebook(registry):
         "dnamfitagegripf",
         "dnamfitagegripm",
     }
-    assert len(registry) == 281
+    assert len(registry) == 238
     assert retired.isdisjoint(registry)
     assert set(registry) == notebook_names
 
@@ -313,7 +313,7 @@ def test_local_runtime_artifacts_match_registry():
     validate_artifact_consistency(ROOT)
 
 
-def test_every_built_clock_carries_the_registry_feature_units():
+def test_every_built_clock_carries_the_expected_feature_units():
     """A stored ``feature_units`` shadows the registry, so a stale copy must not survive a build.
 
     ``resolve_feature_ranges`` resolves a unit as ``override or entry["unit"]``,
@@ -336,6 +336,11 @@ def test_every_built_clock_carries_the_registry_feature_units():
                 getattr(model, "feature_range_data_type", None) or model.metadata.get("data_type"),
             )
         ]
+        if model.metadata.get("data_type") == "proteomics":
+            # The currently packaged Olink models declare NPX explicitly; the
+            # modality itself must not assign NPX to future non-Olink assays.
+            assert all(platform.startswith("Olink Explore") for platform in model.metadata["platform"])
+            expected = ["years" if feature == "age" else "NPX" for feature in model.features]
         if getattr(model, "feature_units", None) != expected:
             stale.append(path.stem)
 

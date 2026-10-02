@@ -138,6 +138,11 @@ def predict_age(
                     clock_name, device, partial(load_clock, clock_name, device, dir, pipeline_logger)
                 )
 
+            # Validate before generic alignment can fill absent required inputs.
+            validate_inputs = getattr(model, "validate_inputs", None)
+            if validate_inputs is not None:
+                validate_inputs(adata)
+
             # Clocks saved before either attribute existed lack both.
             transform_name = getattr(model, "cohort_transform", None)
             required_flag = getattr(model, "required_uns_flag", None)

@@ -64,3 +64,12 @@ A secondary check against Biolearn's four OrganAge coefficient tables found all
 90 models' nonzero terms represented and a maximum absolute coefficient
 difference of `4.999570202279813e-11`, consistent with its decimal rounding.
 Biolearn code and weights were not implementation or oracle sources.
+
+## Current catalogue (0.5.5)
+
+The original 90-model fixtures remain intact as historical author evidence.
+Tests select the 46 full-panel outputs and remove `olink3000` from their names
+when comparing to current artifacts. Reduced-panel outputs are no longer
+published in the current catalogue. The coefficients and expected predictions
+for retained models are unchanged; metadata now explicitly records plasma,
+NPX input semantics and external normalization choices.

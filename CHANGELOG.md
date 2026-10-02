@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.5.5
+
+- Add Kuo et al.'s PAC from original-author code and coefficients, with 128
+  Olink NPX proteins plus chronological age and mortality-equivalent output
+  in years. Required inputs are checked before generic missing-feature filling.
+- Remove the 44 reduced-panel Olink Explore 1536 OrganAge entries from the
+  current catalogue. Retain 46 full-panel models and shorten their names by
+  dropping `olink3000`; coefficients and raw output scales are unchanged.
+- Specify plasma training material, assay normalization, protein identifiers,
+  missing-data behavior and model-specific feature units for proteomic clocks.
+  Add a [proteomic input guide](docs/source/proteomic_clocks.md).
+- Audit all six clocks in the 2026 Insilico trial. ProtAge lacks public trained
+  weights/reference preprocessing; ipfP3GPT is restricted to UK Biobank RAP;
+  PAOPAC provides only opaque Windows inference assets. These three are not
+  added as executable clocks; see the [source audit](docs/development/proteomic-source-audit-0.5.5.md).
+- Preserve committed catalogue data during documentation builds, avoiding stale
+  remote metadata overwriting newly released entries.
+
 ## 0.5.4
 
 - Add CellDRIFT, MiAge, PCBrainAge, and the original 370-CpG `lambda.1se`

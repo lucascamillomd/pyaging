@@ -241,14 +241,14 @@ def source_specifications():
     """Map public scalar clock names to their original panel and organ."""
     result = {}
     for path in SOURCE_SHA256:
-        if not path.endswith(".csv"):
+        if not path.endswith(".csv") or "/feature_reduced/" in path:
             continue
         reduced = "/feature_reduced/" in path
         mortality = "/mortality_based_models/" in path
         panel = "1500" if reduced else "3000"
         target = "mortality" if mortality else "chronological"
         organ = Path(path).name.split("_")[0]
-        name = f"organage{target}olink{panel}{organ.lower().replace('-', '')}"
+        name = f"organage{target}{organ.lower().replace('-', '')}"
         result[name] = {"path": path, "organ": organ, "panel": panel, "target": target}
     return dict(sorted(result.items()))
 
@@ -277,7 +277,7 @@ def _read_source(path, source_dir=None):
 def clock_metadata(name, specification, n_features):
     mortality = specification["target"] == "mortality"
     organ = specification["organ"]
-    platform = "Olink Explore 1536" if specification["panel"] == "1500" else "Olink Explore 3072"
+    platform = "Olink Explore 3072"
     return {
         "clock_name": name,
         "data_type": "proteomics",
@@ -291,17 +291,26 @@ def clock_metadata(name, specification, n_features):
         "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
         "notes": (
             f"{organ} OrganAge {specification['target']} model for {platform}, using author-recommended fold 1. "
-            "Input columns are the original case-sensitive protein symbols and values are Olink NPX, "
-            "already normalized. "
+            "Trained on UK Biobank plasma measured with Olink Explore 3072. "
+            "Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), "
+            "not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 "
+            "relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. "
             "No additional centering or cohort scaling is applied. Absent proteins contribute zero; "
             "NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. "
-            "For other assays, prepare and rescale protein values according to the author guidance before prediction. "
+            "For other assays, the authors recommend a symmetric abundance distribution, protein-wise "
+            "mean subtraction and SD division, then multiplication by the full-model UKB protein SDs "
+            "in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. "
+            "The optional Example_Script.R SD-matching step is also external; NPX labeling alone does "
+            "not establish comparability across Olink panels, batches, plasma and serum. "
             + (
                 "Output is relative natural-log mortality hazard, not age in years. "
                 if mortality
                 else "Output is predicted age in years. "
             )
-            + "Models labelled Female and Male contain protein features; "
+            + "The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific "
+            "variants are not the six-clock comparison endpoints. pyaging returns the original raw "
+            "score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. "
+            "Models labelled Female and Male contain protein features; "
             "neither requires a sex covariate. "
             "Academic/non-commercial research use only; commercial use requires a separate license from the authors."
             + (
@@ -311,7 +320,7 @@ def clock_metadata(name, specification, n_features):
             )
         ),
         "research_only": True,
-        "tissue": ["blood"],
+        "tissue": ["plasma"],
         "predicts": ["mortality risk"] if mortality else ["biological age"],
         "training_target": ["mortality"] if mortality else ["chronological age"],
         "unit": ["log hazard"] if mortality else ["years"],
@@ -323,7 +332,7 @@ def clock_metadata(name, specification, n_features):
         "n_features": n_features,
         "citations": 128,
         "citations_date": "2026-10-02",
-        "version": "0.5.4",
+        "version": "0.5.5",
         "reference_values": True,
     }
 
@@ -360,7 +369,7 @@ def build_clock(name, source_dir=None):
         model.base_model.weight.copy_(torch.tensor([coefficients], dtype=torch.float64))
         model.base_model.bias.fill_(intercept)
     model.metadata = clock_metadata(name, specification, len(features))
-    model.version = "0.5.4"
+    model.version = "0.5.5"
     model.reference_values = [0.0] * len(features)
     model.license = "Academic / Non-Commercial License"
     model.license_text = _read_source("LICENSE", source_dir)
@@ -398,8 +407,8 @@ def main():
         save_clock(model, output_dir=args.output_dir)
         metadata[name] = model.metadata
     metadata_dir = REPO_ROOT / "clocks" / "metadata"
-    torch.save(metadata, metadata_dir / "organage_0.5.4.pt")
-    (metadata_dir / "organage_0.5.4.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n")
+    torch.save(metadata, metadata_dir / "organage_0.5.5.pt")
+    (metadata_dir / "organage_0.5.5.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n")
     print(f"Built {len(metadata)} OrganAge clocks from original author commit {AUTHOR_COMMIT}")
 
 

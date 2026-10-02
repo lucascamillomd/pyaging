@@ -218,3 +218,14 @@ def test_relative_transcriptomics_is_unbounded():
     (record,) = resolve_feature_ranges(["12575"], "transcriptomics (relative)")
     assert record["unit"] is None
     assert math.isinf(-record["low"]) and math.isinf(record["high"])
+
+
+def test_proteomics_units_are_model_specific_and_npx_allows_negative_values():
+    (unknown,) = resolve_feature_ranges(["some_protein"], "proteomics")
+    assert unknown["unit"] is None
+    records = resolve_feature_ranges(["ADIPOQ", "age"], "proteomics", ["NPX", "years"])
+    assert records[0]["unit"] == "NPX"
+    assert records[0]["low"] == -math.inf
+    assert records[0]["high"] == math.inf
+    assert records[1]["unit"] == "years"
+    assert records[1]["low"] == 0.0

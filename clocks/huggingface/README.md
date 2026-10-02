@@ -19,8 +19,9 @@ This public repository contains the model weights and data files used by
   [`pyaging` organization](https://huggingface.co/pyaging) (e.g.
   `pyaging/horvath2013`); each repo carries the weight file, the audited clock
   metadata as `config.json`, and a model card. Root-level `*.pt` files here are
-  the legacy copies kept for pyaging versions <= 0.3.1.
-- `all_clock_metadata.pt` is the live aggregate clock catalog.
+  compatibility copies used when a per-clock repository or revision is unavailable.
+- `all_clock_metadata.pt` is the live aggregate clock catalog. Retired clock files
+  may remain here to preserve earlier releases; file presence is not current catalogue membership.
 - Root-level example files support the pyaging tutorials.
 - `supporting_files/` contains dependencies used to construct or document clocks.
 
@@ -84,3 +85,17 @@ load these files from this official repository and review unexpected repository 
 The repository is maintained solely by Lucas Paulo de Lima Camillo (`lucascamillomd`).
 Weights are uploaded before aggregate metadata so the catalog never advertises a missing
 clock file. Public users need no Hugging Face token to download files.
+
+## Proteomic inputs
+
+The 0.5.5 catalogue contains PAC and 46 full Olink Explore 3072 OrganAge models.
+Their input units and protein identifiers are model-specific. OrganAge uses
+case-sensitive original symbols and PAC uses lowercase symbols plus age in years.
+NPX is log2 relative abundance, not concentration; cross-platform and serum/plasma
+harmonization are external preparation decisions. See the
+[proteomic input guide](https://pyaging.readthedocs.io/en/latest/proteomic_clocks.html).
+
+The reduced Olink Explore 1536 OrganAge models leave the current catalogue, and
+full-model names drop `olink3000`. Existing 0.5.4 tags and files remain intact.
+ProtAge, ipfP3GPT and PAOPAC are not executable pyaging entries in this release;
+the guide explains the unavailable or restricted author assets.

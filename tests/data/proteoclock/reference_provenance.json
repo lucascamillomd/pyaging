@@ -1,0 +1,30 @@
+{
+  "repository": "https://github.com/kuo-lab-uchc/PAC",
+  "commit": "e15edb66800f876a928cec9c8856500048c46fea",
+  "source_sha256": {
+    "README.md": "011e265bbfbdfd102e06b2b669433921cf7e4bd87b97b23fa68421abc1201d9f",
+    "pac_proteomic_age.R": "b87edc70f11e34740f0323e4b7c677eb1d53c5008d631ecf87a35cd22be1d2ff",
+    "pac_example_data.csv": "00d7360bbac1c8a750e29332a4bda080d94780d180cbb1cbf5bcc7bd47612f9f"
+  },
+  "reference_runtime": "R version 4.5.3 (2026-03-11)",
+  "reference_command": "Rscript tests/data/proteoclock/generate_reference.R SOURCE_DIR tests/data/proteoclock",
+  "reference_code": "Original pac_proteomic_age.R sourced and executed without modification",
+  "input": "Eight synthetic profiles, generated using sin/cos values; no participant data",
+  "max_absolute_error_years": 3.552713678800501e-14,
+  "files": {
+    "pac_author_parameters.json": "a59e346733bdd51e29eacb116d59005d272ec92a6b910844683fdcf783792ccb",
+    "generate_reference.R": "97599ae2e862ca714566d9f458a4e05c3ad6c0e002024d4fbe82ab436ecfb723",
+    "input_npx.csv": "11fb976f513f48b046ec450f52b6252243a45bccb884d648fb02d71db9727238",
+    "expected_predictions.csv": "5375c1b1861ac8254a3eb1d1f116d481e10e04c9e992f42c319c738058946fda"
+  },
+  "citation_count": {
+    "source": "https://api.openalex.org/works/https://doi.org/10.1111/acel.14195",
+    "retrieved": "2026-10-02",
+    "cited_by_count": 68
+  },
+  "ipfp3gpt_unavailable": {
+    "source": "https://github.com/Insilico-org/proteoclock/blob/d078b246c9a834bb1eaa54a79381b6c6c14245f7/README.md",
+    "sha256": "c2128c8a74e64fa85502634eab3dcbf056061977e2ae48d640cff8715182cc66",
+    "reason": "The authors removed best_clock.pt at UK Biobank request; execution is restricted to registered researchers within UKB RAP."
+  }
+}

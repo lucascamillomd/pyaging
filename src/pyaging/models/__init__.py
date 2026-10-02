@@ -186,9 +186,11 @@ from ._pc_extensions import (
     PCGrimAgePAI1,
     PCGrimAgeTIMP1,
 )
+from ._proteoclock import PAC
 from ._replication import CellDRIFT, MiAge
 
 __all__ = [
+    "PAC",
     "CellDRIFT",
     "DNAmPhenoAgeNonPRC",
     "DNAmPhenoAgePRC",

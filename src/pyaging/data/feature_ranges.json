@@ -2,7 +2,7 @@
   "schema_version": 1,
   "modality_defaults": {
     "DNA methylation": {"unit": "beta value", "low": 0.0, "high": 1.0},
-    "proteomics": {"unit": "NPX", "low": null, "high": null},
+    "proteomics": {"unit": null, "low": null, "high": null},
     "transcriptomics": {"unit": null, "low": 0.0, "high": null},
     "transcriptomics (relative)": {"unit": null, "low": null, "high": null},
     "histone modification": {"unit": null, "low": 0.0, "high": null},
