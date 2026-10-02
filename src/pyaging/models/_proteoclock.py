@@ -5,6 +5,41 @@ import torch
 from ._base_models import pyagingModel
 
 
+class HPS(pyagingModel):
+    """Kuo et al. Healthspan Proteomic Score from 86 NPX proteins and age.
+
+    Inputs use the original lowercase protein names and age in years. The
+    returned probability of remaining free of the study's disease/death
+    endpoint over ten years ranges from zero to one, with higher values better.
+    No additional scaling, imputation or age residualization is performed.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.register_buffer("gompertz_parameters", torch.empty(2, dtype=torch.float64))
+
+    def validate_inputs(self, adata):
+        if adata.var_names.has_duplicates:
+            raise ValueError("HPS requires unique feature names; aggregate duplicate proteins before prediction.")
+        missing = [name for name in self.features if name not in adata.var_names]
+        if missing:
+            raise ValueError(
+                "HPS requires all 86 proteins and chronological age; missing predictors: "
+                + ", ".join(missing)
+                + ". Use the original lowercase protein identifiers and age in years."
+            )
+
+    def preprocess(self, x):
+        return x
+
+    def postprocess(self, x):
+        shape, rate = self.gompertz_parameters.unbind()
+        rate_new = rate * torch.exp(x)
+        cdf_10_year = 1 - torch.exp(-(rate_new / shape) * (torch.exp(shape * 10) - 1))
+        # Preserve the original R calculation, including rounding at the limits.
+        return 1 - cdf_10_year
+
+
 class PAC(pyagingModel):
     """Kuo et al. proteomic age from 128 Olink NPX proteins and age in years.
 

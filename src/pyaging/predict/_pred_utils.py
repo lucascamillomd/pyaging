@@ -604,6 +604,12 @@ def predict_ages_with_model(
             if progress_callback is not None:
                 progress_callback(index + 1, len(starts))
     predictions = torch.cat(predictions)
+    postprocess_cohort = getattr(model, "postprocess_cohort", None)
+    if postprocess_cohort is not None:
+        # Cohort corrections (e.g. PAOPAC's LOWESS age-bias correction) must
+        # see every sample together, independently of the inference batch size.
+        with torch.inference_mode():
+            predictions = postprocess_cohort(predictions, torch.as_tensor(matrix, dtype=torch.float64, device="cpu"))
 
     return predictions
 

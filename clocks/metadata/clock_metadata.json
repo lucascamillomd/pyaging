@@ -2692,6 +2692,39 @@
     "postprocess": "anti_log_linear",
     "reference_values": true
   },
+  "hps": {
+    "clock_name": "hps",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Kuo, C.-L., et al. \"A proteomic signature of healthspan.\" Proceedings of the National Academy of Sciences 122, e2414086122 (2025).",
+    "doi": "https://doi.org/10.1073/pnas.2414086122",
+    "notes": "Healthspan Proteomic Score (HPS) from the original Kuo lab R release: 86 Olink Explore 3072 plasma protein NPX values plus chronological age in years. Returns the modeled probability of remaining free of the study's major-disease-or-death endpoint over the next 10 years, on a 0-1 scale; higher is healthier. It is not predicted years of life, biological age, or an age-adjusted residual. The endpoint includes cancer excluding nonmelanoma skin cancer, diabetes, heart failure, myocardial infarction, stroke, COPD, dementia, or death. Supply original lowercase identifiers, including separate nppb and ntprobnp assays. NPX is assay-normalized log2 relative abundance, not raw counts, concentrations, linear abundances or z-scores. The study used within-batch and across-batch intensity normalization; NPX labeling alone does not establish comparability across panels, batches, plasma and serum. No additional scaling, normalization or imputation occurs during scoring. All 87 predictor columns are required; supplied NaNs propagate. The study used upstream k-nearest-neighbor imputation (k=10, multiUS); any imputation is a separate caller decision. The Gompertz model was fit in 30,184 UK Biobank adults initially free of the specified endpoint conditions; the healthy cohort age range was 39-70. The August 2025 correction only changes author affiliations. Research use only. The original repository specifies no code license; the publication is CC BY-NC-ND 4.0. This independent Torch implementation uses the published fitted numerical parameters and does not relicense the authors' R code. No author approval of this conversion is claimed.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "healthspan probability"
+    ],
+    "training_target": [
+      "healthspan"
+    ],
+    "unit": [
+      "probability"
+    ],
+    "model_type": "Gompertz proportional hazards model",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Proceedings of the National Academy of Sciences",
+    "last_author": "Breno S. Diniz",
+    "n_features": 87,
+    "citations": 21,
+    "citations_date": "2026-10-02"
+  },
   "hrsinchphenoage": {
     "clock_name": "hrsinchphenoage",
     "data_type": "DNA methylation",
@@ -5605,6 +5638,39 @@
     "last_author": "Breno S. Diniz",
     "n_features": 129,
     "citations": 68,
+    "citations_date": "2026-10-02"
+  },
+  "paopac": {
+    "clock_name": "paopac",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "⌛",
+    "research_only": true,
+    "citation": "Xu, H., et al. Proteome-aware organ proxy aging clocks. bioRxiv (2026).",
+    "doi": "https://doi.org/10.64898/2026.04.24.720503",
+    "notes": "Conventional PAOPAC from the authors' MIT v1.0.0 release: 800 LightGBM trees with 189 Olink protein predictors and TDI, plus chronological age for cohort correction. Supply plasma Olink Explore 3072 NPX (assay-normalized log2 relative abundance), not linear abundance, concentrations, counts or pre-standardized values. NPX labeling alone does not establish equivalence across assays, panels, batches or plasma and serum. Exact duplicate protein columns are averaged on the NPX scale, then names uppercased; newly colliding names are rejected. The original interface applies 2**NPX, fills missing or absent values with zero on that linear scale, and fits StandardScaler over the complete supplied cohort. TDI is optional and read only from the protein matrix; it is exponentiated and standardized like the other inputs. TDI in sample metadata is ignored; absent TDI becomes zero. Required chronological age is supplied as an age column in years. Final output is raw predicted age minus LOWESS(raw predicted age minus chronological age, chronological age), with frac=0.75 and the original statsmodels defaults. Predictions depend on cohort composition, including cohort ages; this is not a fixed per-sample age or a portable age-acceleration residual. Very small or age-degenerate cohorts can produce trivial corrections. No fixed UKB scaler or LOWESS curve is supplied by the original release. Preserve NaNs when preparing AnnData to reproduce the author's missing-value rule. Nature Biotechnology trial supplement S2 identifies the Conventional endpoint; exact identity of that trial's private model artifact with this later public release has not been verified. MIT source; preprint CC BY 4.0. No author approval of this conversion is claimed.",
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "LightGBM with cohort standardization and LOWESS correction",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "bioRxiv",
+    "last_author": "Jing-Dong J. Han",
+    "n_features": 191,
+    "citations": 1,
     "citations_date": "2026-10-02"
   },
   "pasta": {

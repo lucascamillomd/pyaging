@@ -9,6 +9,7 @@ from pyaging.models import (
     _base_models,
     _models,
     _organage,
+    _paopac,
     _pc_extensions,
     _proteoclock,
     _replication,
@@ -36,7 +37,16 @@ def _public_classes(module):
 
 
 def test_models_all_matches_defined_model_classes():
-    modules = (_models, _base_models, _author_extensions, _organage, _pc_extensions, _proteoclock, _replication)
+    modules = (
+        _models,
+        _base_models,
+        _author_extensions,
+        _organage,
+        _paopac,
+        _pc_extensions,
+        _proteoclock,
+        _replication,
+    )
     expected = set().union(*(_public_classes(module) for module in modules))
 
     assert set(pyaging.models.__all__) == expected

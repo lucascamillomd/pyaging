@@ -88,14 +88,18 @@ clock file. Public users need no Hugging Face token to download files.
 
 ## Proteomic inputs
 
-The 0.5.5 catalogue contains PAC and 46 full Olink Explore 3072 OrganAge models.
-Their input units and protein identifiers are model-specific. OrganAge uses
-case-sensitive original symbols and PAC uses lowercase symbols plus age in years.
+The 0.5.6 catalogue contains HPS, PAOPAC Conventional, PAC and 46 full Olink
+Explore 3072 OrganAge models. Their input units and protein identifiers are
+model-specific. OrganAge uses case-sensitive original symbols; HPS and PAC use
+lowercase symbols plus age in years. PAOPAC follows its original interface's
+NPX exponentiation, cohort standardization and LOWESS age-bias correction. Its
+predictions depend on the submitted cohort and require chronological age.
 NPX is log2 relative abundance, not concentration; cross-platform and serum/plasma
 harmonization are external preparation decisions. See the
 [proteomic input guide](https://pyaging.readthedocs.io/en/latest/proteomic_clocks.html).
 
 The reduced Olink Explore 1536 OrganAge models leave the current catalogue, and
 full-model names drop `olink3000`. Existing 0.5.4 tags and files remain intact.
-ProtAge, ipfP3GPT and PAOPAC are not executable pyaging entries in this release;
-the guide explains the unavailable or restricted author assets.
+ProtAge and ipfP3GPT are not executable pyaging entries in this release; the
+guide explains the unavailable or restricted author assets. HPS returns a
+0–1 healthspan probability (higher is healthier), not an age in years.
