@@ -20,66 +20,22 @@ release ships rather than whatever is currently published on HuggingFace.
 """
 
 import math
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
-import torch
 
 import pyaging as pya
 from pyaging.predict._pred_utils import check_features_in_adata, predict_ages_with_model
+from tests.helpers import WEIGHTS_DIR, RecordingLogger, load_local_clock
 
 pytestmark = pytest.mark.full_catalog
 
-WEIGHTS_DIR = Path(__file__).resolve().parents[2] / "clocks" / "weights"
 
 # Count-based modalities are registered as [0, inf): there is no plausible
 # maximum read depth. Their "upper bound" row is this many counts per feature —
 # an arbitrary but fixed choice, because these predictions get pinned below.
 _FALLBACK_SPAN = 10.0
-
-
-class _SilentLogger:
-    """The pipeline's logger interface, quieted."""
-
-    def warning(self, message, indent_level=2):
-        pass
-
-    def info(self, message, indent_level=2):
-        pass
-
-    def error(self, message, indent_level=2):
-        pass
-
-    def start_progress(self, message, indent_level=1):
-        pass
-
-    def finish_progress(self, message, indent_level=1):
-        pass
-
-
-def load_boundary_clock(clock_name):
-    """Load a clock from local weights, prepared exactly as ``_load_clock_impl`` does.
-
-    Parameters
-    ----------
-    clock_name : str
-        Name of the clock, matching its file in ``clocks/weights``.
-
-    Returns
-    -------
-    pyagingModel
-        The clock in float64 on CPU, in eval mode.
-    """
-    path = WEIGHTS_DIR / f"{clock_name}.pt"
-    if not path.exists():
-        pytest.skip(f"{path} is build output; generate it by running clocks/notebooks/{clock_name}.ipynb")
-    clock = torch.load(path, weights_only=False)
-    clock.to(torch.float64)
-    clock.to("cpu")
-    clock.eval()
-    return clock
 
 
 def boundary_inputs(model):
@@ -111,12 +67,12 @@ def boundary_inputs(model):
 
 def predict_at_boundaries(clock_name):
     """Predict a clock's age on its lower-bound row and its upper-bound row."""
-    model = load_boundary_clock(clock_name)
+    model = load_local_clock(clock_name).eval().double()
     lower, upper = boundary_inputs(model)
     frame = pd.DataFrame([lower, upper], columns=model.features)
     adata = pya.pp.df_to_adata(frame, imputer_strategy="constant", verbose=False)
-    check_features_in_adata(adata, model, _SilentLogger())
-    predictions = predict_ages_with_model(adata, model, "cpu", 1024, _SilentLogger())
+    check_features_in_adata(adata, model, RecordingLogger())
+    predictions = predict_ages_with_model(adata, model, "cpu", 1024, RecordingLogger())
     return [float(value) for value in np.asarray(predictions).ravel()]
 
 

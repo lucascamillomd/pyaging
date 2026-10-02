@@ -137,12 +137,10 @@ def _load_clock_impl(clock_name: str, device: str, dir: str, logger, indent_leve
         logger.error(message, indent_level=indent_level + 1)
         raise NameError(message) from exc
 
-    # Load the clock from the file
     # Restore on CPU even when the weights were saved from a CUDA device. The
     # explicit transfer below then respects the caller's selected device.
     clock = torch.load(weights_path, weights_only=False, map_location="cpu")
 
-    # Prepare clock for inference
     clock.to(torch.float64)
     clock.to(device)
     clock.eval()
@@ -301,11 +299,9 @@ def _align_features_into_obsm(adata, model, source_values, source_features, logg
     # instead of rebuilding a Python dictionary over every input feature.
     model_feature_indices = source_features.get_indexer(model.features)
 
-    # Identify missing features
     missing_features_mask = model_feature_indices == -1
     missing_features = np.array(model.features)[missing_features_mask].tolist()
 
-    # Assign values for existing features
     existing_features_mask = ~missing_features_mask
     existing_features_indices = model_feature_indices[existing_features_mask]
     supplied_values = source_values[:, existing_features_indices]
@@ -315,23 +311,19 @@ def _align_features_into_obsm(adata, model, source_values, source_features, logg
         supplied_values = cp.asnumpy(supplied_values)
     matrix[:, existing_features_mask] = supplied_values
 
-    # Handle missing features
     matrix[:, missing_features_mask] = (
         np.array(model.reference_values)[missing_features_mask] if model.reference_values is not None else 0
     )
     adata.obsm[f"X_{model.metadata['clock_name']}"] = matrix
 
-    # Calculate missing features statistics
     num_missing_features = len(missing_features)
     percent_missing = 100 * num_missing_features / len(model.features)
 
-    # Add missing features and percent missing values to the clock
     adata.uns[f"{model.metadata['clock_name']}_percent_na"] = percent_missing
     adata.uns[f"{model.metadata['clock_name']}_missing_features"] = missing_features
     # Columns the input carried; check_feature_ranges judges only these.
     adata.uns[f"{model.metadata['clock_name']}_supplied_features_mask"] = existing_features_mask
 
-    # Raises error if there are no features in the data
     if percent_missing == 100:
         message = (
             f"Every single feature out of {len(model.features)} features "
@@ -342,14 +334,12 @@ def _align_features_into_obsm(adata, model, source_values, source_features, logg
         logger.error(message, indent_level=3)
         raise NameError(message)
 
-    # Log and add missing features if any
     if len(missing_features) > 0:
         logger.warning(
             f"{num_missing_features} out of {len(model.features)} features "
             f"({percent_missing:.2f}%) are missing: {missing_features[: np.min([3, num_missing_features])]}, etc.",
             indent_level=indent_level + 1,
         )
-        # If there are reference values provided
         if model.reference_values is not None:
             logger.info(
                 f"Using reference feature values for {model.metadata['clock_name']}",
@@ -577,7 +567,6 @@ def predict_ages_with_model(
     if adata.n_obs == 0:
         raise ValueError("Prediction requires at least one sample.")
 
-    # If there is a preprocessing step
     if model.preprocess_name is not None:
         logger.info(
             f"The preprocessing method is {model.preprocess_name}",
@@ -586,7 +575,6 @@ def predict_ages_with_model(
     else:
         logger.info("There is no preprocessing necessary", indent_level=indent_level + 1)
 
-    # If there is a postprocessing step
     if model.postprocess_name is not None:
         logger.info(
             f"The postprocessing method is {model.postprocess_name}",
@@ -595,7 +583,6 @@ def predict_ages_with_model(
     else:
         logger.info("There is no postprocessing necessary", indent_level=indent_level + 1)
 
-    # Batched prediction over the clock's feature matrix on the model's device
     matrix = adata.obsm[f"X_{model.metadata['clock_name']}"]
     starts = range(0, matrix.shape[0], batch_size)
     predictions = []
@@ -616,7 +603,6 @@ def predict_ages_with_model(
             predictions.append(prediction)
             if progress_callback is not None:
                 progress_callback(index + 1, len(starts))
-    # Concatenate all batch predictions
     predictions = torch.cat(predictions)
 
     return predictions
@@ -691,13 +677,10 @@ def add_pred_ages_and_clock_metadata_adata(
     {'species': 'Homo sapiens', 'data_type': 'methylation', 'citation': 'Horvath, S. (2013)'}
 
     """
-    # Convert from a torch tensor to a flat numpy array
     predicted_ages = predicted_ages.cpu().detach().numpy().flatten()
 
-    # Add predicted ages to adata.obs
     adata.obs[model.metadata["clock_name"]] = predicted_ages
 
-    # Add clock metadata to adata.uns
     adata.uns[f"{model.metadata['clock_name']}_metadata"] = deepcopy(model.metadata)
 
 
@@ -786,16 +769,13 @@ def cleanup_clock_memory(model=None, clock_name=None, dir=None, **kwargs) -> Non
     >>> # ... use model ...
     >>> cleanup_clock_memory(model=model, clock_name="horvath2013", dir="pyaging_data")
     """
-    # Delete the model if provided
     if model is not None:
         del model
 
-    # Delete any additional objects passed via kwargs
     for obj in kwargs.values():
         if obj is not None:
             del obj
 
-    # Delete the .pt file from disk if specified
     if clock_name is not None and dir is not None:
         weights_path = os.path.join(dir, f"{clock_name}.pt")
         try:
@@ -805,8 +785,6 @@ def cleanup_clock_memory(model=None, clock_name=None, dir=None, **kwargs) -> Non
             # Silently ignore file deletion errors to avoid disrupting tests
             pass
 
-    # Force garbage collection
     gc.collect()
 
-    # Clear PyTorch CUDA cache
     torch.cuda.empty_cache()

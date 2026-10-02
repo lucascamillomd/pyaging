@@ -2,12 +2,11 @@
 
 Clock weights live in one repository per clock under the ``pyaging``
 organization (``pyaging/<clock_name>``); shared assets (example data, the
-aggregate metadata file) live in the legacy data repository, which is also
+aggregate metadata file) live in the shared data repository, which is also
 the fallback whenever a clock's own repository cannot be read.
 
 Set the ``PYAGING_DATA_REVISION`` environment variable to pin downloads to a
-specific revision of the data repositories (e.g. a release tag such as
-``v0.3.1``) for reproducibility. Defaults to ``main``, the live data release.
+specific existing revision of the data repositories for reproducibility. Defaults to ``main``, the live data release.
 """
 
 import os
@@ -120,7 +119,7 @@ def download_hf_file(
 def download_clock_weights(clock_name: str, dir: str = "pyaging_data", logger=None, indent_level: int = 1) -> str:
     """Download a clock's weight file, preferring its dedicated repository.
 
-    Each clock lives in ``pyaging/<clock_name>``; the legacy shared data
+    Each clock lives in ``pyaging/<clock_name>``; the shared data
     repository is the fallback when the per-clock repository cannot be read,
     including when it lacks the requested revision. Both use the same revision.
     The repo's ``config.json`` is fetched alongside the weights - it carries
@@ -138,7 +137,7 @@ def download_clock_weights(clock_name: str, dir: str = "pyaging_data", logger=No
     ):
         # The Hub answers 401 (not 404) for nonexistent repos when the caller
         # has no token, which maps to the authentication error - for anonymous
-        # users a typoed clock name must still reach the legacy fallback and
+        # users a typoed clock name must still reach the shared-repository fallback and
         # its clock-not-available message.
         return download_hf_file(filename, dir, logger, indent_level=indent_level)
     with suppress(PyAgingHubError):

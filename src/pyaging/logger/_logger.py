@@ -46,7 +46,7 @@ def format_logging_message(msg, logging_level, indent_level=1, indent_space_num=
 
 
 class Logger:
-    """Logger that sets up pyaging's legacy text progress output."""
+    """Logger for pyaging's text output and file logging."""
 
     FORMAT = "%(message)s"
 

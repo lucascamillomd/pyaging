@@ -71,14 +71,12 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
     if not PYBIGWIG_AVAILABLE:
         raise ImportError("pyBigWig is not installed. To use this function, please install it.")
 
-    # Ensure bws is a list
     if isinstance(bw_files, str):
         bw_files = [bw_files]
     if not bw_files:
         raise ValueError("bw_files must contain at least one bigWig file.")
 
     with live_step("processing bigWig files", verbose) as (step, pipeline_logger):
-        # Get genomic annotation data
         genes = load_ensembl_metadata(dir, pipeline_logger, indent_level=1)
 
         regions = list(zip(genes["chr"], genes["start"], genes["end"], strict=True))
@@ -86,7 +84,6 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
         for index, bw_file in enumerate(bw_files):
             step.update(f"processing {os.path.basename(bw_file)} ({index + 1}/{len(bw_files)})")
 
-            # Open bigWig file
             with open_bw(bw_file) as bw:
                 for gene_index, (chromosome, start, end) in enumerate(regions):
                     try:
@@ -171,7 +168,6 @@ def df_to_adata(
         raise TypeError("Input df must be a pandas DataFrame.")
 
     with live_step("building AnnData object", verbose) as (step, pipeline_logger):
-        # Split data and metadata
         if metadata_cols is None:
             metadata_cols = []
         if len(metadata_cols) > 0:
@@ -180,20 +176,15 @@ def df_to_adata(
         else:
             metadata = None
 
-        # Create an AnnData object
         adata = create_anndata_object(df, pipeline_logger)
 
-        # Add metadata
         add_metadata_to_anndata(adata, metadata, pipeline_logger)
 
-        # Log statistics
         missing_pct = log_data_statistics(adata.X, pipeline_logger)
 
-        # Impute missing values
         step.update(f"imputing missing values ({imputer_strategy})")
         impute_missing_values(adata, imputer_strategy, pipeline_logger)
 
-        # Add unstructured data
         if "X_imputed" in adata.layers:
             add_unstructured_data(adata, imputer_strategy, pipeline_logger)
 
