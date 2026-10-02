@@ -29,9 +29,9 @@
     "journal": "BMC Genomics",
     "last_author": "Jon Bohlin",
     "n_features": 1695,
-    "citations": 21,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 22,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "adbahadosingh": {
     "clock_name": "adbahadosingh",
@@ -63,9 +63,9 @@
     "journal": "PLOS ONE",
     "last_author": "Uppala Radhakrishna",
     "n_features": 4,
-    "citations": 33,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 34,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "sigmoid"
   },
   "altumage": {
@@ -99,9 +99,9 @@
     "journal": "npj Aging",
     "last_author": "Ritambhara Singh",
     "n_features": 20318,
-    "citations": 145,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 161,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "scale",
     "reference_values": true
   },
@@ -135,9 +135,9 @@
     "journal": "Aging Cell",
     "last_author": "Björn Schumacher",
     "n_features": 576,
-    "citations": 173,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 184,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "binarize"
   },
   "bocklandt": {
@@ -170,9 +170,9 @@
     "journal": "PLoS ONE",
     "last_author": "Éric Vilain",
     "n_features": 1,
-    "citations": 1057,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 1071,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "bohlin": {
     "clock_name": "bohlin",
@@ -204,9 +204,9 @@
     "journal": "Genome Biology",
     "last_author": "Wenche Nystad",
     "n_features": 251,
-    "citations": 237,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 241,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "days_to_weeks"
   },
   "cabec": {
@@ -240,9 +240,9 @@
     "journal": "BMC Genomics",
     "last_author": "Jon Bohlin",
     "n_features": 1892,
-    "citations": 21,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 22,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "camilloh3k27ac": {
     "clock_name": "camilloh3k27ac",
@@ -274,9 +274,9 @@
     "journal": "Science Advances",
     "last_author": "Ritambhara Singh",
     "n_features": 1275,
-    "citations": 4,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "camilloh3k27me3": {
     "clock_name": "camilloh3k27me3",
@@ -308,9 +308,9 @@
     "journal": "Science Advances",
     "last_author": "Ritambhara Singh",
     "n_features": 922,
-    "citations": 4,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "camilloh3k36me3": {
     "clock_name": "camilloh3k36me3",
@@ -342,9 +342,9 @@
     "journal": "Science Advances",
     "last_author": "Ritambhara Singh",
     "n_features": 870,
-    "citations": 4,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "camilloh3k4me1": {
     "clock_name": "camilloh3k4me1",
@@ -376,9 +376,9 @@
     "journal": "Science Advances",
     "last_author": "Ritambhara Singh",
     "n_features": 892,
-    "citations": 4,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "camilloh3k4me3": {
     "clock_name": "camilloh3k4me3",
@@ -410,9 +410,9 @@
     "journal": "Science Advances",
     "last_author": "Ritambhara Singh",
     "n_features": 1240,
-    "citations": 4,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "camilloh3k9ac": {
     "clock_name": "camilloh3k9ac",
@@ -444,9 +444,9 @@
     "journal": "Science Advances",
     "last_author": "Ritambhara Singh",
     "n_features": 102,
-    "citations": 4,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "camilloh3k9me3": {
     "clock_name": "camilloh3k9me3",
@@ -478,9 +478,9 @@
     "journal": "Science Advances",
     "last_author": "Ritambhara Singh",
     "n_features": 341,
-    "citations": 4,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "camillopanhistone": {
     "clock_name": "camillopanhistone",
@@ -512,9 +512,9 @@
     "journal": "Science Advances",
     "last_author": "Ritambhara Singh",
     "n_features": 3739,
-    "citations": 4,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "celldrift": {
     "clock_name": "celldrift",
@@ -582,9 +582,9 @@
     "journal": "Genome Medicine",
     "last_author": "Ivana Bjedov",
     "n_features": 42,
-    "citations": 6,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 7,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "compil6": {
     "clock_name": "compil6",
@@ -616,9 +616,9 @@
     "journal": "The Journals of Gerontology: Series A",
     "last_author": "Riccardo E. Marioni",
     "n_features": 35,
-    "citations": 55,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "corticalclock": {
     "clock_name": "corticalclock",
@@ -650,9 +650,9 @@
     "journal": "Brain",
     "last_author": "Jonathan Mill",
     "n_features": 347,
-    "citations": 206,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 216,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear",
     "reference_values": true
   },
@@ -687,9 +687,9 @@
     "journal": "bioRxiv",
     "last_author": "Bo Wang",
     "n_features": 24,
-    "citations": 30,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 35,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "scale",
     "postprocess": "cox_to_years"
   },
@@ -724,9 +724,9 @@
     "journal": "bioRxiv",
     "last_author": "Bo Wang",
     "n_features": 31,
-    "citations": 30,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 35,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "scale",
     "postprocess": "cox_to_years"
   },
@@ -760,9 +760,9 @@
     "journal": "Aging",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 90,
-    "citations": 25,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 32,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "cvdwesterman": {
     "clock_name": "cvdwesterman",
@@ -794,9 +794,9 @@
     "journal": "Journal of the American Heart Association",
     "last_author": "José M. Ordovás",
     "n_features": 235,
-    "citations": 53,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "sigmoid"
   },
   "deconvolutebloodepicbcell": {
@@ -829,9 +829,9 @@
     "journal": "Genome Biology",
     "last_author": "Brock C. Christensen",
     "n_features": 600,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -865,9 +865,9 @@
     "journal": "Genome Biology",
     "last_author": "Brock C. Christensen",
     "n_features": 600,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -901,9 +901,9 @@
     "journal": "Genome Biology",
     "last_author": "Brock C. Christensen",
     "n_features": 600,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -937,9 +937,9 @@
     "journal": "Genome Biology",
     "last_author": "Brock C. Christensen",
     "n_features": 600,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -973,9 +973,9 @@
     "journal": "Genome Biology",
     "last_author": "Brock C. Christensen",
     "n_features": 600,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -1009,9 +1009,9 @@
     "journal": "Genome Biology",
     "last_author": "Brock C. Christensen",
     "n_features": 600,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -1046,8 +1046,8 @@
     "last_author": "Andrew M. McIntosh",
     "n_features": 196,
     "citations": 93,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "dnamfili": {
     "clock_name": "dnamfili",
@@ -1080,9 +1080,9 @@
     "journal": "Nature Communications",
     "last_author": "Hermann Brenner",
     "n_features": 20,
-    "citations": 22,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 24,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "dnamfitage": {
     "clock_name": "dnamfitage",
@@ -1114,9 +1114,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 1343,
-    "citations": 99,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 105,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "dnamfitagegait": {
@@ -1149,9 +1149,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 111,
-    "citations": 99,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 105,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "dnamfitagegrip": {
@@ -1184,9 +1184,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 183,
-    "citations": 99,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 105,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "dnamfitagevo2max": {
@@ -1219,9 +1219,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 41,
-    "citations": 99,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 105,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "dnamic": {
@@ -1254,9 +1254,9 @@
     "journal": "Nature Aging",
     "last_author": "David Furman",
     "n_features": 91,
-    "citations": 34,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 45,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "dnamphenoage": {
     "clock_name": "dnamphenoage",
@@ -1290,9 +1290,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 513,
-    "citations": 3594,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 3848,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "dnamphenoagenonprc": {
     "clock_name": "dnamphenoagenonprc",
@@ -1329,9 +1329,9 @@
     "journal": "Clinical Epigenetics",
     "last_author": "Morgan Levine",
     "n_features": 458,
-    "citations": 22,
+    "citations": 23,
     "citations_date": "2026-10-02",
-    "version": "0.5.4",
+    "version": "0.5.7",
     "preprocess": "missing_beta_zero_contribution"
   },
   "dnamphenoageprc": {
@@ -1369,9 +1369,9 @@
     "journal": "Clinical Epigenetics",
     "last_author": "Morgan Levine",
     "n_features": 55,
-    "citations": 22,
+    "citations": 23,
     "citations_date": "2026-10-02",
-    "version": "0.5.4",
+    "version": "0.5.7",
     "preprocess": "missing_beta_zero_contribution"
   },
   "dnamstress": {
@@ -1405,8 +1405,8 @@
     "last_author": "Falk W. Lohoff",
     "n_features": 211,
     "citations": 27,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "dnamtl": {
     "clock_name": "dnamtl",
@@ -1439,9 +1439,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 140,
-    "citations": 461,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 484,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "downsyndrome": {
     "clock_name": "downsyndrome",
@@ -1473,9 +1473,9 @@
     "journal": "Nature Communications",
     "last_author": "Adam J. de Smith",
     "n_features": 652,
-    "citations": 62,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 64,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "dunedinpace": {
     "clock_name": "dunedinpace",
@@ -1507,9 +1507,9 @@
     "journal": "eLife",
     "last_author": "Terrie E. Moffitt",
     "n_features": 20000,
-    "citations": 967,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 1106,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "quantile_normalization_with_gold_standard",
     "reference_values": true
   },
@@ -1543,9 +1543,9 @@
     "journal": "eLife",
     "last_author": "Terrie E. Moffitt",
     "n_features": 46,
-    "citations": 666,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 700,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "eabec": {
     "clock_name": "eabec",
@@ -1577,9 +1577,9 @@
     "journal": "BMC Genomics",
     "last_author": "Jon Bohlin",
     "n_features": 1791,
-    "citations": 21,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 22,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "encen100": {
     "clock_name": "encen100",
@@ -1614,9 +1614,9 @@
     "journal": "GeroScience",
     "last_author": "Steve Horvath",
     "n_features": 198,
-    "citations": 45,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 49,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "encen40": {
     "clock_name": "encen40",
@@ -1651,9 +1651,9 @@
     "journal": "GeroScience",
     "last_author": "Steve Horvath",
     "n_features": 559,
-    "citations": 45,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 49,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "ensembleagehumanmouse": {
     "clock_name": "ensembleagehumanmouse",
@@ -1686,9 +1686,9 @@
     "journal": "GeroScience",
     "last_author": "Steve Horvath",
     "n_features": 100,
-    "citations": 3,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 5,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "ensembleagestatic": {
     "clock_name": "ensembleagestatic",
@@ -1721,9 +1721,9 @@
     "journal": "GeroScience",
     "last_author": "Steve Horvath",
     "n_features": 288,
-    "citations": 3,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 5,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "ensembleagestatictop": {
     "clock_name": "ensembleagestatictop",
@@ -1756,9 +1756,9 @@
     "journal": "GeroScience",
     "last_author": "Steve Horvath",
     "n_features": 431,
-    "citations": 3,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 5,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "epicga": {
     "clock_name": "epicga",
@@ -1790,9 +1790,9 @@
     "journal": "Clinical Epigenetics",
     "last_author": "Jon Bohlin",
     "n_features": 176,
-    "citations": 54,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 55,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "days_to_weeks"
   },
   "epicmithyper": {
@@ -1826,9 +1826,9 @@
     "journal": "Nature Cancer",
     "last_author": "José I. Martín-Subero",
     "n_features": 184,
-    "citations": 104,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 109,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "mean",
     "reference_values": true
   },
@@ -1863,9 +1863,9 @@
     "journal": "Nature Cancer",
     "last_author": "José I. Martín-Subero",
     "n_features": 1164,
-    "citations": 104,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 109,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "mean",
     "reference_values": true
   },
@@ -1900,9 +1900,9 @@
     "journal": "Genome Biology",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 385,
-    "citations": 357,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 370,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "mean",
     "reference_values": true
   },
@@ -1936,9 +1936,9 @@
     "journal": "Genome Medicine",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 163,
-    "citations": 155,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 165,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "nan_to_zero",
     "reference_values": true
   },
@@ -1976,9 +1976,9 @@
     "journal": "Genome Medicine",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 170,
-    "citations": 155,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 165,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "nan_to_zero",
     "reference_values": true
   },
@@ -2012,9 +2012,9 @@
     "journal": "Aging Cell",
     "last_author": "Claudio Franceschi",
     "n_features": 1,
-    "citations": 500,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 513,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "gliasin": {
     "clock_name": "gliasin",
@@ -2046,9 +2046,9 @@
     "journal": "Aging",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 220,
-    "citations": 25,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 32,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "grimage": {
     "clock_name": "grimage",
@@ -2080,9 +2080,9 @@
     "journal": "Aging (Albany NY)",
     "last_author": "Steve Horvath",
     "n_features": 1032,
-    "citations": 2610,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 2789,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2116,9 +2116,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 1032,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2152,9 +2152,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 187,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2188,9 +2188,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 92,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2224,9 +2224,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 88,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2260,9 +2260,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 138,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2296,9 +2296,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 187,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2332,9 +2332,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 87,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2368,9 +2368,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 132,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2404,9 +2404,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 173,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2440,9 +2440,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 211,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "grimage2timp1": {
@@ -2475,9 +2475,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 43,
-    "citations": 291,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 319,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "cox_to_years",
     "reference_values": true
   },
@@ -2511,9 +2511,9 @@
     "journal": "BMC Biology",
     "last_author": "Wolfgang Wagner",
     "n_features": 65,
-    "citations": 102,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 105,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear"
   },
   "hannum": {
@@ -2546,9 +2546,9 @@
     "journal": "Molecular Cell",
     "last_author": "Kang Zhang",
     "n_features": 71,
-    "citations": 4501,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 4678,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "hep": {
     "clock_name": "hep",
@@ -2580,9 +2580,9 @@
     "journal": "Aging",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 70,
-    "citations": 25,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 32,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "hepatoxu": {
     "clock_name": "hepatoxu",
@@ -2614,9 +2614,9 @@
     "journal": "Nature Materials",
     "last_author": "Kang Zhang",
     "n_features": 10,
-    "citations": 884,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 900,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "homeostaticdysregulation": {
     "clock_name": "homeostaticdysregulation",
@@ -2648,9 +2648,9 @@
     "journal": "GeroScience",
     "last_author": "Daniel W. Belsky",
     "n_features": 10,
-    "citations": 332,
-    "citations_date": "2026-08-20",
-    "version": "0.5.0",
+    "citations": 404,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "log1p_crp",
     "postprocess": "log_mahalanobis_distance",
     "reference_values": true
@@ -2686,9 +2686,9 @@
     "journal": "Genome Biology",
     "last_author": "Steve Horvath",
     "n_features": 353,
-    "citations": 7318,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 7625,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear",
     "reference_values": true
   },
@@ -2756,9 +2756,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan E. Levine",
     "n_features": 959,
-    "citations": 497,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "hypoclock": {
     "clock_name": "hypoclock",
@@ -2768,7 +2768,7 @@
     "approved_by_author": "⌛",
     "citation": "Teschendorff, Andrew E. \"A comparison of epigenetic mitotic-like clocks for cancer risk prediction.\" Genome Medicine 12 (2020): 56.",
     "doi": "https://doi.org/10.1186/s13073-020-00752-3",
-    "notes": "Pyaging returns an inverted HypoClock burden score, 1 minus the mean beta value across 678 solo-WCGW CpGs; higher values therefore indicate deeper PMD hypomethylation. The assigned 2018 paper is the biological precursor, while the named 678-site implementation is from 2020.",
+    "notes": "Pyaging returns an inverted HypoClock burden score, 1 minus the mean beta value across 678 solo-WCGW CpGs; higher values therefore indicate deeper PMD hypomethylation. Zhou et al. (2018) is the biological precursor; the named 678-site implementation is from Teschendorff (2020).",
     "research_only": null,
     "tissue": [
       "multi-tissue"
@@ -2790,9 +2790,9 @@
     "journal": "Genome Medicine",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 678,
-    "citations": 452,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 165,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "mean",
     "postprocess": "one_minus",
     "reference_values": true
@@ -2828,9 +2828,9 @@
     "journal": "Communications Biology",
     "last_author": "Eric Verdin",
     "n_features": 380,
-    "citations": 53,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 64,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear"
   },
   "intrinclock370": {
@@ -2899,9 +2899,9 @@
     "journal": "GeroScience",
     "last_author": "Daniel W. Belsky",
     "n_features": 11,
-    "citations": 332,
-    "citations_date": "2026-08-20",
-    "version": "0.5.0",
+    "citations": 404,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "log1p_crp",
     "postprocess": "klemera_doubal",
     "reference_values": true
@@ -2938,9 +2938,9 @@
     "journal": "Genome Biology",
     "last_author": "Alicia K. Smith",
     "n_features": 148,
-    "citations": 312,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 315,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "leecontrol": {
@@ -2974,9 +2974,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 546,
-    "citations": 170,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 172,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "leerefinedrobust": {
     "clock_name": "leerefinedrobust",
@@ -3009,9 +3009,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 395,
-    "citations": 170,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 172,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "leerobust": {
     "clock_name": "leerobust",
@@ -3044,9 +3044,9 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 558,
-    "citations": 170,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 172,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "lin": {
     "clock_name": "lin",
@@ -3079,9 +3079,9 @@
     "journal": "Aging",
     "last_author": "Wolfgang Wagner",
     "n_features": 99,
-    "citations": 256,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 268,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "linage2": {
     "clock_name": "linage2",
@@ -3114,9 +3114,9 @@
     "journal": "npj Aging",
     "last_author": "Jan Gruber",
     "n_features": 85,
-    "citations": 6,
-    "citations_date": "2026-08-20",
-    "version": "0.5.0",
+    "citations": 7,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "linage2",
     "reference_values": true
   },
@@ -3150,9 +3150,9 @@
     "journal": "Nature Aging",
     "last_author": "Steve Horvath",
     "n_features": 335,
-    "citations": 390,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_logp2"
   },
   "mammalian2": {
@@ -3185,9 +3185,9 @@
     "journal": "Nature Aging",
     "last_author": "Steve Horvath",
     "n_features": 2572,
-    "citations": 390,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "mammalian2",
     "reference_values": true
   },
@@ -3221,9 +3221,9 @@
     "journal": "Nature Aging",
     "last_author": "Steve Horvath",
     "n_features": 2467,
-    "citations": 390,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "mammalian3",
     "reference_values": true
   },
@@ -3257,9 +3257,9 @@
     "journal": "Nature Aging",
     "last_author": "Steve Horvath",
     "n_features": 2257,
-    "citations": 390,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "mammalian2",
     "reference_values": true
   },
@@ -3293,9 +3293,9 @@
     "journal": "Nature Aging",
     "last_author": "Steve Horvath",
     "n_features": 2097,
-    "citations": 390,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "mammalian3",
     "reference_values": true
   },
@@ -3303,11 +3303,11 @@
     "clock_name": "mammalianfemale",
     "data_type": "DNA methylation",
     "species": "multiple species",
-    "year": 2023,
+    "year": 2024,
     "approved_by_author": "⌛",
-    "citation": "Li, Caesar Z., et al. \"Epigenetic predictors of species maximum life span and other life-history traits in mammals.\" bioRxiv (2023).",
-    "doi": "https://doi.org/10.1101/2023.11.02.565286",
-    "notes": "Pan-mammalian elastic-net sex classifier based on conserved CpG methylation; the returned value is the probability that a sample is female.",
+    "citation": "Li, C. Z., et al. (2024). Epigenetic predictors of species maximum life span and other life-history traits in mammals. Science Advances, 10(23), eadm7273.",
+    "doi": "https://doi.org/10.1126/sciadv.adm7273",
+    "notes": "Pan-mammalian elastic-net sex classifier using conserved CpG methylation. The author package expects SeSAMe-normalized mammalian-array data; its 320K option maps probes to the 40K CpG IDs. Pyaging applies a sigmoid to return female probability; published validation excluded marmosets.",
     "research_only": null,
     "tissue": [
       "multi-tissue"
@@ -3326,12 +3326,12 @@
       "mammalian methylation array"
     ],
     "population": "multiple mammalian species",
-    "journal": "bioRxiv (Cold Spring Harbor Laboratory)",
+    "journal": "Science Advances",
     "last_author": "Steve Horvath",
     "n_features": 101,
-    "citations": 5,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 36,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "sigmoid"
   },
   "mammalianlifespan": {
@@ -3364,9 +3364,9 @@
     "journal": "Science Advances",
     "last_author": "Steve Horvath",
     "n_features": 152,
-    "citations": 5,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 36,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log",
     "reference_values": true
   },
@@ -3400,9 +3400,9 @@
     "journal": "Nature Aging",
     "last_author": "Steve Horvath",
     "n_features": 2240,
-    "citations": 390,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "mammalian2",
     "reference_values": true
   },
@@ -3436,9 +3436,9 @@
     "journal": "Nature Aging",
     "last_author": "Steve Horvath",
     "n_features": 2055,
-    "citations": 390,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "mammalian3",
     "reference_values": true
   },
@@ -3474,8 +3474,8 @@
     "last_author": "Tina Bianco‐Miotto",
     "n_features": 62,
     "citations": 150,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "mccartneyalcohol": {
     "clock_name": "mccartneyalcohol",
@@ -3507,9 +3507,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 450,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "mccartneybmi": {
     "clock_name": "mccartneybmi",
@@ -3541,9 +3541,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 1109,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "sigmoid"
   },
   "mccartneybodyfat": {
@@ -3576,9 +3576,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 968,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "sigmoid"
   },
   "mccartneyeducation": {
@@ -3611,9 +3611,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 373,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "sigmoid"
   },
   "mccartneyhdlcholesterol": {
@@ -3646,9 +3646,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 737,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "sigmoid"
   },
   "mccartneyldlcholesterol": {
@@ -3681,9 +3681,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 233,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "sigmoid"
   },
   "mccartneysmoking": {
@@ -3716,9 +3716,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 233,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "mccartneytotalcholesterol": {
     "clock_name": "mccartneytotalcholesterol",
@@ -3750,9 +3750,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 204,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "sigmoid"
   },
   "mccartneytotalhdlratio": {
@@ -3785,9 +3785,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 412,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "mccartneywhr": {
     "clock_name": "mccartneywhr",
@@ -3819,9 +3819,9 @@
     "journal": "Genome Biology",
     "last_author": "Riccardo E. Marioni",
     "n_features": 226,
-    "citations": 301,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "meer": {
     "clock_name": "meer",
@@ -3853,9 +3853,9 @@
     "journal": "eLife",
     "last_author": "Vadim N. Gladyshev",
     "n_features": 435,
-    "citations": 203,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 207,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "miage": {
     "clock_name": "miage",
@@ -3923,9 +3923,9 @@
     "journal": "Aging",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 672,
-    "citations": 25,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 32,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "ocampoatac1": {
     "clock_name": "ocampoatac1",
@@ -3957,9 +3957,9 @@
     "journal": "GeroScience",
     "last_author": "Alejandro Ocampo",
     "n_features": 228,
-    "citations": 49,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 54,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "tpm_norm_log1p"
   },
   "ocampoatac2": {
@@ -3992,9 +3992,9 @@
     "journal": "GeroScience",
     "last_author": "Alejandro Ocampo",
     "n_features": 380,
-    "citations": 49,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 54,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "tpm_norm_log1p"
   },
   "organagechronologicaladipose": {
@@ -5677,11 +5677,11 @@
     "clock_name": "pasta",
     "data_type": "transcriptomics",
     "species": "Homo sapiens",
-    "year": 2025,
+    "year": 2026,
     "approved_by_author": "✅",
-    "citation": "Salignon, J. et al. Pasta, a versatile transcriptomic clock, maps the chemical and genetic determinants of aging and rejuvenation. bioRxiv 2025.06.04.657785 (2025).",
-    "doi": "https://doi.org/10.1101/2025.06.04.657785",
-    "notes": "Human Pasta age-shift classifier applied to within-sample rank-transformed expression. It converts a ridge-logistic older-versus-younger log-odds score to an age score.",
+    "citation": "Salignon, J., et al. (2026). Pasta, a versatile transcriptomic clock, maps the chemical and genetic determinants of aging and rejuvenation. Advanced Science, e76740.",
+    "doi": "https://doi.org/10.1002/advs.76740",
+    "notes": "Human Pasta age-shift classifier on within-sample rank-transformed expression. Its classifier score is rescaled to a relative age difference on a human-year axis; it is not an absolute chronological-age prediction.",
     "research_only": null,
     "tissue": [
       "multi-tissue"
@@ -5701,12 +5701,12 @@
       "gene expression microarray"
     ],
     "population": "human, age unspecified",
-    "journal": "bioRxiv",
+    "journal": "Advanced Science",
     "last_author": "Christian G. Riedel",
     "n_features": 8113,
-    "citations": 1,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 2,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "median_fill_and_rank_normalization",
     "postprocess": "scale_and_shift",
     "reference_values": true
@@ -5715,11 +5715,11 @@
     "clock_name": "pastamouse",
     "data_type": "transcriptomics",
     "species": "Mus musculus",
-    "year": 2025,
+    "year": 2026,
     "approved_by_author": "✅",
-    "citation": "Salignon, J. et al. Pasta, a versatile transcriptomic clock, maps the chemical and genetic determinants of aging and rejuvenation. bioRxiv 2025.06.04.657785 (2025).",
-    "doi": "https://doi.org/10.1101/2025.06.04.657785",
-    "notes": "Mouse application of the human Pasta model after mapping one-to-one orthologues, rank transformation, and median imputation of missing model genes.",
+    "citation": "Salignon, J., et al. (2026). Pasta, a versatile transcriptomic clock, maps the chemical and genetic determinants of aging and rejuvenation. Advanced Science, e76740.",
+    "doi": "https://doi.org/10.1002/advs.76740",
+    "notes": "Mouse application of the human Pasta model after one-to-one orthologue mapping, rank transformation, and median imputation of missing genes. The output is a human-year-scaled relative age difference, not mouse chronological age.",
     "research_only": null,
     "tissue": [
       "multi-tissue"
@@ -5739,12 +5739,12 @@
       "gene expression microarray"
     ],
     "population": "human, age unspecified",
-    "journal": "bioRxiv",
+    "journal": "Advanced Science",
     "last_author": "Christian G. Riedel",
     "n_features": 1600,
-    "citations": 1,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 2,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "median_fill_and_rank_normalization",
     "postprocess": "scale_and_shift",
     "reference_values": true
@@ -5814,9 +5814,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan E. Levine",
     "n_features": 78464,
-    "citations": 497,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "pcgrimage": {
@@ -5849,9 +5849,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan E. Levine",
     "n_features": 78466,
-    "citations": 497,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "pcgrimageadm": {
@@ -6164,9 +6164,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan E. Levine",
     "n_features": 78464,
-    "citations": 497,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "pchorvath2013": {
@@ -6200,9 +6200,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan E. Levine",
     "n_features": 78464,
-    "citations": 497,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear",
     "reference_values": true
   },
@@ -6237,9 +6237,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan E. Levine",
     "n_features": 78464,
-    "citations": 497,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "pcskinandblood": {
@@ -6275,9 +6275,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan E. Levine",
     "n_features": 78464,
-    "citations": 497,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear",
     "reference_values": true
   },
@@ -6312,9 +6312,9 @@
     "journal": "Proceedings of the National Academy of Sciences of the United States of America",
     "last_author": "Michael S. Kobor",
     "n_features": 94,
-    "citations": 292,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 301,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear"
   },
   "petkovich": {
@@ -6347,9 +6347,9 @@
     "journal": "Cell Metabolism",
     "last_author": "Vadim N. Gladyshev",
     "n_features": 90,
-    "citations": 441,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 453,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "petkovich"
   },
   "phenoage": {
@@ -6382,8 +6382,8 @@
     "journal": "Aging",
     "last_author": "Steve Horvath",
     "n_features": 10,
-    "citations": 3594,
-    "citations_date": "2026-07-05",
+    "citations": 3848,
+    "citations_date": "2026-10-02",
     "version": "0.5.7",
     "preprocess": "natural_log_crp",
     "postprocess": "mortality_to_phenoage"
@@ -6421,9 +6421,9 @@
     "journal": "GeroScience",
     "last_author": "Daniel W. Belsky",
     "n_features": 7,
-    "citations": 332,
-    "citations_date": "2026-08-20",
-    "version": "0.5.0",
+    "citations": 404,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "log1p_crp",
     "postprocess": "mortality_to_phenoage_saopaulo",
     "reference_values": true
@@ -6460,9 +6460,9 @@
     "journal": "Journal of Mathematical Chemistry",
     "last_author": "István Csabai",
     "n_features": 239,
-    "citations": 2,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 3,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear"
   },
   "pipekfilteredh": {
@@ -6497,9 +6497,9 @@
     "journal": "Journal of Mathematical Chemistry",
     "last_author": "István Csabai",
     "n_features": 272,
-    "citations": 2,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 3,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear"
   },
   "pipekretrainedh": {
@@ -6534,9 +6534,9 @@
     "journal": "Journal of Mathematical Chemistry",
     "last_author": "István Csabai",
     "n_features": 308,
-    "citations": 2,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 3,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear"
   },
   "prostatecancerkirby": {
@@ -6569,9 +6569,9 @@
     "journal": "BMC Cancer",
     "last_author": "Richard M. Myers",
     "n_features": 3,
-    "citations": 61,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 63,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "reedbmi": {
     "clock_name": "reedbmi",
@@ -6604,18 +6604,18 @@
     "journal": "Clinical Epigenetics",
     "last_author": "Gibran Hemani",
     "n_features": 135,
-    "citations": 86,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 88,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "reg": {
     "clock_name": "reg",
     "data_type": "transcriptomics",
     "species": "Homo sapiens",
-    "year": 2025,
+    "year": 2026,
     "approved_by_author": "✅",
-    "citation": "Salignon, J. et al. Pasta, a versatile transcriptomic clock, maps the chemical and genetic determinants of aging and rejuvenation. bioRxiv 2025.06.04.657785 (2025).",
-    "doi": "https://doi.org/10.1101/2025.06.04.657785",
+    "citation": "Salignon, J., et al. (2026). Pasta, a versatile transcriptomic clock, maps the chemical and genetic determinants of aging and rejuvenation. Advanced Science, e76740.",
+    "doi": "https://doi.org/10.1002/advs.76740",
     "notes": "Baseline chronological-age regression model from the Pasta study, using rank-transformed multi-tissue human expression.",
     "research_only": null,
     "tissue": [
@@ -6636,12 +6636,12 @@
       "gene expression microarray"
     ],
     "population": "human, age unspecified",
-    "journal": "bioRxiv",
+    "journal": "Advanced Science",
     "last_author": "Christian G. Riedel",
     "n_features": 8113,
-    "citations": 1,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 2,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "median_fill_and_rank_normalization",
     "postprocess": "add_constant",
     "reference_values": true
@@ -6676,9 +6676,9 @@
     "journal": "Nature Communications",
     "last_author": "Peter W. Laird",
     "n_features": 87,
-    "citations": 86,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 93,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "replitalinorm": {
     "clock_name": "replitalinorm",
@@ -6710,9 +6710,9 @@
     "journal": "Nature Communications",
     "last_author": "Peter W. Laird",
     "n_features": 218,
-    "citations": 86,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 93,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "retroelementagev1": {
     "clock_name": "retroelementagev1",
@@ -6744,9 +6744,9 @@
     "journal": "Aging Cell",
     "last_author": "Michael J. Corley",
     "n_features": 1317,
-    "citations": 26,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 31,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "retroelementagev2": {
     "clock_name": "retroelementagev2",
@@ -6778,9 +6778,9 @@
     "journal": "Aging Cell",
     "last_author": "Michael J. Corley",
     "n_features": 1378,
-    "citations": 26,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 31,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "senchronoage": {
     "clock_name": "senchronoage",
@@ -6814,8 +6814,8 @@
     "last_author": "Albert T. Higgins-Chen",
     "n_features": 187,
     "citations": 0,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "sencultureage": {
     "clock_name": "sencultureage",
@@ -6850,8 +6850,8 @@
     "last_author": "Albert T. Higgins-Chen",
     "n_features": 142,
     "citations": 0,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "senmortalityage": {
     "clock_name": "senmortalityage",
@@ -6885,8 +6885,8 @@
     "last_author": "Albert T. Higgins-Chen",
     "n_features": 91,
     "citations": 0,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "skinandblood": {
     "clock_name": "skinandblood",
@@ -6924,9 +6924,9 @@
     "journal": "Aging",
     "last_author": "Kenneth Raj",
     "n_features": 391,
-    "citations": 853,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 893,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear"
   },
   "stemtoc": {
@@ -6963,9 +6963,9 @@
     "journal": "Nature Communications",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 371,
-    "citations": 24,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 29,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "0.95 quantile",
     "reference_values": true
   },
@@ -7001,9 +7001,9 @@
     "journal": "Nature Communications",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 629,
-    "citations": 24,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 29,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "0.95 quantile",
     "reference_values": true
   },
@@ -7037,9 +7037,9 @@
     "journal": "Nature Aging",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 353,
-    "citations": 66,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 76,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "stocp": {
     "clock_name": "stocp",
@@ -7071,9 +7071,9 @@
     "journal": "Nature Aging",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 513,
-    "citations": 66,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 76,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "stocz": {
     "clock_name": "stocz",
@@ -7105,9 +7105,9 @@
     "journal": "Nature Aging",
     "last_author": "Andrew E. Teschendorff",
     "n_features": 514,
-    "citations": 66,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 76,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "stubbs": {
     "clock_name": "stubbs",
@@ -7146,9 +7146,9 @@
     "journal": "Genome Biology",
     "last_author": "Wolf Reik",
     "n_features": 17992,
-    "citations": 430,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 437,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "quantile_normalization_and_scale_with_gold_standard",
     "postprocess": "stubbs",
     "reference_values": true
@@ -7184,9 +7184,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsageblood": {
@@ -7220,9 +7220,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsagebrain": {
@@ -7256,9 +7256,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsageheart": {
@@ -7292,9 +7292,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsagehormone": {
@@ -7328,9 +7328,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsageimmune": {
@@ -7364,9 +7364,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsageinflammation": {
@@ -7400,9 +7400,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsagekidney": {
@@ -7436,9 +7436,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsageliver": {
@@ -7472,9 +7472,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsagelung": {
@@ -7508,9 +7508,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsagemetabolic": {
@@ -7544,9 +7544,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "systemsagemusculoskeletal": {
@@ -7580,9 +7580,9 @@
     "journal": "Nature Aging",
     "last_author": "Morgan Levine",
     "n_features": 125175,
-    "citations": 41,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "tage": {
@@ -7615,9 +7615,9 @@
     "journal": "Nature",
     "last_author": "Vadim N. Gladyshev",
     "n_features": 10487,
-    "citations": 0,
-    "citations_date": "2026-08-21",
-    "version": "0.5.0",
+    "citations": 21,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "tagemortality": {
@@ -7628,7 +7628,7 @@
     "approved_by_author": "⌛",
     "citation": "Tyshkovskiy, Alexander, et al. \"Universal transcriptomic hallmarks of mammalian ageing and mortality.\" Nature 654 (2026): 173-188.",
     "doi": "https://doi.org/10.1038/s41586-026-10542-3",
-    "notes": "Elastic Net over 10,487 mouse-Entrez genes, multispecies multi-tissue, scaleddiff variant. Cohort-relative: predict_age runs the tAge cohort preprocessing on the raw RNA-seq counts itself, so a prediction is a hazard shift against the reference group rather than an absolute risk. Name the cohort's species with a 0/1 column among var_names (mouse, rat, macaque or human; absent or all-zero means mouse) and the samples to centre against with a truthy adata.obs[\"tage_reference_group\"] (absent centres on the whole cohort); at least two samples are needed. The published pipeline's SimpleImputer, mean-only StandardScaler and pass-through SelectKBest are folded into the packaged linear layer, and the imputer medians are carried as reference_values so a gene the sample does not measure contributes its training median. Output is log10(hazard ratio) -- base 10, not the natural log the 'log hazard' unit label usually implies -- and unlike the chronological clocks it is never rescaled by species maximum lifespan, so it is directly comparable across species. Released under the MGB Open Access License 1.0: non-commercial academic research use only.",
+    "notes": "Elastic Net over 10,487 mouse-Entrez genes, multispecies multi-tissue, scaleddiff variant. Cohort-relative: predict_age runs the tAge cohort preprocessing on the raw RNA-seq counts itself, so a prediction is a hazard shift against the reference group rather than an absolute risk. Name the cohort's species with a 0/1 column among var_names (mouse, rat, macaque or human; absent or all-zero means mouse) and the samples to centre against with a truthy adata.obs[\"tage_reference_group\"] (absent centres on the whole cohort); at least two samples are needed. The published pipeline's SimpleImputer, mean-only StandardScaler and pass-through SelectKBest are folded into the packaged linear layer, and the imputer medians are carried as reference_values so a gene the sample does not measure contributes its training median. Output is log10(hazard ratio), using the base-10 logarithm -- and unlike the chronological clocks it is never rescaled by species maximum lifespan, so it is directly comparable across species. Released under the MGB Open Access License 1.0: non-commercial academic research use only.",
     "research_only": true,
     "tissue": [
       "multi-tissue"
@@ -7640,7 +7640,7 @@
       "mortality"
     ],
     "unit": [
-      "log hazard"
+      "log10 hazard ratio"
     ],
     "model_type": "elastic net regression",
     "platform": [
@@ -7650,9 +7650,9 @@
     "journal": "Nature",
     "last_author": "Vadim N. Gladyshev",
     "n_features": 10487,
-    "citations": 0,
-    "citations_date": "2026-08-21",
-    "version": "0.5.0",
+    "citations": 21,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "reference_values": true
   },
   "thompson": {
@@ -7694,9 +7694,9 @@
     "journal": "Aging (Albany NY)",
     "last_author": "Matteo Pellegrini",
     "n_features": 582,
-    "citations": 236,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 242,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "twelvecelldeconvolutebloodepicbas": {
     "clock_name": "twelvecelldeconvolutebloodepicbas",
@@ -7728,9 +7728,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -7764,9 +7764,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -7800,9 +7800,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -7836,9 +7836,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -7872,9 +7872,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -7908,9 +7908,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -7944,9 +7944,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -7980,9 +7980,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -8016,9 +8016,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -8052,9 +8052,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -8088,9 +8088,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -8124,9 +8124,9 @@
     "journal": "Nature Communications",
     "last_author": "Brock C. Christensen",
     "n_features": 240,
-    "citations": 13,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "fill_with_reference_means",
     "reference_values": true
   },
@@ -8160,9 +8160,9 @@
     "journal": "Frontiers in Genetics",
     "last_author": "Antonio Gonzalez",
     "n_features": 8,
-    "citations": 145,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 155,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "weidner": {
     "clock_name": "weidner",
@@ -8195,9 +8195,9 @@
     "journal": "Genome Biology",
     "last_author": "Wolfgang Wagner",
     "n_features": 3,
-    "citations": 973,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 986,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "wu": {
     "clock_name": "wu",
@@ -8231,8 +8231,8 @@
     "last_author": "Huiying Liang",
     "n_features": 111,
     "citations": 82,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "postprocess": "anti_log_linear"
   },
   "xchrom": {
@@ -8266,9 +8266,9 @@
     "journal": "BMC Genomics",
     "last_author": "Leonard C. Schalkwyk",
     "n_features": 4047,
-    "citations": 38,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 39,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "sex_estimation_autosomal_zscore",
     "reference_values": true
   },
@@ -8303,9 +8303,9 @@
     "journal": "BMC Genomics",
     "last_author": "Leonard C. Schalkwyk",
     "n_features": 284,
-    "citations": 38,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 39,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "sex_estimation_autosomal_zscore",
     "reference_values": true
   },
@@ -8339,9 +8339,9 @@
     "journal": "Nature Aging",
     "last_author": "Vadim N. Gladyshev",
     "n_features": 999,
-    "citations": 183,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 208,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "yingcausage": {
     "clock_name": "yingcausage",
@@ -8373,9 +8373,9 @@
     "journal": "Nature Aging",
     "last_author": "Vadim N. Gladyshev",
     "n_features": 585,
-    "citations": 183,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 208,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "yingdamage": {
     "clock_name": "yingdamage",
@@ -8407,9 +8407,9 @@
     "journal": "Nature Aging",
     "last_author": "Vadim N. Gladyshev",
     "n_features": 1089,
-    "citations": 183,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 208,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   },
   "zhangblup": {
     "clock_name": "zhangblup",
@@ -8443,9 +8443,9 @@
     "journal": "Genome Medicine",
     "last_author": "Peter M. Visscher",
     "n_features": 319607,
-    "citations": 519,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 550,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "scale_row",
     "reference_values": true
   },
@@ -8481,9 +8481,9 @@
     "journal": "Genome Medicine",
     "last_author": "Peter M. Visscher",
     "n_features": 514,
-    "citations": 519,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0",
+    "citations": 550,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
     "preprocess": "scale_row",
     "reference_values": true
   },
@@ -8517,8 +8517,8 @@
     "journal": "Nature Communications",
     "last_author": "Hermann Brenner",
     "n_features": 10,
-    "citations": 404,
-    "citations_date": "2026-07-05",
-    "version": "0.5.0"
+    "citations": 421,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
   }
 }

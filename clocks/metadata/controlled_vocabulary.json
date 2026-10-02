@@ -450,6 +450,7 @@
         "kilograms",
         "log hazard",
         "log odds",
+        "log10 hazard ratio",
         "meters per second",
         "milliliters per kilogram per minute",
         "months",
