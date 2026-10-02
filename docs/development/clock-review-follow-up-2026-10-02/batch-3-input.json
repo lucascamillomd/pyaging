@@ -1,0 +1,1412 @@
+{
+  "intrinclock370": {
+    "clock_name": "intrinclock370",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Tomusiak, A., et al. \u201cDevelopment of an epigenetic clock resistant to changes in immune cell composition.\u201d Communications Biology 7, 934 (2024).",
+    "doi": "https://doi.org/10.1038/s42003-024-06609-4",
+    "notes": "Author-demo IntrinClock at lambda.1se: 370 nonzero CpGs from the original serialized cv.glmnet fit. Predicts chronological age resistant to immune-cell-composition changes. This is a separately fitted regularization column, not the existing 380-CpG lambda.min model with ten sites removed. Returns years using the author's inverse Horvath transform.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "two-stage elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Communications Biology",
+    "last_author": "Eric Verdin",
+    "n_features": 370,
+    "citations": 64,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "postprocess": "anti_log_linear"
+  },
+  "kdmage": {
+    "clock_name": "kdmage",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "\u231b",
+    "citation": "Kwon, Dayoon, and Daniel W. Belsky. \"A toolkit for quantification of biological age from blood chemistry and organ function test data: BioAge.\" GeroScience 43.6 (2021): 2795-2808.",
+    "doi": "https://doi.org/10.1007/s11357-021-00480-5",
+    "notes": "Klemera-Doubal biological age, trained sex-specifically on NHANES III adults aged 30-75 who were not pregnant, using the BioAge package defaults. Biomarker parameters were fit on SI-unit variants so they are natively in pyaging's unit convention, and C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. Sex is coded female = 1 and male = 0; a dataset with no female column scores every sample with the male parameters.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "Klemera\u2013Doubal composite",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "GeroScience",
+    "last_author": "Daniel W. Belsky",
+    "n_features": 11,
+    "citations": 404,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "log1p_crp",
+    "postprocess": "klemera_doubal",
+    "reference_values": true
+  },
+  "knight": {
+    "clock_name": "knight",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2016,
+    "approved_by_author": "\u2705",
+    "citation": "Knight, A. K., et al. \"An epigenetic clock for gestational age at birth based on blood methylation data.\" Genome Biology 17 (2016): 206.",
+    "doi": "https://doi.org/10.1186/s13059-016-1068-z",
+    "notes": "Elastic-net DNA-methylation estimator of gestational age at birth trained across six cord-blood and neonatal blood-spot cohorts, using 148 CpGs shared across the 27K and 450K arrays.",
+    "research_only": null,
+    "tissue": [
+      "cord blood",
+      "neonatal blood spots"
+    ],
+    "predicts": [
+      "gestational age"
+    ],
+    "training_target": [
+      "gestational age"
+    ],
+    "unit": [
+      "weeks"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K"
+    ],
+    "population": "newborns",
+    "journal": "Genome Biology",
+    "last_author": "Alicia K. Smith",
+    "n_features": 148,
+    "citations": 315,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "leecontrol": {
+    "clock_name": "leecontrol",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2019,
+    "approved_by_author": "\u2705",
+    "citation": "Lee, Y., et al. \u201cPlacental epigenetic clocks: estimating gestational age using placental DNA methylation levels.\u201d Aging 11(12): 4238\u20134253 (2019).",
+    "doi": "https://doi.org/10.18632/aging.102049",
+    "notes": "Control placental clock trained on placentas designated as controls, with known major placental pathology excluded.",
+    "research_only": null,
+    "tissue": [
+      "placenta"
+    ],
+    "predicts": [
+      "gestational age"
+    ],
+    "training_target": [
+      "gestational age"
+    ],
+    "unit": [
+      "weeks"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "pregnancies",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 546,
+    "citations": 172,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "leerefinedrobust": {
+    "clock_name": "leerefinedrobust",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2019,
+    "approved_by_author": "\u2705",
+    "citation": "Lee, Y., et al. \u201cPlacental epigenetic clocks: estimating gestational age using placental DNA methylation levels.\u201d Aging 11(12): 4238\u20134253 (2019).",
+    "doi": "https://doi.org/10.18632/aging.102049",
+    "notes": "Refined robust placental clock fitted within uncomplicated term pregnancies (gestational age >36 weeks) using the original RPC loci as candidates.",
+    "research_only": null,
+    "tissue": [
+      "placenta"
+    ],
+    "predicts": [
+      "gestational age"
+    ],
+    "training_target": [
+      "gestational age"
+    ],
+    "unit": [
+      "weeks"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "pregnancies",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 395,
+    "citations": 172,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "leerobust": {
+    "clock_name": "leerobust",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2019,
+    "approved_by_author": "\u2705",
+    "citation": "Lee, Y., et al. \u201cPlacental epigenetic clocks: estimating gestational age using placental DNA methylation levels.\u201d Aging 11(12): 4238\u20134253 (2019).",
+    "doi": "https://doi.org/10.18632/aging.102049",
+    "notes": "Robust placental clock trained across placentas with and without pregnancy complications and congenital abnormalities.",
+    "research_only": null,
+    "tissue": [
+      "placenta"
+    ],
+    "predicts": [
+      "gestational age"
+    ],
+    "training_target": [
+      "gestational age"
+    ],
+    "unit": [
+      "weeks"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "pregnancies",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 558,
+    "citations": 172,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "lin": {
+    "clock_name": "lin",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2016,
+    "approved_by_author": "\u231b",
+    "citation": "Lin, Q., et al. \u201cDNA methylation levels at individual age-associated CpG sites can be indicative for life expectancy.\u201d Aging 8(2): 394\u2013401 (2016).",
+    "doi": "https://doi.org/10.18632/aging.100908",
+    "notes": "Whole-blood 99-CpG multivariate age estimator trained to predict chronological age; age acceleration from the model was secondarily tested for association with all-cause mortality.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "linear regression",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K"
+    ],
+    "population": "all ages",
+    "journal": "Aging",
+    "last_author": "Wolfgang Wagner",
+    "n_features": 99,
+    "citations": 268,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "linage2": {
+    "clock_name": "linage2",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Fong, Sheng, et al. \"LinAge2: providing actionable insights and benchmarking with epigenetic clocks.\" npj Aging 11.1 (2025): 29.",
+    "doi": "https://doi.org/10.1038/s41514-025-00221-4",
+    "notes": "Principal-component clinical clock trained on 20-year mortality in the NHANES IV 1999-2000 wave and tested in the 2001-2002 wave. The 59 model features are log transformed where the reference specifies, robustly z-scored by sex against a healthy 40-50 year old NHANES reference, and folded at 6 MAD-scaled units; the folded vector is projected onto sex-specific singular vectors and scored by a sex-specific Cox model, so male and female samples run through entirely separate parameter sets. Chronological age is supplied in years and enters the Cox terms in months, where it is a genuine covariate rather than a cancelling offset. Sex is coded female = 1 and male = 0; a dataset with no female column scores every sample with the male parameters. C-reactive protein is supplied raw in mg/dL and takes a plain natural log with no floor, so a reading below detection coded as 0 folds to the -6 cap instead of being clamped the way the BioAge clocks clamp it. The input contract is wider than the 59 model features: total cholesterol, HDL cholesterol and triglycerides are consumed only by the Friedewald LDL and are not features themselves, and 26 questionnaire codes feed the comorbidity, self-reported-health and healthcare-use indices. An absent questionnaire block is the main hazard and it biases the estimate downward. The substituted values are the reference cohort's median profile everywhere except the comorbidity index: answering no to all 22 conditions gives 0 where the cohort's median is 1/22, so that one feature is substituted marginally healthier than the median. It costs almost nothing, because the index's entire 0 to 1 range moves the estimate by only 0.06 years. The self-reported-health index is what does the damage: its substitute of good, unchanged health is exactly the cohort median, and a subject who would have reported poor and worsening health reads about 5.3 years younger than they should. The healthcare-use index is the raw NHANES 1999-2000 HUQ050 code (0 = none, 1 = 1, 2 = 2 to 3, 3 = 4 to 9, 4 = 10 to 12, 5 = 13 or more visits), so its valid range is 0 to 5 and the fold at 6 never fires on it; the 0 to 8 HUQ051 scale of later NHANES cycles must be collapsed onto it first (3 to 5 -> 3, 6 -> 4, 7 and 8 -> 5) or healthcare use is overstated. Substituting its median code of 2 for a subject who made 13 or more visits moves the male estimate up by about 0.35 years and the female estimate down by about 1.9 years. An absent lipid panel substitutes a total cholesterol chosen so that the derived LDL lands on the reference median, avoiding the reference implementation's hard 0 mmol/L substitution; a NaN inside a lipid column that is present still takes that hard 0 path and lowers the estimate by roughly 0.35 years. The range check cannot see this at all: it resolves ranges over the clock's declared input features, and the comorbidity, self-reported-health and healthcare-use indices are derived inside the model rather than supplied, so no range check ever applies to them. Heed the missing-feature warning the prediction pipeline emits; for this clock it is the only signal that the questionnaire block was absent.",
+    "research_only": null,
+    "tissue": [
+      "blood",
+      "urine"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + Cox regression",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "npj Aging",
+    "last_author": "Jan Gruber",
+    "n_features": 85,
+    "citations": 7,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "linage2",
+    "reference_values": true
+  },
+  "mammalian1": {
+    "clock_name": "mammalian1",
+    "data_type": "DNA methylation",
+    "species": "multiple species",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Lu, A. T., et al. \"Universal DNA methylation age across mammalian tissues.\" Nature Aging 3.9 (2023): 1144-1166.",
+    "doi": "https://doi.org/10.1038/s43587-023-00462-6",
+    "notes": "Universal pan-mammalian clock 1: elastic-net regression of log-transformed chronological age on conserved mammalian-array CpGs, back-transformed to years.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Horvath MammalMethylChip40"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 335,
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_logp2"
+  },
+  "mammalian2": {
+    "clock_name": "mammalian2",
+    "data_type": "DNA methylation",
+    "species": "multiple species",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Lu, A. T., et al. \"Universal DNA methylation age across mammalian tissues.\" Nature Aging 3.9 (2023): 1144-1166.",
+    "doi": "https://doi.org/10.1038/s43587-023-00462-6",
+    "notes": "Universal pan-mammalian clock 2 fits relative age (age divided by species maximum lifespan) and the author inverse transformation returns species-adjusted chronological age in years.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "relative age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Horvath MammalMethylChip40"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 2572,
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "mammalian2",
+    "reference_values": true
+  },
+  "mammalian3": {
+    "clock_name": "mammalian3",
+    "data_type": "DNA methylation",
+    "species": "multiple species",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Lu, A. T., et al. \"Universal DNA methylation age across mammalian tissues.\" Nature Aging 3.9 (2023): 1144-1166.",
+    "doi": "https://doi.org/10.1038/s43587-023-00462-6",
+    "notes": "Universal pan-mammalian clock 3 fits a log-linear age transformation based on gestation and sexual maturity and returns chronological age in years.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Horvath MammalMethylChip40"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 2467,
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "mammalian3",
+    "reference_values": true
+  },
+  "mammalianblood2": {
+    "clock_name": "mammalianblood2",
+    "data_type": "DNA methylation",
+    "species": "multiple species",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Lu, A. T., et al. \"Universal DNA methylation age across mammalian tissues.\" Nature Aging 3.9 (2023): 1144-1166.",
+    "doi": "https://doi.org/10.1038/s43587-023-00462-6",
+    "notes": "Blood-specific universal clock 2 fits relative age and returns species-adjusted chronological age in years after the maximum-lifespan inverse transformation.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "relative age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Horvath MammalMethylChip40"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 2257,
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "mammalian2",
+    "reference_values": true
+  },
+  "mammalianblood3": {
+    "clock_name": "mammalianblood3",
+    "data_type": "DNA methylation",
+    "species": "multiple species",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Lu, A. T., et al. \"Universal DNA methylation age across mammalian tissues.\" Nature Aging 3.9 (2023): 1144-1166.",
+    "doi": "https://doi.org/10.1038/s43587-023-00462-6",
+    "notes": "Blood-specific universal clock 3 fits the gestation/maturity-based log-linear age transformation and returns chronological age in years.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Horvath MammalMethylChip40"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 2097,
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "mammalian3",
+    "reference_values": true
+  },
+  "mammalianfemale": {
+    "clock_name": "mammalianfemale",
+    "data_type": "DNA methylation",
+    "species": "multiple species",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Li, C. Z., et al. (2024). Epigenetic predictors of species maximum life span and other life-history traits in mammals. Science Advances, 10(23), eadm7273.",
+    "doi": "https://doi.org/10.1126/sciadv.adm7273",
+    "notes": "Pan-mammalian elastic-net sex classifier using conserved CpG methylation. The author package expects SeSAMe-normalized mammalian-array data; its 320K option maps probes to the 40K CpG IDs. Pyaging applies a sigmoid to return female probability; published validation excluded marmosets.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "sex"
+    ],
+    "training_target": [
+      "sex"
+    ],
+    "unit": [
+      "probability"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "mammalian methylation array"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Science Advances",
+    "last_author": "Steve Horvath",
+    "n_features": 101,
+    "citations": 36,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "sigmoid"
+  },
+  "mammalianlifespan": {
+    "clock_name": "mammalianlifespan",
+    "data_type": "DNA methylation",
+    "species": "multiple species",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Li, Caesar Z., et al. \"Epigenetic predictors of species maximum life span and other life-history traits in mammals.\" Science Advances 10.23 (2024): eadm7273.",
+    "doi": "https://doi.org/10.1126/sciadv.adm7273",
+    "notes": "Pan-mammalian tissue-agnostic elastic-net predictor fitted to log species maximum life span from conserved CpG methylation; pyaging exponentiates the linear output to years.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "species maximum lifespan"
+    ],
+    "training_target": [
+      "species maximum lifespan"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Horvath MammalMethylChip40"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Science Advances",
+    "last_author": "Steve Horvath",
+    "n_features": 152,
+    "citations": 36,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log",
+    "reference_values": true
+  },
+  "mammalianskin2": {
+    "clock_name": "mammalianskin2",
+    "data_type": "DNA methylation",
+    "species": "multiple species",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Lu, A. T., et al. \"Universal DNA methylation age across mammalian tissues.\" Nature Aging 3.9 (2023): 1144-1166.",
+    "doi": "https://doi.org/10.1038/s43587-023-00462-6",
+    "notes": "Skin-specific universal clock 2 fits relative age and returns species-adjusted chronological age in years after the maximum-lifespan inverse transformation.",
+    "research_only": null,
+    "tissue": [
+      "skin"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "relative age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Horvath MammalMethylChip40"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 2240,
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "mammalian2",
+    "reference_values": true
+  },
+  "mammalianskin3": {
+    "clock_name": "mammalianskin3",
+    "data_type": "DNA methylation",
+    "species": "multiple species",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Lu, A. T., et al. \"Universal DNA methylation age across mammalian tissues.\" Nature Aging 3.9 (2023): 1144-1166.",
+    "doi": "https://doi.org/10.1038/s43587-023-00462-6",
+    "notes": "Skin-specific universal clock 3 fits the gestation/maturity-based log-linear age transformation and returns chronological age in years.",
+    "research_only": null,
+    "tissue": [
+      "skin"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Horvath MammalMethylChip40"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 2055,
+    "citations": 415,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "mammalian3",
+    "reference_values": true
+  },
+  "mayne": {
+    "clock_name": "mayne",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2017,
+    "approved_by_author": "\u231b",
+    "citation": "Mayne, Benjamin T., et al. \"Accelerated placental aging in early onset preeclampsia pregnancies identified by DNA methylation.\" Epigenomics 9 (2017): 279\u2013289.",
+    "doi": "https://doi.org/10.2217/epi-2016-0103",
+    "notes": "Placental elastic-net clock trained on pooled healthy human placenta methylation datasets; 62 selected CpGs predict gestational age and were used to test age acceleration in early-onset preeclampsia.",
+    "research_only": null,
+    "tissue": [
+      "placenta"
+    ],
+    "predicts": [
+      "gestational age"
+    ],
+    "training_target": [
+      "gestational age"
+    ],
+    "unit": [
+      "weeks"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K"
+    ],
+    "population": "pregnancies",
+    "journal": "Epigenomics",
+    "last_author": "Tina Bianco\u2010Miotto",
+    "n_features": 62,
+    "citations": 150,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "mccartneyalcohol": {
+    "clock_name": "mccartneyalcohol",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score trained on log(alcohol units per week + 1), residualized for age, sex and ten genetic principal components. The returned linear score remains on that adjusted natural-log scale; it is not an absolute exposure in physical units. Evaluated out of sample in LBC1936.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "alcohol consumption"
+    ],
+    "training_target": [
+      "alcohol consumption"
+    ],
+    "unit": [
+      "natural-log (units per week + 1)"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 450,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "mccartneybmi": {
+    "clock_name": "mccartneybmi",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score for body mass index (BMI), trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. BMI was log-transformed before residualization. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "body mass index"
+    ],
+    "training_target": [
+      "body mass index"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 1109,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "sigmoid"
+  },
+  "mccartneybodyfat": {
+    "clock_name": "mccartneybodyfat",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score for body fat percentage, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "body fat percentage"
+    ],
+    "training_target": [
+      "body fat percentage"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 968,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "sigmoid"
+  },
+  "mccartneyeducation": {
+    "clock_name": "mccartneyeducation",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score for educational attainment, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "educational attainment"
+    ],
+    "training_target": [
+      "educational attainment"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 373,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "sigmoid"
+  },
+  "mccartneyhdlcholesterol": {
+    "clock_name": "mccartneyhdlcholesterol",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score for HDL cholesterol, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "HDL cholesterol"
+    ],
+    "training_target": [
+      "HDL cholesterol"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 737,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "sigmoid"
+  },
+  "mccartneyldlcholesterol": {
+    "clock_name": "mccartneyldlcholesterol",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score for LDL with remnant cholesterol, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "LDL cholesterol"
+    ],
+    "training_target": [
+      "LDL cholesterol"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 233,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "sigmoid"
+  },
+  "mccartneysmoking": {
+    "clock_name": "mccartneysmoking",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score trained on log(smoking pack-years + 1), residualized for age, sex and ten genetic principal components. The returned linear score remains on that adjusted natural-log scale; it is not an absolute exposure in physical units. Evaluated out of sample in LBC1936.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "smoking exposure"
+    ],
+    "training_target": [
+      "smoking exposure"
+    ],
+    "unit": [
+      "natural-log (pack-years + 1)"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 233,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "mccartneytotalcholesterol": {
+    "clock_name": "mccartneytotalcholesterol",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score for total cholesterol, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "total cholesterol"
+    ],
+    "training_target": [
+      "total cholesterol"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 204,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "sigmoid"
+  },
+  "mccartneytotalhdlratio": {
+    "clock_name": "mccartneytotalhdlratio",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score for total-to-HDL cholesterol ratio, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "total-to-HDL cholesterol ratio"
+    ],
+    "training_target": [
+      "total-to-HDL cholesterol ratio"
+    ],
+    "unit": [
+      "ratio"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 412,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "mccartneywhr": {
+    "clock_name": "mccartneywhr",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "McCartney, D. L., et al. \u201cEpigenetic prediction of complex traits and death.\u201d Genome Biology 19, 136 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1514-1",
+    "notes": "Whole-blood DNAm LASSO score for waist-to-hip ratio, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "waist-to-hip ratio"
+    ],
+    "training_target": [
+      "waist-to-hip ratio"
+    ],
+    "unit": [
+      "ratio"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 226,
+    "citations": 312,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "meer": {
+    "clock_name": "meer",
+    "data_type": "DNA methylation",
+    "species": "Mus musculus",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Meer, M. V., Podolskiy, D. I., Tyshkovskiy, A. & Gladyshev, V. N. A whole lifespan mouse multi-tissue DNA methylation clock. eLife 7, e40675 (2018).",
+    "doi": "https://doi.org/10.7554/elife.40675",
+    "notes": "Whole Lifespan Multi-Tissue (WLMT) mouse clock trained by elastic net on RRBS methylation percentages from untreated wild-type C57BL/6 samples.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "days"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "RRBS"
+    ],
+    "population": "mice",
+    "journal": "eLife",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 435,
+    "citations": 207,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "miage": {
+    "clock_name": "miage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Youn, A., and Wang, S. (2018). The MiAge Calculator: a DNA methylation-based mitotic age calculator of human tissue types. Epigenetics, 13(2), 192\u2013206.",
+    "doi": "https://doi.org/10.1080/15592294.2017.1389361",
+    "notes": "Mitotic-age estimator using the authors\u2019 268-CpG fitted b/c/d parameters and five-start bounded L-BFGS-B least squares (bounds of 10\u201310,000 on the relative-mitotic-age scale). The scale is identifiable only up to an unknown common factor, so scores are not absolute division counts. The scalar optimizer runs on CPU in float64, including when other clocks run on CUDA. Missing CpGs and supplied NaNs are omitted from each sample\u2019s objective. The original all-NaN tie returns 2,008; this is an optimizer starting value with no biological meaning, so measured clock CpGs are required for interpretation. Original author function_library.r and site_specific_parameters.Rdata are preserved by an archived mirror at anilpsori/DNAm_pipelines_and_biomarkers commit d84d6adfc039355d5f9c962fc5faa7d1054f56b2; the original Columbia download returned HTTP403 during verification. All 268 CpG IDs and shared annotation fields match the original publisher supplement in order. No software/weight license is declared by the archived author files; the separate publisher supplement is CC BY4.0.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "mitotic age"
+    ],
+    "training_target": [
+      "replicative history"
+    ],
+    "unit": [
+      "relative cell divisions"
+    ],
+    "model_type": "dynamic methylation transmission model",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "human, age unspecified",
+    "journal": "Epigenetics",
+    "last_author": "Shuang Wang",
+    "n_features": 268,
+    "citations": 98,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "preprocess": "omit missing CpGs and supplied NaNs from the least-squares objective",
+    "reference_values": true
+  },
+  "neusin": {
+    "clock_name": "neusin",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Tong, Huige, et al. \"Cell-type specific epigenetic clocks to quantify biological age at cell-type resolution.\" Aging 16 (2024): 13452\u201313504.",
+    "doi": "https://doi.org/10.18632/aging.206184",
+    "notes": "Neu-Sin is a neuron semi-intrinsic chronological-age clock: elastic-net regression was restricted to neuron age-DMCTs but fitted to methylation values not adjusted for brain cell fractions. Coefficients were fitted in the 450K Jaffe cortex cohort; the regularization penalty was selected on the EPIC Pihlstrom cohort.",
+    "research_only": null,
+    "tissue": [
+      "brain cortex"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Andrew E. Teschendorff",
+    "n_features": 672,
+    "citations": 32,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "ocampoatac1": {
+    "clock_name": "ocampoatac1",
+    "data_type": "chromatin accessibility",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Morandini, F. et al. ATAC-clock: An aging clock based on chromatin accessibility. GeroScience 46, 635-650 (2024).",
+    "doi": "https://doi.org/10.1007/s11357-023-00986-0",
+    "notes": "Published final ATAC-clock coefficient-table implementation using 228 open chromatin regions from the 80,400-region input peak set.",
+    "research_only": null,
+    "tissue": [
+      "peripheral blood mononuclear cells"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "ATAC-seq"
+    ],
+    "population": "adults",
+    "journal": "GeroScience",
+    "last_author": "Alejandro Ocampo",
+    "n_features": 228,
+    "citations": 54,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "tpm_norm_log1p"
+  },
+  "ocampoatac2": {
+    "clock_name": "ocampoatac2",
+    "data_type": "chromatin accessibility",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Morandini, F. et al. ATAC-clock: An aging clock based on chromatin accessibility. GeroScience 46, 635-650 (2024).",
+    "doi": "https://doi.org/10.1007/s11357-023-00986-0",
+    "notes": "Alternate packaged implementation loaded from the authors' GitHub final_coefs.tsv; it represents the same uncorrected final ATAC-clock target, not a deployable cell-composition-corrected clock.",
+    "research_only": null,
+    "tissue": [
+      "peripheral blood mononuclear cells"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "ATAC-seq"
+    ],
+    "population": "adults",
+    "journal": "GeroScience",
+    "last_author": "Alejandro Ocampo",
+    "n_features": 380,
+    "citations": 54,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "tpm_norm_log1p"
+  },
+  "organagechronologicaladipose": {
+    "clock_name": "organagechronologicaladipose",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205\u2013222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adipose OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicaladrenal": {
+    "clock_name": "organagechronologicaladrenal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205\u2013222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adrenal OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalartery": {
+    "clock_name": "organagechronologicalartery",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205\u2013222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Artery OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 14,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalbrain": {
+    "clock_name": "organagechronologicalbrain",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205\u2013222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Brain OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 118,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalconventional": {
+    "clock_name": "organagechronologicalconventional",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205\u2013222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Conventional OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2916,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalesophagus": {
+    "clock_name": "organagechronologicalesophagus",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205\u2013222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Esophagus OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalfemale": {
+    "clock_name": "organagechronologicalfemale",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205\u2013222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Female OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 6,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  }
+}

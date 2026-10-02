@@ -21,7 +21,7 @@ drop `olink3000` from their names. Their ordered features, double-precision
 coefficients and intercepts are unchanged. The original 90-model oracle files
 remain intact; current tests select and rename the full-panel outputs.
 
-The [input guide](../source/proteomic_clocks.md) distinguishes plasma training
+The [proteomics tutorial](../../tutorials/tutorial_proteomics.ipynb) distinguishes plasma training
 material from serum trial measurements, NPX from concentrations and standardized
 values, and raw OrganAge mortality scores from mortality-equivalent years. It
 also distinguishes the original models from additional preprocessing in the

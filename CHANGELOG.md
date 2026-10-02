@@ -10,7 +10,7 @@
   dropping `olink3000`; coefficients and raw output scales are unchanged.
 - Specify plasma training material, assay normalization, protein identifiers,
   missing-data behavior and model-specific feature units for proteomic clocks.
-  Add a [proteomic input guide](docs/source/proteomic_clocks.md).
+  Add a [proteomic input guide](tutorials/tutorial_proteomics.ipynb).
 - Audit all six clocks in the 2026 Insilico trial. ProtAge lacks public trained
   weights/reference preprocessing; ipfP3GPT is restricted to UK Biobank RAP;
   PAOPAC provides only opaque Windows inference assets. These three are not

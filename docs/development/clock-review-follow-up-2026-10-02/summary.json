@@ -1,0 +1,123 @@
+{
+  "date": "2026-10-02",
+  "clock_count": 240,
+  "luna_reviewers": 6,
+  "batch_sizes": [
+    40,
+    40,
+    40,
+    40,
+    40,
+    40
+  ],
+  "tutorial_model": "gpt-6-astra",
+  "new_structured_input_fields": false,
+  "metadata_corrections": 9,
+  "citation_corrections": 2,
+  "numerical_changes": false,
+  "citation_count_observation": "2026-10-02",
+  "training_details": "Source-backed facts collected in per-batch reviews; no new public schema introduced in this correction batch.",
+  "unresolved_entries": [
+    {
+      "clock_name": "depressionbarbu",
+      "issue": "The packaged intercept 12.2169841 is not in the current publisher supplement or article. The live supplementary workbook contains 196 CpG/weight rows and no intercept; the live article XML contains no intercept value. The notebook assigns 12.2169841 as a hard-coded “Methylation risk score calibration intercept” but does not cite its source.",
+      "missing_evidence": "Original calibration/model artifact or documented derivation connecting this intercept to the published adjusted-M-value scale. No numerical inference made.",
+      "sources": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC8589651/",
+        "https://static-content.springer.com/esm/art%3A10.1038%2Fs41380-020-0808-3/MediaObjects/41380_2020_808_MOESM4_ESM.xlsx",
+        "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/depressionbarbu.ipynb"
+      ]
+    },
+    {
+      "clock_name": "cpgptgrimage3",
+      "issue": "The preprint anonymizes mortality-cohort identities and does not establish participant age range or exact array mix. The current preprint endpoint returned HTTP 429 in this review; existing source-checked ledger records that author-maintained tutorial/code document the named implementation.",
+      "missing_evidence": "An accessible primary manuscript or cohort-specific source identifying the mortality training sample and age range. Retained manuscript details remain qualified as source-limited.",
+      "sources": [
+        "https://www.biorxiv.org/content/10.1101/2024.10.24.619766v5",
+        "https://github.com/lcamillo/CpGPT/blob/5bfe6ac5e32c8ef7effc56349fe17770de09b7cb/tutorials/predict_mortality.ipynb"
+      ]
+    },
+    {
+      "clock_name": "cpgptpcgrimage3",
+      "issue": "The preprint anonymizes mortality-cohort identities and does not establish participant age range or exact array mix. The current preprint endpoint returned HTTP 429 in this review; existing source-checked ledger records that author-maintained tutorial/code document the named implementation.",
+      "missing_evidence": "An accessible primary manuscript or cohort-specific source identifying the mortality training sample and age range. Retained manuscript details remain qualified as source-limited.",
+      "sources": [
+        "https://www.biorxiv.org/content/10.1101/2024.10.24.619766v5",
+        "https://github.com/lcamillo/CpGPT/blob/5bfe6ac5e32c8ef7effc56349fe17770de09b7cb/tutorials/predict_mortality.ipynb"
+      ]
+    },
+    {
+      "clock_name": "cvdwesterman",
+      "issue": "The paper’s final cross-study learner is described as a 1,305-CpG union/ensemble, while the packaged model contains 235 coefficients followed by a sigmoid. The paper does not document the provenance mapping to the packaged implementation.",
+      "missing_evidence": "Author source or derivation establishing the relationship between the published final learner and the packaged 235-feature score. The current notes preserve the implementation distinction.",
+      "sources": [
+        "https://www.pure.ed.ac.uk/ws/portalfiles/portal/146349622/JAHA.119.015299.pdf",
+        "https://github.com/lucascamillomd/pyaging/blob/321d99bbbaf92339abea5affca25cd8022969795/clocks/notebooks/cvdwesterman.ipynb"
+      ]
+    },
+    {
+      "name": "mccartney-d10-output-scales",
+      "issue": "The original paper and Additional file 1 support linear coefficient scoring and residualized phenotypes, but the exact phenotype transformation/unit mapping for every D10 trait was not independently extracted from Additional file 4 during this bounded review. The six sigmoid findings are supported by the original equation and publisher coefficient fixture; runtime changes are deferred.",
+      "missing_evidence": "Direct readable text for Additional file 4 (phenotype transformation details) and/or author implementation reproducing one complete published model against an author reference example.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "knight-training-count",
+      "issue": "The primary paper establishes six training cohorts and provides cohort-specific descriptions, but this review did not independently sum a pooled training N from the cohort table/supplement.",
+      "missing_evidence": "Extract and reconcile the six training-cohort sample counts from the primary paper and its Additional file 1 before recording a combined N.",
+      "source_url": "https://doi.org/10.1186/s13059-016-1068-z"
+    },
+    {
+      "name": "mayne-training-range",
+      "issue": "The primary source supports pooled healthy placenta datasets and the gestational-age clock, but exact pooled training N and age range were not verified from a readable primary-paper/supplement passage in this review.",
+      "missing_evidence": "Readable primary article or supplement cohort table with pooled training sample counts and gestational-age range.",
+      "source_url": "https://doi.org/10.2217/epi-2016-0103"
+    },
+    {
+      "name": "organage-variant-training-details",
+      "issue": "The paper-level UK Biobank and broader cohort facts are source-backed, but each of the seven organ/system coefficient variants does not have an independently reconciled cohort N or age span in this review.",
+      "missing_evidence": "Variant-to-cohort mapping in the original author code/data supplement and corresponding training counts/age spans.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    },
+    {
+      "name": "OrganAge exact per-variant training age interval and fitted sample count",
+      "issue": "The public primary-paper summary and author README support UK Biobank plasma/Olink Explore 3072, >50,000 UK Biobank participants plus other cohorts, but do not expose an exact age interval or fitted n for each coefficient vector in this bounded pass. The metadata's broad adult population label is retained; no specific age/count was inferred.",
+      "missing_evidence": "A verifiable extraction from the complete paper's STAR Methods/supplement or author training outputs mapping the exact cohort filters and training n to each fold-1 coefficient vector.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    },
+    {
+      "name": "paopac",
+      "issue": "The exact identity and preparation of the Conventional PAOPAC artifact used in the Nature Biotechnology trial versus the later public MIT v1.0.0 release remain unverified. The primary preprint full text was inaccessible in the reviewed audit; public author-code execution confirms behavior of the public artifact but cannot establish artifact identity with the private trial model.",
+      "missing_evidence": "A source from the authors or trial data/code directly linking the trial model artifact and preprocessing to the later public v1.0.0 release, or accessible full methods that establish the linkage."
+    },
+    {
+      "name": "yingadaptage, yingcausage, yingdamage",
+      "issue": "The source states 2,664 whole-blood samples for clock fitting, but accessible primary text does not establish their exact cohort breakdown, training age range, or assay platform. It separately reports 450K for meQTL instruments and describes Generation Scotland in adjacent association work; neither proves the fitted-clock cohort/platform. Primary paper also reports 1,000/586/1,090 sites while the packaged model has 999/585/1,089 inputs; the reason for each one-site difference remains unknown.",
+      "missing_evidence": "A primary-source account or author release mapping the 2,664 training samples to cohorts, age distribution, assay platform, and the omitted site in each packaged model."
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepic*",
+      "issue": "The paper’s 1,200-site IDOL-Ext EPIC library and the inherited 240-site Biolearn replacement are not equivalent feature sets; the paper’s training/validation performance cannot be attributed to the replacement.",
+      "missing_evidence": "Author/Biolearn provenance or validation establishing the replacement model’s relationship to the published IDOL-Ext library."
+    },
+    {
+      "name": "zhangmortality",
+      "issue": "The paper’s primary score is a cohort-cutoff binary aberrant-methylation count. The package implements a continuous weighted-beta score; no author-provided implementation supporting that continuous formula was found in the existing audit.",
+      "missing_evidence": "Author code or explicit primary-source endorsement of the continuous weighted-beta formula."
+    }
+  ],
+  "validation": {
+    "offline_suite": {
+      "passed": 692,
+      "skipped": 72,
+      "deselected": 361
+    },
+    "post_citation_metadata_suite": {
+      "passed": 97,
+      "deselected": 1
+    },
+    "notebooks_executed": 2,
+    "strict_sphinx_build": "passed",
+    "tensor_storage_and_predictions": "unchanged for all11 updated objects"
+  }
+}

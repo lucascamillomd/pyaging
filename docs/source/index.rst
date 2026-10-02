@@ -65,7 +65,6 @@ pyaging
 
    installation
    clock_glossary
-   proteomic_clocks
 
 .. toctree::
    :hidden:

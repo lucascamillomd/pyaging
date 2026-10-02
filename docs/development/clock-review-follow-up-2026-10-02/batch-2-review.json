@@ -1,0 +1,648 @@
+{
+  "batch": 2,
+  "reviewed_clocks": [
+    "dnamtl",
+    "downsyndrome",
+    "dunedinpace",
+    "dunedinpoam38",
+    "eabec",
+    "encen100",
+    "encen40",
+    "ensembleagehumanmouse",
+    "ensembleagestatic",
+    "ensembleagestatictop",
+    "epicga",
+    "epicmithyper",
+    "epicmithypo",
+    "epitoc1",
+    "epitoc2",
+    "epitoc3",
+    "garagnani",
+    "gliasin",
+    "grimage",
+    "grimage2",
+    "grimage2adm",
+    "grimage2b2m",
+    "grimage2cystatinc",
+    "grimage2gdf15",
+    "grimage2leptin",
+    "grimage2loga1c",
+    "grimage2logcrp",
+    "grimage2packyrs",
+    "grimage2pai1",
+    "grimage2timp1",
+    "han",
+    "hannum",
+    "hep",
+    "hepatoxu",
+    "homeostaticdysregulation",
+    "horvath2013",
+    "hps",
+    "hrsinchphenoage",
+    "hypoclock",
+    "intrinclock"
+  ],
+  "corrections": [
+    {
+      "clock_name": "grimage2adm",
+      "field": "postprocess",
+      "old_value": "cox_to_years",
+      "new_value": null,
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/grimage2adm.ipynb",
+      "source_locator": "clocks/notebooks/grimage2adm.ipynb, code cell 24: model.postprocess_name = None; the serialized output metadata is stale",
+      "evidence": "The implementation notebook explicitly sets no postprocessing for this component output. It returns the fitted surrogate value in its native reported unit; the cox_to_years label is stale output metadata, not an applied conversion.",
+      "confidence": "high",
+      "integration_note": "Fresh HF objects also had postprocess_name=cox_to_years. Set it to None and omit the absent postprocess key, matching notebook source and existing PAI1 convention; identity behavior and tensor bytes preserved.",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "grimage2b2m",
+      "field": "postprocess",
+      "old_value": "cox_to_years",
+      "new_value": null,
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/grimage2b2m.ipynb",
+      "source_locator": "clocks/notebooks/grimage2b2m.ipynb, code cell 25: model.postprocess_name = None; the serialized output metadata is stale",
+      "evidence": "The implementation notebook explicitly sets no postprocessing for this component output. It returns the fitted surrogate value in its native reported unit; the cox_to_years label is stale output metadata, not an applied conversion.",
+      "confidence": "high",
+      "integration_note": "Fresh HF objects also had postprocess_name=cox_to_years. Set it to None and omit the absent postprocess key, matching notebook source and existing PAI1 convention; identity behavior and tensor bytes preserved.",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "grimage2cystatinc",
+      "field": "postprocess",
+      "old_value": "cox_to_years",
+      "new_value": null,
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/grimage2cystatinc.ipynb",
+      "source_locator": "clocks/notebooks/grimage2cystatinc.ipynb, code cell 25: model.postprocess_name = None; the serialized output metadata is stale",
+      "evidence": "The implementation notebook explicitly sets no postprocessing for this component output. It returns the fitted surrogate value in its native reported unit; the cox_to_years label is stale output metadata, not an applied conversion.",
+      "confidence": "high",
+      "integration_note": "Fresh HF objects also had postprocess_name=cox_to_years. Set it to None and omit the absent postprocess key, matching notebook source and existing PAI1 convention; identity behavior and tensor bytes preserved.",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "grimage2gdf15",
+      "field": "postprocess",
+      "old_value": "cox_to_years",
+      "new_value": null,
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/grimage2gdf15.ipynb",
+      "source_locator": "clocks/notebooks/grimage2gdf15.ipynb, code cell 25: model.postprocess_name = None; the serialized output metadata is stale",
+      "evidence": "The implementation notebook explicitly sets no postprocessing for this component output. It returns the fitted surrogate value in its native reported unit; the cox_to_years label is stale output metadata, not an applied conversion.",
+      "confidence": "high",
+      "integration_note": "Fresh HF objects also had postprocess_name=cox_to_years. Set it to None and omit the absent postprocess key, matching notebook source and existing PAI1 convention; identity behavior and tensor bytes preserved.",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "grimage2leptin",
+      "field": "postprocess",
+      "old_value": "cox_to_years",
+      "new_value": null,
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/grimage2leptin.ipynb",
+      "source_locator": "clocks/notebooks/grimage2leptin.ipynb, code cell 25: model.postprocess_name = None; the serialized output metadata is stale",
+      "evidence": "The implementation notebook explicitly sets no postprocessing for this component output. It returns the fitted surrogate value in its native reported unit; the cox_to_years label is stale output metadata, not an applied conversion.",
+      "confidence": "high",
+      "integration_note": "Fresh HF objects also had postprocess_name=cox_to_years. Set it to None and omit the absent postprocess key, matching notebook source and existing PAI1 convention; identity behavior and tensor bytes preserved.",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "grimage2loga1c",
+      "field": "postprocess",
+      "old_value": "cox_to_years",
+      "new_value": null,
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/grimage2loga1c.ipynb",
+      "source_locator": "clocks/notebooks/grimage2loga1c.ipynb, code cell 25: model.postprocess_name = None; the serialized output metadata is stale",
+      "evidence": "The implementation notebook explicitly sets no postprocessing for this component output. It returns the fitted surrogate value in its native reported unit; the cox_to_years label is stale output metadata, not an applied conversion.",
+      "confidence": "high",
+      "integration_note": "Fresh HF objects also had postprocess_name=cox_to_years. Set it to None and omit the absent postprocess key, matching notebook source and existing PAI1 convention; identity behavior and tensor bytes preserved.",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "grimage2logcrp",
+      "field": "postprocess",
+      "old_value": "cox_to_years",
+      "new_value": null,
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/grimage2logcrp.ipynb",
+      "source_locator": "clocks/notebooks/grimage2logcrp.ipynb, code cell 25: model.postprocess_name = None; the serialized output metadata is stale",
+      "evidence": "The implementation notebook explicitly sets no postprocessing for this component output. It returns the fitted surrogate value in its native reported unit; the cox_to_years label is stale output metadata, not an applied conversion.",
+      "confidence": "high",
+      "integration_note": "Fresh HF objects also had postprocess_name=cox_to_years. Set it to None and omit the absent postprocess key, matching notebook source and existing PAI1 convention; identity behavior and tensor bytes preserved.",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "grimage2packyrs",
+      "field": "postprocess",
+      "old_value": "cox_to_years",
+      "new_value": null,
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/grimage2packyrs.ipynb",
+      "source_locator": "clocks/notebooks/grimage2packyrs.ipynb, code cell 25: model.postprocess_name = None; the serialized output metadata is stale",
+      "evidence": "The implementation notebook explicitly sets no postprocessing for this component output. It returns the fitted surrogate value in its native reported unit; the cox_to_years label is stale output metadata, not an applied conversion.",
+      "confidence": "high",
+      "integration_note": "Fresh HF objects also had postprocess_name=cox_to_years. Set it to None and omit the absent postprocess key, matching notebook source and existing PAI1 convention; identity behavior and tensor bytes preserved.",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "grimage2timp1",
+      "field": "postprocess",
+      "old_value": "cox_to_years",
+      "new_value": null,
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/grimage2timp1.ipynb",
+      "source_locator": "clocks/notebooks/grimage2timp1.ipynb, code cell 25: model.postprocess_name = None; the serialized output metadata is stale",
+      "evidence": "The implementation notebook explicitly sets no postprocessing for this component output. It returns the fitted surrogate value in its native reported unit; the cox_to_years label is stale output metadata, not an applied conversion.",
+      "confidence": "high",
+      "integration_note": "Fresh HF objects also had postprocess_name=cox_to_years. Set it to None and omit the absent postprocess key, matching notebook source and existing PAI1 convention; identity behavior and tensor bytes preserved.",
+      "coordinator_disposition": "implemented"
+    }
+  ],
+  "retained": [
+    {
+      "name": "dnamtl",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://doi.org/10.18632/aging.102173",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "downsyndrome",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://www.nature.com/articles/s41467-021-21064-z",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "dunedinpace",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://elifesciences.org/articles/73420",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "dunedinpoam38",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7282814/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "eabec",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7590728/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "encen100",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://d-nb.info/1308171587/34",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "encen40",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://d-nb.info/1308171587/34",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "ensembleagehumanmouse",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://doi.org/10.1007/s11357-025-01808-1",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "ensembleagestatic",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://doi.org/10.1007/s11357-025-01808-1",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "ensembleagestatictop",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://doi.org/10.1007/s11357-025-01808-1",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "epicga",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8056641/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "epicmithyper",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://doi.org/10.1038/s43018-020-00131-2",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "epicmithypo",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://doi.org/10.1038/s43018-020-00131-2",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "epitoc1",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5046977/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "epitoc2",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7315560/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "epitoc3",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7315560/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "garagnani",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://cris.unibo.it/retrieve/e1dcb32b-fd5d-7715-e053-1705fe0a6cc9/Garagnani_2012.pdf",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "gliasin",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11723652/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "grimage",
+      "reason": "Retain the GrimAge v1 (2019) citation; it is the source for original GrimAge, distinct from the 2022 GrimAge2 update.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6366976/",
+      "source_locator": "Article front matter and bibliographic metadata"
+    },
+    {
+      "name": "grimage2",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2adm",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2b2m",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2cystatinc",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2gdf15",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2leptin",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2loga1c",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2logcrp",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2packyrs",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2pai1",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "grimage2timp1",
+      "reason": "Retain the 2022 GrimAge2 citation for the updated model and its inherited/component predictors; the original GrimAge 2019 paper is not the version-2 display citation.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9792204/",
+      "source_locator": "Methods, FHS training split; paper reports 1,833 training and 711 test participants aged 40-92 years"
+    },
+    {
+      "name": "han",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7315536/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "hannum",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3780611/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "hep",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11723652/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "hepatoxu",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://www.nature.com/articles/nmat4997",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "homeostaticdysregulation",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://doi.org/10.1007/s11357-021-00480-5",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "horvath2013",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4015143/",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "hps",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://doi.org/10.1073/pnas.2414086122",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "hrsinchphenoage",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    },
+    {
+      "name": "hypoclock",
+      "reason": "The primary paper defines HypoScore as mean methylation at 678 solo-WCGWs, inversely associated with divisions. The equation 1-HypoScore ~ A(s)R(s,x) supports retaining the positive-oriented complement. This does not make the output a calibrated division count.",
+      "source_url": "https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-020-00752-3",
+      "source_locator": "Methods, HypoClock solo-WCGW analysis, especially equations and explanation around lines 193-201"
+    },
+    {
+      "name": "intrinclock",
+      "reason": "Citation and scientific metadata were compared field by field with the evidence ledger. DOI maps to this clock in the citation audit, and its count/date match the candidate record. No material correction was indicated by the completed methods audit.",
+      "source_url": "https://www.nature.com/articles/s42003-024-06609-4",
+      "source_locator": "Evidence ledger paper source; completed methods audit"
+    }
+  ],
+  "unresolved": [],
+  "training_details": [
+    {
+      "name": "dnamtl",
+      "facts": "human blood training set: 2,256 adults aged 22–93 years",
+      "source_url": "https://doi.org/10.18632/aging.102173",
+      "source_locator": "Abstract; Results, 'DNAmTL versus measured TL in blood and adipose tissue'; Methods"
+    },
+    {
+      "name": "downsyndrome",
+      "facts": "196 DS and 439 non-DS newborns",
+      "source_url": "https://www.nature.com/articles/s41467-021-21064-z",
+      "source_locator": "Abstract and Table 1"
+    },
+    {
+      "name": "dunedinpace",
+      "facts": "N=817 with methylation and measured Pace of Aging at age 45",
+      "source_url": "https://elifesciences.org/articles/73420",
+      "source_locator": "Materials and methods, DunedinPACE"
+    },
+    {
+      "name": "dunedinpoam38",
+      "facts": "The target was developed in 954 members of the same-year Dunedin birth cohort.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7282814/",
+      "source_locator": "Abstract"
+    },
+    {
+      "name": "eabec",
+      "facts": "adults aged 18–88 years (MoBa-START plus GEO; n=2,227)",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7590728/",
+      "source_locator": "Methods: training/sample cohort"
+    },
+    {
+      "name": "encen100",
+      "facts": "trained only on centenarian samples; age group 100–115",
+      "source_url": "https://d-nb.info/1308171587/34",
+      "source_locator": "Table 1 and Results: Centenarian clocks"
+    },
+    {
+      "name": "encen40",
+      "facts": "Age ≥40: N=7039, age range [40,115]",
+      "source_url": "https://d-nb.info/1308171587/34",
+      "source_locator": "Table 1"
+    },
+    {
+      "name": "ensembleagehumanmouse",
+      "facts": "Mouse and human methylation data were combined for cross-species predictions.",
+      "source_url": "https://doi.org/10.1007/s11357-025-01808-1",
+      "source_locator": "Human-mouse EnsembleAge development"
+    },
+    {
+      "name": "ensembleagestatic",
+      "facts": "Static models were trained exclusively on treated or perturbed animals.",
+      "source_url": "https://doi.org/10.1007/s11357-025-01808-1",
+      "source_locator": "Results, Development of EnsembleAge clock"
+    },
+    {
+      "name": "ensembleagestatictop",
+      "facts": "Static models were trained exclusively on treated or perturbed animals.",
+      "source_url": "https://doi.org/10.1007/s11357-025-01808-1",
+      "source_locator": "Results, Development of EnsembleAge clock"
+    },
+    {
+      "name": "epicga",
+      "facts": "The clock was trained on 755 non-ART newborns from START.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8056641/",
+      "source_locator": "Abstract, Methods"
+    },
+    {
+      "name": "epicmithyper",
+      "facts": "1,595 human samples spanning normal B-cell subpopulations and 14 B-cell tumor subtypes",
+      "source_url": "https://doi.org/10.1038/s43018-020-00131-2",
+      "source_locator": "Abstract; Fig. 5; Methods, epiCMIT construction"
+    },
+    {
+      "name": "epicmithypo",
+      "facts": "1,595 human samples spanning normal B-cell subpopulations and 14 B-cell tumor subtypes",
+      "source_url": "https://doi.org/10.1038/s43018-020-00131-2",
+      "source_locator": "Abstract; Fig. 5; Methods, epiCMIT construction"
+    },
+    {
+      "name": "epitoc1",
+      "facts": "Model derivation combined fetal reference tissues with healthy adult samples from the Hannum whole-blood cohort.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5046977/",
+      "source_locator": "Original EpiTOC derivation: fetal reference tissues plus adult Hannum whole-blood samples"
+    },
+    {
+      "name": "epitoc2",
+      "facts": "Model fitting used Hannum whole blood spanning ages 19 to 101.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7315560/",
+      "source_locator": "Methods, derivation cohort"
+    },
+    {
+      "name": "epitoc3",
+      "facts": "The derivation uses fetal/neonatal reference tissues, six normal cell lines, and adult whole-blood cohorts.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7282814/",
+      "source_locator": "Methods: reference samples, normal cell lines, and adult blood cohorts"
+    },
+    {
+      "name": "garagnani",
+      "facts": "The study includes cord-blood/newborn samples and people through approximately age 99.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4015143/",
+      "source_locator": "Study populations and ELOVL2 age-association analysis"
+    },
+    {
+      "name": "gliasin",
+      "facts": "adults aged 18–97 years (Jaffe prefrontal-cortex training data)",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11723652/",
+      "source_locator": "Methods: training/sample cohort"
+    },
+    {
+      "name": "grimage",
+      "facts": "The training set comprised 1,731 Framingham participants with mean age 66 years.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6366976/",
+      "source_locator": "Methods, training data"
+    },
+    {
+      "name": "grimage2",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2adm",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2b2m",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2cystatinc",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2gdf15",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2leptin",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2loga1c",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2logcrp",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2packyrs",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2pai1",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "grimage2timp1",
+      "facts": "GrimAge2 was trained in 1,833 FHS participants aged 40–92 years.",
+      "source_url": "https://www.aging-us.com/article/204434/text",
+      "source_locator": "Discussion; Materials and Methods, FHS training split"
+    },
+    {
+      "name": "han",
+      "facts": "The training set comprised 973 healthy blood profiles from donors aged 1 to 101 years.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7315536/",
+      "source_locator": "Results, Selection of age-associated CpGs for blood"
+    },
+    {
+      "name": "hannum",
+      "facts": "Two cohorts totaled 656 participants aged 19–101 years, comprising 426 Caucasian and 230 Hispanic individuals.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3780611/",
+      "source_locator": "Results, Global methylomic profiling over a wide age range"
+    },
+    {
+      "name": "hep",
+      "facts": "adults aged 18–75 years (210 normal liver samples)",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11723652/",
+      "source_locator": "Methods: training/sample cohort"
+    },
+    {
+      "name": "hepatoxu",
+      "facts": "The 1,933-sample dataset was split 2:1; the training set had 1,275 samples from 715 HCC and 560 normal samples.",
+      "source_url": "https://www.purdue.edu/hla/sites/zhulab/wp-content/uploads/sites/23/2017/11/nmat4997-s1.pdf",
+      "source_locator": "Methods, Building a diagnostic model; Supplementary Fig. 2"
+    },
+    {
+      "name": "homeostaticdysregulation",
+      "facts": "train = NHANES3 %>% filter(age >= 20 & age <= 30 & pregnant == 0 & bmi < 30)",
+      "source_url": "https://github.com/dayoonkwon/BioAge",
+      "source_locator": "BioAge::hd_nhanes(), the NHANES III reference filter"
+    },
+    {
+      "name": "horvath2013",
+      "facts": "The training and validation collection spans many tissues and ages, including newborn and centenarian-range samples.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4015143/",
+      "source_locator": "Supplementary dataset descriptions; main Results"
+    },
+    {
+      "name": "hps",
+      "facts": "The healthy UK Biobank cohort included adults aged 39 to 70 years.",
+      "source_url": "https://doi.org/10.1073/pnas.2414086122",
+      "source_locator": "Results: HPS development; SI Appendix Table S1"
+    },
+    {
+      "name": "hrsinchphenoage",
+      "facts": "The function identifies HRS and InCHIANTI as the retraining data.",
+      "source_url": "https://github.com/MorganLevineLab/methylCIPHER/blob/master/R/calcHRSInChPhenoAge.R",
+      "source_locator": "calcHRSInChPhenoAge.R, function documentation"
+    },
+    {
+      "name": "hypoclock",
+      "facts": "HypoClock was assessed across normal adult tissues, premalignant lesions and cancers.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7315560/",
+      "source_locator": "Abstract, Methods and Results"
+    },
+    {
+      "name": "intrinclock",
+      "facts": "After quality control and a 75:25 split, 9,104 samples trained the model and 2,994 validated it.",
+      "source_url": "https://www.nature.com/articles/s42003-024-06609-4",
+      "source_locator": "Results, Development of IntrinClock"
+    }
+  ],
+  "review_notes": [
+    "All 40 assigned clocks were found in both methods_audit_2026-10-02.json and evidence_ledger.jsonl; the method reviews were complete with no unresolved fields.",
+    "All 40 DOI values map to the matching citation-audit work and clock name; candidate citation counts and citations_date match the audited counts and 2026-10-02 observation date.",
+    "Nine GrimAge2 component postprocess labels are stale in serialized metadata; the notebook code sets model.postprocess_name=None. The main grimage2 clock uses cox_to_years, and grimage2pai1 already has no postprocess.",
+    "HypoClock upstream HypoScore is the average methylation level; the 1 - mean beta return orientation is deliberate and makes the score rise with hypomethylation burden.",
+    "No numerical outputs were recalculated or changed."
+  ],
+  "coordinator_review": "Corrected the direction wording for HypoClock after checking the primary equation, verified fresh HF proxy objects, and replaced stale repository links."
+}

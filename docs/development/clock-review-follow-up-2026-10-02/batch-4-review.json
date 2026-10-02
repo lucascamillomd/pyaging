@@ -1,0 +1,865 @@
+{
+  "batch": 4,
+  "reviewed_clocks": [
+    "organagechronologicalheart",
+    "organagechronologicalimmune",
+    "organagechronologicalintestine",
+    "organagechronologicalkidney",
+    "organagechronologicalliver",
+    "organagechronologicallung",
+    "organagechronologicalmale",
+    "organagechronologicalmultiorgan",
+    "organagechronologicalmuscle",
+    "organagechronologicalorganismal",
+    "organagechronologicalpancreas",
+    "organagechronologicalpituitary",
+    "organagechronologicalsalivary",
+    "organagechronologicalskin",
+    "organagechronologicalstomach",
+    "organagechronologicalthyroid",
+    "organagemortalityadipose",
+    "organagemortalityadrenal",
+    "organagemortalityartery",
+    "organagemortalitybrain",
+    "organagemortalityconventional",
+    "organagemortalityesophagus",
+    "organagemortalityfemale",
+    "organagemortalityheart",
+    "organagemortalityimmune",
+    "organagemortalityintestine",
+    "organagemortalitykidney",
+    "organagemortalityliver",
+    "organagemortalitylung",
+    "organagemortalitymale",
+    "organagemortalitymultiorgan",
+    "organagemortalitymuscle",
+    "organagemortalityorganismal",
+    "organagemortalitypancreas",
+    "organagemortalitypituitary",
+    "organagemortalitysalivary",
+    "organagemortalityskin",
+    "organagemortalitystomach",
+    "organagemortalitythyroid",
+    "pac"
+  ],
+  "corrections": [],
+  "retained": [
+    {
+      "name": "organagechronologicalheart",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalimmune",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalintestine",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalkidney",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalliver",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicallung",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalmale",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalmultiorgan",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalmuscle",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalorganismal",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalpancreas",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalpituitary",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalsalivary",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalskin",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalstomach",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalthyroid",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the chronological-age elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityadipose",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityadrenal",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityartery",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitybrain",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityconventional",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityesophagus",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityfemale",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityheart",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityimmune",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityintestine",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitykidney",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityliver",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitylung",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitymale",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitymultiorgan",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitymuscle",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityorganismal",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitypancreas",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitypituitary",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitysalivary",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalityskin",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitystomach",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagemortalitythyroid",
+      "reason": "Retained. Original-author pinned coefficient provenance and the feature-count evidence ledger identify this as the mortality-based Cox elastic-net OrganAge variant; the present feature count, Olink Explore 3072 platform and output unit/target agree with those records. The original-author README recommends full models and fold 1 for Olink Explore 3072, which matches the pinned artifact. The shared Cell Metabolism citation/DOI and date match the evidence ledger; exact-DOI citation audit maps it to the exact title and all OrganAge variants (128 citations, observed 2026-10-02).",
+      "source": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "pac",
+      "reason": "Retained. The original 2024 Aging Cell citation/DOI and date match the evidence ledger; the exact-DOI citation audit maps the DOI to the PAC title and this clock (68 citations, observed 2026-10-02). The pinned author R implementation supports 128 Olink proteins plus chronological age (129 predictors); PAC uses the Cox-selected protein model and Gompertz age calibration, so its mortality-derived years output remains distinct from an age-gap residual.",
+      "source": "https://github.com/kuo-lab-uchc/PAC/tree/e15edb66800f876a928cec9c8856500048c46fea"
+    }
+  ],
+  "unresolved": [
+    {
+      "name": "OrganAge exact per-variant training age interval and fitted sample count",
+      "issue": "The public primary-paper summary and author README support UK Biobank plasma/Olink Explore 3072, >50,000 UK Biobank participants plus other cohorts, but do not expose an exact age interval or fitted n for each coefficient vector in this bounded pass. The metadata's broad adult population label is retained; no specific age/count was inferred.",
+      "missing_evidence": "A verifiable extraction from the complete paper's STAR Methods/supplement or author training outputs mapping the exact cohort filters and training n to each fold-1 coefficient vector.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    }
+  ],
+  "training_details": [
+    {
+      "clock_name": "organagechronologicalheart",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalimmune",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalintestine",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalkidney",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalliver",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicallung",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalmale",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalmultiorgan",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalmuscle",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalorganismal",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalpancreas",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalpituitary",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalsalivary",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalskin",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalstomach",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagechronologicalthyroid",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityadipose",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityadrenal",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityartery",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitybrain",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityconventional",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityesophagus",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityfemale",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityheart",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityimmune",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityintestine",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitykidney",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityliver",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitylung",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitymale",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitymultiorgan",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitymuscle",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityorganismal",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitypancreas",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitypituitary",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitysalivary",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalityskin",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitystomach",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "organagemortalitythyroid",
+      "facts": [
+        {
+          "fact": "Developed using UK Biobank plasma proteomics; the original paper summary describes elastic-net organ-specific and conventional models using proteomic data from over 50,000 UK Biobank participants and other cohorts. Olink Explore 3072 assayed approximately 3,000 proteins.",
+          "locator": "Original Cell Metabolism paper, Summary and Introduction; author's Olink Explore 3072 model guidance",
+          "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+        },
+        {
+          "fact": "The accessible paper summary and author README do not identify a precise training age interval or model-specific fitted sample count for this coefficient variant; no more specific value is inferred. The author README recommends full models and first fold for new Olink Explore 3072 data.",
+          "locator": "Original-author README, How to apply the organ-specific models to your own dataset; source limit for this pass",
+          "source_url": "https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/blob/5147b0301ec7f4abdb10ef650d04f47454ddc8fd/README.md"
+        }
+      ]
+    },
+    {
+      "clock_name": "pac",
+      "facts": [
+        {
+          "fact": "UK Biobank Pharma Proteomics Project: 53,021 participants aged 39–70; plasma levels of 2,923 proteins assessed on Olink Explore 3072.",
+          "locator": "Original-author README, Publication section; supported by PAC article abstract",
+          "source_url": "https://github.com/kuo-lab-uchc/PAC/tree/e15edb66800f876a928cec9c8856500048c46fea/blob/e15edb66800f876a928cec9c8856500048c46fea/README.md"
+        },
+        {
+          "fact": "PAC is a mortality-surrogate biological-age score built with LASSO-penalized Cox regression and Gompertz proportional-hazards calibration; the original R predictor vector has chronological age plus 128 selected proteins.",
+          "locator": "Original-author README, Publication section; pac_proteomic_age.R, model parameter comments and predictors vector",
+          "source_url": "https://github.com/kuo-lab-uchc/PAC/tree/e15edb66800f876a928cec9c8856500048c46fea/blob/e15edb66800f876a928cec9c8856500048c46fea/pac_proteomic_age.R"
+        }
+      ]
+    }
+  ],
+  "review_notes": [
+    "All 40 requested metadata records were checked against the methods audit, current clock metadata, and original-author evidence ledger. Per-record OrganAge identity was checked by clock name, target family, coefficient-backed n_features, output unit and DOI; the records share one original paper but do not share age-versus-mortality targets.",
+    "For OrganAge, chronological variants predict age in years with elastic-net regression; mortality variants predict relative natural-log mortality hazard with Cox elastic-net. No mortality-to-years conversion or age-gap calculation is implied by the registered mortality variants. The author README explicitly recommends full models and fold 1 for Olink Explore 3072, matching pinned build provenance.",
+    "PAC remains a mortality-surrogate age in years. Its input includes age and 128 proteins; it is not a chronological-age residual. The exact-DOI citation snapshot association and count were retained for both publications (OrganAge 128; PAC 68, observed 2026-10-02).",
+    "The pinned original PAC R file was fetched and checked live. The OrganAge author's current repository README was checked live, along with the published paper landing-page summary. The complete OrganAge paper/supplement coefficient tables were not extracted in this pass; see the unresolved item. No MethylCIPHER or Biolearn source was used.",
+    "The citation count is a dated snapshot and is retained only as of 2026-10-02. No data, model, notebook, or metadata registry files were changed."
+  ]
+}

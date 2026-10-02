@@ -2149,7 +2149,6 @@
     "citations": 319,
     "citations_date": "2026-10-02",
     "version": "0.5.7",
-    "postprocess": "cox_to_years",
     "reference_values": true
   },
   "grimage2b2m": {
@@ -2185,7 +2184,6 @@
     "citations": 319,
     "citations_date": "2026-10-02",
     "version": "0.5.7",
-    "postprocess": "cox_to_years",
     "reference_values": true
   },
   "grimage2cystatinc": {
@@ -2221,7 +2219,6 @@
     "citations": 319,
     "citations_date": "2026-10-02",
     "version": "0.5.7",
-    "postprocess": "cox_to_years",
     "reference_values": true
   },
   "grimage2gdf15": {
@@ -2257,7 +2254,6 @@
     "citations": 319,
     "citations_date": "2026-10-02",
     "version": "0.5.7",
-    "postprocess": "cox_to_years",
     "reference_values": true
   },
   "grimage2leptin": {
@@ -2293,7 +2289,6 @@
     "citations": 319,
     "citations_date": "2026-10-02",
     "version": "0.5.7",
-    "postprocess": "cox_to_years",
     "reference_values": true
   },
   "grimage2loga1c": {
@@ -2329,7 +2324,6 @@
     "citations": 319,
     "citations_date": "2026-10-02",
     "version": "0.5.7",
-    "postprocess": "cox_to_years",
     "reference_values": true
   },
   "grimage2logcrp": {
@@ -2365,7 +2359,6 @@
     "citations": 319,
     "citations_date": "2026-10-02",
     "version": "0.5.7",
-    "postprocess": "cox_to_years",
     "reference_values": true
   },
   "grimage2packyrs": {
@@ -2401,7 +2394,6 @@
     "citations": 319,
     "citations_date": "2026-10-02",
     "version": "0.5.7",
-    "postprocess": "cox_to_years",
     "reference_values": true
   },
   "grimage2pai1": {
@@ -2472,7 +2464,6 @@
     "citations": 319,
     "citations_date": "2026-10-02",
     "version": "0.5.7",
-    "postprocess": "cox_to_years",
     "reference_values": true
   },
   "han": {
@@ -3928,7 +3919,7 @@
     "species": "Homo sapiens",
     "year": 2023,
     "approved_by_author": "⌛",
-    "citation": "Morandini, F. et al. ATAC-clock: An aging clock based on chromatin accessibility. GeroScience 46, 635-650 (2024).",
+    "citation": "Morandini, F., Rechsteiner, C., Perez, K., et al. “ATAC-clock: An aging clock based on chromatin accessibility.” GeroScience 46(2), 1789–1806 (2024).",
     "doi": "https://doi.org/10.1007/s11357-023-00986-0",
     "notes": "Published final ATAC-clock coefficient-table implementation using 228 open chromatin regions from the 80,400-region input peak set.",
     "research_only": null,
@@ -3963,7 +3954,7 @@
     "species": "Homo sapiens",
     "year": 2023,
     "approved_by_author": "⌛",
-    "citation": "Morandini, F. et al. ATAC-clock: An aging clock based on chromatin accessibility. GeroScience 46, 635-650 (2024).",
+    "citation": "Morandini, F., Rechsteiner, C., Perez, K., et al. “ATAC-clock: An aging clock based on chromatin accessibility.” GeroScience 46(2), 1789–1806 (2024).",
     "doi": "https://doi.org/10.1007/s11357-023-00986-0",
     "notes": "Alternate packaged implementation loaded from the authors' GitHub final_coefs.tsv; it represents the same uncorrected final ATAC-clock target, not a deployable cell-composition-corrected clock.",
     "research_only": null,

@@ -1,0 +1,62 @@
+{
+  "audit_date": "2026-10-02",
+  "purpose": "Read-only comparison and implementation planning; not a change to canonical metadata or scores.",
+  "pyaging_content_commit": "339f9de1ac3b503f194811b58836979a6d703084",
+  "pyaging_merged_commit": "ba831fc1cf7f52900667872fd3740bb53c0702d4",
+  "pyaging_registry_sha256": "9faa8586b5e20a3e7e050405e9151bde5131d2897a297328c078ecca89815f3b",
+  "methylcipher_repository": "https://github.com/HigginsChenLab/methylCIPHERv2",
+  "methylcipher_commit": "f9e5c724b2d64199b696a882161fe245a39fcf6c",
+  "methylcipher_sysdata_sha256": "cf1988cbf713f7142c0da67089f2d86690b7f92a71afa8655b772009ca6028c1",
+  "methylcipher_embedded_source_commit": "19c9039079b27543c2c625ed5ece5a5ef4b8e0e2",
+  "source_limitation": "Embedded provenance points to HigginsChenLab/methylCIPHER-meta, which returned404. The public pinned package embeds the descriptors but not field-level primary evidence.",
+  "upstream_internal_entries": 147,
+  "upstream_public_entries": 131,
+  "upstream_hidden_components": 16,
+  "upstream_codebook_rows": 140,
+  "mutual_public_pairs": 104,
+  "crosswalk_counts": {
+    "matched_alias": 66,
+    "related_internal_component": 1,
+    "not_in_pyaging": 25,
+    "matched_name": 38,
+    "unmatched_routed_component": 6,
+    "routed_component": 8,
+    "related_variant": 1,
+    "unmatched_internal_component": 2
+  },
+  "comparison_rows": 1560,
+  "comparison_status_counts": {
+    "normalized_equal": 307,
+    "definition_or_value_difference": 90,
+    "equal": 169,
+    "text_comparison_only": 304,
+    "different_granularity": 104,
+    "runtime_contract_review": 312,
+    "new_field_candidate": 208,
+    "publication_difference": 24,
+    "upstream_missing": 42
+  },
+  "literal_flags": 114,
+  "literal_flag_field_counts": {
+    "model_type": 34,
+    "tissue": 19,
+    "n_features": 19,
+    "doi": 12,
+    "year": 12,
+    "platform": 18
+  },
+  "feature_panel_comparison": {
+    "exact_sets": 68,
+    "not_available_from_local_upstream_catalog": 32,
+    "larger_pyaging_input_sets_with_known_basis_difference": 4
+  },
+  "runtime_metadata_errors": {
+    "grimage2_proxy_stale_postprocess_labels": 9
+  },
+  "reviewers": [
+    "root",
+    "gpt-6-luna"
+  ],
+  "execution": "A new Luna reviewer completed two passes. Additional workers and the prior worker could not start due to the app thread limit.",
+  "scientific_scope": "Raw matching, count and tensor-identity checks do not establish end-to-end cross-package or original-author numerical parity."
+}
