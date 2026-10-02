@@ -1,5 +1,6 @@
 # pyaging/predict/__init__.py
 
+from ._cache import ClockCache
 from ._pred import predict_age
 from ._pred_utils import (
     add_pred_ages_and_clock_metadata_adata,
@@ -21,6 +22,7 @@ from ._transforms import (
 )
 
 __all__ = [
+    "ClockCache",
     "add_pred_ages_and_clock_metadata_adata",
     "binarize",
     "check_feature_ranges",

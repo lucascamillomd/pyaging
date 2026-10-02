@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 
 from ..logger._live import SimpleStep, display_enabled, live_step, quiet_hf_bars
+from ..utils._files import atomic_output_path
 from ..utils._hf import download_hf_file
 
 _EXAMPLE_DATA_FILENAMES = {
@@ -63,13 +64,15 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     enabled = display_enabled(verbose)
     filename = _EXAMPLE_DATA_FILENAMES[data_type]
     destination = Path(dir) / filename
+    if destination.is_dir():
+        raise IsADirectoryError(destination)
     if destination.exists():
         SimpleStep(filename, enabled=enabled).done(f"example data already at {destination}")
         return str(destination)
 
     with quiet_hf_bars(verbose), live_step(f"downloading {filename}", verbose) as (step, pipeline_logger):
         cache_path = download_hf_file(filename, dir, pipeline_logger, indent_level=1)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(cache_path, destination)
+        with atomic_output_path(destination) as temporary_path:
+            shutil.copy(cache_path, temporary_path)
         step.done(f"example data at {destination}")
     return str(destination)

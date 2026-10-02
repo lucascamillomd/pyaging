@@ -21,7 +21,7 @@ def test_load_clock_downloads_lowercase_hf_file_and_prepares_model(monkeypatch, 
 
     assert result is model
     download_clock_weights.assert_called_once_with("horvath2013", str(tmp_path), logger, indent_level=2)
-    torch_load.assert_called_once_with(returned_path, weights_only=False)
+    torch_load.assert_called_once_with(returned_path, weights_only=False, map_location="cpu")
     assert model.to.call_args_list == [call(torch.float64), call("cuda")]
     model.eval.assert_called_once_with()
 

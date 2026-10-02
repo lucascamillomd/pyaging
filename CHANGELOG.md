@@ -1,0 +1,31 @@
+# Changelog
+
+## 0.5.3
+
+This package release uses existing model weights and Hugging Face files. It does
+not create a `v0.5.3` data tag.
+
+- Add an optional bounded `pya.pred.ClockCache` for repeated prediction across
+  datasets, with separate entries for device and data revision.
+- Speed up feature matching, EPIC v2 probe aggregation, quantile normalization,
+  and bigWig signal assembly.
+- Support sparse prediction input and keep aligned matrices on the CPU before
+  transferring each inference batch. Protect retained inputs from model transforms.
+- Preserve metadata for numeric, datetime, and hierarchical sample identifiers;
+  return writable arrays with independent original and imputed snapshots.
+- Correct EPIC v2 singleton probe names and repeated-label aggregation; validate
+  ambiguous feature names, invalid batch sizes, imputation strategies, and tAge inputs.
+- Publish local downloads atomically so interrupted files cannot become cache hits.
+  Preserve HTTP error diagnostics and fall back to the same data revision when a
+  per-clock repository lacks the requested tag.
+- Keep logging and Hugging Face progress settings isolated from other libraries.
+- Make Pasta/Reg missing-value filling independent of batch size and vectorize
+  their tied ranks. Apply PCGrimAge's existing reference imputation in its forward
+  pass. Preserve dtype/device for all-missing mitotic-clock inputs.
+- Evaluate the PhenoAge mortality-to-age links in log space to avoid artificial
+  infinities at extreme inputs. Coefficients and mathematical formulas are unchanged.
+- Stop clock notebook builds on failure and make version updates portable across
+  macOS and Linux. Derive the default release version from the package.
+
+See [the audit report](docs/development/audit-0.5.3.md) for findings, validation,
+benchmarks, and follow-up recommendations.

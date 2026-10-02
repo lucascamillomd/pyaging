@@ -1,9 +1,7 @@
-"""Sidecar selection for the per-clock Hugging Face repo sync.
-
-Only the file-selection logic is covered here; the upload itself needs the Hub.
-"""
+"""Local validation and sidecar selection for per-clock Hugging Face sync."""
 
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -13,6 +11,35 @@ ROOT = Path(__file__).resolve().parents[1]
 _spec = importlib.util.spec_from_file_location("hf_repo_sync", ROOT / "clocks" / "hf_repo_sync.py")
 hf_repo_sync = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(hf_repo_sync)
+
+
+@pytest.mark.parametrize("create_weights_directory", [False, True], ids=["missing", "empty"])
+@pytest.mark.parametrize("arguments", [[], ["--tag", "v0.5.3", "--tag-only"]], ids=["sync", "tag-only"])
+def test_sync_cli_rejects_empty_catalog_before_contacting_hub(
+    tmp_path, monkeypatch, capsys, create_weights_directory, arguments
+):
+    weights = tmp_path / "weights"
+    if create_weights_directory:
+        weights.mkdir()
+    metadata = tmp_path / "clock_metadata.json"
+    metadata.write_text(json.dumps({"horvath2013": {"clock_name": "horvath2013"}}))
+    monkeypatch.setattr(hf_repo_sync, "WEIGHTS_DIR", weights)
+    monkeypatch.setattr(hf_repo_sync, "METADATA_FILE", metadata)
+    monkeypatch.setattr("sys.argv", ["hf_repo_sync.py", *arguments])
+    hub_clients = []
+
+    def create_hub_client():
+        hub_clients.append(object())
+        return hub_clients[-1]
+
+    monkeypatch.setattr(hf_repo_sync, "HfApi", create_hub_client)
+
+    with pytest.raises(SystemExit) as error:
+        hf_repo_sync.main()
+
+    assert error.value.code == 2
+    assert "non-empty weights directory" in capsys.readouterr().err
+    assert hub_clients == []
 
 
 def test_sidecar_assets_are_prefix_scoped_to_one_clock(tmp_path):

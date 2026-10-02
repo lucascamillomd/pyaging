@@ -21,6 +21,7 @@ import contextlib
 import sys
 import threading
 import time
+from contextvars import ContextVar
 
 from rich.console import Console, Group
 
@@ -52,6 +53,7 @@ DOT = "⏺" if sys.platform == "darwin" else "●"
 ELBOW = "⎿"
 
 _console = Console()
+_hf_bars_disabled = ContextVar("pyaging_hf_bars_disabled", default=False)
 
 
 class Sparkle:
@@ -107,20 +109,17 @@ def display_enabled(verbose) -> bool:
 
 @contextlib.contextmanager
 def quiet_hf_bars(verbose=True):
-    """Suppress the Hub's own download bars wherever the display renders its
-    own progress, and always at verbose=False. Non-interactive verbose runs
-    keep the bars: they are the only live progress signal there."""
-    from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
+    """Suppress bars for this run without changing global Hub settings.
 
+    Non-interactive verbose runs keep the bars: they are the only live
+    progress signal there. Nested quiet contexts remain quiet.
+    """
     animated = _console.is_jupyter or _console.is_interactive
-    were_enabled = (not verbose or animated) and not are_progress_bars_disabled()
-    if were_enabled:
-        disable_progress_bars()
+    token = _hf_bars_disabled.set(_hf_bars_disabled.get() or not verbose or animated)
     try:
         yield
     finally:
-        if were_enabled:
-            enable_progress_bars()
+        _hf_bars_disabled.reset(token)
 
 
 def _bar(completed: float, total: float | None, width: int = 24, pulse: bool = False):
@@ -143,7 +142,7 @@ def live_step(label: str, verbose):
     The step renders animated when interactive, prints final lines when
     piped, and is fully silent at verbose=False - callers keep one code path.
     """
-    with SimpleStep(label, enabled=display_enabled(verbose)) as step:
+    with quiet_hf_bars(verbose), SimpleStep(label, enabled=display_enabled(verbose)) as step:
         yield step, DisplayLogger(step.warn)
 
 
