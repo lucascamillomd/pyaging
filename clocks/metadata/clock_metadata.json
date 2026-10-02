@@ -233,7 +233,6 @@
     ],
     "model_type": "elastic net regression",
     "platform": [
-      "Illumina 450K",
       "Illumina EPIC"
     ],
     "population": "adults",
@@ -646,7 +645,7 @@
     "platform": [
       "Illumina 450K"
     ],
-    "population": "human, age unspecified",
+    "population": "all ages",
     "journal": "Brain",
     "last_author": "Jonathan Mill",
     "n_features": 347,
@@ -662,9 +661,9 @@
     "species": "Homo sapiens",
     "year": 2024,
     "approved_by_author": "✅",
-    "citation": "de Lima Camillo, L. P., Sehgal, R., Armstrong, J., Higgins-Chen, A. T., Horvath, S., & Wang, B. CpGPT: a foundation model for DNA methylation. bioRxiv 2024.10.24.619766 (2024).",
+    "citation": "de Lima Camillo, L. P., Sehgal, R., Armstrong, J., et al. CpGPT: a foundation model for DNA methylation. bioRxiv 2024.10.24.619766 (2024).",
     "doi": "https://doi.org/10.1101/2024.10.24.619766",
-    "notes": "CpGPTGrimAge3 implementation combining chronological age, GrimAge2 DNAm proxies, and CpGPT-predicted plasma-protein proxies in a Cox linear predictor that is calibrated to years.",
+    "notes": "CpGPTGrimAge3 implementation combining chronological age, GrimAge2 DNAm proxies, and CpGPT-predicted plasma-protein proxies in a Cox linear predictor that is calibrated to years. Supply derived methylation protein/lifestyle proxies and age, not a raw CpG matrix or measured proteomics. CpGPT protein proxies come from the proteins checkpoint on its trained standardized scale; required proxies must be present.",
     "research_only": true,
     "tissue": [
       "whole blood"
@@ -699,9 +698,9 @@
     "species": "Homo sapiens",
     "year": 2024,
     "approved_by_author": "✅",
-    "citation": "de Lima Camillo, L. P., Sehgal, R., Armstrong, J., Higgins-Chen, A. T., Horvath, S., & Wang, B. CpGPT: a foundation model for DNA methylation. bioRxiv 2024.10.24.619766 (2024).",
+    "citation": "de Lima Camillo, L. P., Sehgal, R., Armstrong, J., et al. CpGPT: a foundation model for DNA methylation. bioRxiv 2024.10.24.619766 (2024).",
     "doi": "https://doi.org/10.1101/2024.10.24.619766",
-    "notes": "Principal-component CpGPTGrimAge3 implementation combining chronological age, GrimAge2 DNAm proxies, and CpGPT-predicted plasma-protein proxies; 30 proxy inputs are projected to 29 PCs, entered with age into a Cox linear predictor, and calibrated to years.",
+    "notes": "Principal-component CpGPTGrimAge3 implementation combining chronological age, GrimAge2 DNAm proxies, and CpGPT-predicted plasma-protein proxies; 30 proxy inputs are projected to 29 PCs, entered with age into a Cox linear predictor, and calibrated to years. Supply derived methylation protein/lifestyle proxies and age, not a raw CpG matrix or measured proteomics. CpGPT protein proxies come from the proteins checkpoint on its trained standardized scale; required proxies must be present.",
     "research_only": true,
     "tissue": [
       "whole blood"
@@ -1023,7 +1022,7 @@
     "approved_by_author": "⌛",
     "citation": "Barbu, Miruna C., et al. \"Epigenetic prediction of major depressive disorder.\" Molecular Psychiatry 26.9 (2021): 5112-5123.",
     "doi": "https://doi.org/10.1038/s41380-020-0808-3",
-    "notes": "Blood methylation risk score for major depressive disorder built with penalised regression on genome-wide EPIC-array CpGs, trained on over 1,200 cases and 1,800 controls. Discriminates prevalent from incident MDD independently of polygenic risk, with a smoking-independent variant also derived.",
+    "notes": "Blood methylation risk score for major depressive disorder, fitted with LASSO in 1,223 cases and 1,824 controls. The training outcome was MDD status residualized for age, sex and ten genetic principal components. The paper used dasen-normalized M-values, with training methylation additionally adjusted for relatedness, blood-cell composition and processing batch. The packaged linear model does not perform those input transformations or adjustments; raw beta values are not the published training input. Its output is a unitless score, not a depression probability or a classifier of prevalent versus incident disease.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -1037,7 +1036,7 @@
     "unit": [
       "unitless"
     ],
-    "model_type": "elastic net regression",
+    "model_type": "LASSO regression",
     "platform": [
       "Illumina EPIC"
     ],
@@ -1266,7 +1265,7 @@
     "approved_by_author": "⌛",
     "citation": "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591.",
     "doi": "https://doi.org/10.18632/aging.101414",
-    "notes": "Blood DNA-methylation estimator trained by elastic net on 513 CpGs common to the 27K, 450K and EPIC arrays to reproduce a mortality-derived clinical Phenotypic Age.",
+    "notes": "Blood DNA-methylation estimator trained by elastic net on 513 CpGs common to the 27K, 450K and EPIC arrays to reproduce a mortality-derived clinical Phenotypic Age. The parent DNAmPhenoAge coefficients were fitted on InCHIANTI 450K whole-blood data; the selected sites also occur on 27K and EPIC arrays.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -1282,9 +1281,7 @@
     ],
     "model_type": "elastic net regression",
     "platform": [
-      "Illumina 27K",
-      "Illumina 450K",
-      "Illumina EPIC"
+      "Illumina 450K"
     ],
     "population": "adults",
     "journal": "Aging",
@@ -1305,7 +1302,7 @@
       "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
     ],
     "doi": "https://doi.org/10.1186/s13148-022-01249-z",
-    "notes": "Original Levine-lab non-polycomb PhenoAge contribution using 458 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero.",
+    "notes": "Original Levine-lab non-polycomb PhenoAge contribution using 458 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero. The parent DNAmPhenoAge coefficients were fitted on InCHIANTI 450K whole-blood data; the selected sites also occur on 27K and EPIC arrays.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -1321,9 +1318,7 @@
     ],
     "model_type": "weighted linear score",
     "platform": [
-      "Illumina 27K",
-      "Illumina 450K",
-      "Illumina EPIC"
+      "Illumina 450K"
     ],
     "population": "adults",
     "journal": "Clinical Epigenetics",
@@ -1345,7 +1340,7 @@
       "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
     ],
     "doi": "https://doi.org/10.1186/s13148-022-01249-z",
-    "notes": "Original Levine-lab polycomb-related PhenoAge contribution using 55 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero.",
+    "notes": "Original Levine-lab polycomb-related PhenoAge contribution using 55 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero. The parent DNAmPhenoAge coefficients were fitted on InCHIANTI 450K whole-blood data; the selected sites also occur on 27K and EPIC arrays.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -1361,9 +1356,7 @@
     ],
     "model_type": "weighted linear score",
     "platform": [
-      "Illumina 27K",
-      "Illumina 450K",
-      "Illumina EPIC"
+      "Illumina 450K"
     ],
     "population": "adults",
     "journal": "Clinical Epigenetics",
@@ -2024,7 +2017,7 @@
     "approved_by_author": "⌛",
     "citation": "Tong, Huige, et al. \"Cell-type specific epigenetic clocks to quantify biological age at cell-type resolution.\" Aging 16 (2024): 14204–14237.",
     "doi": "https://doi.org/10.18632/aging.206184",
-    "notes": "Glia-Sin is a glia semi-intrinsic chronological-age clock: elastic-net regression was restricted to glia age-DMCTs but fitted to methylation values not adjusted for brain cell fractions.",
+    "notes": "Glia-Sin is a glia semi-intrinsic chronological-age clock: elastic-net regression was restricted to glia age-DMCTs but fitted to methylation values not adjusted for brain cell fractions. Coefficients were fitted in the 450K Jaffe cortex cohort; the regularization penalty was selected on the EPIC Pihlstrom cohort.",
     "research_only": null,
     "tissue": [
       "brain cortex"
@@ -2040,7 +2033,8 @@
     ],
     "model_type": "elastic net regression",
     "platform": [
-      "Illumina 450K"
+      "Illumina 450K",
+      "Illumina EPIC"
     ],
     "population": "adults",
     "journal": "Aging",
@@ -3075,7 +3069,7 @@
       "Illumina 27K",
       "Illumina 450K"
     ],
-    "population": "adults",
+    "population": "all ages",
     "journal": "Aging",
     "last_author": "Wolfgang Wagner",
     "n_features": 99,
@@ -3485,7 +3479,7 @@
     "approved_by_author": "⌛",
     "citation": "McCartney, D. L., et al. “Epigenetic prediction of complex traits and death.” Genome Biology 19, 136 (2018).",
     "doi": "https://doi.org/10.1186/s13059-018-1514-1",
-    "notes": "Whole-blood DNAm LASSO score for alcohol consumption, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "notes": "Whole-blood DNAm LASSO score trained on log(alcohol units per week + 1), residualized for age, sex and ten genetic principal components. The returned linear score remains on that adjusted natural-log scale; it is not an absolute exposure in physical units. Evaluated out of sample in LBC1936.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -3497,7 +3491,7 @@
       "alcohol consumption"
     ],
     "unit": [
-      "units per week"
+      "natural-log (units per week + 1)"
     ],
     "model_type": "LASSO regression",
     "platform": [
@@ -3519,7 +3513,7 @@
     "approved_by_author": "⌛",
     "citation": "McCartney, D. L., et al. “Epigenetic prediction of complex traits and death.” Genome Biology 19, 136 (2018).",
     "doi": "https://doi.org/10.1186/s13059-018-1514-1",
-    "notes": "Whole-blood DNAm LASSO score for body mass index (BMI), trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "notes": "Whole-blood DNAm LASSO score for body mass index (BMI), trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. BMI was log-transformed before residualization. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -3554,7 +3548,7 @@
     "approved_by_author": "⌛",
     "citation": "McCartney, D. L., et al. “Epigenetic prediction of complex traits and death.” Genome Biology 19, 136 (2018).",
     "doi": "https://doi.org/10.1186/s13059-018-1514-1",
-    "notes": "Whole-blood DNAm LASSO score for body fat percentage, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "notes": "Whole-blood DNAm LASSO score for body fat percentage, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -3589,7 +3583,7 @@
     "approved_by_author": "⌛",
     "citation": "McCartney, D. L., et al. “Epigenetic prediction of complex traits and death.” Genome Biology 19, 136 (2018).",
     "doi": "https://doi.org/10.1186/s13059-018-1514-1",
-    "notes": "Whole-blood DNAm LASSO score for educational attainment, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "notes": "Whole-blood DNAm LASSO score for educational attainment, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -3624,7 +3618,7 @@
     "approved_by_author": "⌛",
     "citation": "McCartney, D. L., et al. “Epigenetic prediction of complex traits and death.” Genome Biology 19, 136 (2018).",
     "doi": "https://doi.org/10.1186/s13059-018-1514-1",
-    "notes": "Whole-blood DNAm LASSO score for HDL cholesterol, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "notes": "Whole-blood DNAm LASSO score for HDL cholesterol, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -3659,7 +3653,7 @@
     "approved_by_author": "⌛",
     "citation": "McCartney, D. L., et al. “Epigenetic prediction of complex traits and death.” Genome Biology 19, 136 (2018).",
     "doi": "https://doi.org/10.1186/s13059-018-1514-1",
-    "notes": "Whole-blood DNAm LASSO score for LDL with remnant cholesterol, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "notes": "Whole-blood DNAm LASSO score for LDL with remnant cholesterol, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -3694,7 +3688,7 @@
     "approved_by_author": "⌛",
     "citation": "McCartney, D. L., et al. “Epigenetic prediction of complex traits and death.” Genome Biology 19, 136 (2018).",
     "doi": "https://doi.org/10.1186/s13059-018-1514-1",
-    "notes": "Whole-blood DNAm LASSO score for smoking exposure (pack-years), trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "notes": "Whole-blood DNAm LASSO score trained on log(smoking pack-years + 1), residualized for age, sex and ten genetic principal components. The returned linear score remains on that adjusted natural-log scale; it is not an absolute exposure in physical units. Evaluated out of sample in LBC1936.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -3706,7 +3700,7 @@
       "smoking exposure"
     ],
     "unit": [
-      "pack-years"
+      "natural-log (pack-years + 1)"
     ],
     "model_type": "LASSO regression",
     "platform": [
@@ -3728,7 +3722,7 @@
     "approved_by_author": "⌛",
     "citation": "McCartney, D. L., et al. “Epigenetic prediction of complex traits and death.” Genome Biology 19, 136 (2018).",
     "doi": "https://doi.org/10.1186/s13059-018-1514-1",
-    "notes": "Whole-blood DNAm LASSO score for total cholesterol, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936.",
+    "notes": "Whole-blood DNAm LASSO score for total cholesterol, trained in Generation Scotland on an age-, sex-, and ancestry-adjusted phenotype residual and evaluated out of sample in LBC1936. The current pyaging implementation applies a sigmoid to the linear score, so the returned value is bounded and unitless. It is neither the original continuous phenotype residual nor a calibrated probability; the paper does not specify this sigmoid.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -3901,7 +3895,7 @@
     "approved_by_author": "⌛",
     "citation": "Tong, Huige, et al. \"Cell-type specific epigenetic clocks to quantify biological age at cell-type resolution.\" Aging 16 (2024): 13452–13504.",
     "doi": "https://doi.org/10.18632/aging.206184",
-    "notes": "Neu-Sin is a neuron semi-intrinsic chronological-age clock: elastic-net regression was restricted to neuron age-DMCTs but fitted to methylation values not adjusted for brain cell fractions.",
+    "notes": "Neu-Sin is a neuron semi-intrinsic chronological-age clock: elastic-net regression was restricted to neuron age-DMCTs but fitted to methylation values not adjusted for brain cell fractions. Coefficients were fitted in the 450K Jaffe cortex cohort; the regularization penalty was selected on the EPIC Pihlstrom cohort.",
     "research_only": null,
     "tissue": [
       "brain cortex"
@@ -3917,7 +3911,8 @@
     ],
     "model_type": "elastic net regression",
     "platform": [
-      "Illumina 450K"
+      "Illumina 450K",
+      "Illumina EPIC"
     ],
     "population": "adults",
     "journal": "Aging",
@@ -5792,7 +5787,7 @@
     "approved_by_author": "⌛",
     "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644–661.",
     "doi": "https://doi.org/10.1038/s43587-022-00248-2",
-    "notes": "Principal-component proxy trained to reproduce the original DNAmTL clock score; the implemented returned score is on the DNAmTL base-pair scale.",
+    "notes": "Principal-component proxy trained to reproduce the original DNAmTL clock output; the returned score remains in kilobases. Figure-level base-pair deviations are a separate analysis-scale conversion.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -5804,7 +5799,7 @@
       "DNAmTL output"
     ],
     "unit": [
-      "base pairs"
+      "kilobases"
     ],
     "model_type": "PCA + elastic net regression",
     "platform": [
@@ -8172,7 +8167,7 @@
     "approved_by_author": "⌛",
     "citation": "Weidner, C. I., Lin, Q., Koch, C. M., et al. (2014). Aging of blood can be tracked by DNA methylation changes at just three CpG sites. Genome Biology, 15, R24.",
     "doi": "https://doi.org/10.1186/gb-2014-15-2-r24",
-    "notes": "Three-site whole-blood epigenetic-age estimator. The sites were selected from Illumina 27K blood profiles, and the final multivariate linear equation was fitted on targeted bisulfite-pyrosequencing beta values from 82 blood samples and validated in 69 independent samples.",
+    "notes": "Three-site whole-blood epigenetic-age estimator. The sites were selected from Illumina 27K blood profiles, and the final multivariate linear equation was fitted on targeted bisulfite-pyrosequencing beta values from 82 blood samples and validated in 69 independent samples. The published PDE4C measurement is a pyrosequenced CpG upstream of array probe cg17861230. The package uses cg17861230 as its feature label; supplying that array probe directly is an approximation and does not reproduce the published assay.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -8191,7 +8186,7 @@
       "Illumina 27K",
       "bisulfite sequencing"
     ],
-    "population": "adults",
+    "population": "all ages",
     "journal": "Genome Biology",
     "last_author": "Wolfgang Wagner",
     "n_features": 3,
@@ -8243,7 +8238,7 @@
     "approved_by_author": "⌛",
     "citation": "Wang, Y. et al. DNA methylation-based sex classifier to predict sex and identify sex chromosome aneuploidy. BMC Genomics 22, 484 (2021).",
     "doi": "https://doi.org/10.1186/s12864-021-07675-2",
-    "notes": "X-chromosome first-principal-component score used with the Y score to infer X dosage and classify 46,XX, 46,XY, 45,X, and 47,XXY samples.",
+    "notes": "X-chromosome first-principal-component score used with the Y score to infer X dosage and classify 46,XX, 46,XY, 45,X, and 47,XXY samples. Feature screening and PCA used 450K whole-blood data from 18-year-olds; EPIC data were used for validation.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -8259,8 +8254,7 @@
     ],
     "model_type": "principal component analysis",
     "platform": [
-      "Illumina 450K",
-      "Illumina EPIC"
+      "Illumina 450K"
     ],
     "population": "adults",
     "journal": "BMC Genomics",
@@ -8280,7 +8274,7 @@
     "approved_by_author": "⌛",
     "citation": "Wang, Y. et al. DNA methylation-based sex classifier to predict sex and identify sex chromosome aneuploidy. BMC Genomics 22, 484 (2021).",
     "doi": "https://doi.org/10.1186/s12864-021-07675-2",
-    "notes": "Y-chromosome first-principal-component score used with the X score to infer Y presence and classify 46,XX, 46,XY, 45,X, and 47,XXY samples.",
+    "notes": "Y-chromosome first-principal-component score used with the X score to infer Y presence and classify 46,XX, 46,XY, 45,X, and 47,XXY samples. Feature screening and PCA used 450K whole-blood data from 18-year-olds; EPIC data were used for validation.",
     "research_only": null,
     "tissue": [
       "whole blood"
@@ -8296,8 +8290,7 @@
     ],
     "model_type": "principal component analysis",
     "platform": [
-      "Illumina 450K",
-      "Illumina EPIC"
+      "Illumina 450K"
     ],
     "population": "adults",
     "journal": "BMC Genomics",

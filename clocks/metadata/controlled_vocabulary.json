@@ -454,6 +454,8 @@
         "meters per second",
         "milliliters per kilogram per minute",
         "months",
+        "natural-log (pack-years + 1)",
+        "natural-log (units per week + 1)",
         "natural-log milligrams per liter",
         "natural-log percent",
         "pack-years",
