@@ -156,7 +156,6 @@ def save_clock(model, output_dir=None):
     output.mkdir(parents=True, exist_ok=True)
     name = model.metadata["clock_name"]
     torch.save(model, output / f"{name}.pt")
-    (output / f"{name}.LICENSE.txt").write_text(model.license_text)
     (output / f"{name}.provenance.json").write_text(json.dumps(model.provenance, indent=2) + "\n")
 
 
