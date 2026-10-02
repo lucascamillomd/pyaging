@@ -1,0 +1,1069 @@
+{
+  "observed_date": "2026-10-02",
+  "provider": "OpenAlex",
+  "method": "Exact DOI lookup of cited_by_count; title checked against the referenced paper. Journal and preprint counts are not summed. Clocks from one paper share its count.",
+  "clock_count": 240,
+  "publication_count": 82,
+  "works": {
+    "https://doi.org/10.1002/advs.76740": {
+      "title": "Pasta, a Versatile Transcriptomic Clock, Maps the Chemical and Genetic Determinants of Aging and Rejuvenation",
+      "work_id": "https://openalex.org/W4411021267",
+      "citations": 2,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1002/advs.76740",
+      "response_sha256": "399b4fff526dafd8ae75ce081e4eb665ee1c83d1e135a95a0b9d81e60ad6f6ac",
+      "clocks": [
+        "pasta",
+        "pastamouse",
+        "reg"
+      ]
+    },
+    "https://doi.org/10.1007/s10910-022-01381-4": {
+      "title": "A revised multi-tissue, multi-platform epigenetic clock model for methylation array data",
+      "work_id": "https://openalex.org/W4291637387",
+      "citations": 3,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1007/s10910-022-01381-4",
+      "response_sha256": "0a5538899331ab21ab481cc9cb85d718c10739574c661d21b4ca1623bc9a02f0",
+      "clocks": [
+        "pipekelasticnet",
+        "pipekfilteredh",
+        "pipekretrainedh"
+      ]
+    },
+    "https://doi.org/10.1007/s11357-021-00480-5": {
+      "title": "A toolkit for quantification of biological age from blood chemistry and organ function test data: BioAge",
+      "work_id": "https://openalex.org/W3210156413",
+      "citations": 404,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1007/s11357-021-00480-5",
+      "response_sha256": "f1c9d6d9723435718f8a759349ee3bec62487911d6f34f55b33dd739e3a1d6c5",
+      "clocks": [
+        "homeostaticdysregulation",
+        "kdmage",
+        "phenoagesaopaulo"
+      ]
+    },
+    "https://doi.org/10.1007/s11357-023-00731-7": {
+      "title": "Centenarian clocks: epigenetic clocks for validating claims of exceptional longevity",
+      "work_id": "https://openalex.org/W4360942071",
+      "citations": 49,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1007/s11357-023-00731-7",
+      "response_sha256": "3e6a68cfe3922bb9735d838799a681421a39014fd7c532d5819caa5e992c5748",
+      "clocks": [
+        "encen100",
+        "encen40"
+      ]
+    },
+    "https://doi.org/10.1007/s11357-023-00986-0": {
+      "title": "ATAC-clock: An aging clock based on chromatin accessibility",
+      "work_id": "https://openalex.org/W4388344123",
+      "citations": 54,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1007/s11357-023-00986-0",
+      "response_sha256": "be4cba7868c487964550d4a0814297f8c7c71b834f8632183add132a5eb9fc8a",
+      "clocks": [
+        "ocampoatac1",
+        "ocampoatac2"
+      ]
+    },
+    "https://doi.org/10.1007/s11357-025-01808-1": {
+      "title": "EnsembleAge: enhancing epigenetic age assessment with a multi-clock framework",
+      "work_id": "https://openalex.org/W4413004641",
+      "citations": 5,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1007/s11357-025-01808-1",
+      "response_sha256": "1ed58662cee3b4f048139d9ef3d6eb5e252ce6860b283b072281ca9fa4ed6542",
+      "clocks": [
+        "ensembleagehumanmouse",
+        "ensembleagestatic",
+        "ensembleagestatictop"
+      ]
+    },
+    "https://doi.org/10.1016/j.biopsych.2022.06.036": {
+      "title": "Additive Effects of Stress and Alcohol Exposure on Accelerated Epigenetic Aging in Alcohol Use Disorder",
+      "work_id": "https://openalex.org/W4285601140",
+      "citations": 27,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1016/j.biopsych.2022.06.036",
+      "response_sha256": "cc486a1f06e835a2e74d40bf88efc1a6e24a08010230b37fead5a7bcdc0adbe4",
+      "clocks": [
+        "dnamstress"
+      ]
+    },
+    "https://doi.org/10.1016/j.cmet.2017.03.016": {
+      "title": "Using DNA Methylation Profiling to Evaluate Biological Age and Longevity Interventions",
+      "work_id": "https://openalex.org/W2605265780",
+      "citations": 453,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1016/j.cmet.2017.03.016",
+      "response_sha256": "ba613976a7ffa6ac2a267ae5b9d4289cf3a09b560e9e277f20f79e33c770708f",
+      "clocks": [
+        "petkovich"
+      ]
+    },
+    "https://doi.org/10.1016/j.cmet.2024.10.005": {
+      "title": "Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems",
+      "work_id": "https://openalex.org/W4403980232",
+      "citations": 128,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1016/j.cmet.2024.10.005",
+      "response_sha256": "70a53ff6956d0ce1e6e838fdbbf4f4cfa69a6a7198748b768e4f81d1c8b5d8ee",
+      "clocks": [
+        "organagechronologicaladipose",
+        "organagechronologicaladrenal",
+        "organagechronologicalartery",
+        "organagechronologicalbrain",
+        "organagechronologicalconventional",
+        "organagechronologicalesophagus",
+        "organagechronologicalfemale",
+        "organagechronologicalheart",
+        "organagechronologicalimmune",
+        "organagechronologicalintestine",
+        "organagechronologicalkidney",
+        "organagechronologicalliver",
+        "organagechronologicallung",
+        "organagechronologicalmale",
+        "organagechronologicalmultiorgan",
+        "organagechronologicalmuscle",
+        "organagechronologicalorganismal",
+        "organagechronologicalpancreas",
+        "organagechronologicalpituitary",
+        "organagechronologicalsalivary",
+        "organagechronologicalskin",
+        "organagechronologicalstomach",
+        "organagechronologicalthyroid",
+        "organagemortalityadipose",
+        "organagemortalityadrenal",
+        "organagemortalityartery",
+        "organagemortalitybrain",
+        "organagemortalityconventional",
+        "organagemortalityesophagus",
+        "organagemortalityfemale",
+        "organagemortalityheart",
+        "organagemortalityimmune",
+        "organagemortalityintestine",
+        "organagemortalitykidney",
+        "organagemortalityliver",
+        "organagemortalitylung",
+        "organagemortalitymale",
+        "organagemortalitymultiorgan",
+        "organagemortalitymuscle",
+        "organagemortalityorganismal",
+        "organagemortalitypancreas",
+        "organagemortalitypituitary",
+        "organagemortalitysalivary",
+        "organagemortalityskin",
+        "organagemortalitystomach",
+        "organagemortalitythyroid"
+      ]
+    },
+    "https://doi.org/10.1016/j.molcel.2012.10.016": {
+      "title": "Genome-wide Methylation Profiles Reveal Quantitative Views of Human Aging Rates",
+      "work_id": "https://openalex.org/W2121091193",
+      "citations": 4678,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1016/j.molcel.2012.10.016",
+      "response_sha256": "c08951c8319430041437cad141a6242a3db64cd3a2a32c6de0d593a154ad30ec",
+      "clocks": [
+        "hannum"
+      ]
+    },
+    "https://doi.org/10.1038/ncomms14617": {
+      "title": "DNA methylation signatures in peripheral blood strongly predict all-cause mortality",
+      "work_id": "https://openalex.org/W2596440417",
+      "citations": 421,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/ncomms14617",
+      "response_sha256": "315c0376c3fcce5b2821247d4d8f4696470bd443b3372eedad7976c1964f5e4f",
+      "clocks": [
+        "zhangmortality"
+      ]
+    },
+    "https://doi.org/10.1038/nmat4997": {
+      "title": "Circulating tumour DNA methylation markers for diagnosis and prognosis of hepatocellular carcinoma",
+      "work_id": "https://openalex.org/W2764195238",
+      "citations": 900,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/nmat4997",
+      "response_sha256": "2a07fe6695066c0f497bdcf06d88877e63b943ae7bfaaa72cb97d5c00102db79",
+      "clocks": [
+        "hepatoxu"
+      ]
+    },
+    "https://doi.org/10.1038/s41380-020-0808-3": {
+      "title": "Epigenetic prediction of major depressive disorder",
+      "work_id": "https://openalex.org/W3033449288",
+      "citations": 93,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s41380-020-0808-3",
+      "response_sha256": "bf4a0849160e8f8c3824eb0b1e8f642e65b6abb74c0e474dc1ef8e1af55162b9",
+      "clocks": [
+        "depressionbarbu"
+      ]
+    },
+    "https://doi.org/10.1038/s41467-021-21064-z": {
+      "title": "The genome-wide impact of trisomy 21 on DNA methylation and its implications for hematopoiesis",
+      "work_id": "https://openalex.org/W3128526015",
+      "citations": 64,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s41467-021-21064-z",
+      "response_sha256": "31a310ab4339e1fb44d84754806316edeebd43e1ef779105f8ee66f4081e156f",
+      "clocks": [
+        "downsyndrome"
+      ]
+    },
+    "https://doi.org/10.1038/s41467-021-27864-7": {
+      "title": "Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling",
+      "work_id": "https://openalex.org/W4220700446",
+      "citations": 302,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s41467-021-27864-7",
+      "response_sha256": "d69c66ea1c5500da1706cc6b5bfc97db0d6ca8194256d90a0ab52f9d4f8ae670",
+      "clocks": [
+        "twelvecelldeconvolutebloodepicbas",
+        "twelvecelldeconvolutebloodepicbmem",
+        "twelvecelldeconvolutebloodepicbnv",
+        "twelvecelldeconvolutebloodepiccd4mem",
+        "twelvecelldeconvolutebloodepiccd4nv",
+        "twelvecelldeconvolutebloodepiccd8mem",
+        "twelvecelldeconvolutebloodepiccd8nv",
+        "twelvecelldeconvolutebloodepiceos",
+        "twelvecelldeconvolutebloodepicmono",
+        "twelvecelldeconvolutebloodepicneu",
+        "twelvecelldeconvolutebloodepicnk",
+        "twelvecelldeconvolutebloodepictreg"
+      ]
+    },
+    "https://doi.org/10.1038/s41467-022-32893-x": {
+      "title": "Derivation and validation of an epigenetic frailty risk score in population-based cohorts of older adults",
+      "work_id": "https://openalex.org/W4294992822",
+      "citations": 24,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s41467-022-32893-x",
+      "response_sha256": "3640a7259f95ed3453d722df55221f2640df1efe137f42c264d24ecca0353a46",
+      "clocks": [
+        "dnamfili"
+      ]
+    },
+    "https://doi.org/10.1038/s41467-022-34268-8": {
+      "title": "Cell division drives DNA methylation loss in late-replicating domains in primary human cells",
+      "work_id": "https://openalex.org/W4308568985",
+      "citations": 93,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s41467-022-34268-8",
+      "response_sha256": "943d047572e4aecc9cc90fd555cd1fac7073045a675aa613ce56de53ce5b7298",
+      "clocks": [
+        "replitali",
+        "replitalinorm"
+      ]
+    },
+    "https://doi.org/10.1038/s41467-024-48649-8": {
+      "title": "An improved epigenetic counter to track mitotic age in normal and precancerous tissues",
+      "work_id": "https://openalex.org/W4397022786",
+      "citations": 29,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s41467-024-48649-8",
+      "response_sha256": "3cf29ca8da7e35812b371ab66926a94abb885d4af7301832964df4cb2821b0c6",
+      "clocks": [
+        "stemtoc",
+        "stemtocvitro"
+      ]
+    },
+    "https://doi.org/10.1038/s41514-022-00085-y": {
+      "title": "A pan-tissue DNA-methylation epigenetic clock based on deep learning",
+      "work_id": "https://openalex.org/W4224276389",
+      "citations": 161,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s41514-022-00085-y",
+      "response_sha256": "47f78fae957faf0beb84bbeb68c11ca95c2233c4550d8f99f791c600dc5b12bc",
+      "clocks": [
+        "altumage"
+      ]
+    },
+    "https://doi.org/10.1038/s41514-025-00221-4": {
+      "title": "LinAge2: providing actionable insights and benchmarking with epigenetic clocks",
+      "work_id": "https://openalex.org/W4409730772",
+      "citations": 7,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s41514-025-00221-4",
+      "response_sha256": "bf3af43835f229a7c0eb1c298dd06e762b237322272b7afea2c3f1c6df7acfe6",
+      "clocks": [
+        "linage2"
+      ]
+    },
+    "https://doi.org/10.1038/s41586-026-10542-3": {
+      "title": "Universal transcriptomic hallmarks of mammalian ageing and mortality",
+      "work_id": "https://openalex.org/W7162513626",
+      "citations": 21,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s41586-026-10542-3",
+      "response_sha256": "e80c6bbe7706ff0c565151ec11b5ae38487c87a21c8499778e15fbd54568f111",
+      "clocks": [
+        "tage",
+        "tagemortality"
+      ]
+    },
+    "https://doi.org/10.1038/s42003-024-06609-4": {
+      "title": "Development of an epigenetic clock resistant to changes in immune cell composition",
+      "work_id": "https://openalex.org/W4401245022",
+      "citations": 64,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s42003-024-06609-4",
+      "response_sha256": "882c1bd50e6eeb1881b98d72ae72e23de2d75fb8cd41a18190be9a87af0b2a24",
+      "clocks": [
+        "intrinclock",
+        "intrinclock370"
+      ]
+    },
+    "https://doi.org/10.1038/s43018-020-00131-2": {
+      "title": "The proliferative history shapes the DNA methylome of B-cell tumors and predicts clinical outcome",
+      "work_id": "https://openalex.org/W3097796274",
+      "citations": 109,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s43018-020-00131-2",
+      "response_sha256": "6ee3d408a4fa9a1a60bf30a7c594f07dee8cc648833e534d8678c9cf12669f40",
+      "clocks": [
+        "epicmithyper",
+        "epicmithypo"
+      ]
+    },
+    "https://doi.org/10.1038/s43587-022-00248-2": {
+      "title": "A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking",
+      "work_id": "https://openalex.org/W4285492214",
+      "citations": 546,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s43587-022-00248-2",
+      "response_sha256": "83b9a1e86b053dab0d539e51b922dba13520ba3b199f328ed35310a816a2a66d",
+      "clocks": [
+        "hrsinchphenoage",
+        "pcdnamtl",
+        "pcgrimage",
+        "pcgrimageadm",
+        "pcgrimageb2m",
+        "pcgrimagecystatinc",
+        "pcgrimagegdf15",
+        "pcgrimageleptin",
+        "pcgrimagepackyrs",
+        "pcgrimagepai1",
+        "pcgrimagetimp1",
+        "pchannum",
+        "pchorvath2013",
+        "pcphenoage",
+        "pcskinandblood"
+      ]
+    },
+    "https://doi.org/10.1038/s43587-023-00462-6": {
+      "title": "Universal DNA methylation age across mammalian tissues",
+      "work_id": "https://openalex.org/W4385726786",
+      "citations": 415,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s43587-023-00462-6",
+      "response_sha256": "0da39e50ee6cddf64f9125b165da55ae16cf299ad9643ad28d04667cfc050d73",
+      "clocks": [
+        "mammalian1",
+        "mammalian2",
+        "mammalian3",
+        "mammalianblood2",
+        "mammalianblood3",
+        "mammalianskin2",
+        "mammalianskin3"
+      ]
+    },
+    "https://doi.org/10.1038/s43587-023-00557-0": {
+      "title": "Causality-enriched epigenetic age uncouples damage and adaptation",
+      "work_id": "https://openalex.org/W4391027505",
+      "citations": 208,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s43587-023-00557-0",
+      "response_sha256": "77ee0d2ac620126de92bee382324d9a230964395e7a4117d0b349a3c1299d4a7",
+      "clocks": [
+        "yingadaptage",
+        "yingcausage",
+        "yingdamage"
+      ]
+    },
+    "https://doi.org/10.1038/s43587-024-00600-8": {
+      "title": "Quantifying the stochastic component of epigenetic aging",
+      "work_id": "https://openalex.org/W4396773086",
+      "citations": 76,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s43587-024-00600-8",
+      "response_sha256": "528c2f061c82f8840f494fc404ce7c23c98ea74c8d921ba79bcb5942f46fbb19",
+      "clocks": [
+        "stoch",
+        "stocp",
+        "stocz"
+      ]
+    },
+    "https://doi.org/10.1038/s43587-025-00883-5": {
+      "title": "A blood-based epigenetic clock for intrinsic capacity predicts mortality and is associated with clinical, immunological and lifestyle factors",
+      "work_id": "https://openalex.org/W4411036731",
+      "citations": 45,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s43587-025-00883-5",
+      "response_sha256": "747552c636904fe967113b88c3efd9ef79771edd3425df7773aa937b69dd48c2",
+      "clocks": [
+        "dnamic"
+      ]
+    },
+    "https://doi.org/10.1038/s43587-025-00958-3": {
+      "title": "Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems",
+      "work_id": "https://openalex.org/W4414183316",
+      "citations": 57,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1038/s43587-025-00958-3",
+      "response_sha256": "55763a0d75de504c8fde3c09cbe387e186ee5b91f450bbe9f80e92e5dcccd2b2",
+      "clocks": [
+        "systemsage",
+        "systemsageblood",
+        "systemsagebrain",
+        "systemsageheart",
+        "systemsagehormone",
+        "systemsageimmune",
+        "systemsageinflammation",
+        "systemsagekidney",
+        "systemsageliver",
+        "systemsagelung",
+        "systemsagemetabolic",
+        "systemsagemusculoskeletal"
+      ]
+    },
+    "https://doi.org/10.1073/pnas.1820843116": {
+      "title": "The PedBE clock accurately estimates DNA methylation age in pediatric buccal cells",
+      "work_id": "https://openalex.org/W2980520436",
+      "citations": 301,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1073/pnas.1820843116",
+      "response_sha256": "3eb55d93ce2e5abff64a31b7e1e091d3084341e91f80769ea46172a167febad9",
+      "clocks": [
+        "pedbe"
+      ]
+    },
+    "https://doi.org/10.1073/pnas.2414086122": {
+      "title": "A proteomic signature of healthspan",
+      "work_id": "https://openalex.org/W4411086964",
+      "citations": 21,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1073/pnas.2414086122",
+      "response_sha256": "c965e86a163bb0a2996bbadad8dc1ada581ebf08eaa1f43b2e386e7885fd21f5",
+      "clocks": [
+        "hps"
+      ]
+    },
+    "https://doi.org/10.1080/15592294.2017.1389361": {
+      "title": "The MiAge Calculator: a DNA methylation-based mitotic age calculator of human tissue types",
+      "work_id": "https://openalex.org/W2770929780",
+      "citations": 98,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1080/15592294.2017.1389361",
+      "response_sha256": "bf1faa73bc460d961c220e38474ffcb0cc3c60dbeda6b2bf5fc12a25424ea26f",
+      "clocks": [
+        "miage"
+      ]
+    },
+    "https://doi.org/10.1093/brain/awaa334": {
+      "title": "Recalibrating the epigenetic clock: implications for assessing biological age in the human cortex",
+      "work_id": "https://openalex.org/W3111314674",
+      "citations": 216,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1093/brain/awaa334",
+      "response_sha256": "857838a14e7cbcf103011f17c02dde095cdd9df1f7e727be86101897bdcb3e5b",
+      "clocks": [
+        "corticalclock"
+      ]
+    },
+    "https://doi.org/10.1093/gerona/glab046": {
+      "title": "Creating and Validating a DNA Methylation-Based Proxy for Interleukin-6",
+      "work_id": "https://openalex.org/W3132892285",
+      "citations": 57,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1093/gerona/glab046",
+      "response_sha256": "fbb47dcb044510efed2e374c796ceb592030a9bd2757ec4a5207364ebfc42b87",
+      "clocks": [
+        "compil6"
+      ]
+    },
+    "https://doi.org/10.1101/2024.10.24.619766": {
+      "title": "CpGPT: a Foundation Model for DNA Methylation",
+      "work_id": "https://openalex.org/W4403862062",
+      "citations": 35,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1101/2024.10.24.619766",
+      "response_sha256": "2af3fae7f194f808a4c9c62fdff0bd7f850669c4a85b093728c777e71fbdab30",
+      "clocks": [
+        "cpgptgrimage3",
+        "cpgptpcgrimage3"
+      ]
+    },
+    "https://doi.org/10.1111/acel.12005": {
+      "title": "Methylation of ELOVL 2 gene as a new epigenetic marker of age",
+      "work_id": "https://openalex.org/W1980326316",
+      "citations": 513,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1111/acel.12005",
+      "response_sha256": "9b206532fbd077a83ada091a995305c40458b0a26cc4abf8dd5f0b8a7b449d3e",
+      "clocks": [
+        "garagnani"
+      ]
+    },
+    "https://doi.org/10.1111/acel.13320": {
+      "title": "BiT age: A transcriptome‐based aging clock near the theoretical limit of accuracy",
+      "work_id": "https://openalex.org/W3133928772",
+      "citations": 184,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1111/acel.13320",
+      "response_sha256": "014b769b0973a84738ada3e9845065f2cadd1ac60da34f07403c99a63045d689",
+      "clocks": [
+        "bitage"
+      ]
+    },
+    "https://doi.org/10.1111/acel.14195": {
+      "title": "Proteomic aging clock ( PAC ) predicts age‐related outcomes in middle‐aged and older adults",
+      "work_id": "https://openalex.org/W4396930237",
+      "citations": 68,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1111/acel.14195",
+      "response_sha256": "72aa131455af598e7b2b7348dfca463ae6901e4d2abe712fb4c416fc1472b5da",
+      "clocks": [
+        "pac"
+      ]
+    },
+    "https://doi.org/10.1111/acel.14288": {
+      "title": "Retro‐age: A unique epigenetic biomarker of aging captured by DNA methylation states of retroelements",
+      "work_id": "https://openalex.org/W4401261137",
+      "citations": 31,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1111/acel.14288",
+      "response_sha256": "d3099939416f174c76ceda39407aae0890312fbcf59303644a9b2b20fc77fb3e",
+      "clocks": [
+        "retroelementagev1",
+        "retroelementagev2"
+      ]
+    },
+    "https://doi.org/10.1111/acel.70430": {
+      "title": "DNA Methylation Signatures of Cellular Senescence Are Not Reversed by Senolytic Treatment",
+      "work_id": "https://openalex.org/W7131629812",
+      "citations": 0,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1111/acel.70430",
+      "response_sha256": "cb749aada06db989dd91e15a9b0262028572ae9efd89cf20a90ef419feeca2a6",
+      "clocks": [
+        "senchronoage",
+        "sencultureage",
+        "senmortalityage"
+      ]
+    },
+    "https://doi.org/10.1126/sciadv.adf4163": {
+      "title": "More than bad luck: Cancer and aging are linked to replication-driven changes to the epigenome",
+      "work_id": "https://openalex.org/W4384820782",
+      "citations": 29,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1126/sciadv.adf4163",
+      "response_sha256": "1ae1a2c3435f85d94f517376fc438d15d3a2c2941b39ba76e46b3f3d22fdb107",
+      "clocks": [
+        "celldrift"
+      ]
+    },
+    "https://doi.org/10.1126/sciadv.adk9373": {
+      "title": "Histone mark age of human tissues and cell types",
+      "work_id": "https://openalex.org/W4405967605",
+      "citations": 33,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1126/sciadv.adk9373",
+      "response_sha256": "35496dbd4d2ffa83e6a7f71daddce2b0758d43dce55c2dd7f8c926185d29251b",
+      "clocks": [
+        "camilloh3k27ac",
+        "camilloh3k27me3",
+        "camilloh3k36me3",
+        "camilloh3k4me1",
+        "camilloh3k4me3",
+        "camilloh3k9ac",
+        "camilloh3k9me3",
+        "camillopanhistone"
+      ]
+    },
+    "https://doi.org/10.1126/sciadv.adm7273": {
+      "title": "Epigenetic predictors of species maximum life span and other life-history traits in mammals",
+      "work_id": "https://openalex.org/W4399425566",
+      "citations": 36,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1126/sciadv.adm7273",
+      "response_sha256": "08a89ec014b04c18c1e07600d2c8f115ac2b699e8476e3049747e4459ceff9b2",
+      "clocks": [
+        "mammalianfemale",
+        "mammalianlifespan"
+      ]
+    },
+    "https://doi.org/10.1161/jaha.119.015299": {
+      "title": "Epigenomic Assessment of Cardiovascular Disease Risk and Interactions With Traditional Risk Metrics",
+      "work_id": "https://openalex.org/W3016911859",
+      "citations": 57,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1161/jaha.119.015299",
+      "response_sha256": "85a17a63634bb5bc9a287324a2cc81e2712666c06aa0b1800a8eee63de806402",
+      "clocks": [
+        "cvdwesterman"
+      ]
+    },
+    "https://doi.org/10.1186/gb-2013-14-10-r115": {
+      "title": "DNA methylation age of human tissues and cell types",
+      "work_id": "https://openalex.org/W1974047233",
+      "citations": 7625,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/gb-2013-14-10-r115",
+      "response_sha256": "f9bd92e292ffd2172d68f0db4f6e5d9fd91b94302371a255dcdef5ea46cc3e15",
+      "clocks": [
+        "horvath2013"
+      ]
+    },
+    "https://doi.org/10.1186/gb-2014-15-2-r24": {
+      "title": "Aging of blood can be tracked by DNA methylation changes at just three CpG sites",
+      "work_id": "https://openalex.org/W2146794662",
+      "citations": 986,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/gb-2014-15-2-r24",
+      "response_sha256": "a32784cc4de6578ab05405d8519a559744bc6cd1513cb0b0a683ac37ebe15b2c",
+      "clocks": [
+        "weidner"
+      ]
+    },
+    "https://doi.org/10.1186/s12864-020-07168-8": {
+      "title": "Blood-based epigenetic estimators of chronological age in human adults using DNA methylation data from the Illumina MethylationEPIC array",
+      "work_id": "https://openalex.org/W3097290795",
+      "citations": 22,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s12864-020-07168-8",
+      "response_sha256": "b5ade04622e6b0f0d3ec9f986504433bb6aa4e289816febf9d0271eab6f4f01d",
+      "clocks": [
+        "abec",
+        "cabec",
+        "eabec"
+      ]
+    },
+    "https://doi.org/10.1186/s12864-021-07675-2": {
+      "title": "DNA methylation-based sex classifier to predict sex and identify sex chromosome aneuploidy",
+      "work_id": "https://openalex.org/W3176205551",
+      "citations": 39,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s12864-021-07675-2",
+      "response_sha256": "0bc5e65f56d1da505c335ade7c2fa7befa284115d7dce35453626ca4a5a37a90",
+      "clocks": [
+        "xchrom",
+        "ychrom"
+      ]
+    },
+    "https://doi.org/10.1186/s12885-017-3252-2": {
+      "title": "Genome-wide DNA methylation measurements in prostate tissues uncovers novel prostate cancer diagnostic biomarkers and transcription factor binding patterns",
+      "work_id": "https://openalex.org/W2605688857",
+      "citations": 63,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s12885-017-3252-2",
+      "response_sha256": "b5d0849d4f2d765fbb6d6c437f0b65cdaf2cec7bb6abaf7723d980971f85eb01",
+      "clocks": [
+        "prostatecancerkirby"
+      ]
+    },
+    "https://doi.org/10.1186/s12915-020-00807-2": {
+      "title": "New targeted approaches for epigenetic age predictions",
+      "work_id": "https://openalex.org/W3037653560",
+      "citations": 105,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s12915-020-00807-2",
+      "response_sha256": "c0c42835cb8ef62630751c1fc92320e0df0ee01baf8784f4d9ad666e804911ca",
+      "clocks": [
+        "han"
+      ]
+    },
+    "https://doi.org/10.1186/s13059-016-1063-4": {
+      "title": "Prediction of gestational age based on genome-wide differentially methylated regions",
+      "work_id": "https://openalex.org/W2528967511",
+      "citations": 241,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13059-016-1063-4",
+      "response_sha256": "044ad416a1370d9fdf16c071a3493a3e79e918902b761f14a20707568cc9350b",
+      "clocks": [
+        "bohlin"
+      ]
+    },
+    "https://doi.org/10.1186/s13059-016-1064-3": {
+      "title": "Correlation of an epigenetic mitotic clock with cancer risk",
+      "work_id": "https://openalex.org/W2529317472",
+      "citations": 370,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13059-016-1064-3",
+      "response_sha256": "eb951c6d72ef09b91d6484f741ca2f1b623fd174a34bdae4f7a3a7c8e662fbfc",
+      "clocks": [
+        "epitoc1"
+      ]
+    },
+    "https://doi.org/10.1186/s13059-016-1068-z": {
+      "title": "An epigenetic clock for gestational age at birth based on blood methylation data",
+      "work_id": "https://openalex.org/W2529664418",
+      "citations": 315,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13059-016-1068-z",
+      "response_sha256": "b24cb3ba580fb71db3a47aa7c61b8532f31175eec0fee58ea026fedebe5fa1d3",
+      "clocks": [
+        "knight"
+      ]
+    },
+    "https://doi.org/10.1186/s13059-017-1203-5": {
+      "title": "Multi-tissue DNA methylation age predictor in mouse",
+      "work_id": "https://openalex.org/W2606865793",
+      "citations": 437,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13059-017-1203-5",
+      "response_sha256": "0733205abfdc3a56840b4f0d55b0ba0f1650aaa0536b49569c710df3f0ddf373",
+      "clocks": [
+        "stubbs"
+      ]
+    },
+    "https://doi.org/10.1186/s13059-018-1448-7": {
+      "title": "An optimized library for reference-based deconvolution of whole-blood biospecimens assayed using the Illumina HumanMethylationEPIC BeadArray",
+      "work_id": "https://openalex.org/W2805049578",
+      "citations": 487,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13059-018-1448-7",
+      "response_sha256": "193f2802b39cb9332611cb55a4ff1603a43851a57fb133fc1b1b4ee166db7696",
+      "clocks": [
+        "deconvolutebloodepicbcell",
+        "deconvolutebloodepiccd4tcell",
+        "deconvolutebloodepiccd8tcell",
+        "deconvolutebloodepicmonocyte",
+        "deconvolutebloodepicneutrophil",
+        "deconvolutebloodepicnkcell"
+      ]
+    },
+    "https://doi.org/10.1186/s13059-018-1514-1": {
+      "title": "Epigenetic prediction of complex traits and death",
+      "work_id": "https://openalex.org/W2796457199",
+      "citations": 312,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13059-018-1514-1",
+      "response_sha256": "cfcb38c43d1a17ace8b393523af71906cc14eb541a6b70b7621605e172e9c39d",
+      "clocks": [
+        "mccartneyalcohol",
+        "mccartneybmi",
+        "mccartneybodyfat",
+        "mccartneyeducation",
+        "mccartneyhdlcholesterol",
+        "mccartneyldlcholesterol",
+        "mccartneysmoking",
+        "mccartneytotalcholesterol",
+        "mccartneytotalhdlratio",
+        "mccartneywhr"
+      ]
+    },
+    "https://doi.org/10.1186/s13073-019-0667-1": {
+      "title": "Improved precision of epigenetic clock estimates across tissues and its implication for biological ageing",
+      "work_id": "https://openalex.org/W2969410982",
+      "citations": 550,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13073-019-0667-1",
+      "response_sha256": "967164638cf7fb0bb802d4fa4665fe00a5ec381e8dabb78817104c69cbd3861a",
+      "clocks": [
+        "zhangblup",
+        "zhangen"
+      ]
+    },
+    "https://doi.org/10.1186/s13073-020-00752-3": {
+      "title": "A comparison of epigenetic mitotic-like clocks for cancer risk prediction",
+      "work_id": "https://openalex.org/W3037887056",
+      "citations": 165,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13073-020-00752-3",
+      "response_sha256": "64adac1b6d5b3a46c9effa512f34b181f695a6b42ad11c10f938a00e3c29ceea",
+      "clocks": [
+        "epitoc2",
+        "epitoc3",
+        "hypoclock"
+      ]
+    },
+    "https://doi.org/10.1186/s13073-024-01349-w": {
+      "title": "An expedited screening platform for the discovery of anti-ageing compounds in vitro and in vivo",
+      "work_id": "https://openalex.org/W4400246513",
+      "citations": 7,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13073-024-01349-w",
+      "response_sha256": "bf7ac90026b9e830c0faba277cf1f114205b3e8cb365813d7ea908467ec21254",
+      "clocks": [
+        "cellpopage"
+      ]
+    },
+    "https://doi.org/10.1186/s13148-020-00841-5": {
+      "title": "The association of DNA methylation with body mass index: distinguishing between predictors and biomarkers",
+      "work_id": "https://openalex.org/W3013240726",
+      "citations": 88,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13148-020-00841-5",
+      "response_sha256": "3ec7f85370333f471383eb6b40e01f1bda378bf2c797862f15375660d93ad2fc",
+      "clocks": [
+        "reedbmi"
+      ]
+    },
+    "https://doi.org/10.1186/s13148-021-01055-z": {
+      "title": "An EPIC predictor of gestational age and its application to newborns conceived by assisted reproductive technologies",
+      "work_id": "https://openalex.org/W3153056629",
+      "citations": 55,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13148-021-01055-z",
+      "response_sha256": "cc76ae247425374b18a41aeaa6d5d168f660bdc213522f75c97c83b2619b5ff9",
+      "clocks": [
+        "epicga"
+      ]
+    },
+    "https://doi.org/10.1186/s13148-022-01249-z": {
+      "title": "Evidence of accelerated epigenetic aging of breast tissues in patients with breast cancer is driven by CpGs associated with polycomb-related genes",
+      "work_id": "https://openalex.org/W4225654230",
+      "citations": 23,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1186/s13148-022-01249-z",
+      "response_sha256": "ef3147683cedff145b756803d08b14dc6d9be5f3c5a42f9f4f5306f395953fc0",
+      "clocks": [
+        "dnamphenoagenonprc",
+        "dnamphenoageprc"
+      ]
+    },
+    "https://doi.org/10.1371/journal.pone.0014821": {
+      "title": "Epigenetic Predictor of Age",
+      "work_id": "https://openalex.org/W2080644309",
+      "citations": 1071,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1371/journal.pone.0014821",
+      "response_sha256": "ddf05cd08f49fbc3b7ea7cb6b96b03751d11b53325502b2abab2bd621f7ceb69",
+      "clocks": [
+        "bocklandt"
+      ]
+    },
+    "https://doi.org/10.1371/journal.pone.0248375": {
+      "title": "Artificial intelligence and leukocyte epigenomics: Evaluation and prediction of late-onset Alzheimer’s disease",
+      "work_id": "https://openalex.org/W3144548509",
+      "citations": 34,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.1371/journal.pone.0248375",
+      "response_sha256": "3a6638d96250c6f1b384b55ea4c2013f2b09c3a2cb22ba7159395580cae79f02",
+      "clocks": [
+        "adbahadosingh"
+      ]
+    },
+    "https://doi.org/10.18632/aging.100908": {
+      "title": "DNA methylation levels at individual age-associated CpG sites can be indicative for life expectancy",
+      "work_id": "https://openalex.org/W2291827855",
+      "citations": 268,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.100908",
+      "response_sha256": "670e7ccf067ac499bde74a628f99962b99009e2c2e73066b907d476d3b299be6",
+      "clocks": [
+        "lin"
+      ]
+    },
+    "https://doi.org/10.18632/aging.101414": {
+      "title": "An epigenetic biomarker of aging for lifespan and healthspan",
+      "work_id": "https://openalex.org/W2949100461",
+      "citations": 3848,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.101414",
+      "response_sha256": "cdb9607102d2ecfa49649a558ebf985df77586617c5c4a0029fb52820ef6443d",
+      "clocks": [
+        "dnamphenoage",
+        "phenoage"
+      ]
+    },
+    "https://doi.org/10.18632/aging.101508": {
+      "title": "Epigenetic clock for skin and blood cells applied to Hutchinson Gilford Progeria Syndrome and ex vivo studies",
+      "work_id": "https://openalex.org/W2883262856",
+      "citations": 893,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.101508",
+      "response_sha256": "ee757eb3de5031b0f654c39bf3fbc1284272e12b5bdd610a90752465a92606ec",
+      "clocks": [
+        "skinandblood"
+      ]
+    },
+    "https://doi.org/10.18632/aging.101590": {
+      "title": "A multi-tissue full lifespan epigenetic clock for mice",
+      "work_id": "https://openalex.org/W2898925737",
+      "citations": 242,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.101590",
+      "response_sha256": "35dfd42f09a10d031d2de32b24dd308b10cd7e6bc5ebc3521d0e94107a385b1c",
+      "clocks": [
+        "thompson"
+      ]
+    },
+    "https://doi.org/10.18632/aging.101684": {
+      "title": "DNA methylation GrimAge strongly predicts lifespan and healthspan",
+      "work_id": "https://openalex.org/W2912654909",
+      "citations": 2789,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.101684",
+      "response_sha256": "f6eea85e5abbfe9f9c48af1b3c3c993489564a86bfc87c4f8808cfa206957a7d",
+      "clocks": [
+        "grimage"
+      ]
+    },
+    "https://doi.org/10.18632/aging.102049": {
+      "title": "Placental epigenetic clocks: estimating gestational age using placental DNA methylation levels",
+      "work_id": "https://openalex.org/W2956136191",
+      "citations": 172,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.102049",
+      "response_sha256": "cad0ecbd0c7f71ccabd07be57f8a32b81c7c043a22052dd4c7303bcc99df712e",
+      "clocks": [
+        "leecontrol",
+        "leerefinedrobust",
+        "leerobust"
+      ]
+    },
+    "https://doi.org/10.18632/aging.102173": {
+      "title": "DNA methylation-based estimator of telomere length",
+      "work_id": "https://openalex.org/W2969128479",
+      "citations": 484,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.102173",
+      "response_sha256": "0239cc635348ffe826f8273356c88a4975c1d2ae66f41cc520d21ce6ac9ab604",
+      "clocks": [
+        "dnamtl"
+      ]
+    },
+    "https://doi.org/10.18632/aging.102399": {
+      "title": "DNA methylation profile is a quantitative measure of biological aging in children",
+      "work_id": "https://openalex.org/W2990385305",
+      "citations": 82,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.102399",
+      "response_sha256": "2b310bfe70a823a2da64621ed690b73b33349eb955208577a7079218bd1d6782",
+      "clocks": [
+        "wu"
+      ]
+    },
+    "https://doi.org/10.18632/aging.204196": {
+      "title": "Aging the brain: multi-region methylation principal component based clock in the context of Alzheimer’s disease",
+      "work_id": "https://openalex.org/W4288802227",
+      "citations": 40,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.204196",
+      "response_sha256": "4e511a1dd2fd59ecd47971cc75bc3f2fe0758d66542c285597c0544d043c68a1",
+      "clocks": [
+        "pcbrainage"
+      ]
+    },
+    "https://doi.org/10.18632/aging.204434": {
+      "title": "DNA methylation GrimAge version 2",
+      "work_id": "https://openalex.org/W4311442097",
+      "citations": 319,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.204434",
+      "response_sha256": "313d1fbe0ebebe86a8b8b295fded9fd38741478f44035b12ed02f3bbc1df4a89",
+      "clocks": [
+        "grimage2",
+        "grimage2adm",
+        "grimage2b2m",
+        "grimage2cystatinc",
+        "grimage2gdf15",
+        "grimage2leptin",
+        "grimage2loga1c",
+        "grimage2logcrp",
+        "grimage2packyrs",
+        "grimage2pai1",
+        "grimage2timp1"
+      ]
+    },
+    "https://doi.org/10.18632/aging.204538": {
+      "title": "DNAmFitAge: biological age indicator incorporating physical fitness",
+      "work_id": "https://openalex.org/W4321482409",
+      "citations": 105,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.204538",
+      "response_sha256": "3f222b91ebc1fec3d56e1eeedbfb3403828b304ff6f6322f3951205c2ba0e970",
+      "clocks": [
+        "dnamfitage",
+        "dnamfitagegait",
+        "dnamfitagegrip",
+        "dnamfitagevo2max"
+      ]
+    },
+    "https://doi.org/10.18632/aging.206184": {
+      "title": "Cell-type specific epigenetic clocks to quantify biological age at cell-type resolution",
+      "work_id": "https://openalex.org/W4405877359",
+      "citations": 32,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.18632/aging.206184",
+      "response_sha256": "2ea2244864facc0aea1fbf5a9a11634fef0a684275ec7fa1978c0f9d55c8a775",
+      "clocks": [
+        "ctsliver",
+        "gliasin",
+        "hep",
+        "neusin"
+      ]
+    },
+    "https://doi.org/10.2217/epi-2016-0103": {
+      "title": "Accelerated Placental Aging in Early Onset Preeclampsia Pregnancies Identified By DNA Methylation",
+      "work_id": "https://openalex.org/W2557295976",
+      "citations": 150,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.2217/epi-2016-0103",
+      "response_sha256": "ca00b437e75e82362f8294cf3f8d19c9152a5122c937c9a0bcf98381fb320a2e",
+      "clocks": [
+        "mayne"
+      ]
+    },
+    "https://doi.org/10.3389/fgene.2016.00126": {
+      "title": "Simplified Assay for Epigenetic Age Estimation in Whole Blood of Adults",
+      "work_id": "https://openalex.org/W2463513647",
+      "citations": 155,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.3389/fgene.2016.00126",
+      "response_sha256": "53a39a27177bc6bbc28c1b3a78eef5fc92f6621df9d42c41444d1da3f99e742d",
+      "clocks": [
+        "vidalbralo"
+      ]
+    },
+    "https://doi.org/10.64898/2026.04.24.720503": {
+      "title": "Proteome-aware organ proxy aging clocks",
+      "work_id": "https://openalex.org/W7159580198",
+      "citations": 1,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.64898/2026.04.24.720503",
+      "response_sha256": "756f99a1e18cb123c3df7f7c11969730f1efb6b9ce02bca46fd0dcd1e714e77e",
+      "clocks": [
+        "paopac"
+      ]
+    },
+    "https://doi.org/10.7554/elife.40675": {
+      "title": "A whole lifespan mouse multi-tissue DNA methylation clock",
+      "work_id": "https://openalex.org/W2901936684",
+      "citations": 207,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.7554/elife.40675",
+      "response_sha256": "dfd902eece4f63a54400e74358c01187f807b7a37347475753bd6cc5755916bf",
+      "clocks": [
+        "meer"
+      ]
+    },
+    "https://doi.org/10.7554/elife.54870": {
+      "title": "Quantification of the pace of biological aging in humans through a blood test, the DunedinPoAm DNA methylation algorithm",
+      "work_id": "https://openalex.org/W3022131036",
+      "citations": 700,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.7554/elife.54870",
+      "response_sha256": "e74076d15a701a000c70cc0f4406dbe6b75ab1018e9022e67d12b78043886c3b",
+      "clocks": [
+        "dunedinpoam38"
+      ]
+    },
+    "https://doi.org/10.7554/elife.73420": {
+      "title": "DunedinPACE, a DNA methylation biomarker of the pace of aging",
+      "work_id": "https://openalex.org/W4205358347",
+      "citations": 1106,
+      "citations_date": "2026-10-02",
+      "source_url": "https://api.openalex.org/works/https://doi.org/10.7554/elife.73420",
+      "response_sha256": "9463735a833f2f6826e502c360ead0096173726d2242a10eb0f99c83224cfee1",
+      "clocks": [
+        "dunedinpace"
+      ]
+    }
+  }
+}

@@ -35,7 +35,8 @@
   var DETAIL_FIELDS = [
     ["predicts", "Predicts"], ["training_target", "Training target"], ["unit", "Unit"], ["tissue", "Tissue"],
     ["platform", "Platform"], ["population", "Population"], ["model_type", "Model type"],
-    ["n_features", "N features"], ["year", "Year"], ["citations", "Citations"], ["downloads", "Downloads"],
+    ["n_features", "N features"], ["year", "Year"], ["citations", "Citations"],
+    ["citations_date", "Citations checked"], ["downloads", "Downloads"],
     ["last_author", "Last author"], ["journal", "Journal"], ["species", "Species"],
     ["data_type", "Data type"], ["approved_by_author", "Verified"],
     ["research_only", "Research use only"],

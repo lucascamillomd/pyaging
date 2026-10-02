@@ -67,6 +67,18 @@ registry and
 [`evidence_ledger.jsonl`](https://github.com/lucascamillomd/pyaging/blob/main/clocks/metadata/evidence_ledger.jsonl)
 are maintained in the pyaging repository.
 
+## Clinical PhenoAge correction
+
+Use **pyaging >=0.5.7** for clinical `phenoage`. The corrected Gompertz parameter
+is `gamma = 0.0076927`; earlier package versions used the Cox variable-selection
+penalty `0.0192` instead. That inflated finite estimates by approximately
+9.619365 years for the same log hazard. Recalculate prior clinical PhenoAge
+results after upgrading. The formula is implemented in the Python class, so a
+new weight download alone cannot fix an older package. DNAm PhenoAge and the
+separately fitted Sao Paulo model are unaffected. The
+[original supplementary methods](https://cdn.aging-us.com/article/101414/supplementary/SD1/0/aging-v10i4-101414-supplementary-material-SD1.pdf)
+distinguish the two parameters on pages 1 and 2.
+
 ## Licensing and provenance
 
 This is a mixed-provenance research collection, so the repository license is `other`.

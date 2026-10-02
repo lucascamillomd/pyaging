@@ -70,11 +70,27 @@ def test_registry_uses_controlled_arrays(registry, vocabulary):
             assert record[field], f"{clock_name}.{field}"
 
 
-def test_evidence_is_complete_and_resolved(registry, ledger):
+def test_evidence_is_complete_and_unresolved_fields_are_disclosed(registry, ledger):
     validate_evidence(registry, ledger)
+    audit = load_json(METADATA_DIR / "methods_audit_2026-10-02.json")
+    reviewed = {record["clock_name"]: record for record in audit["clocks"]}
+    assert len(audit["clocks"]) == len(reviewed) == len(registry)
+    assert set(reviewed) == set(registry)
     for clock_name, record in ledger.items():
+        review = reviewed[clock_name]
+        checked = set(review["checked_fields"])
+        unresolved = set(review["unresolved_fields"])
+        assert not checked & unresolved, clock_name
+        assert set(AUDITED_FIELDS) <= checked | unresolved, clock_name
+        assert review["artifact_feature_count"] == registry[clock_name]["n_features"]
+        assert (review["review_status"] == "partial") == bool(unresolved), clock_name
         for field in AUDITED_FIELDS:
-            assert record["fields"][field]["status"] != "unresolved", f"{clock_name}.{field}"
+            evidence = record["fields"][field]
+            if evidence["status"] == "unresolved":
+                # A source-access gap must stay visible, rather than acquiring a
+                # misleading confirmed label just to satisfy a completeness test.
+                assert field in unresolved, f"{clock_name}.{field}"
+                assert evidence["note"] and record["access_issues"], f"{clock_name}.{field}"
 
 
 def test_reedbmi_access_issues_do_not_contradict_corrected_feature_count(ledger):
