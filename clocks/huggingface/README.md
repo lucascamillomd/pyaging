@@ -108,7 +108,7 @@ NPX exponentiation, cohort standardization and LOWESS age-bias correction. Its
 predictions depend on the submitted cohort and require chronological age.
 NPX is log2 relative abundance, not concentration; cross-platform and serum/plasma
 harmonization are external preparation decisions. See the
-[proteomic input guide](https://pyaging.readthedocs.io/en/latest/proteomic_clocks.html).
+[proteomics tutorial](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_proteomics.html).
 
 The reduced Olink Explore 1536 OrganAge models leave the current catalogue, and
 full-model names drop `olink3000`. Existing 0.5.4 tags and files remain intact.

@@ -1,0 +1,1446 @@
+{
+  "stocz": {
+    "clock_name": "stocz",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u2705",
+    "citation": "Tong, Huige, et al. \"Quantifying the stochastic component of epigenetic aging.\" Nature Aging 4 (2024): 886\u2013901.",
+    "doi": "https://doi.org/10.1038/s43587-024-00600-8",
+    "notes": "Stochastic chronological-age clock built from simulated methylation trajectories at Zhang clock CpGs; it is a stochastic counterpart, not the original Zhang clock.",
+    "research_only": null,
+    "tissue": [
+      "sorted monocytes"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Andrew E. Teschendorff",
+    "n_features": 514,
+    "citations": 76,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "stubbs": {
+    "clock_name": "stubbs",
+    "data_type": "DNA methylation",
+    "species": "Mus musculus",
+    "year": 2017,
+    "approved_by_author": "\u231b",
+    "citation": "Stubbs, T. M., et al. \u201cMulti-tissue DNA methylation age predictor in mouse.\u201d Genome Biology 18: 68 (2017).",
+    "doi": "https://doi.org/10.1186/s13059-017-1203-5",
+    "notes": "Mouse multi-tissue RRBS age predictor: 17,992 common input loci are normalized and reduced to 329 nonzero clock sites, then quadratically calibrated.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue",
+      "liver",
+      "lung",
+      "heart",
+      "brain cortex",
+      "skeletal muscle",
+      "cerebellum",
+      "spleen"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "months"
+    ],
+    "model_type": "quadratically calibrated elastic net regression",
+    "platform": [
+      "RRBS"
+    ],
+    "population": "mice",
+    "journal": "Genome Biology",
+    "last_author": "Wolf Reik",
+    "n_features": 17992,
+    "citations": 437,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "quantile_normalization_and_scale_with_gold_standard",
+    "postprocess": "stubbs",
+    "reference_values": true
+  },
+  "systemsage": {
+    "clock_name": "systemsage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Composite Systems Age integrates the 11 mortality-associated physiological-system scores plus a DNAm chronological-age prediction through PCA and Cox elastic-net regression, then rescales the result to an age-like value.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "multisystem biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsageblood": {
+    "clock_name": "systemsageblood",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Blood-system component of Systems Age: a whole-blood DNAm score built from blood-system biomarker PCs and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "blood-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsagebrain": {
+    "clock_name": "systemsagebrain",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Brain-system component of Systems Age: a whole-blood DNAm score built from brain-system biomarker and functional PCs and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "brain-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsageheart": {
+    "clock_name": "systemsageheart",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Heart-system component of Systems Age: a whole-blood DNAm score built from cardiovascular-system biomarkers and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "cardiovascular-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsagehormone": {
+    "clock_name": "systemsagehormone",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Hormone-system component of Systems Age: a whole-blood DNAm score built from endocrine-system biomarkers and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "endocrine-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsageimmune": {
+    "clock_name": "systemsageimmune",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Immune-system component of Systems Age: a whole-blood DNAm score built from immune-system biomarkers and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "immune-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsageinflammation": {
+    "clock_name": "systemsageinflammation",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Inflammation-system component of Systems Age: a whole-blood DNAm score built from inflammatory biomarkers and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "inflammatory-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsagekidney": {
+    "clock_name": "systemsagekidney",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Kidney-system component of Systems Age: a whole-blood DNAm score built from renal-system biomarkers and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "renal-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsageliver": {
+    "clock_name": "systemsageliver",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Liver-system component of Systems Age: a whole-blood DNAm score built from hepatic-system biomarkers and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "hepatic-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsagelung": {
+    "clock_name": "systemsagelung",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Lung-system component of Systems Age: a whole-blood DNAm score built from pulmonary-system biomarkers and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "pulmonary-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsagemetabolic": {
+    "clock_name": "systemsagemetabolic",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Metabolic-system component of Systems Age: a whole-blood DNAm score built from metabolic-system biomarkers and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "metabolic-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "systemsagemusculoskeletal": {
+    "clock_name": "systemsagemusculoskeletal",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Sehgal, R., Markov, Y., Qin, C., et al. (2025). Systems Age: a single blood methylation test to quantify aging heterogeneity across 11 physiological systems. Nature Aging, 5, 1880\u20131896.",
+    "doi": "https://doi.org/10.1038/s43587-025-00958-3",
+    "notes": "Musculoskeletal-system component of Systems Age: a whole-blood DNAm score built from musculoskeletal biomarkers and functional measures and mortality training, returned on an age-like scale.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "musculoskeletal-system biological age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan Levine",
+    "n_features": 125175,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "tage": {
+    "clock_name": "tage",
+    "data_type": "transcriptomics",
+    "species": "multiple species",
+    "year": 2026,
+    "approved_by_author": "\u231b",
+    "citation": "Tyshkovskiy, Alexander, et al. \"Universal transcriptomic hallmarks of mammalian ageing and mortality.\" Nature 654 (2026): 173-188.",
+    "doi": "https://doi.org/10.1038/s41586-026-10542-3",
+    "notes": "Elastic Net over 10,487 mouse-Entrez genes, multispecies multi-tissue, scaleddiff variant. Cohort-relative: predict_age runs the tAge cohort preprocessing on the raw RNA-seq counts itself, so a prediction is an age difference against the reference group rather than an absolute age -- zero means \"looks like the reference\", negative means younger-looking. Name the cohort's species with a 0/1 column among var_names (mouse, rat, macaque or human; absent or all-zero means mouse) and the samples to centre against with a truthy adata.obs[\"tage_reference_group\"] (absent centres on the whole cohort); at least two samples are needed. The published pipeline's SimpleImputer, mean-only StandardScaler and pass-through SelectKBest are folded into the packaged linear layer, and the imputer medians are carried as reference_values so a gene the sample does not measure contributes its training median. Output is months of mouse age: the Elastic Net predicts a fraction of species maximum lifespan and the mouse factor of 48 months is baked into the weights, so a cohort of another species must be rescaled by its own maximum lifespan over 48 (human 122.5 years, rat 50.4 months, macaque 39 years); those constants come from the authors' released tAge package and differ slightly from the paper's Methods, which report 4, 3.8, 39 and 122 years. Released under the MGB Open Access License 1.0: non-commercial academic research use only.",
+    "research_only": true,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "relative age"
+    ],
+    "training_target": [
+      "relative age"
+    ],
+    "unit": [
+      "months"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "RNA-seq"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10487,
+    "citations": 21,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "tagemortality": {
+    "clock_name": "tagemortality",
+    "data_type": "transcriptomics",
+    "species": "multiple species",
+    "year": 2026,
+    "approved_by_author": "\u231b",
+    "citation": "Tyshkovskiy, Alexander, et al. \"Universal transcriptomic hallmarks of mammalian ageing and mortality.\" Nature 654 (2026): 173-188.",
+    "doi": "https://doi.org/10.1038/s41586-026-10542-3",
+    "notes": "Elastic Net over 10,487 mouse-Entrez genes, multispecies multi-tissue, scaleddiff variant. Cohort-relative: predict_age runs the tAge cohort preprocessing on the raw RNA-seq counts itself, so a prediction is a hazard shift against the reference group rather than an absolute risk. Name the cohort's species with a 0/1 column among var_names (mouse, rat, macaque or human; absent or all-zero means mouse) and the samples to centre against with a truthy adata.obs[\"tage_reference_group\"] (absent centres on the whole cohort); at least two samples are needed. The published pipeline's SimpleImputer, mean-only StandardScaler and pass-through SelectKBest are folded into the packaged linear layer, and the imputer medians are carried as reference_values so a gene the sample does not measure contributes its training median. Output is log10(hazard ratio), using the base-10 logarithm -- and unlike the chronological clocks it is never rescaled by species maximum lifespan, so it is directly comparable across species. Released under the MGB Open Access License 1.0: non-commercial academic research use only.",
+    "research_only": true,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log10 hazard ratio"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "RNA-seq"
+    ],
+    "population": "multiple mammalian species",
+    "journal": "Nature",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10487,
+    "citations": 21,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "thompson": {
+    "clock_name": "thompson",
+    "data_type": "DNA methylation",
+    "species": "Mus musculus",
+    "year": 2018,
+    "approved_by_author": "\u2705",
+    "citation": "Thompson, M. J., Chwia\u0142kowska, K., Rubbi, L. et al. A multi-tissue full lifespan epigenetic clock for mice. Aging (Albany NY) 10, 2832\u20132854 (2018).",
+    "doi": "https://doi.org/10.18632/aging.101590",
+    "notes": "Full-lifespan multi-tissue mouse DNA-methylation clock fit by elastic net to RRBS CpG methylation across 1,147 samples from ten tissues and multiple strains; the 582-site all-CpG model estimates chronological age and detects intervention- and genotype-associated age acceleration.",
+    "research_only": null,
+    "tissue": [
+      "adipose tissue",
+      "blood",
+      "cerebellum",
+      "brain cortex",
+      "heart",
+      "kidney",
+      "liver",
+      "lung",
+      "skeletal muscle",
+      "spleen"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "months"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "RRBS"
+    ],
+    "population": "mice",
+    "journal": "Aging (Albany NY)",
+    "last_author": "Matteo Pellegrini",
+    "n_features": 582,
+    "citations": 242,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "twelvecelldeconvolutebloodepicbas": {
+    "clock_name": "twelvecelldeconvolutebloodepicbas",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the basophil proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "basophil proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepicbmem": {
+    "clock_name": "twelvecelldeconvolutebloodepicbmem",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the memory B cell proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "memory B cell proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepicbnv": {
+    "clock_name": "twelvecelldeconvolutebloodepicbnv",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the naive B cell proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "naive B cell proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepiccd4mem": {
+    "clock_name": "twelvecelldeconvolutebloodepiccd4mem",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the memory CD4+ T cell proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "memory CD4+ T cell proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepiccd4nv": {
+    "clock_name": "twelvecelldeconvolutebloodepiccd4nv",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the naive CD4+ T cell proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "naive CD4+ T cell proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepiccd8mem": {
+    "clock_name": "twelvecelldeconvolutebloodepiccd8mem",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the memory CD8+ T cell proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "memory CD8+ T cell proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepiccd8nv": {
+    "clock_name": "twelvecelldeconvolutebloodepiccd8nv",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the naive CD8+ T cell proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "naive CD8+ T cell proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepiceos": {
+    "clock_name": "twelvecelldeconvolutebloodepiceos",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the eosinophil proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "eosinophil proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepicmono": {
+    "clock_name": "twelvecelldeconvolutebloodepicmono",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the monocyte proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "monocyte proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepicneu": {
+    "clock_name": "twelvecelldeconvolutebloodepicneu",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the neutrophil proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "neutrophil proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepicnk": {
+    "clock_name": "twelvecelldeconvolutebloodepicnk",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the natural killer cell proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "natural killer cell proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "twelvecelldeconvolutebloodepictreg": {
+    "clock_name": "twelvecelldeconvolutebloodepictreg",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Zhang, Z., Koestler, D.C. et al. Enhanced cell deconvolution of peripheral blood using DNA methylation for high-resolution immune profiling. Nature Communications 13, 761 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-021-27864-7",
+    "notes": "Reference-based constrained deconvolution returning the regulatory T-cell proportion from EPIC-array blood methylation. The published EPIC IDOL-Ext library used 1,200 CpGs selected to optimize recovery of known artificial-mixture cell-type proportions; pyaging instead inherits Biolearn\u2019s undocumented 240-CpG replacement, whose rows reproducibly comprise 10 positive and 10 negative maximal cell-versus-other methylation contrasts per subtype and are not a subset of the published 1,200 probes.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "regulatory T-cell proportion"
+    ],
+    "training_target": [
+      "cell-type proportions"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Communications",
+    "last_author": "Brock C. Christensen",
+    "n_features": 240,
+    "citations": 302,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "vidalbralo": {
+    "clock_name": "vidalbralo",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2016,
+    "approved_by_author": "\u231b",
+    "citation": "Vidal-Bralo, Laura, Yolanda Lopez-Golan, and Antonio Gonzalez. \"Simplified assay for epigenetic age estimation in whole blood of adults.\" Frontiers in Genetics 7 (2016): 126.",
+    "doi": "https://doi.org/10.3389/fgene.2016.00126",
+    "notes": "Eight-CpG whole-blood chronological-age estimator selected by forward stepwise regression in 390 adults and calibrated by multiple linear regression; CpGs were chosen for compatibility with a single multiplex MS-SNuPE assay.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "linear regression",
+    "platform": [
+      "Illumina 27K"
+    ],
+    "population": "adults",
+    "journal": "Frontiers in Genetics",
+    "last_author": "Antonio Gonzalez",
+    "n_features": 8,
+    "citations": 155,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "weidner": {
+    "clock_name": "weidner",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2014,
+    "approved_by_author": "\u231b",
+    "citation": "Weidner, C. I., Lin, Q., Koch, C. M., et al. (2014). Aging of blood can be tracked by DNA methylation changes at just three CpG sites. Genome Biology, 15, R24.",
+    "doi": "https://doi.org/10.1186/gb-2014-15-2-r24",
+    "notes": "Three-site whole-blood epigenetic-age estimator. The sites were selected from Illumina 27K blood profiles, and the final multivariate linear equation was fitted on targeted bisulfite-pyrosequencing beta values from 82 blood samples and validated in 69 independent samples. The published PDE4C measurement is a pyrosequenced CpG upstream of array probe cg17861230. The package uses cg17861230 as its feature label; supplying that array probe directly is an approximation and does not reproduce the published assay.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "linear regression",
+    "platform": [
+      "Illumina 27K",
+      "bisulfite sequencing"
+    ],
+    "population": "all ages",
+    "journal": "Genome Biology",
+    "last_author": "Wolfgang Wagner",
+    "n_features": 3,
+    "citations": 986,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "wu": {
+    "clock_name": "wu",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2019,
+    "approved_by_author": "\u231b",
+    "citation": "Wu, X., et al. \u201cDNA methylation profile is a quantitative measure of biological aging in children.\u201d Aging 11(22): 10031\u201310051 (2019).",
+    "doi": "https://doi.org/10.18632/aging.102399",
+    "notes": "Child-specific 111-CpG blood age predictor built by sure independence screening followed by elastic net; pyaging converts the published month-scale output to years.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "screened elastic net regression",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K"
+    ],
+    "population": "children",
+    "journal": "Aging",
+    "last_author": "Huiying Liang",
+    "n_features": 111,
+    "citations": 82,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log_linear"
+  },
+  "xchrom": {
+    "clock_name": "xchrom",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "\u231b",
+    "citation": "Wang, Y. et al. DNA methylation-based sex classifier to predict sex and identify sex chromosome aneuploidy. BMC Genomics 22, 484 (2021).",
+    "doi": "https://doi.org/10.1186/s12864-021-07675-2",
+    "notes": "X-chromosome first-principal-component score used with the Y score to infer X dosage and classify 46,XX, 46,XY, 45,X, and 47,XXY samples. Feature screening and PCA used 450K whole-blood data from 18-year-olds; EPIC data were used for validation.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "X-chromosome dosage"
+    ],
+    "training_target": [
+      "X-chromosome dosage"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "principal component analysis",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "BMC Genomics",
+    "last_author": "Leonard C. Schalkwyk",
+    "n_features": 4047,
+    "citations": 39,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "sex_estimation_autosomal_zscore",
+    "reference_values": true
+  },
+  "ychrom": {
+    "clock_name": "ychrom",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "\u231b",
+    "citation": "Wang, Y. et al. DNA methylation-based sex classifier to predict sex and identify sex chromosome aneuploidy. BMC Genomics 22, 484 (2021).",
+    "doi": "https://doi.org/10.1186/s12864-021-07675-2",
+    "notes": "Y-chromosome first-principal-component score used with the X score to infer Y presence and classify 46,XX, 46,XY, 45,X, and 47,XXY samples. Feature screening and PCA used 450K whole-blood data from 18-year-olds; EPIC data were used for validation.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "Y-chromosome presence"
+    ],
+    "training_target": [
+      "Y-chromosome presence"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "principal component analysis",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "BMC Genomics",
+    "last_author": "Leonard C. Schalkwyk",
+    "n_features": 284,
+    "citations": 39,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "sex_estimation_autosomal_zscore",
+    "reference_values": true
+  },
+  "yingadaptage": {
+    "clock_name": "yingadaptage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Ying, K., Liu, H., Tarkhov, A.E. et al. Causality-enriched epigenetic age uncouples damage and adaptation. Nature Aging 4, 231\u2013246 (2024).",
+    "doi": "https://doi.org/10.1038/s43587-023-00557-0",
+    "notes": "Causality-enriched age predictor restricted to adaptive/protective age-related CpGs, with feature penalties weighted by EWMR causality scores.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "adaptive epigenetic age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "causality-weighted elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 999,
+    "citations": 208,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "yingcausage": {
+    "clock_name": "yingcausage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Ying, K., Liu, H., Tarkhov, A.E. et al. Causality-enriched epigenetic age uncouples damage and adaptation. Nature Aging 4, 231\u2013246 (2024).",
+    "doi": "https://doi.org/10.1038/s43587-023-00557-0",
+    "notes": "Causality-enriched chronological-age clock using EWMR-prioritized CpGs and feature-specific penalties derived from causality scores.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "causality-weighted elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 585,
+    "citations": 208,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "yingdamage": {
+    "clock_name": "yingdamage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Ying, K., Liu, H., Tarkhov, A.E. et al. Causality-enriched epigenetic age uncouples damage and adaptation. Nature Aging 4, 231\u2013246 (2024).",
+    "doi": "https://doi.org/10.1038/s43587-023-00557-0",
+    "notes": "Causality-enriched age predictor restricted to damaging age-related CpGs, with feature penalties weighted by EWMR causality scores.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "damaging epigenetic age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "causality-weighted elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 1089,
+    "citations": 208,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "zhangblup": {
+    "clock_name": "zhangblup",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2019,
+    "approved_by_author": "\u231b",
+    "citation": "Zhang, Q., Vallerga, C.L., Walker, R.M. et al. Improved precision of epigenetic clock estimates across tissues and its implication for biological ageing. Genome Medicine 11, 54 (2019).",
+    "doi": "https://doi.org/10.1186/s13073-019-0667-1",
+    "notes": "High-dimensional chronological-age predictor using best linear unbiased prediction across the full quality-controlled set of 319,607 methylation probes.",
+    "research_only": null,
+    "tissue": [
+      "whole blood",
+      "saliva"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "best linear unbiased prediction",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Genome Medicine",
+    "last_author": "Peter M. Visscher",
+    "n_features": 319607,
+    "citations": 550,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "scale_row",
+    "reference_values": true
+  },
+  "zhangen": {
+    "clock_name": "zhangen",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2019,
+    "approved_by_author": "\u231b",
+    "citation": "Zhang, Q., Vallerga, C.L., Walker, R.M. et al. Improved precision of epigenetic clock estimates across tissues and its implication for biological ageing. Genome Medicine 11, 54 (2019).",
+    "doi": "https://doi.org/10.1186/s13073-019-0667-1",
+    "notes": "Elastic-net chronological-age predictor released from the largest multi-cohort training set, using 514 selected CpGs from predominantly blood plus saliva data.",
+    "research_only": null,
+    "tissue": [
+      "whole blood",
+      "saliva"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Genome Medicine",
+    "last_author": "Peter M. Visscher",
+    "n_features": 514,
+    "citations": 550,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "scale_row",
+    "reference_values": true
+  },
+  "zhangmortality": {
+    "clock_name": "zhangmortality",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2017,
+    "approved_by_author": "\u231b",
+    "citation": "Zhang, Y., Wilson, R., Heiss, J. et al. DNA methylation signatures in peripheral blood strongly predict all-cause mortality. Nature Communications 8, 14617 (2017).",
+    "doi": "https://doi.org/10.1038/ncomms14617",
+    "notes": "Ten-CpG whole-blood mortality risk score. Pyaging implements the paper supplement's continuous LASSO-weighted score exactly (the sum of ten raw beta values multiplied by their published coefficients). The same study also defines a separate simplified 0-10 aberrant-methylation count based on cohort-specific quartile cutoffs.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "weighted linear score",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "older adults",
+    "journal": "Nature Communications",
+    "last_author": "Hermann Brenner",
+    "n_features": 10,
+    "citations": 421,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  }
+}

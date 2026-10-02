@@ -1,9 +1,10 @@
 Tutorials
 =========
 
-One walkthrough per supported data type. Each downloads a small public
-example dataset, builds an AnnData object, runs one or more clocks, and reads
-out the predictions.
+Walkthroughs for each supported data type, using public example datasets or
+explicitly synthetic data. Build an AnnData object, run clocks, and inspect
+predictions and input coverage. The RNA-seq tutorial includes mammalian tAge
+and tAgeMortality; the proteomics tutorial covers PAC, HPS, OrganAge and PAOPAC.
 
 .. toctree::
    :maxdepth: 1
@@ -16,4 +17,5 @@ out the predictions.
    tutorial_histonemarkchipseq
    tutorial_atacseq
    tutorial_rnaseq
+   tutorial_proteomics
    tutorial_bloodchemistry

@@ -1,0 +1,18 @@
+{
+  "verified_clocks": [
+    "grimage2adm",
+    "grimage2b2m",
+    "grimage2cystatinc",
+    "grimage2gdf15",
+    "grimage2leptin",
+    "grimage2loga1c",
+    "grimage2logcrp",
+    "grimage2packyrs",
+    "grimage2timp1",
+    "ocampoatac1",
+    "ocampoatac2"
+  ],
+  "verified_aggregate_records": 240,
+  "anonymous": true,
+  "public_api_predictions_match_baseline": true
+}

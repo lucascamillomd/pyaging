@@ -97,6 +97,36 @@ def test_reedbmi_access_issues_do_not_contradict_corrected_feature_count(ledger)
     assert not any("134 CpGs" in issue for issue in ledger["reedbmi"]["access_issues"])
 
 
+@pytest.mark.parametrize(
+    "class_name",
+    [
+        "GrimAge2ADM",
+        "GrimAge2B2M",
+        "GrimAge2CystatinC",
+        "GrimAge2GDF15",
+        "GrimAge2Leptin",
+        "GrimAge2LogA1C",
+        "GrimAge2LogCRP",
+        "GrimAge2PackYrs",
+        "GrimAge2PAI1",
+        "GrimAge2TIMP1",
+    ],
+)
+def test_grimage2_surrogates_have_no_age_conversion_label(registry, class_name):
+    from pyaging.models import _models
+
+    name = class_name.lower()
+    values = torch.tensor([-1.0, 0.0, 2.0])
+    torch.testing.assert_close(getattr(_models, class_name)().postprocess(values), values)
+    assert registry[name].get("postprocess") is None
+    path = WEIGHTS_DIR / f"{name}.pt"
+    if path.exists():
+        model = torch.load(path, weights_only=False, map_location="cpu")
+        assert model.postprocess_name is None
+        assert model.metadata.get("postprocess") is None
+        torch.testing.assert_close(model.postprocess(values), values)
+
+
 def _write_consistent_artifact_fixture(tmp_path, registry, clock_name="tiny"):
     root = tmp_path
     metadata_dir = root / "clocks" / "metadata"
