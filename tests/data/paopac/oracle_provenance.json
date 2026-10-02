@@ -1,0 +1,27 @@
+{
+  "python": "3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)]",
+  "numpy": "1.26.4",
+  "pandas": "2.2.3",
+  "scikit-learn": "1.6.1",
+  "statsmodels": "0.14.4",
+  "lightgbm": "4.6.0",
+  "cases": [
+    "complete",
+    "tdi",
+    "missing",
+    "exact_duplicate",
+    "duplicate_nan",
+    "singleton",
+    "constant_age",
+    "age_nan",
+    "all_nan"
+  ],
+  "errors": {
+    "case_collision": "ValueError: cannot reindex on an axis with duplicate labels"
+  },
+  "source": "JackieHanLab/PAOPAC v1.0.0; compiled pre.predict() unchanged",
+  "pyd_sha256": "c8ecb6f06d0830f3c88dc18e05f5e838042762b3f9f186e125963e089015e85c",
+  "model_text_sha256": "10eb9c389ff5fe8fc9adb9c0c27430fcc43dcf628c43ecf42b70e4f8dbfb31d5",
+  "weights_interface": "pickle.loads supplies native Booster-backed estimator with original feature_name_; final fitted estimator uses all800 trees",
+  "data": "Synthetic NumPy default_rng(23981), no participant data"
+}

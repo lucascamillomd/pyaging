@@ -145,6 +145,9 @@ def predict_age(
 
             # Clocks saved before either attribute existed lack both.
             transform_name = getattr(model, "cohort_transform", None)
+            prepare_input_frame = getattr(model, "prepare_input_frame", None)
+            if transform_name is not None and prepare_input_frame is not None:
+                raise ValueError(f"Clock '{clock_name}' declares two incompatible input preparation methods.")
             required_flag = getattr(model, "required_uns_flag", None)
             # A clock whose input contract nothing can satisfy for it refuses to
             # run unmarked input. A declared transform supersedes the flag: it
@@ -166,6 +169,14 @@ def predict_age(
                     cohort_frames[transform_name] = apply_cohort_transform(adata, transform_name, dir, pipeline_logger)
                 display.stage(clock_name, "matching features")
                 build_cohort_feature_matrix(adata, model, cohort_frames[transform_name], pipeline_logger)
+            elif prepare_input_frame is not None:
+                # Some author interfaces normalize identifiers before matching
+                # features. Keep their prepared frame separate from adata.X so
+                # other clocks still receive the caller's original inputs.
+                display.stage(clock_name, "preparing inputs")
+                frame = prepare_input_frame(adata)
+                build_cohort_feature_matrix(adata, model, frame, pipeline_logger)
+                del frame
             else:
                 display.stage(clock_name, "matching features")
                 check_features_in_adata(adata, model, pipeline_logger)

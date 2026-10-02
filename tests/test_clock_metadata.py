@@ -57,7 +57,7 @@ def test_registry_has_every_implementation_notebook(registry):
         "dnamfitagegripf",
         "dnamfitagegripm",
     }
-    assert len(registry) == 238
+    assert len(registry) == 240
     assert retired.isdisjoint(registry)
     assert set(registry) == notebook_names
 
@@ -341,6 +341,8 @@ def test_every_built_clock_carries_the_expected_feature_units():
             # modality itself must not assign NPX to future non-Olink assays.
             assert all(platform.startswith("Olink Explore") for platform in model.metadata["platform"])
             expected = ["years" if feature == "age" else "NPX" for feature in model.features]
+            if model.metadata.get("clock_name") == "paopac":
+                expected[model.features.index("TDI")] = "Townsend deprivation index; author protein-matrix transform"
         if getattr(model, "feature_units", None) != expected:
             stale.append(path.stem)
 

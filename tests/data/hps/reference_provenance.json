@@ -1,0 +1,25 @@
+{
+  "repository": "https://github.com/kuo-lab-uchc/HPS",
+  "commit": "6eec9ac5a091e34fece69fa4652ebd9af22c1839",
+  "source_sha256": {
+    "README.md": "c5f29dd0c21773976c0dc0eea1395169a0009735a0e02b42a45f1b3d59ef3b24",
+    "HPS.R": "e55df4dd50313869fa4d94f989391d36fba8b8594b8579e189be4cfdc930c4c3",
+    "hps_example_data.csv": "af2bd95e5ead0ea9c07f0eb855fa463c71c90cd5467be68dfa97385b23c4b8df"
+  },
+  "reference_runtime": "R version 4.5.3 (2026-03-11)",
+  "reference_command": "Rscript tests/data/hps/generate_reference.R SOURCE_DIR tests/data/hps",
+  "reference_code": "Original HPS.R sourced and executed without modification",
+  "input": "Ten synthetic profiles; eight realistic age profiles plus two extreme saturation checks; no participant data",
+  "max_absolute_error_probability": 4.440892098500626e-16,
+  "files": {
+    "hps_author_parameters.json": "5788abcd5d22e0958082fd2434bf2eb06eb4ee80fdb15cac59de0fb50c8c9be1",
+    "generate_reference.R": "86a63d190d9b0a60a6f7edb54e8994b8aa4edbcdac76e458c334d87b5235fbf2",
+    "input_npx.csv": "db5c609d0349c177c727e249e2e071532ed1c21014970d40608ac7adb9efd519",
+    "expected_predictions.csv": "d99c2f9a992704edb3869410042086fd515df18d10e0ef88f68adf09c057d91d"
+  },
+  "citation_count": {
+    "source": "https://api.openalex.org/works/https://doi.org/10.1073/pnas.2414086122",
+    "retrieved": "2026-10-02",
+    "cited_by_count": 21
+  }
+}

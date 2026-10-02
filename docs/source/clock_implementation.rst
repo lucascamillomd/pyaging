@@ -85,6 +85,7 @@ one per clock.
    clock_notebooks/hepatoxu
    clock_notebooks/homeostaticdysregulation
    clock_notebooks/horvath2013
+   clock_notebooks/hps
    clock_notebooks/hrsinchphenoage
    clock_notebooks/hypoclock
    clock_notebooks/intrinclock
@@ -168,6 +169,7 @@ one per clock.
    clock_notebooks/organagemortalitystomach
    clock_notebooks/organagemortalitythyroid
    clock_notebooks/pac
+   clock_notebooks/paopac
    clock_notebooks/pasta
    clock_notebooks/pastamouse
    clock_notebooks/pcbrainage

@@ -175,6 +175,7 @@ from ._models import (
     stemTOC,
 )
 from ._organage import OrganAge
+from ._paopac import PAOPAC, PAOPACTrees
 from ._pc_extensions import (
     PCBrainAge,
     PCGrimAgeADM,
@@ -186,10 +187,13 @@ from ._pc_extensions import (
     PCGrimAgePAI1,
     PCGrimAgeTIMP1,
 )
-from ._proteoclock import PAC
+from ._proteoclock import HPS, PAC
 from ._replication import CellDRIFT, MiAge
 
 __all__ = [
+    "HPS",
+    "PAOPAC",
+    "PAOPACTrees",
     "PAC",
     "CellDRIFT",
     "DNAmPhenoAgeNonPRC",
