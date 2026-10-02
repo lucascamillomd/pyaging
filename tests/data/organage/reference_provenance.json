@@ -1,0 +1,18 @@
+{
+  "author_commit": "5147b0301ec7f4abdb10ef650d04f47454ddc8fd",
+  "runtime": "R version 4.5.3 (2026-03-11), official macOS arm64 binary",
+  "source_scoring": "scripts/R/Example_Script.R, exact coefficient selection and rowSums(sweep()) expressions",
+  "author_script_sha256": "02fc291721d6018bafa5a49adf4aff3841c7e9d085d682088b9ac0feeee31e63",
+  "n_models": 90,
+  "n_predictions": 1080,
+  "output_tolerance": {
+    "rtol": 0,
+    "atol": 1e-10
+  },
+  "fixture_sha256": {
+    "author_fold_one.json.gz": "54a99a5a79c0123d416d20e633085235ce33b6160130740595ec1938911a1f94",
+    "input_npx.csv.gz": "f8af942a51967a4c6dbb2adb371e219ab7e263a8d39951227dcfc36acde016f6",
+    "generate_reference.R": "95495311a1265a70a92af3d6ee49854d67a71f599555f14ce225c5fde5f196d1",
+    "expected_predictions.csv": "26363648d19cd957d0ec0f9a30affa5dab0d99df807b5f87e323cd537a825c23"
+  }
+}

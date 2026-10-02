@@ -1,0 +1,22 @@
+{
+  "source": "HigginsChenLab/methylCIPHERv2",
+  "commit": "f9e5c724b2d64199b696a882161fe245a39fcf6c",
+  "purpose": "Secondary comparison only; not used to build weights or author reference outputs.",
+  "results": {
+    "intrinclock370": {
+      "coefficient_max_absolute_difference": 0.0,
+      "same_feature_set": true,
+      "author_intercept": -2.132860950847256
+    },
+    "dnamphenoageprc": {
+      "coefficient_max_absolute_difference": 0.0,
+      "same_feature_set": true,
+      "author_intercept": 0.0
+    },
+    "dnamphenoagenonprc": {
+      "coefficient_max_absolute_difference": 0.0,
+      "same_feature_set": true,
+      "author_intercept": 0.0
+    }
+  }
+}

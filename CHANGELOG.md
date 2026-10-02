@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.5.4
+
+- Add CellDRIFT, MiAge, PCBrainAge, and the original 370-CpG `lambda.1se`
+  IntrinClock model. The existing 380-CpG `intrinclock` is unchanged.
+- Add the original 55-CpG PRC and 458-CpG non-PRC PhenoAge contributions,
+  without an age intercept or independent recalibration.
+- Expose all eight PCGrimAge smoking/protein proxies as standalone predictors.
+- Add 90 proteomic OrganAge outputs from the authors’ recommended fold-one
+  chronological/mortality models for Olink 3000 and 1500 panels.
+- Preserve author preprocessing, output units, source provenance, and licenses.
+  MiAge uses the authors’ five-start bounded optimization on the CPU.
+- Validate the additions against native R author-code fixtures, including missing
+  features and batching; publish the new artifacts and data snapshot `v0.5.4`.
+
+See [the clock guide](docs/source/clocks_0_5_4.md) for input requirements and score
+interpretation, and [release validation](docs/development/release-0.5.4.md) for
+source and comparison details.
+
 ## 0.5.3
 
 This package release uses existing model weights and Hugging Face files. It does

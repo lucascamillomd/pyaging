@@ -62,6 +62,26 @@ def test_sidecar_assets_are_prefix_scoped_to_one_clock(tmp_path):
     assert hf_repo_sync._sidecar_assets("horvath2013", tmp_path) == []
 
 
+def test_author_license_is_published_without_relicensing_weights(tmp_path):
+    (tmp_path / "organage.LICENSE.txt").write_text("Academic Non-Commercial License")
+    (tmp_path / "organage.provenance.json").write_text('{"source": "author"}')
+    (tmp_path / "organageother.LICENSE.txt").write_text("unrelated")
+    assert [path.name for path in hf_repo_sync._sidecar_assets("organage", tmp_path)] == [
+        "organage.LICENSE.txt",
+        "organage.provenance.json",
+    ]
+    card = hf_repo_sync._build_card({"clock_name": "organage", "research_only": True}, has_author_license=True)
+    assert "license: mit" not in card
+    assert "organage.LICENSE.txt" in card
+    assert "license_link: https://huggingface.co/pyaging/organage/blob/main/organage.LICENSE.txt" in card
+    assert "research" in card.lower()
+
+
+def test_model_card_does_not_infer_a_weight_license_from_package_license():
+    card = hf_repo_sync._build_card({"clock_name": "example"})
+    assert "license: mit" not in card
+
+
 @pytest.mark.skipif(
     not (ROOT / "clocks" / "weights" / "tage_gene_mapping.csv.gz").exists(),
     reason="mapping asset not built locally (clocks/weights/ is gitignored)",

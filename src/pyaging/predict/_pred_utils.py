@@ -16,7 +16,7 @@ except Exception:
 
 import gc
 
-from ..models import pyagingModel
+from ..models._base_models import pyagingModel
 from ..preprocess._tage import _prepare_tage
 from ..utils._feature_ranges import resolve_feature_bounds
 from ..utils._hf import PyAgingResourceNotFoundError, download_clock_weights

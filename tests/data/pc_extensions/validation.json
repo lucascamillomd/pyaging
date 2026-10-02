@@ -1,0 +1,16 @@
+{
+  "engine": "R 4.5.3 original author calculations versus pyaging double precision",
+  "n_cases_per_model": 8,
+  "max_absolute_error": {
+    "pcbrainage": 2.7853275241795927e-12,
+    "pcgrimageadm": 1.0231815394945443e-12,
+    "pcgrimageb2m": 1.257285475730896e-08,
+    "pcgrimagecystatinc": 2.7939677238464355e-09,
+    "pcgrimagegdf15": 8.640199666842818e-12,
+    "pcgrimageleptin": 2.1259438653942198e-10,
+    "pcgrimagepackyrs": 1.6058265828178264e-12,
+    "pcgrimagepai1": 4.656612873077393e-10,
+    "pcgrimagetimp1": 9.458744898438454e-11
+  },
+  "focused_tests_passed": 59
+}

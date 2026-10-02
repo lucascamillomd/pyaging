@@ -1,5 +1,6 @@
 # pyaging/models/__init__.py
 
+from ._author_extensions import DNAmPhenoAgeNonPRC, DNAmPhenoAgePRC, IntrinClock370
 from ._base_models import (
     AltumAgeNeuralNetwork,
     LinearModel,
@@ -173,8 +174,36 @@ from ._models import (
     epiTOC2,
     stemTOC,
 )
+from ._organage import OrganAge
+from ._pc_extensions import (
+    PCBrainAge,
+    PCGrimAgeADM,
+    PCGrimAgeB2M,
+    PCGrimAgeCystatinC,
+    PCGrimAgeGDF15,
+    PCGrimAgeLeptin,
+    PCGrimAgePackYrs,
+    PCGrimAgePAI1,
+    PCGrimAgeTIMP1,
+)
+from ._replication import CellDRIFT, MiAge
 
 __all__ = [
+    "CellDRIFT",
+    "DNAmPhenoAgeNonPRC",
+    "DNAmPhenoAgePRC",
+    "IntrinClock370",
+    "MiAge",
+    "OrganAge",
+    "PCBrainAge",
+    "PCGrimAgeADM",
+    "PCGrimAgeB2M",
+    "PCGrimAgeCystatinC",
+    "PCGrimAgeGDF15",
+    "PCGrimAgeLeptin",
+    "PCGrimAgePackYrs",
+    "PCGrimAgePAI1",
+    "PCGrimAgeTIMP1",
     "ABEC",
     "ADBahadoSingh",
     "AltumAge",

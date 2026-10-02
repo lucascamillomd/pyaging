@@ -1,0 +1,112 @@
+{
+  "dnamphenoagenonprc": {
+    "clock_name": "dnamphenoagenonprc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": [
+      "Rozenblit, M., et al. Evidence of accelerated epigenetic aging of breast tissues in patients with breast cancer is driven by CpGs associated with polycomb-related genes. Clinical Epigenetics 14, 30 (2022).",
+      "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
+    ],
+    "doi": "https://doi.org/10.1186/s13148-022-01249-z",
+    "notes": "Original Levine-lab non-polycomb PhenoAge contribution using 458 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "non-polycomb PhenoAge contribution"
+    ],
+    "training_target": [
+      "phenotypic age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "weighted linear score",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Clinical Epigenetics",
+    "last_author": "Morgan Levine",
+    "n_features": 458,
+    "citations": 22,
+    "citations_date": "2026-10-02"
+  },
+  "dnamphenoageprc": {
+    "clock_name": "dnamphenoageprc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "⌛",
+    "citation": [
+      "Rozenblit, M., et al. Evidence of accelerated epigenetic aging of breast tissues in patients with breast cancer is driven by CpGs associated with polycomb-related genes. Clinical Epigenetics 14, 30 (2022).",
+      "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
+    ],
+    "doi": "https://doi.org/10.1186/s13148-022-01249-z",
+    "notes": "Original Levine-lab polycomb-related PhenoAge contribution using 55 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "polycomb-related PhenoAge contribution"
+    ],
+    "training_target": [
+      "phenotypic age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "weighted linear score",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Clinical Epigenetics",
+    "last_author": "Morgan Levine",
+    "n_features": 55,
+    "citations": 22,
+    "citations_date": "2026-10-02"
+  },
+  "intrinclock370": {
+    "clock_name": "intrinclock370",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "⌛",
+    "citation": "Tomusiak, A., et al. “Development of an epigenetic clock resistant to changes in immune cell composition.” Communications Biology 7, 934 (2024).",
+    "doi": "https://doi.org/10.1038/s42003-024-06609-4",
+    "notes": "Author-demo IntrinClock at lambda.1se: 370 nonzero CpGs from the original serialized cv.glmnet fit. Predicts chronological age resistant to immune-cell-composition changes. This is a separately fitted regularization column, not the existing 380-CpG lambda.min model with ten sites removed. Returns years using the author's inverse Horvath transform.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "two-stage elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Communications Biology",
+    "last_author": "Eric Verdin",
+    "n_features": 370,
+    "citations": 64,
+    "citations_date": "2026-10-02"
+  }
+}
