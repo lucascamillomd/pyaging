@@ -18,6 +18,7 @@ import torch
 import pyaging as pya
 from pyaging.predict._pred_utils import check_feature_ranges, check_features_in_adata
 from pyaging.predict._transforms import PHENOAGE_CRP_FLOOR_MG_DL, log1p_crp
+from tests.helpers import RecordingLogger
 
 WEIGHTS = Path(__file__).resolve().parents[2] / "clocks" / "weights" / "phenoage.pt"
 
@@ -26,30 +27,6 @@ requires_weights = pytest.mark.skipif(
     not WEIGHTS.exists(),
     reason=f"{WEIGHTS} is build output; generate it by running clocks/notebooks/phenoage.ipynb",
 )
-
-
-class _RecordingLogger:
-    """Captures the pipeline warnings raised while a clock's inputs are checked."""
-
-    def __init__(self):
-        self.warnings = []
-
-    def warning(self, message, indent_level=2):
-        self.warnings.append(message)
-
-    def info(self, message, indent_level=2):
-        pass
-
-    def error(self, message, indent_level=2):
-        pass
-
-    # The @progress decorator calls these on the logger it finds as the last
-    # positional argument.
-    def start_progress(self, message, indent_level=1):
-        pass
-
-    def finish_progress(self, message, indent_level=1):
-        pass
 
 
 class _FakeModel:
@@ -68,7 +45,7 @@ def _warnings_for_crp(value):
     model = _FakeModel(["c_reactive_protein"], "clinical biomarkers")
     adata = anndata.AnnData(np.zeros((1, 1), dtype=float))
     adata.obsm["X_fakeclock"] = np.array([[value]], dtype=float)
-    logger = _RecordingLogger()
+    logger = RecordingLogger()
     check_feature_ranges(adata, model, logger)
     return " ".join(logger.warnings)
 
@@ -77,7 +54,7 @@ def _predict(frame, imputer_strategy="constant"):
     """Mirror predict_age's ordering: impute, fill missing features, then run the model."""
     model = _phenoage()
     adata = pya.pp.df_to_adata(frame, imputer_strategy=imputer_strategy, verbose=False)
-    check_features_in_adata(adata, model, _RecordingLogger())
+    check_features_in_adata(adata, model, RecordingLogger())
     row = torch.tensor(np.asarray(adata.obsm["X_phenoage"], dtype=float), dtype=torch.float64)
     with torch.inference_mode():
         return model(row)

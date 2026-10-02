@@ -112,11 +112,11 @@ process-tutorials:
 	done && cd ..
 
 test:
-	@echo "Running gold standard tests..."
-	uv run pytest || { echo "Gold standard tests failed"; exit 1; }
+	@echo "Running offline tests..."
+	uv run pytest || { echo "Offline tests failed"; exit 1; }
 
 test-all:
-	@echo "Running gold standard tests across supported Python versions..."
+	@echo "Running offline tests across supported Python versions..."
 	@for py in 3.11 3.12 3.13 3.14; do \
 		echo "Testing with Python $$py..."; \
 		uv run --python $$py pytest || { echo "Tests failed on Python $$py"; exit 1; }; \

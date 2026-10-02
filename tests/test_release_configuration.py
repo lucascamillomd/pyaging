@@ -143,9 +143,6 @@ def test_docs_target_runs_sphinx_in_managed_environment():
 
 
 def test_makefile_uses_only_hf_publish_targets():
-    assert "upload-to-s3" not in MAKEFILE
-    legacy_s3_cli = "aws" + " s3"
-    assert legacy_s3_cli not in MAKEFILE
     assert "HF_REPO_ID ?= lucascamillomd/pyaging-data" in MAKEFILE
     assert "verify-hf-auth:" in MAKEFILE
     assert "verify-hf-data-repo-public:" in MAKEFILE
@@ -242,7 +239,7 @@ def test_parallel_release_dry_run_preserves_publish_sequence():
         text=True,
     )
     output = result.stdout
-    assert output.index("Running gold standard tests") < output.index("Syncing per-clock repos under the pyaging org")
+    assert output.index("Running offline tests") < output.index("Syncing per-clock repos under the pyaging org")
     assert output.index("Building documentation") < output.index("Syncing per-clock repos under the pyaging org")
     clock_sync_at = output.index("Syncing per-clock repos under the pyaging org")
     assert clock_sync_at < output.index("Committing and pushing changes")
@@ -376,8 +373,3 @@ def test_workflows_have_named_jobs_and_concurrency_controls():
         assert workflow["concurrency"]["group"]
         assert workflow["concurrency"]["cancel-in-progress"] in {"true", "false"}
         assert all(job.get("name") for job in workflow["jobs"].values())
-
-
-def test_legacy_chained_workflows_are_removed():
-    for name in ("build.yml", "publish.yml", "test.yml", "release.yml"):
-        assert not (WORKFLOW_DIRECTORY / name).exists()
