@@ -155,7 +155,7 @@ def test_makefile_uses_only_hf_publish_targets():
 
 
 def test_makefile_has_hf_release_defaults():
-    assert re.search(r"^VERSION \?= v\d+\.\d+\.\d+$", MAKEFILE, flags=re.MULTILINE)
+    assert "VERSION ?= v$(shell sed" in MAKEFILE
     assert "HF_REPO_ID ?= lucascamillomd/pyaging-data" in MAKEFILE
     assert "HF_REPO_OWNER ?= lucascamillomd" in MAKEFILE
     assert "HF_STATIC_DIR ?= hf_static_data" in MAKEFILE

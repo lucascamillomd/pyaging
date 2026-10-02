@@ -1,6 +1,6 @@
 .PHONY: lint format update build install update-clocks-notebooks update-all-clocks verify-hf-auth verify-hf-data-repo-public create-hf-data-repo upload-clocks-to-hf upload-static-data-to-hf tag-hf-data-repo process-tutorials test test-all test-tutorials docs version commit tag release release-slim clean
 
-VERSION ?= v0.4.0
+VERSION ?= v$(shell sed -n 's/^__version__ = "\(.*\)"/\1/p' src/pyaging/__init__.py)
 HF_REPO_ID ?= lucascamillomd/pyaging-data
 HF_REPO_OWNER ?= lucascamillomd
 HF_STATIC_DIR ?= hf_static_data
@@ -56,14 +56,13 @@ update-clocks-notebooks:
 			continue; \
 		fi; \
 		echo "Processing clock notebook ($$counter/$$total): $$notebook"; \
-		jupyter nbconvert --execute --inplace "$$notebook" || { \
+		uv run --no-sync jupyter nbconvert --execute --inplace "$$notebook" || { \
 			echo ""; \
 			echo "ERROR: ================================================================"; \
 			echo "ERROR: Failed to process notebook: $$notebook"; \
 			echo "ERROR: ================================================================"; \
 			echo ""; \
-			counter=$$((counter+1)); \
-			continue; \
+			exit 1; \
 		}; \
 		counter=$$((counter+1)); \
 	done && cd ../..
@@ -133,11 +132,11 @@ docs:
 
 version:
 	@echo "Updating version in src/pyaging/__init__.py to $(VERSION)..."
-	sed -i '' "s/^__version__ = \".*\"/__version__ = \"$(patsubst v%,%,$(VERSION))\"/" src/pyaging/__init__.py || { echo "Error updating version in src/pyaging/__init__.py"; exit 1; }
+	uv run --no-sync python -c 'import json, pathlib, re, sys; path = pathlib.Path("src/pyaging/__init__.py"); path.write_text(re.sub(r"(?m)^__version__ = .*$$", "__version__ = " + json.dumps(sys.argv[1]), path.read_text()))' "$(patsubst v%,%,$(VERSION))"
 
 commit:
 	@echo "Committing and pushing changes..."
-	git add src/pyaging uv.lock clocks/notebooks clocks/metadata tutorials docs/source docs/_static README.md
+	git add src/pyaging uv.lock pyproject.toml Makefile .github tests clocks/notebooks clocks/metadata tutorials docs/source docs/_static docs/development README.md CHANGELOG.md
 	git commit -m $(COMMIT_MSG) || { echo "Git commit failed"; exit 1; }
 	git push || { echo "Git push failed"; exit 1; }
 

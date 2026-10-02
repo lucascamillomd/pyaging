@@ -4,6 +4,7 @@ import functools
 import logging
 import sys
 import time
+from collections.abc import Sized
 from contextlib import contextmanager
 
 
@@ -45,7 +46,7 @@ def format_logging_message(msg, logging_level, indent_level=1, indent_space_num=
 
 
 class Logger:
-    """Dynamo-specific logger that sets up logging for the package."""
+    """Logger that sets up pyaging's legacy text progress output."""
 
     FORMAT = "%(message)s"
 
@@ -68,13 +69,6 @@ class Logger:
 
         self.logger.propagate = False
         self.log_time()
-
-        # Other global initialization
-        silence_logger("anndata")
-        silence_logger("h5py")
-        silence_logger("numba")
-        silence_logger("pysam")
-        silence_logger("pystan")
 
         if level is not None:
             self.logger.setLevel(level)
@@ -112,8 +106,10 @@ class Logger:
         """
         previous = self.namespace
         self.namespace = namespace
-        yield
-        self.namespace = previous
+        try:
+            yield
+        finally:
+            self.namespace = previous
 
     def namespace_message(self, message):
         """Add namespace information at the beginning of the logging message.
@@ -296,16 +292,17 @@ class Logger:
         ts :
             total size
         """
-        if self.report_hook_percent_state is None:
-            self.report_hook_percent_state = 0
-
-        if ts == -1:
+        if ts <= 0:
+            self.report_hook_percent_state = None
             return
 
-        cur_percent = rs * bn / ts
+        if bn == 0 or self.report_hook_percent_state is None:
+            self.report_hook_percent_state = 0
+
+        cur_percent = min(rs * bn / ts, 1)
 
         if cur_percent - self.report_hook_percent_state > 0.01:
-            self.report_progress(count=rs * bn, total=ts, indent_level=self.indent_level)
+            self.report_progress(percent=cur_percent * 100, indent_level=self.indent_level)
             self.report_hook_percent_state = cur_percent
         if rs * bn >= ts:
             self.report_hook_percent_state = None
@@ -318,8 +315,8 @@ class LoggerManager:
     CRITICAL = logging.CRITICAL
     EXCEPTION = logging.ERROR
 
-    main_logger = Logger("dynamo")
-    temp_timer_logger = Logger("dynamo-temp-timer-logger")
+    main_logger = Logger("pyaging")
+    temp_timer_logger = Logger("pyaging.temp-timer")
 
     @staticmethod
     def get_main_logger():
@@ -337,23 +334,24 @@ class LoggerManager:
     def progress_logger(generator, logger=None, progress_name="", indent_level=1):
         if logger is None:
             logger = LoggerManager.get_temp_timer_logger()
-        iterator = iter(generator)
         logger.log_time()
-        i = 0
+        total = len(generator) if isinstance(generator, Sized) else None
         prev_progress_percent = 0
-        while i < len(generator):
-            i += 1
-            new_progress_percent = i / len(generator) * 100
+        for i, item in enumerate(generator, start=1):
+            if total is None or total == 0:
+                yield item
+                continue
+            new_progress_percent = i / total * 100
             # report every `interval` percent
             if new_progress_percent - prev_progress_percent > 1 or new_progress_percent >= 100:
                 logger.report_progress(
                     count=i,
-                    total=len(generator),
+                    total=total,
                     progress_name=progress_name,
                     indent_level=indent_level,
                 )
                 prev_progress_percent = new_progress_percent
-            yield next(iterator)
+            yield item
 
 
 def main_info(message, indent_level=1):
@@ -435,4 +433,4 @@ def main_info_verbose_timeit(msg):
 
 
 def main_set_level(level):
-    set_logger_level("dynamo", level)
+    LoggerManager.main_logger.setLevel(level)

@@ -42,6 +42,24 @@ LINAGE2_COMORBIDITY_ITEMS = (
 )
 
 
+def _global_median(x):
+    """Keep the rank clocks' lower median and all-missing zero fallback."""
+    median = torch.nanmedian(x)
+    return torch.where(torch.isnan(median), torch.zeros_like(median), median)
+
+
+def _average_ranks(values):
+    """Assign average one-based ranks without scalar tensor comparisons."""
+    sorted_values, order = torch.sort(values)
+    _, counts = torch.unique_consecutive(sorted_values, return_counts=True)
+    ends = counts.cumsum(0)
+    starts = ends - counts
+    averages = (starts + ends + 1).to(values.dtype) / 2
+    ranks = torch.empty_like(values)
+    ranks[order] = torch.repeat_interleave(averages, counts, output_size=values.numel())
+    return ranks
+
+
 class AltumAge(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -1138,6 +1156,7 @@ class PCGrimAge(pyagingModel):
         self.features_PCTIMP1 = None
 
     def forward(self, x):
+        x = self.preprocess(x)
         CpGs = x[:, :-2]
         Female = x[:, -2].unsqueeze(1)
         Age = x[:, -1].unsqueeze(1)
@@ -1278,28 +1297,21 @@ class Pasta(pyagingModel):
         """
         Assign average ranks (1-based) per vector, handling ties.
         """
-        sorted_vals, sorted_idx = torch.sort(values)
-        ranks = torch.empty_like(sorted_vals, dtype=values.dtype)
+        return _average_ranks(values)
 
-        n = values.numel()
-        start = 0
-        while start < n:
-            end = start + 1
-            while end < n and sorted_vals[end] == sorted_vals[start]:
-                end += 1
-            avg_rank = (start + end - 1) / 2.0 + 1.0
-            ranks[sorted_idx[start:end]] = avg_rank
-            start = end
+    def prepare_cohort_context(self, x):
+        """Compute the missing-value fill once across the complete cohort."""
+        return _global_median(x)
 
-        return ranks
+    def predict_with_cohort_context(self, x, context):
+        """Score a batch with its cohort's median without storing run state."""
+        return self.postprocess(self.base_model(self.preprocess(x, context)))
 
-    def preprocess(self, x):
+    def preprocess(self, x, median=None):
         """
         Fill missing values with the global median then rank-normalize per sample.
         """
-        median = torch.nanmedian(x)
-        if torch.isnan(median):
-            median = torch.tensor(0.0, device=x.device, dtype=x.dtype)
+        median = _global_median(x) if median is None else median.to(device=x.device, dtype=x.dtype)
         x = torch.where(torch.isnan(x), median, x)
 
         ranked = torch.empty_like(x, dtype=x.dtype)
@@ -1349,21 +1361,33 @@ class PastaMouse(Pasta):
         else:
             self.reference_values = [self.full_reference_values[i] for i in self.mouse_feature_indices]
 
+    def _full_reference_tensor(self, x):
+        if self.base_model_features is None or self.mouse_feature_indices is None:
+            raise ValueError("PastaMouse must be configured with set_mouse_features before inference.")
+
+        if self.full_reference_values is None:
+            return torch.zeros(len(self.base_model_features), device=x.device, dtype=x.dtype)
+        return torch.as_tensor(self.full_reference_values, device=x.device, dtype=x.dtype)
+
+    def prepare_cohort_context(self, x):
+        """Include human reference values without expanding the full cohort."""
+        reference = self._full_reference_tensor(x)
+        inserted = torch.ones(reference.shape, dtype=torch.bool, device=x.device)
+        inserted[self.mouse_feature_indices] = False
+        # Missing references do not affect nanmedian, which is the common case.
+        reference = reference[inserted & ~torch.isnan(reference)]
+        values = torch.cat([x.reshape(-1), reference.repeat(x.size(0))]) if reference.numel() else x
+        return _global_median(values)
+
+    def predict_with_cohort_context(self, x, context):
+        return super().predict_with_cohort_context(self._expand_with_reference(x), context)
+
     def _expand_with_reference(self, x):
         """
         Reconstruct the full 8113-length input expected by the base model by
         inserting reference values for human-only genes.
         """
-        if self.base_model_features is None or self.mouse_feature_indices is None:
-            raise ValueError("PastaMouse must be configured with set_mouse_features before inference.")
-
-        if self.full_reference_values is None:
-            ref_full = torch.zeros(len(self.base_model_features), device=x.device, dtype=x.dtype)
-        elif isinstance(self.full_reference_values, torch.Tensor):
-            ref_full = self.full_reference_values.to(device=x.device, dtype=x.dtype)
-        else:
-            ref_full = torch.tensor(self.full_reference_values, device=x.device, dtype=x.dtype)
-
+        ref_full = self._full_reference_tensor(x)
         full_x = ref_full.unsqueeze(0).repeat(x.size(0), 1)
         full_x[:, self.mouse_feature_indices] = x
         return full_x
@@ -1386,28 +1410,21 @@ class Reg(pyagingModel):
         """
         Assign average ranks (1-based) per vector, handling ties.
         """
-        sorted_vals, sorted_idx = torch.sort(values)
-        ranks = torch.empty_like(sorted_vals, dtype=values.dtype)
+        return _average_ranks(values)
 
-        n = values.numel()
-        start = 0
-        while start < n:
-            end = start + 1
-            while end < n and sorted_vals[end] == sorted_vals[start]:
-                end += 1
-            avg_rank = (start + end - 1) / 2.0 + 1.0
-            ranks[sorted_idx[start:end]] = avg_rank
-            start = end
+    def prepare_cohort_context(self, x):
+        """Compute the missing-value fill once across the complete cohort."""
+        return _global_median(x)
 
-        return ranks
+    def predict_with_cohort_context(self, x, context):
+        """Score a batch with its cohort's median without storing run state."""
+        return self.postprocess(self.base_model(self.preprocess(x, context)))
 
-    def preprocess(self, x):
+    def preprocess(self, x, median=None):
         """
         Fill missing values with the global median then rank-normalize per sample.
         """
-        median = torch.nanmedian(x)
-        if torch.isnan(median):
-            median = torch.tensor(0.0, device=x.device, dtype=x.dtype)
+        median = _global_median(x) if median is None else median.to(device=x.device, dtype=x.dtype)
         x = torch.where(torch.isnan(x), median, x)
 
         ranked = torch.empty_like(x, dtype=x.dtype)
@@ -1708,11 +1725,11 @@ class PhenoAge(pyagingModel):
         Applies a convertion from a CDF of the mortality score from a Gompertz
         distribution to phenotypic age.
         """
-        # lambda
-        lambda_ = torch.tensor(0.0192, device=x.device, dtype=x.dtype)
-        mortality_score = 1 - torch.exp(-torch.exp(x) * (torch.exp(120 * lambda_) - 1) / lambda_)
-        age = 141.50225 + torch.log(-0.00553 * torch.log(1 - mortality_score)) / 0.090165
-        return age
+        # log(1 - mortality) equals the negative Gompertz hazard exactly.
+        # Cancel the nested exp/log terms before finite precision rounds the
+        # mortality to zero or one, preserving the published constants.
+        log_scale = math.log(0.00553 * math.expm1(120 * 0.0192) / 0.0192)
+        return 141.50225 + (x + log_scale) / 0.090165
 
 
 class PhenoAgeSaoPaulo(pyagingModel):
@@ -2273,7 +2290,7 @@ class stemTOC(pyagingModel):
         quantiles = []
         for row in x:
             filtered_row = row[row != -1]
-            quantile_95 = torch.quantile(filtered_row, 0.95) if len(filtered_row) > 0 else torch.tensor(float("nan"))
+            quantile_95 = torch.quantile(filtered_row, 0.95) if len(filtered_row) > 0 else x.new_tensor(float("nan"))
             quantiles.append(quantile_95)
         return torch.vstack(quantiles)
 
@@ -2290,7 +2307,7 @@ class epiTOC1(pyagingModel):
         means = []
         for row in x:
             filtered_row = row[row != -1]
-            mean = torch.mean(filtered_row) if len(filtered_row) > 0 else torch.tensor(float("nan"))
+            mean = torch.mean(filtered_row) if len(filtered_row) > 0 else x.new_tensor(float("nan"))
             means.append(mean)
         return torch.vstack(means)
 

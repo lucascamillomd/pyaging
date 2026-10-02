@@ -157,8 +157,8 @@ def _center_against_reference(df: pd.DataFrame, reference_index=None) -> pd.Data
     missing values (``na.rm = TRUE``), so a gene the alignment stage padded with
     ``NaN`` stays ``NaN`` for the model's imputer to fill.
 
-    ``reference_index`` is a list of sample labels; ``None`` centres on the whole
-    cohort.
+    ``reference_index`` is a list of sample labels or a boolean row mask;
+    ``None`` centres on the whole cohort.
     """
     reference = df if reference_index is None else df.loc[reference_index]
     if reference.empty:
@@ -215,26 +215,22 @@ def _resolve_species(frame: pd.DataFrame, logger) -> tuple[str, pd.DataFrame]:
     return selected[0], remaining
 
 
-def _resolve_reference_group(adata) -> list | None:
+def _resolve_reference_group(adata) -> np.ndarray | None:
     """Read the samples to centre against from ``obs[REFERENCE_COLUMN]``.
 
     Absent, the cohort centres on every sample -- the reference pipeline's own
-    default. Present, the truthy rows are the reference group.
+    default. Present, the True or 1 rows are the reference group.
     """
     if REFERENCE_COLUMN not in adata.obs.columns:
         return None
     column = adata.obs[REFERENCE_COLUMN]
-    values = np.asarray(column)
-    if values.dtype == bool:
-        mask = values
-    elif np.issubdtype(values.dtype, np.number):
-        mask = values != 0
-    else:
-        raise ValueError(f"adata.obs[{REFERENCE_COLUMN!r}] must be boolean (or 0/1), got dtype {values.dtype}")
-    names = list(adata.obs_names[mask])
-    if len(names) == 0:
+    if not pd.api.types.is_numeric_dtype(column.dtype) or column.isna().any() or not column.isin([0, 1]).all():
+        raise ValueError(f"adata.obs[{REFERENCE_COLUMN!r}] must be boolean (or 0/1) without missing values")
+    mask = column.to_numpy(dtype=bool)
+    if not mask.any():
         raise ValueError(f"adata.obs[{REFERENCE_COLUMN!r}] selects no samples")
-    return names
+    # Labels can repeat; a positional mask keeps the selected rows unambiguous.
+    return mask
 
 
 def _prepare_tage(adata, dir: str = "pyaging_data", logger=None) -> pd.DataFrame:
@@ -313,8 +309,14 @@ def _prepare_tage(adata, dir: str = "pyaging_data", logger=None) -> pd.DataFrame
     # ``to_df`` densifies a sparse matrix and labels the axes; the ``astype``
     # copies, so nothing downstream can reach the caller's counts and the other
     # clocks in the same predict_age call still see the original data.
-    frame = adata.to_df().astype(np.float64)
+    frame = adata.to_df()
+    if np.iscomplexobj(frame.to_numpy()):
+        raise ValueError("the tAge clocks expect real, nonnegative raw RNA-seq counts")
+    frame = frame.astype(np.float64)
     species, frame = _resolve_species(frame, logger)
+    counts = frame.to_numpy()
+    if not np.isfinite(counts).all() or (counts < 0).any():
+        raise ValueError("the tAge clocks expect finite, nonnegative raw RNA-seq counts without missing values")
     if species != "mouse":
         logger.warning(
             f"tage is calibrated in months of mouse age; a {species} cohort needs rescaling by its own "
@@ -350,8 +352,8 @@ def _prepare_tage(adata, dir: str = "pyaging_data", logger=None) -> pd.DataFrame
         "n_input_genes": int(frame.shape[1]),
         "n_filtered_genes": int(filtered.shape[1]),
         "n_mapped_genes": int(mapped.shape[1]),
-        "n_reference_samples": len(reference_index) if reference_index is not None else int(adata.n_obs),
-        "reference_group": list(reference_index) if reference_index is not None else "all_samples",
+        "n_reference_samples": int(reference_index.sum()) if reference_index is not None else int(adata.n_obs),
+        "reference_group": list(adata.obs_names[reference_index]) if reference_index is not None else "all_samples",
     }
     return centered
 

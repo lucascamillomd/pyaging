@@ -1,8 +1,23 @@
 import io
+from concurrent.futures import ThreadPoolExecutor
 
+import pytest
 from rich.console import Console
 
 from pyaging.logger._live import ClockRunDisplay, SimpleStep, display_enabled
+
+
+@pytest.fixture
+def hf_progress_settings():
+    """Restore the public HF settings touched by the progress tests."""
+    from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars, enable_progress_bars
+
+    was_disabled = are_progress_bars_disabled()
+    enable_progress_bars()
+    try:
+        yield
+    finally:
+        (disable_progress_bars if was_disabled else enable_progress_bars)()
 
 
 def _forced_console(buffer):
@@ -142,3 +157,47 @@ def test_disabled_step_suppresses_payloads_too():
         step.done("also hidden")
 
     assert buffer.getvalue() == ""
+
+
+def test_quiet_hf_bars_preserves_other_library_progress_settings(hf_progress_settings):
+    from huggingface_hub.utils import are_progress_bars_disabled, disable_progress_bars
+
+    from pyaging.logger._live import quiet_hf_bars
+
+    disable_progress_bars("other-library")
+    with quiet_hf_bars(False):
+        assert are_progress_bars_disabled("other-library")
+
+    assert are_progress_bars_disabled("other-library")
+    assert not are_progress_bars_disabled()
+
+
+def test_quiet_hf_bars_does_not_silence_other_threads(hf_progress_settings):
+    from huggingface_hub.utils import are_progress_bars_disabled
+
+    from pyaging.logger._live import quiet_hf_bars
+
+    with quiet_hf_bars(False), ThreadPoolExecutor(max_workers=1) as pool:
+        assert pool.submit(are_progress_bars_disabled).result() is False
+
+
+def test_silent_step_disables_its_hf_download_bar(monkeypatch, capsys):
+    from huggingface_hub.utils import tqdm
+
+    from pyaging.logger._live import live_step
+    from pyaging.utils._hf import download_hf_file
+
+    def download_with_progress(**kwargs):
+        progress_class = kwargs.get("tqdm_class", tqdm)
+        with progress_class(total=1, desc="hub download", disable=False) as bar:
+            bar.update(1)
+        return "cached.pt"
+
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", download_with_progress)
+
+    with live_step("loading data", False):
+        assert download_hf_file("data.pt") == "cached.pt"
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""

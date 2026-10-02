@@ -158,8 +158,10 @@ def main() -> int:
     if args.tag_only and not args.tag:
         parser.error("--tag-only requires --tag")
 
-    registry = json.loads(METADATA_FILE.read_text(encoding="utf-8"))
     available = sorted(path.stem for path in WEIGHTS_DIR.glob("*.pt"))
+    if not available:
+        parser.error(f"a non-empty weights directory is required: {WEIGHTS_DIR}")
+    registry = json.loads(METADATA_FILE.read_text(encoding="utf-8"))
     selected = args.clocks or available
     unknown = [name for name in selected if name not in available]
     if unknown:

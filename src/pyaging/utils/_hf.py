@@ -13,17 +13,30 @@ specific revision of the data repositories (e.g. a release tag such as
 import os
 from contextlib import suppress
 
+import httpx
 from huggingface_hub import hf_hub_download
 from huggingface_hub.errors import (
     EntryNotFoundError,
     HfHubHTTPError,
     LocalEntryNotFoundError,
     RepositoryNotFoundError,
+    RevisionNotFoundError,
 )
+from huggingface_hub.utils import tqdm
+
+from ..logger._live import _hf_bars_disabled
 
 REPO_ID = "lucascamillomd/pyaging-data"
 CLOCKS_OWNER = "pyaging"
 DEFAULT_REVISION = "main"
+
+
+class _SilentProgressBar(tqdm):
+    """A per-download bar that honors pyaging's silent display context."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs["disable"] = True
+        super().__init__(*args, **kwargs)
 
 
 def get_data_revision() -> str:
@@ -37,6 +50,10 @@ class PyAgingHubError(RuntimeError):
 
 class PyAgingResourceNotFoundError(PyAgingHubError):
     """Raised when a requested data file does not exist."""
+
+
+class PyAgingRevisionNotFoundError(PyAgingHubError):
+    """Raised when a requested data repository revision does not exist."""
 
 
 class PyAgingRepositoryError(PyAgingHubError):
@@ -62,16 +79,23 @@ def download_hf_file(
 
     ``dir`` is retained for backward compatibility but is no longer used.
     """
+    revision = get_data_revision()
+    progress_options = {"tqdm_class": _SilentProgressBar} if _hf_bars_disabled.get() else {}
     try:
         path = hf_hub_download(
             repo_id=repo_id,
             filename=filename,
-            revision=get_data_revision(),
+            revision=revision,
+            **progress_options,
         )
     except LocalEntryNotFoundError as exc:
         raise PyAgingDownloadError(f"Could not download data file '{filename}' and no local copy is available") from exc
     except EntryNotFoundError as exc:
         raise PyAgingResourceNotFoundError(f"Data file '{filename}' was not found in repository '{repo_id}'") from exc
+    except RevisionNotFoundError as exc:
+        raise PyAgingRevisionNotFoundError(
+            f"Data revision '{revision}' was not found in repository '{repo_id}' for file '{filename}'"
+        ) from exc
     except RepositoryNotFoundError as exc:
         if getattr(exc.response, "status_code", None) in (401, 403):
             raise PyAgingAuthenticationError(f"Hugging Face denied access to data file '{filename}'") from exc
@@ -83,6 +107,8 @@ def download_hf_file(
         if status_code == 429:
             raise PyAgingRateLimitError(f"Hugging Face rate-limited the download of data file '{filename}'") from exc
         raise PyAgingDownloadError(f"Hugging Face could not download data file '{filename}'") from exc
+    except httpx.RequestError as exc:
+        raise PyAgingDownloadError(f"Could not transfer data file '{filename}' from Hugging Face") from exc
     except OSError as exc:
         raise PyAgingDownloadError(f"Could not save data file '{filename}'") from exc
 
@@ -95,7 +121,8 @@ def download_clock_weights(clock_name: str, dir: str = "pyaging_data", logger=No
     """Download a clock's weight file, preferring its dedicated repository.
 
     Each clock lives in ``pyaging/<clock_name>``; the legacy shared data
-    repository is the fallback when the per-clock repository cannot be read.
+    repository is the fallback when the per-clock repository cannot be read,
+    including when it lacks the requested revision. Both use the same revision.
     The repo's ``config.json`` is fetched alongside the weights - it carries
     the audited clock metadata and is the file the Hub counts as a download.
     """
@@ -103,7 +130,12 @@ def download_clock_weights(clock_name: str, dir: str = "pyaging_data", logger=No
     filename = f"{clock_name}.pt"
     try:
         path = download_hf_file(filename, dir, logger, indent_level=indent_level, repo_id=clock_repo)
-    except (PyAgingRepositoryError, PyAgingResourceNotFoundError, PyAgingAuthenticationError):
+    except (
+        PyAgingRepositoryError,
+        PyAgingResourceNotFoundError,
+        PyAgingRevisionNotFoundError,
+        PyAgingAuthenticationError,
+    ):
         # The Hub answers 401 (not 404) for nonexistent repos when the caller
         # has no token, which maps to the authentication error - for anonymous
         # users a typoed clock name must still reach the legacy fallback and

@@ -62,3 +62,28 @@ def test_example_data_filename_mapping_is_not_public():
 def test_download_example_data_rejects_unknown_data_type():
     with pytest.raises(ValueError, match="has not yet been implemented"):
         data_module.download_example_data("not-implemented")
+
+
+def test_interrupted_example_copy_does_not_poison_cache(monkeypatch, tmp_path):
+    source = tmp_path / "source.pkl"
+    source.write_bytes(b"complete")
+    destination = tmp_path / "examples"
+    monkeypatch.setattr(data_module, "download_hf_file", lambda *args, **kwargs: str(source))
+
+    def interrupted_copy(source, target):
+        Path(target).write_bytes(b"partial")
+        raise OSError("disk full")
+
+    monkeypatch.setattr(data_module.shutil, "copy", interrupted_copy)
+
+    with pytest.raises(OSError, match="disk full"):
+        data_module.download_example_data("GSE139307", dir=str(destination), verbose=False)
+
+    assert list(destination.iterdir()) == []
+
+
+def test_download_example_data_rejects_directory_at_destination(tmp_path):
+    (tmp_path / "GSE139307.pkl").mkdir()
+
+    with pytest.raises(IsADirectoryError):
+        data_module.download_example_data("GSE139307", dir=str(tmp_path), verbose=False)

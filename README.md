@@ -48,7 +48,21 @@ pya.pred.predict_age(adata, ["Horvath2013", "AltumAge", "DunedinPACE"])
 adata.obs.head()
 ```
 
-Clock weights are downloaded on demand from per-clock repositories under the [`pyaging` Hugging Face organization](https://huggingface.co/pyaging) (example data comes from [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data)). Set the `PYAGING_DATA_REVISION` environment variable to a release tag (e.g. `v0.3.1`) to pin downloads to a specific data revision for reproducibility; it defaults to `main`, the live data release.
+Clock weights are downloaded on demand from per-clock repositories under the [`pyaging` Hugging Face organization](https://huggingface.co/pyaging) (example data comes from [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data)). Set `PYAGING_DATA_REVISION` to an existing data release tag, such as `v0.5.2`, to pin downloads; it defaults to `main`. Package-only releases do not create new HF tags. Version 0.5.3 uses the existing model artifacts.
+
+### Run the same clocks across datasets
+
+Reuse loaded models with a bounded cache:
+
+```python
+clocks = ["Horvath2013", "AltumAge"]
+cache = pya.pred.ClockCache(maxsize=len(clocks))
+for adata in datasets:  # Each dataset is a separate AnnData object.
+    pya.pred.predict_age(adata, clocks, clock_cache=cache)
+cache.clear()
+```
+
+The cache avoids repeated download checks, deserialization, and device transfers. It holds at most `maxsize` models and keeps separate entries for each device and data revision. It is optional; ordinary calls retain no model cache. Clear it to refresh weights from a moving `main` revision. See the [prediction guide](https://pyaging.readthedocs.io/en/latest/pyaging.predict.html) for memory and cohort guidance.
 
 ## ❓ Can't find an aging clock?
 

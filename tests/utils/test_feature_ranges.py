@@ -62,6 +62,15 @@ def test_none_feature_unit_falls_back_to_the_registry_unit():
     assert by_feature["albumin"]["unit"] == "g/dL"
 
 
+def test_feature_ranges_accepts_feature_iterator_without_losing_names():
+    records = resolve_feature_ranges(iter(["age", "female"]), "clinical biomarkers")
+
+    assert records == [
+        {"feature": "age", "unit": "years", "low": 0.0, "high": 122.5},
+        {"feature": "female", "unit": "indicator (1 = female, 0 = male)", "low": 0.0, "high": 1.0},
+    ]
+
+
 def test_get_feature_ranges_rejects_a_clock_without_features(monkeypatch):
     class _FeaturelessClock:
         features = None
