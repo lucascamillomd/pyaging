@@ -17,6 +17,7 @@ import pyaging.data._data as data_module
         ("ENCFF386QWG", "ENCFF386QWG.bigWig"),
         ("GSE65765", "GSE65765_CPM.pkl"),
         ("blood_chemistry_example", "blood_chemistry_example.pkl"),
+        ("PAD000022", "PAD000022_subset.pkl"),
     ],
 )
 def test_download_example_data_uses_hf_filename_and_copies_into_caller_directory(

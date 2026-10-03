@@ -23,6 +23,9 @@ This public repository contains the model weights and data files used by
 - `all_clock_metadata.pt` is the live aggregate clock catalog. Retired clock files
   may remain here to preserve earlier releases; file presence is not current catalogue membership.
 - Root-level example files support the pyaging tutorials.
+- `PAD000022_subset.pkl` contains 32 real plasma samples and 134 Olink Explore
+  3072 assays for the OrganAge tutorial. Its [data card](PAD000022_README.md)
+  documents the CC0 source, selection, normalization and limitations.
 - `supporting_files/` contains dependencies used to construct or document clocks.
 
 Files used by the Python package are intentionally stored at the repository root and
