@@ -13,6 +13,7 @@ _EXAMPLE_DATA_FILENAMES = {
     "ENCFF386QWG": "ENCFF386QWG.bigWig",
     "GSE65765": "GSE65765_CPM.pkl",
     "blood_chemistry_example": "blood_chemistry_example.pkl",
+    "PAD000022": "PAD000022_subset.pkl",
 }
 
 
@@ -21,14 +22,16 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     Downloads example datasets for various types of biological data used in aging studies.
 
     This function facilitates the download of example datasets for different types of biological data,
-    including methylation, histone mark, RNA-seq, and ATAC-seq data. It is designed to provide quick
+    including methylation, histone mark, RNA-seq, ATAC-seq, and proteomics data. It is designed to provide quick
     access to standard datasets for users to test and explore the functionalities of the pyaging package.
 
     Parameters
     ----------
     data_type : str
         The type of data to download. Valid options are 'GSE139307', 'GSE130735', 'GSE223748',
-        'ENCFF386QWG', 'GSE65765', 'GSE193140', and 'blood_chemistry_example'.
+        'ENCFF386QWG', 'GSE65765', 'GSE193140', 'blood_chemistry_example', and 'PAD000022'.
+        'PAD000022' contains 32 real plasma samples with 134 Olink Explore 3072 NPX features
+        for the brain, heart, and kidney OrganAge models.
 
     dir : str
         Directory where the example file is placed (default "pyaging_data"). The download
@@ -54,7 +57,7 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
 
     Examples
     --------
-    >>> download_example_data("methylation")
+    >>> download_example_data("GSE139307")
     >>> # This will download the example methylation dataset to the local system.
 
     """
