@@ -73,6 +73,7 @@ exclude_patterns = [
     "clock_notebooks/template.ipynb",
 ]
 html_static_path = ["../_static"]
+templates_path = ["_templates"]
 source_suffix = [".rst", ".md"]
 
 # -- Options for HTML output -------------------------------------------------
@@ -118,6 +119,25 @@ html_context = {
     "github_repo": "pyaging",
     "github_version": "main",
 }
+
+# Keep published tutorial URLs working after notebook renames and the RRBS merge.
+_tutorial_redirects = {
+    "tutorial_utils": ("tutorial_metadata", ""),
+    "tutorial_dnam_illumina_human_array": ("tutorial_dnam", "#Human-arrays"),
+    "tutorial_dnam_illumina_mammalian_array": ("tutorial_dnam", "#Mammalian-arrays"),
+    "tutorial_dnam_rrbs": ("tutorial_dnam", "#Mouse-RRBS"),
+    "tutorial_dnam_human": ("tutorial_dnam", "#Human-arrays"),
+    "tutorial_dnam_mammals": ("tutorial_dnam", "#Mammalian-arrays"),
+    "tutorial_histonemarkchipseq": ("tutorial_histone_mark", ""),
+    "tutorial_atacseq": ("tutorial_chromatin_accessibility", ""),
+    "tutorial_rnaseq": ("tutorial_transcriptomics", ""),
+    "tutorial_bloodchemistry": ("tutorial_blood_chemistry", ""),
+}
+html_context["tutorial_redirects"] = {
+    f"tutorials/{old}": (f"tutorials/{new}", fragment) for old, (new, fragment) in _tutorial_redirects.items()
+}
+html_additional_pages = {old: "tutorial_redirect.html" for old in html_context["tutorial_redirects"]}
+
 html_logo = "../_static/logo.png"
 html_favicon = "../_static/logo.png"
 html_css_files = [
