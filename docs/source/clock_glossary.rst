@@ -3,11 +3,6 @@
 Clock Catalogue
 ===============
 
-Citation counts are dated snapshots from `OpenAlex <https://openalex.org/>`_
-for the cited publication. Variants from the same paper share its count;
-preprint and journal counts are not added together. Expand a clock to see
-the date of its citation count.
-
 .. toctree::
    :hidden:
 
