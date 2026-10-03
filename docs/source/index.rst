@@ -28,7 +28,7 @@ pyaging
    :class-container: sd-text-center
 
    .. grid-item-card:: :octicon:`rocket;1.5em;sd-text-primary` Get started
-      :link: tutorials/tutorial_dnam_illumina_human_array
+      :link: tutorials/tutorial_dnam
       :link-type: doc
 
       Predict age from Illumina array data in a few lines.
@@ -69,8 +69,16 @@ pyaging
 .. toctree::
    :hidden:
    :caption: Tutorials
+   :maxdepth: 1
 
-   tutorials/index
+   tutorials/tutorial_metadata
+   tutorials/tutorial_cpgptgrimage3
+   tutorials/tutorial_dnam
+   tutorials/tutorial_histone_mark
+   tutorials/tutorial_chromatin_accessibility
+   tutorials/tutorial_transcriptomics
+   tutorials/tutorial_proteomics
+   tutorials/tutorial_blood_chemistry
 
 .. toctree::
    :hidden:
