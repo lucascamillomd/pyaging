@@ -6346,7 +6346,7 @@
     "approved_by_author": "⌛",
     "citation": "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591.",
     "doi": "https://doi.org/10.18632/aging.101414",
-    "notes": "Clinical Phenotypic Age combines chronological age with nine blood biomarkers. The coefficients and mortality-to-age equation follow the [2019 Liu et al. correction](https://doi.org/10.1371/journal.pmed.1002760). The printed equation approaches a lower bound of 141.50 years as modeled mortality approaches zero. Supply raw C-reactive protein in mg/dL. pyaging floors it at 0.01 mg/dL before taking its natural logarithm. Use pyaging >=0.6.1 for the corrected calibration, which runs in the package class.",
+    "notes": "Clinical Phenotypic Age combines chronological age with nine blood biomarkers. The coefficients and age conversion follow [Kuo et al. (2021), section 4.3](https://doi.org/10.1111/acel.13376). The leading 1 inside the logarithm in the 2019 erratum, used in pyaging 0.6.1, compressed scores near 141.50 years. In an unweighted check of 5,645 NHANES 2009–2010 adults, 98.2% of 0.6.1 scores fell within 0.1 years of 141.50. The Kuo equation restored the age scale while preserving mortality ranking. Supply raw C-reactive protein in mg/dL. pyaging floors it at 0.01 mg/dL before taking its natural logarithm. The Kuo calibration requires pyaging >=0.6.2.",
     "research_only": null,
     "tissue": [
       "blood"
@@ -6370,7 +6370,7 @@
     "n_features": 10,
     "citations": 3848,
     "citations_date": "2026-10-02",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "preprocess": "natural_log_crp",
     "postprocess": "mortality_to_phenoage"
   },

@@ -120,22 +120,22 @@ def test_phenoage_extreme_finite_predictors_do_not_overflow():
     x = torch.tensor([[-50.0], [0.0], [1000.0]], dtype=torch.float64)
     result = PhenoAge().postprocess(x)
     assert torch.isfinite(result).all()
-    expected = torch.tensor([[141.5], [149.54646933597505], [11053.521199910809]], dtype=torch.float64)
+    expected = torch.tensor([[-403.10727799426434], [142.44645904883447], [11053.521199910809]], dtype=torch.float64)
     torch.testing.assert_close(result, expected, rtol=0, atol=1e-11)
 
 
 def test_phenoage_matches_corrected_expression_at_regular_predictors():
     x = torch.linspace(-12.0, -4.0, 17, dtype=torch.float64)
-    # Evaluate the equations as printed in Liu et al. (2019), e1002760.
+    # Evaluate the equations as printed in Kuo et al. (2021), section 4.3.
     mortality = 1 - torch.exp(-1.51714 * torch.exp(x) / 0.0076927)
-    corrected = 141.50 + torch.log1p(-0.00553 * torch.log1p(-mortality)) / 0.09165
+    corrected = 141.50 + torch.log(-0.00553 * torch.log1p(-mortality)) / 0.09165
     torch.testing.assert_close(PhenoAge().postprocess(x), corrected, atol=1e-12, rtol=0)
 
 
 def test_phenoage_matches_independent_published_formula_reference():
-    # Evaluated separately with 80-digit Decimal arithmetic from the erratum.
+    # Evaluated separately with 80-digit Decimal arithmetic from the published equations.
     x = torch.tensor([-12.0, -9.0, -6.0], dtype=torch.float64)
-    expected = torch.tensor([141.50007311463003, 141.5014684527022, 141.52945684738162], dtype=torch.float64)
+    expected = torch.tensor([11.513562158490771, 44.24678638107669, 76.98001060366262], dtype=torch.float64)
     torch.testing.assert_close(PhenoAge().postprocess(x), expected, atol=1e-12, rtol=0)
 
 

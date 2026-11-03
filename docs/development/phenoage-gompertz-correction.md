@@ -1,5 +1,22 @@
 # Clinical PhenoAge Gompertz correction
 
+## pyaging 0.6.2 calibration
+
+[Kuo et al. (2021), section 4.3](https://doi.org/10.1111/acel.13376) defines the
+clinical PhenoAge calibration used in pyaging 0.6.2.
+
+```text
+PhenoAge = 141.50 + (xb + log(0.00553 * 1.51714 / 0.0076927)) / 0.09165
+```
+
+An unweighted check of 5,645 NHANES 2009–2010 adults found that 98.2% of
+0.6.1 scores fell within 0.1 years of 141.50. With the Kuo equation the
+median was 44.67 years, and the 5th–95th percentile range was 15.81–81.01
+years. The eight-year mortality AUROC was 0.8775 for both formulas (584
+deaths). This comparison measures discrimination and the age scale.
+
+## Historical pyaging 0.6.1 calibration
+
 The [2019 Liu et al. correction](https://doi.org/10.1371/journal.pmed.1002760)
 is the source for clinical PhenoAge in pyaging 0.6.1. It supersedes the
 2018 calibration described below. The corrected artifact uses a log-hazard
@@ -11,7 +28,7 @@ PhenoAge = 141.50 + log1p(0.00553 * 1.51714 * exp(xb) / 0.0076927) / 0.09165
 ```
 
 The leading 1 inside the published logarithm gives 141.50 years as the lower
-limit. Use the rebuilt weights with pyaging 0.6.1 or later.
+limit. This was the calibration shipped in 0.6.1.
 
 ## Historical pyaging 0.5.7 calibration
 

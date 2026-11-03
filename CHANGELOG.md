@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.2
+
+- Use the [Kuo et al. (2021) equation](https://doi.org/10.1111/acel.13376) for
+  clinical PhenoAge. The leading 1 in the 2019 erratum compressed the age
+  scale in 0.6.1. The biomarker coefficients follow Kuo et al. (2021).
+
 ## 0.6.1
 
 - Apply the [2019 correction](https://doi.org/10.1371/journal.pmed.1002760)

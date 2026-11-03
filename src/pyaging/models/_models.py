@@ -1725,11 +1725,11 @@ class PhenoAge(pyagingModel):
 
     def postprocess(self, x):
         """Convert the fitted log hazard to clinical Phenotypic Age in years."""
-        # Liu et al. (2019), doi:10.1371/journal.pmed.1002760.
+        # Kuo et al. (2021), section 4.3, doi:10.1111/acel.13376.
         # Substitute the negative Gompertz hazard for log(1 - mortality).
-        # Evaluate log(1 + exp(log_scaled_hazard)) without overflow.
+        # Cancel log(exp(xb)) before mortality can round to zero or one.
         log_scaled_hazard = x + math.log(0.00553 * 1.51714 / 0.0076927)
-        return 141.50 + torch.logaddexp(torch.zeros_like(x), log_scaled_hazard) / 0.09165
+        return 141.50 + log_scaled_hazard / 0.09165
 
 
 class PhenoAgeSaoPaulo(pyagingModel):
