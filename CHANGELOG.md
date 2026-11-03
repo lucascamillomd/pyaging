@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- Fill absent CpGs for eligible human DNA methylation clocks with beta
+  references from Hannum 450K (GSE40279) and BoA EPIC v2 (GSE246337).
+  Shared CpGs use the mean of the two cohort medians. A clock's own reference
+  vector takes precedence, and uncovered features fall back to zero.
+
 ## 0.5.5
 
 - Add Kuo et al.'s PAC from original-author code and coefficients, with 128
