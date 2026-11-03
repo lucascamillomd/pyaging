@@ -1577,6 +1577,9 @@ class TwelveCellDeconvoluteBloodEPIC(DeconvolutionSingleCell):
 
 
 class DepressionBarbu(pyagingModel):
+    # This clock consumes dasen-normalized M-values.
+    use_dnam_median_fallback = False
+
     def __init__(self):
         super().__init__()
 
