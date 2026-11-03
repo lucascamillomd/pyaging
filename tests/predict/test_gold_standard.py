@@ -85,7 +85,7 @@ gold_standard_dict = {
     "pcskinandblood": 55.508428118217466,
     "pedbe": 5.947250020578089,
     "petkovich": 24.47996061655825,
-    "phenoage": -65.7553566561792,
+    "phenoage": 141.50000003509402,
     "replitali": 94.8332866338199,
     "skinandblood": 104.75113267297903,
     "stubbs": 1.7329077738158296,

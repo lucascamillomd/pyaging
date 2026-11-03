@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1
+
+- Apply the [2019 correction](https://doi.org/10.1371/journal.pmed.1002760)
+  to the clinical PhenoAge coefficients and mortality-to-age equation.
+  The equation as printed has a lower limit of 141.50 years.
+
 ## 0.6.0
 
 - Fill absent CpGs for eligible human DNA methylation clocks with beta

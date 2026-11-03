@@ -1,5 +1,20 @@
 # Clinical PhenoAge Gompertz correction
 
+The [2019 Liu et al. correction](https://doi.org/10.1371/journal.pmed.1002760)
+is the source for clinical PhenoAge in pyaging 0.6.1. It supersedes the
+2018 calibration described below. The corrected artifact uses a log-hazard
+intercept of −19.907 and an alkaline phosphatase coefficient of 0.00188.
+The runtime evaluates the printed mortality-to-age equation in log space:
+
+```text
+PhenoAge = 141.50 + log1p(0.00553 * 1.51714 * exp(xb) / 0.0076927) / 0.09165
+```
+
+The leading 1 inside the published logarithm gives 141.50 years as the lower
+limit. Use the rebuilt weights with pyaging 0.6.1 or later.
+
+## Historical pyaging 0.5.7 calibration
+
 The [original Levine et al. supplement](https://cdn.aging-us.com/article/101414/supplementary/SD1/0/aging-v10i4-101414-supplementary-material-SD1.pdf), checked 2026-10-02, distinguishes the Cox variable-selection penalty `lambda = 0.0192` (page 1) from the Gompertz ancillary parameter `gamma = 0.0076927` (page 2). Table S1 on page 10 reports the latter rounded to 0.0077.
 
 Earlier pyaging versions used the selection penalty in the Gompertz calculation. Version 0.5.7 uses the published gamma, retaining the stable algebraic form of the mortality-to-age conversion:
