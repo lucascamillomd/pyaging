@@ -1,0 +1,104 @@
+##[group]Run uv run --no-sync pytest --nbmake tutorials/ --ignore=tutorials/tutorial_cpgptgrimage3.ipynb
+^[[36;1muv run --no-sync pytest --nbmake tutorials/ --ignore=tutorials/tutorial_cpgptgrimage3.ipynb^[[0m
+shell: /usr/bin/bash -e {0}
+env:
+  UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+  UV_PYTHON: 3.11
+  UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+##[endgroup]
+============================= test session starts ==============================
+platform linux -- Python 3.11.18, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/runner/work/pyaging/pyaging
+configfile: pyproject.toml
+plugins: nbmake-1.5.5, cov-7.1.0, zarr-3.1.6, anyio-4.14.2
+collected 7 items
+
+tutorials/tutorial_blood_chemistry.ipynb .                               [ 14%]
+tutorials/tutorial_chromatin_accessibility.ipynb .                       [ 28%]
+tutorials/tutorial_dnam.ipynb F                                          [ 42%]
+tutorials/tutorial_histone_mark.ipynb .                                  [ 57%]
+tutorials/tutorial_metadata.ipynb .                                      [ 71%]
+tutorials/tutorial_proteomics.ipynb .                                    [ 85%]
+tutorials/tutorial_transcriptomics.ipynb .                               [100%]
+
+=================================== FAILURES ===================================
+_______ /home/runner/work/pyaging/pyaging/tutorials/tutorial_dnam.ipynb ________
+---------------------------------------------------------------------------
+adata = pya.pp.df_to_adata(df, metadata_cols=['gender', 'tissue_type', 'dataset'], imputer_strategy='knn')
+^[[31m---------------------------------------------------------------------------^[[39m
+^[[31mKeyError^[[39m                                  Traceback (most recent call last)
+^[[36mCell^[[39m^[[36m ^[[39m^[[32mIn[7]^[[39m^[[32m, line 1^[[39m
+^[[32m----> ^[[39m^[[32m1^[[39m adata = pya.pp.df_to_adata(df, metadata_cols=[^[[33m'gender'^[[39m, ^[[33m'tissue_type'^[[39m, ^[[33m'dataset'^[[39m], imputer_strategy=^[[33m'knn'^[[39m)
+
+^[[36mFile ^[[39m^[[32m~/work/pyaging/pyaging/src/pyaging/preprocess/_preprocess.py:174^[[39m, in ^[[36mdf_to_adata^[[39m^[[34m(df, metadata_cols, imputer_strategy, verbose)^[[39m
+^[[32m    172^[[39m     metadata_cols = []
+^[[32m    173^[[39m ^[[38;5;28;01mif^[[39;00m ^[[38;5;28mlen^[[39m(metadata_cols) > ^[[32m0^[[39m:
+^[[32m--> ^[[39m^[[32m174^[[39m     metadata = ^[[30;43mdf^[[39;49m^[[30;43m.^[[39;49m^[[30;43mloc^[[39;49m^[[30;43m[^[[39;49m^[[30;43m:^[[39;49m^[[30;43m,^[[39;49m^[[30;43m ^[[39;49m^[[30;43mmetadata_cols^[[39;49m^[[30;43m]^[[39;49m
+^[[32m    175^[[39m     df = df.drop(metadata_cols, axis=^[[32m1^[[39m)
+^[[32m    176^[[39m ^[[38;5;28;01melse^[[39;00m:
+
+^[[36mFile ^[[39m^[[32m~/work/pyaging/pyaging/.venv/lib/python3.11/site-packages/pandas/core/indexing.py:1185^[[39m, in ^[[36m_LocationIndexer.__getitem__^[[39m^[[34m(self, key)^[[39m
+^[[32m   1183^[[39m     ^[[38;5;28;01mif^[[39;00m ^[[38;5;28mself^[[39m._is_scalar_access(key):
+^[[32m   1184^[[39m         ^[[38;5;28;01mreturn^[[39;00m ^[[38;5;28mself^[[39m.obj._get_value(*key, takeable=^[[38;5;28mself^[[39m._takeable)
+^[[32m-> ^[[39m^[[32m1185^[[39m     ^[[38;5;28;01mreturn^[[39;00m ^[[30;43mself^[[39;49m^[[30;43m.^[[39;49m^[[30;43m_getitem_tuple^[[39;49m^[[30;43m(^[[39;49m^[[30;43mkey^[[39;49m^[[30;43m)^[[39;49m
+^[[32m   1186^[[39m ^[[38;5;28;01melse^[[39;00m:
+^[[32m   1187^[[39m     ^[[38;5;66;03m# we by definition only have the 0th axis^[[39;00m
+^[[32m   1188^[[39m     axis = ^[[38;5;28mself^[[39m.axis ^[[38;5;129;01mor^[[39;00m ^[[32m0^[[39m
+
+^[[36mFile ^[[39m^[[32m~/work/pyaging/pyaging/.venv/lib/python3.11/site-packages/pandas/core/indexing.py:1378^[[39m, in ^[[36m_LocIndexer._getitem_tuple^[[39m^[[34m(self, tup)^[[39m
+^[[32m   1375^[[39m ^[[38;5;28;01mif^[[39;00m ^[[38;5;28mself^[[39m._multi_take_opportunity(tup):
+^[[32m   1376^[[39m     ^[[38;5;28;01mreturn^[[39;00m ^[[38;5;28mself^[[39m._multi_take(tup)
+^[[32m-> ^[[39m^[[32m1378^[[39m ^[[38;5;28;01mreturn^[[39;00m ^[[30;43mself^[[39;49m^[[30;43m.^[[39;49m^[[30;43m_getitem_tuple_same_dim^[[39;49m^[[30;43m(^[[39;49m^[[30;43mtup^[[39;49m^[[30;43m)^[[39;49m
+
+^[[36mFile ^[[39m^[[32m~/work/pyaging/pyaging/.venv/lib/python3.11/site-packages/pandas/core/indexing.py:1021^[[39m, in ^[[36m_LocationIndexer._getitem_tuple_same_dim^[[39m^[[34m(self, tup)^[[39m
+^[[32m   1018^[[39m ^[[38;5;28;01mif^[[39;00m com.is_null_slice(key):
+^[[32m   1019^[[39m     ^[[38;5;28;01mcontinue^[[39;00m
+^[[32m-> ^[[39m^[[32m1021^[[39m retval = ^[[30;43mgetattr^[[39;49m^[[30;43m(^[[39;49m^[[30;43mretval^[[39;49m^[[30;43m,^[[39;49m^[[30;43m ^[[39;49m^[[30;43mself^[[39;49m^[[30;43m.^[[39;49m^[[30;43mname^[[39;49m^[[30;43m)^[[39;49m^[[30;43m.^[[39;49m^[[30;43m_getitem_axis^[[39;49m^[[30;43m(^[[39;49m^[[30;43mkey^[[39;49m^[[30;43m,^[[39;49m^[[30;43m ^[[39;49m^[[30;43maxis^[[39;49m^[[30;43m=^[[39;49m^[[30;43mi^[[39;49m^[[30;43m)^[[39;49m
+^[[32m   1022^[[39m ^[[38;5;66;03m# We should never have retval.ndim < self.ndim, as that should^[[39;00m
+^[[32m   1023^[[39m ^[[38;5;66;03m#  be handled by the _getitem_lowerdim call above.^[[39;00m
+^[[32m   1024^[[39m ^[[38;5;28;01massert^[[39;00m retval.ndim == ^[[38;5;28mself^[[39m.ndim
+
+^[[36mFile ^[[39m^[[32m~/work/pyaging/pyaging/.venv/lib/python3.11/site-packages/pandas/core/indexing.py:1421^[[39m, in ^[[36m_LocIndexer._getitem_axis^[[39m^[[34m(self, key, axis)^[[39m
+^[[32m   1418^[[39m     ^[[38;5;28;01mif^[[39;00m ^[[38;5;28mhasattr^[[39m(key, ^[[33m"^[[39m^[[33mndim^[[39m^[[33m"^[[39m) ^[[38;5;129;01mand^[[39;00m key.ndim > ^[[32m1^[[39m:
+^[[32m   1419^[[39m         ^[[38;5;28;01mraise^[[39;00m ^[[38;5;167;01mValueError^[[39;00m(^[[33m"^[[39m^[[33mCannot index with multidimensional key^[[39m^[[33m"^[[39m)
+^[[32m-> ^[[39m^[[32m1421^[[39m     ^[[38;5;28;01mreturn^[[39;00m ^[[30;43mself^[[39;49m^[[30;43m.^[[39;49m^[[30;43m_getitem_iterable^[[39;49m^[[30;43m(^[[39;49m^[[30;43mkey^[[39;49m^[[30;43m,^[[39;49m^[[30;43m ^[[39;49m^[[30;43maxis^[[39;49m^[[30;43m=^[[39;49m^[[30;43maxis^[[39;49m^[[30;43m)^[[39;49m
+^[[32m   1423^[[39m ^[[38;5;66;03m# nested tuple slicing^[[39;00m
+^[[32m   1424^[[39m ^[[38;5;28;01mif^[[39;00m is_nested_tuple(key, labels):
+
+^[[36mFile ^[[39m^[[32m~/work/pyaging/pyaging/.venv/lib/python3.11/site-packages/pandas/core/indexing.py:1361^[[39m, in ^[[36m_LocIndexer._getitem_iterable^[[39m^[[34m(self, key, axis)^[[39m
+^[[32m   1358^[[39m ^[[38;5;28mself^[[39m._validate_key(key, axis)
+^[[32m   1360^[[39m ^[[38;5;66;03m# A collection of keys^[[39;00m
+^[[32m-> ^[[39m^[[32m1361^[[39m keyarr, indexer = ^[[30;43mself^[[39;49m^[[30;43m.^[[39;49m^[[30;43m_get_listlike_indexer^[[39;49m^[[30;43m(^[[39;49m^[[30;43mkey^[[39;49m^[[30;43m,^[[39;49m^[[30;43m ^[[39;49m^[[30;43maxis^[[39;49m^[[30;43m)^[[39;49m
+^[[32m   1362^[[39m ^[[38;5;28;01mreturn^[[39;00m ^[[38;5;28mself^[[39m.obj._reindex_with_indexers(
+^[[32m   1363^[[39m     {axis: [keyarr, indexer]}, copy=^[[38;5;28;01mTrue^[[39;00m, allow_dups=^[[38;5;28;01mTrue^[[39;00m
+^[[32m   1364^[[39m )
+
+^[[36mFile ^[[39m^[[32m~/work/pyaging/pyaging/.venv/lib/python3.11/site-packages/pandas/core/indexing.py:1559^[[39m, in ^[[36m_LocIndexer._get_listlike_indexer^[[39m^[[34m(self, key, axis)^[[39m
+^[[32m   1556^[[39m ax = ^[[38;5;28mself^[[39m.obj._get_axis(axis)
+^[[32m   1557^[[39m axis_name = ^[[38;5;28mself^[[39m.obj._get_axis_name(axis)
+^[[32m-> ^[[39m^[[32m1559^[[39m keyarr, indexer = ^[[30;43max^[[39;49m^[[30;43m.^[[39;49m^[[30;43m_get_indexer_strict^[[39;49m^[[30;43m(^[[39;49m^[[30;43mkey^[[39;49m^[[30;43m,^[[39;49m^[[30;43m ^[[39;49m^[[30;43maxis_name^[[39;49m^[[30;43m)^[[39;49m
+^[[32m   1561^[[39m ^[[38;5;28;01mreturn^[[39;00m keyarr, indexer
+
+^[[36mFile ^[[39m^[[32m~/work/pyaging/pyaging/.venv/lib/python3.11/site-packages/pandas/core/indexes/base.py:6212^[[39m, in ^[[36mIndex._get_indexer_strict^[[39m^[[34m(self, key, axis_name)^[[39m
+^[[32m   6209^[[39m ^[[38;5;28;01melse^[[39;00m:
+^[[32m   6210^[[39m     keyarr, indexer, new_indexer = ^[[38;5;28mself^[[39m._reindex_non_unique(keyarr)
+^[[32m-> ^[[39m^[[32m6212^[[39m ^[[30;43mself^[[39;49m^[[30;43m.^[[39;49m^[[30;43m_raise_if_missing^[[39;49m^[[30;43m(^[[39;49m^[[30;43mkeyarr^[[39;49m^[[30;43m,^[[39;49m^[[30;43m ^[[39;49m^[[30;43mindexer^[[39;49m^[[30;43m,^[[39;49m^[[30;43m ^[[39;49m^[[30;43maxis_name^[[39;49m^[[30;43m)^[[39;49m
+^[[32m   6214^[[39m keyarr = ^[[38;5;28mself^[[39m.take(indexer)
+^[[32m   6215^[[39m ^[[38;5;28;01mif^[[39;00m ^[[38;5;28misinstance^[[39m(key, Index):
+^[[32m   6216^[[39m     ^[[38;5;66;03m# GH 42790 - Preserve name from an Index^[[39;00m
+
+^[[36mFile ^[[39m^[[32m~/work/pyaging/pyaging/.venv/lib/python3.11/site-packages/pandas/core/indexes/base.py:6264^[[39m, in ^[[36mIndex._raise_if_missing^[[39m^[[34m(self, key, indexer, axis_name)^[[39m
+^[[32m   6261^[[39m     ^[[38;5;28;01mraise^[[39;00m ^[[38;5;167;01mKeyError^[[39;00m(^[[33mf^[[39m^[[33m"^[[39m^[[33mNone of [^[[39m^[[38;5;132;01m{^[[39;00mkey^[[38;5;132;01m}^[[39;00m^[[33m] are in the [^[[39m^[[38;5;132;01m{^[[39;00maxis_name^[[38;5;132;01m}^[[39;00m^[[33m]^[[39m^[[33m"^[[39m)
+^[[32m   6263^[[39m not_found = ^[[38;5;28mlist^[[39m(ensure_index(key)[missing_mask.nonzero()[^[[32m0^[[39m]].unique())
+^[[32m-> ^[[39m^[[32m6264^[[39m ^[[38;5;28;01mraise^[[39;00m ^[[38;5;167;01mKeyError^[[39;00m(^[[33mf^[[39m^[[33m"^[[39m^[[38;5;132;01m{^[[39;00mnot_found^[[38;5;132;01m}^[[39;00m^[[33m not in index^[[39m^[[33m"^[[39m)
+
+^[[31mKeyError^[[39m: "['tissue_type'] not in index"
+----------------------------- Captured stderr call -----------------------------
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+
+* nbmake: Automate reading GitHub Actions logs with our bot: https://github.com/marketplace/treebeard-build
+
+=========================== short test summary info ============================
+FAILED tutorials/tutorial_dnam.ipynb::tutorial_dnam.ipynb - ^[[31mKeyError^[[39m: "['tissue_type'] not in index"
+==================== 1 failed, 6 passed in 96.32s (0:01:36) ====================
+##[error]Process completed with exit code 1.

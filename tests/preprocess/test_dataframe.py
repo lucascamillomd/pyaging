@@ -138,3 +138,22 @@ def test_knn_helper_retains_all_missing_columns():
     adata = anndata.AnnData(np.array([[1.0, np.nan], [2.0, np.nan]]))
     impute_missing_values(adata, "knn", DisplayLogger(lambda message: None))
     np.testing.assert_array_equal(adata.X, [[1.0, 0.0], [2.0, 0.0]])
+
+
+def test_epic_aggregation_leaves_metadata_columns_with_underscores_alone():
+    frame = pd.DataFrame(
+        {
+            "tissue_type": ["blood", "saliva"],
+            "cg1_TC11": [0.2, 0.4],
+            "cg1_BC12": [0.4, 0.6],
+            "cg2": [0.5, 0.7],
+        },
+        index=["s1", "s2"],
+    )
+    result = epicv2_probe_aggregation(frame, verbose=False)
+    assert result.columns.tolist() == ["tissue_type", "cg1", "cg2"]
+    assert result["tissue_type"].tolist() == ["blood", "saliva"]
+    np.testing.assert_allclose(result["cg1"], [0.3, 0.5])
+
+    no_duplicates = epicv2_probe_aggregation(frame.drop(columns="cg1_BC12"), verbose=False)
+    assert no_duplicates.columns.tolist() == ["tissue_type", "cg1", "cg2"]
