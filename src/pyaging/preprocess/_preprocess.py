@@ -1,4 +1,5 @@
 import os
+import re
 
 import anndata
 import numpy as np
@@ -201,6 +202,9 @@ def df_to_adata(
     return adata
 
 
+_EPICV2_SUFFIX = re.compile(r"_[TB][CO]\d+$")
+
+
 def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
     """
     Aggregates probes targeting the same CpG site in a DataFrame from the Illumina Methylation EPIC array v2.
@@ -229,7 +233,12 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
         raise TypeError("Input df must be a pandas DataFrame.")
 
     with live_step("scanning for duplicated probes", verbose) as (step, pipeline_logger):
-        cpg_sites = pd.Index([column.split("_", 1)[0] for column in df.columns], name=df.columns.name)
+        # Only strip EPIC v2 replicate suffixes (e.g. "_TC21", "_BO11"); leave metadata such as
+        # "tissue_type" untouched.
+        cpg_sites = pd.Index(
+            [_EPICV2_SUFFIX.sub("", column) if isinstance(column, str) else column for column in df.columns],
+            name=df.columns.name,
+        )
         n_duplicated_probes = int(cpg_sites.duplicated().sum())
 
         # Even singleton probes need canonical CpG names for clock matching.
@@ -240,7 +249,13 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
         step.update(f"averaging {n_duplicated_probes} duplicated probes")
         # Group by position so repeated column labels are counted only once.
         # sort=False preserves the input's first-occurrence ordering.
-        aggregated_df = df.T.groupby(cpg_sites, sort=False).mean().T
+        is_probe = pd.Index(df.columns).map(lambda c: isinstance(c, str) and bool(_EPICV2_SUFFIX.search(c)))
+        # Average every column that maps to a probe CpG (including an unsuffixed copy of it);
+        # pass all other columns through unchanged.
+        is_probe = np.asarray(cpg_sites.isin(cpg_sites[np.asarray(is_probe, dtype=bool)]), dtype=bool)
+        aggregated_probes = df.loc[:, is_probe].T.groupby(cpg_sites[is_probe], sort=False).mean().T
+        others = df.loc[:, ~is_probe].set_axis(cpg_sites[~is_probe], axis=1)
+        aggregated_df = pd.concat([others, aggregated_probes], axis=1)[cpg_sites.unique()]
         step.done(f"{df.shape[1]} probes aggregated into {aggregated_df.shape[1]} unique CpG sites")
 
     return aggregated_df

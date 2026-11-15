@@ -17,6 +17,8 @@ class DNAmPhenoAgePRC(pyagingModel):
     missing CpGs and supplied NA beta values make zero contribution.
     """
 
+    use_dnam_median_fallback = False
+
     def preprocess(self, x):
         return torch.where(torch.isnan(x), torch.zeros_like(x), x)
 

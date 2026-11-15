@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.6.2
+
+- Use the [Kuo et al. (2021) equation](https://doi.org/10.1111/acel.13376) for
+  clinical PhenoAge. The leading 1 in the 2019 erratum compressed the age
+  scale in 0.6.1. The biomarker coefficients follow Kuo et al. (2021).
+
+## 0.6.1
+
+- Apply the [2019 correction](https://doi.org/10.1371/journal.pmed.1002760)
+  to the clinical PhenoAge coefficients and mortality-to-age equation.
+  The equation as printed has a lower limit of 141.50 years.
+
+## 0.6.0
+
+- Fill absent CpGs for eligible human DNA methylation clocks with beta
+  references from Hannum 450K (GSE40279) and BoA EPIC v2 (GSE246337).
+  Shared CpGs use the mean of the two cohort medians. A clock's own reference
+  vector takes precedence, and uncovered features fall back to zero.
+
 ## 0.5.5
 
 - Add Kuo et al.'s PAC from original-author code and coefficients, with 128
