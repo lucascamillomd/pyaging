@@ -1,13 +1,16 @@
 """Independent author-source checks for the 0.5.4 linear-clock additions."""
 
 from pathlib import Path
+from unittest.mock import Mock
 
+import anndata
 import numpy as np
 import pandas as pd
 import torch
 
 from pyaging.models._author_extensions import DNAmPhenoAgeNonPRC, DNAmPhenoAgePRC, IntrinClock370
 from pyaging.models._base_models import LinearModel
+from pyaging.predict._pred_utils import check_features_in_adata
 
 DATA = Path(__file__).resolve().parents[1] / "data/author_extensions"
 
@@ -34,11 +37,13 @@ def test_phenoage_partitions_match_original_r_functions():
         selected = coefficients.loc[mask]
         assert len(selected) == count
         model = _configured(cls, selected.CpG, selected.Weight)
+        model.metadata.update(clock_name=key, species="Homo sapiens", data_type="DNA methylation")
         result = model(torch.tensor(frame[model.features].to_numpy(), dtype=torch.float64))
         np.testing.assert_allclose(result.detach().numpy().ravel(), expected[key], atol=1e-10, rtol=1e-12)
         missing = frame.drop(columns=coefficients.CpG.iloc[[0, 15, 17]])
-        aligned = missing.reindex(columns=model.features, fill_value=0)
-        result = model(torch.tensor(aligned.to_numpy(), dtype=torch.float64))
+        adata = anndata.AnnData(missing.to_numpy(), var=pd.DataFrame(index=missing.columns))
+        check_features_in_adata(adata, model, Mock())
+        result = model(torch.tensor(adata.obsm[f"X_{key}"], dtype=torch.float64))
         np.testing.assert_allclose(result.detach().numpy().ravel(), missing_expected[key], atol=1e-10, rtol=1e-12)
 
 
