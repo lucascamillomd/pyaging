@@ -37,6 +37,72 @@ def test_feature_alignment_accepts_sparse_without_changing_input(matrix_type):
     assert adata.uns["test_percent_na"] == pytest.approx(100 / 3)
 
 
+@pytest.mark.parametrize(
+    "species, use_medians, references, expected",
+    [
+        ("Homo sapiens", True, None, [0.2, 0.6, 0.0]),
+        ("Homo sapiens", True, [0.0, 0.0, np.nan], [0.2, 0.0, np.nan]),
+        ("Mus musculus", True, None, [0.2, 0.0, 0.0]),
+        ("Homo sapiens", False, None, [0.2, 0.0, 0.0]),
+    ],
+)
+def test_absent_cpg_beta_columns_use_compatible_medians(monkeypatch, species, use_medians, references, expected):
+    from pyaging.predict import _pred_utils
+
+    load_medians = Mock(return_value={"cg00000001": 0.6})
+    monkeypatch.setattr(_pred_utils, "_load_dnam_feature_medians", load_medians, raising=False)
+    model = _clock()
+    model.features = ["cg00000000", "cg00000001", "cg00000002"]
+    model.metadata.update(species=species, data_type="DNA methylation")
+    model.use_dnam_median_fallback = use_medians
+    model.reference_values = references
+    adata = anndata.AnnData(np.array([[0.2]]), var=pd.DataFrame(index=["cg00000000"]))
+
+    check_features_in_adata(adata, model, Mock())
+
+    np.testing.assert_array_equal(adata.obsm["X_test"], [expected])
+    np.testing.assert_array_equal(adata.uns["test_supplied_features_mask"], [True, False, False])
+    assert adata.uns["test_missing_features"] == ["cg00000001", "cg00000002"]
+    assert adata.uns["test_percent_na"] == pytest.approx(200 / 3)
+    assert load_medians.call_count == int(expected[1] == 0.6)
+
+
+@pytest.mark.parametrize("supplied", [["cg00000001"], ["unrelated"]])
+def test_cpg_medians_are_unused_for_complete_or_entirely_absent_inputs(monkeypatch, supplied):
+    from pyaging.predict import _pred_utils
+
+    load_medians = Mock(side_effect=AssertionError("unnecessary median table load"))
+    monkeypatch.setattr(_pred_utils, "_load_dnam_feature_medians", load_medians, raising=False)
+    model = _clock()
+    model.features = ["cg00000001"]
+    model.metadata.update(species="Homo sapiens", data_type="DNA methylation")
+    model.reference_values = None
+    adata = anndata.AnnData(np.array([[0.2]]), var=pd.DataFrame(index=supplied))
+
+    if supplied == model.features:
+        check_features_in_adata(adata, model, Mock())
+        np.testing.assert_array_equal(adata.obsm["X_test"], [[0.2]])
+    else:
+        with pytest.raises(NameError, match="Every single feature"):
+            check_features_in_adata(adata, model, Mock())
+    load_medians.assert_not_called()
+
+
+def test_depressionbarbu_does_not_fill_missing_m_values_with_beta_medians(monkeypatch):
+    from pyaging.models._models import DepressionBarbu
+    from pyaging.predict import _pred_utils
+
+    model = DepressionBarbu()
+    model.features = ["cg00000108", "cg00000029"]
+    model.metadata.update(clock_name="depressionbarbu", species="Homo sapiens", data_type="DNA methylation")
+    adata = anndata.AnnData(np.array([[-2.0]]), var=pd.DataFrame(index=["cg00000108"]))
+    monkeypatch.setattr(_pred_utils, "_load_dnam_feature_medians", lambda: {"cg00000029": 0.6})
+
+    check_features_in_adata(adata, model, Mock())
+
+    np.testing.assert_array_equal(adata.obsm["X_depressionbarbu"], [[-2.0, 0.0]])
+
+
 def test_duplicate_feature_names_do_not_silently_choose_a_measurement():
     adata = anndata.AnnData(np.array([[1.0, 9.0]]))
     adata.var_names = ["a", "a"]

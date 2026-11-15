@@ -1577,6 +1577,9 @@ class TwelveCellDeconvoluteBloodEPIC(DeconvolutionSingleCell):
 
 
 class DepressionBarbu(pyagingModel):
+    # This clock consumes dasen-normalized M-values.
+    use_dnam_median_fallback = False
+
     def __init__(self):
         super().__init__()
 
@@ -1722,14 +1725,11 @@ class PhenoAge(pyagingModel):
 
     def postprocess(self, x):
         """Convert the fitted log hazard to clinical Phenotypic Age in years."""
-        # log(1 - mortality) equals the negative Gompertz hazard exactly.
-        # Cancel the nested exp/log terms before finite precision rounds the
-        # mortality to zero or one, preserving the published constants.
-        # Levine 2018 supplementary methods, p. 2: gamma = 0.0076927.
-        # The 0.0192 on p. 1 is the Cox variable-selection penalty, not gamma.
-        gamma = 0.0076927
-        log_scale = math.log(0.00553 * math.expm1(120 * gamma) / gamma)
-        return 141.50225 + (x + log_scale) / 0.090165
+        # Kuo et al. (2021), section 4.3, doi:10.1111/acel.13376.
+        # Substitute the negative Gompertz hazard for log(1 - mortality).
+        # Cancel log(exp(xb)) before mortality can round to zero or one.
+        log_scaled_hazard = x + math.log(0.00553 * 1.51714 / 0.0076927)
+        return 141.50 + log_scaled_hazard / 0.09165
 
 
 class PhenoAgeSaoPaulo(pyagingModel):
