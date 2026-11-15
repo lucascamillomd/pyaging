@@ -1,4 +1,5 @@
 import os
+import re
 
 import anndata
 import numpy as np
@@ -10,13 +11,6 @@ try:
     PYBIGWIG_AVAILABLE = True
 except ImportError:
     PYBIGWIG_AVAILABLE = False
-
-try:
-    import cupy as cp
-
-    CUPY_AVAILABLE = cp.cuda.is_available()
-except Exception:
-    CUPY_AVAILABLE = False
 
 from ..logger._live import live_step
 from ._preprocess_utils import (
@@ -66,7 +60,7 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
     (1-22, X). Non-standard chromosomes or regions outside annotated genes are not processed. The signal
     transformation uses the arcsinh function for normalization. This function requires pyBigWig to be installed.
     If pyBigWig is not available, an ImportError will be raised. To use this function, ensure you have installed
-    pyaging with the 'bigwig' extra: pip install pyaging[bigwig]
+    pyaging with the 'histone' extra: pip install pyaging[histone]
 
     Examples
     --------
@@ -78,45 +72,36 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
     if not PYBIGWIG_AVAILABLE:
         raise ImportError("pyBigWig is not installed. To use this function, please install it.")
 
-    # Ensure bws is a list
     if isinstance(bw_files, str):
         bw_files = [bw_files]
+    if not bw_files:
+        raise ValueError("bw_files must contain at least one bigWig file.")
 
     with live_step("processing bigWig files", verbose) as (step, pipeline_logger):
-        # Get genomic annotation data
         genes = load_ensembl_metadata(dir, pipeline_logger, indent_level=1)
 
-        all_samples = []  # List to store signal data for each sample
-        for index, bw_file in enumerate(bw_files, start=1):
-            step.update(f"processing {os.path.basename(bw_file)} ({index}/{len(bw_files)})")
+        regions = list(zip(genes["chr"], genes["start"], genes["end"], strict=True))
+        signals = np.zeros((len(bw_files), len(regions)), dtype=float)
+        for index, bw_file in enumerate(bw_files):
+            step.update(f"processing {os.path.basename(bw_file)} ({index + 1}/{len(bw_files)})")
 
-            # Open bigWig file
             with open_bw(bw_file) as bw:
-                signal_sample = np.empty(shape=(0, 0), dtype=float)
-                for i in range(genes.shape[0]):
+                for gene_index, (chromosome, start, end) in enumerate(regions):
                     try:
                         signal = bw.stats(
-                            "chr" + genes["chr"].iloc[i],
-                            genes["start"].iloc[i] - 1,
-                            genes["end"].iloc[i],
+                            "chr" + str(chromosome),
+                            start - 1,
+                            end,
                             type="mean",
                             exact=True,
                         )[0]
                     except Exception:
                         signal = None
 
-                    signal_transformed = np.arcsinh(signal) if signal is not None else 0
+                    if signal is not None:
+                        signals[index, gene_index] = np.arcsinh(signal)
 
-                    signal_sample = np.append(signal_sample, signal_transformed)
-
-            # Append DataFrame for the current sample
-            all_samples.append(pd.DataFrame(signal_sample[None, :], columns=genes.gene_id.tolist()))
-
-        # Concatenate all sample dataframes
-        df_concat = pd.concat(all_samples, ignore_index=True)
-
-        # Add file name as index
-        df_concat.index = bw_files
+        df_concat = pd.DataFrame(signals, index=bw_files, columns=genes.gene_id.tolist())
 
         plural = "s" if len(bw_files) != 1 else ""
         step.done(f"{len(bw_files)} bigWig file{plural} × {genes.shape[0]} genes")
@@ -184,7 +169,6 @@ def df_to_adata(
         raise TypeError("Input df must be a pandas DataFrame.")
 
     with live_step("building AnnData object", verbose) as (step, pipeline_logger):
-        # Split data and metadata
         if metadata_cols is None:
             metadata_cols = []
         if len(metadata_cols) > 0:
@@ -193,25 +177,20 @@ def df_to_adata(
         else:
             metadata = None
 
-        # Create an AnnData object
         adata = create_anndata_object(df, pipeline_logger)
 
-        # Add metadata
         add_metadata_to_anndata(adata, metadata, pipeline_logger)
 
-        # Log statistics
         missing_pct = log_data_statistics(adata.X, pipeline_logger)
 
-        # Impute missing values
         step.update(f"imputing missing values ({imputer_strategy})")
         impute_missing_values(adata, imputer_strategy, pipeline_logger)
 
-        # Add unstructured data
         if "X_imputed" in adata.layers:
             add_unstructured_data(adata, imputer_strategy, pipeline_logger)
 
-        # Move adata.X to GPU if possible
-        adata.X = cp.array(adata.X) if CUPY_AVAILABLE else np.asfortranarray(adata.X)
+        # Keep full cohorts in host memory; prediction transfers batches.
+        adata.X = np.asfortranarray(adata.X)
 
         if missing_pct == 0:
             missing = " · no missing values"
@@ -221,6 +200,9 @@ def df_to_adata(
         step.done(f"AnnData: {adata.n_obs} samples × {adata.n_vars} features{missing}")
 
     return adata
+
+
+_EPICV2_SUFFIX = re.compile(r"_[TB][CO]\d+$")
 
 
 def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
@@ -251,36 +233,29 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
         raise TypeError("Input df must be a pandas DataFrame.")
 
     with live_step("scanning for duplicated probes", verbose) as (step, pipeline_logger):
-        # Create an empty dictionary to store aggregated data
-        aggregated_data = {}
-        n_duplicated_probes = 0
+        # Only strip EPIC v2 replicate suffixes (e.g. "_TC21", "_BO11"); leave metadata such as
+        # "tissue_type" untouched.
+        cpg_sites = pd.Index(
+            [_EPICV2_SUFFIX.sub("", column) if isinstance(column, str) else column for column in df.columns],
+            name=df.columns.name,
+        )
+        n_duplicated_probes = int(cpg_sites.duplicated().sum())
 
-        for column in df.columns:
-            cpg_site = column.split("_")[0]
-            if cpg_site in aggregated_data:
-                n_duplicated_probes += 1
-                aggregated_data[cpg_site].append(df[column])
-            else:
-                aggregated_data[cpg_site] = [df[column]]
-
-        # In case there are no duplicated probes, just return current array
+        # Even singleton probes need canonical CpG names for clock matching.
         if n_duplicated_probes == 0:
-            step.done(f"no duplicated probes across {df.shape[1]} columns · returning original data")
-            return df
+            step.done(f"no duplicated probes across {df.shape[1]} columns")
+            return df if df.columns.equals(cpg_sites) else df.set_axis(cpg_sites, axis=1)
 
         step.update(f"averaging {n_duplicated_probes} duplicated probes")
-        aggregated_columns = []
-        for cpg_site, columns in aggregated_data.items():
-            if len(columns) > 1:
-                mean_series = pd.concat(columns, axis=1).mean(axis=1)
-                mean_series.name = cpg_site
-                aggregated_columns.append(mean_series)
-            else:
-                # Directly use the single column DataFrame if there's only one probe for the CpG site
-                aggregated_columns.append(columns[0].rename(cpg_site))
-
-        # Concatenate all aggregated columns to form the final DataFrame
-        aggregated_df = pd.concat(aggregated_columns, axis=1)
+        # Group by position so repeated column labels are counted only once.
+        # sort=False preserves the input's first-occurrence ordering.
+        is_probe = pd.Index(df.columns).map(lambda c: isinstance(c, str) and bool(_EPICV2_SUFFIX.search(c)))
+        # Average every column that maps to a probe CpG (including an unsuffixed copy of it);
+        # pass all other columns through unchanged.
+        is_probe = np.asarray(cpg_sites.isin(cpg_sites[np.asarray(is_probe, dtype=bool)]), dtype=bool)
+        aggregated_probes = df.loc[:, is_probe].T.groupby(cpg_sites[is_probe], sort=False).mean().T
+        others = df.loc[:, ~is_probe].set_axis(cpg_sites[~is_probe], axis=1)
+        aggregated_df = pd.concat([others, aggregated_probes], axis=1)[cpg_sites.unique()]
         step.done(f"{df.shape[1]} probes aggregated into {aggregated_df.shape[1]} unique CpG sites")
 
     return aggregated_df

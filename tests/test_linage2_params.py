@@ -67,13 +67,16 @@ def test_the_fold_applies_to_the_skip_columns_too():
     assert PARAMS["fold"]["cap"] == 6
     assert "including the five in skip_mask" in PARAMS["fold"]["applies_to"]
 
-    # These two skip z-scoring, so their raw 0-8 range meets the cap directly. Their registry
-    # bounds describe the input, not the folded value, which is exactly the trap the note warns of.
+    # These two skip z-scoring, so their raw scale meets the cap directly. The self-reported-health
+    # index's 0-8 range crosses it, and its registry bound describes the input, not the folded value,
+    # which is exactly the trap the note warns of. The healthcare-use index is the 1999-2000 HUQ050
+    # code, whose 0-5 range never reaches the cap; only out-of-scale codes are clipped.
     skipped = {name for name, skip in zip(PARAMS["features"], PARAMS["skip_mask"], strict=True) if skip}
     for name in ("self_reported_health_index", "healthcare_use_index"):
         assert name in skipped
-        assert registry[name]["high"] > PARAMS["fold"]["cap"]
         assert "NOT the fold" in PARAMS["derived"][name]["recipe"]
+    assert registry["self_reported_health_index"]["high"] > PARAMS["fold"]["cap"]
+    assert registry["healthcare_use_index"]["high"] == 5 < PARAMS["fold"]["cap"]
 
 
 def test_masks_align_with_the_feature_vector():

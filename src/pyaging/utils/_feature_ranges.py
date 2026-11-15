@@ -119,6 +119,7 @@ def resolve_feature_ranges(features, data_type, feature_units=None) -> list[dict
     ValueError
         If ``feature_units`` is a list whose length differs from ``features``.
     """
+    features = list(features)
     units, low, high = resolve_feature_bounds(features, data_type, feature_units)
     return [
         {"feature": feature, "unit": unit, "low": float(lower), "high": float(upper)}

@@ -28,3 +28,12 @@ def test_load_ensembl_metadata_uses_downloaded_hf_path_and_filters_chromosomes(m
     )
     assert genes.index.tolist() == ["keep"]
     assert genes.loc["keep", "chr"] == "1"
+
+
+def test_numeric_chromosome_names_are_not_discarded(monkeypatch, tmp_path):
+    metadata_path = tmp_path / "autosomes.csv"
+    pd.DataFrame({"gene_id": ["gene1", "gene2"], "chr": [1, 2]}).to_csv(metadata_path, index=False)
+    monkeypatch.setattr(preprocess_utils, "download_hf_file", lambda *args, **kwargs: str(metadata_path))
+    genes = preprocess_utils.load_ensembl_metadata("unused", Mock())
+    assert genes.index.tolist() == ["gene1", "gene2"]
+    assert genes["chr"].tolist() == ["1", "2"]

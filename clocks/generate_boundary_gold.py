@@ -25,9 +25,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "tests"))
+sys.path.insert(0, str(ROOT))
 
-from predict.test_boundary_gold_standard import WEIGHTS_DIR, predict_at_boundaries  # noqa: E402
+from tests.predict.test_boundary_gold_standard import WEIGHTS_DIR, predict_at_boundaries  # noqa: E402
 
 
 def main() -> int:

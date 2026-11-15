@@ -1,0 +1,15 @@
+{%- set destination, fragment = tutorial_redirects[pagename] -%}
+{%- set target = pathto(destination) + fragment -%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="0; url={{ target|e }}">
+    <link rel="canonical" href="{{ target|e }}">
+    <title>Tutorial moved - pyaging</title>
+  </head>
+  <body>
+    <p>This tutorial has moved. <a href="{{ target|e }}">Open the tutorial</a>.</p>
+  </body>
+</html>

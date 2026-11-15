@@ -376,3 +376,48 @@ def test_filter_matches_the_reference_fixture_gene_count():
     # the committed raw counts; the R run retained 19 550 of 57 010 genes.
     counts = pd.read_csv(FIXTURES / "input_expression.csv.gz", index_col=0).T
     assert _tage._filter_genes(counts).shape == (24, 19550)
+
+
+@pytest.mark.parametrize("value", [np.nan, np.inf, -1.0])
+def test_prepare_rejects_invalid_raw_counts_before_mapping(value):
+    a = _with_species(_adata(), "mouse")
+    a.X[0, 0] = value
+    with pytest.raises(ValueError, match="finite|missing|nonnegative"):
+        _prepare(a)
+    assert "tage_preparation" not in a.uns
+
+
+@pytest.mark.parametrize("value", [np.nan, np.inf, 2, -1])
+def test_reference_group_rejects_missing_or_nonbinary_values(value):
+    a = _with_species(_adata(), "mouse")
+    a.obs["tage_reference_group"] = [1, 0, value, 0]
+    with pytest.raises(ValueError, match="boolean|0/1|missing"):
+        _prepare(a)
+
+
+@pytest.mark.parametrize("dtype", ["boolean", "Int64"])
+def test_reference_group_accepts_nullable_binary_columns(dtype):
+    a = _with_species(_adata(), "mouse")
+    a.obs["tage_reference_group"] = pd.Series([1, 0, 1, 0], index=a.obs_names, dtype=dtype)
+    _prepare(a)
+    assert a.uns["tage_preparation"]["reference_group"] == ["s0", "s2"]
+
+
+def test_sparse_counts_match_dense_preparation():
+    from scipy.sparse import csr_matrix
+
+    a = _with_species(_adata(), "mouse")
+    sparse = a.copy()
+    sparse.X = csr_matrix(sparse.X)
+    pd.testing.assert_frame_equal(_prepare(a), _prepare(sparse))
+
+
+def test_reference_group_selects_rows_positionally_with_duplicate_sample_names():
+    a = _with_species(_adata(), "mouse")
+    a.obs_names = ["repeat", "repeat", "s2", "s3"]
+    a.obs["tage_reference_group"] = [True, False, False, False]
+    result = _prepare(a)
+    np.testing.assert_allclose(result.iloc[0], 0.0, atol=1e-12)
+    assert not np.allclose(result.iloc[1], 0.0)
+    assert a.uns["tage_preparation"]["n_reference_samples"] == 1
+    assert a.uns["tage_preparation"]["reference_group"] == ["repeat"]

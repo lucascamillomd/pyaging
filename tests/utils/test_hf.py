@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 
+import httpx
 import pytest
 from huggingface_hub.errors import (
     EntryNotFoundError,
@@ -7,6 +8,7 @@ from huggingface_hub.errors import (
     HfHubHTTPError,
     LocalEntryNotFoundError,
     RepositoryNotFoundError,
+    RevisionNotFoundError,
 )
 
 from pyaging.utils._hf import (
@@ -15,6 +17,7 @@ from pyaging.utils._hf import (
     PyAgingRateLimitError,
     PyAgingRepositoryError,
     PyAgingResourceNotFoundError,
+    PyAgingRevisionNotFoundError,
     download_clock_weights,
     download_hf_file,
 )
@@ -176,3 +179,61 @@ def test_download_clock_weights_falls_back_when_hub_answers_401_anonymously(monk
 
     assert result == weights_path
     assert hub_download.call_args_list[1].kwargs["repo_id"] == "lucascamillomd/pyaging-data"
+
+
+def test_optional_clock_config_transport_failure_does_not_block_weights(monkeypatch, tmp_path):
+    weights_path = str(tmp_path / "horvath2013.pt")
+    monkeypatch.setattr(
+        "pyaging.utils._hf.hf_hub_download",
+        Mock(side_effect=[weights_path, httpx.ConnectError("connection lost")]),
+    )
+
+    assert download_clock_weights("horvath2013") == weights_path
+
+
+def test_hf_transport_failure_has_package_error_and_preserves_cause(monkeypatch):
+    failure = httpx.ReadTimeout("read timed out")
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", Mock(side_effect=failure))
+
+    with pytest.raises(PyAgingDownloadError) as error:
+        download_hf_file("horvath2013.pt")
+
+    assert error.value.__cause__ is failure
+
+
+def test_clock_weights_missing_dedicated_revision_falls_back_to_same_legacy_revision(monkeypatch):
+    missing_revision = RevisionNotFoundError("tag missing", response=Mock(status_code=404))
+    downloader = Mock(side_effect=[missing_revision, "/cache/v0.5.2/horvath2013.pt"])
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", downloader)
+    monkeypatch.setenv("PYAGING_DATA_REVISION", "v0.5.2")
+
+    result = download_clock_weights("horvath2013")
+
+    assert result == "/cache/v0.5.2/horvath2013.pt"
+    assert [call.kwargs["repo_id"] for call in downloader.call_args_list] == [
+        "pyaging/horvath2013",
+        "lucascamillomd/pyaging-data",
+    ]
+    assert [call.kwargs["revision"] for call in downloader.call_args_list] == ["v0.5.2", "v0.5.2"]
+
+
+def test_missing_revision_reports_the_requested_revision_and_repository(monkeypatch):
+    missing_revision = RevisionNotFoundError("tag missing", response=Mock(status_code=404))
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", Mock(side_effect=missing_revision))
+    monkeypatch.setenv("PYAGING_DATA_REVISION", "v0.5.2")
+
+    with pytest.raises(PyAgingRevisionNotFoundError, match="v0.5.2.*lucascamillomd/pyaging-data") as error:
+        download_hf_file("horvath2013.pt")
+
+    assert error.value.__cause__ is missing_revision
+
+
+def test_load_clock_preserves_missing_revision_diagnostic(monkeypatch):
+    from pyaging.predict import load_clock
+
+    missing_revision = RevisionNotFoundError("tag missing", response=Mock(status_code=404))
+    monkeypatch.setattr("pyaging.utils._hf.hf_hub_download", Mock(side_effect=missing_revision))
+    monkeypatch.setenv("PYAGING_DATA_REVISION", "missing-release")
+
+    with pytest.raises(PyAgingRevisionNotFoundError, match="missing-release"):
+        load_clock("horvath2013", verbose=False)

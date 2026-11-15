@@ -1,0 +1,82 @@
+{
+  "accession": "PAD000022",
+  "source_doi": "10.6019/PAD000022",
+  "publication_doi": "10.1038/s42004-025-01665-1",
+  "license": "CC0-1.0",
+  "platform": "Olink Explore 3072",
+  "unit": "NPX",
+  "normalization": "Plate control, unchanged from the source CSV",
+  "creators": "Douglas Y. Kirsher, Shreya Chand, Aron Phong, Bich Nguyen, Balazs G. Szoke, Sara Ahadi",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "license_evidence": "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/PAD000022",
+  "sources": [
+    {
+      "url": "https://ftp.pride.ebi.ac.uk/pride/data/archive/2025/11/PAD000022/Olink3K_Data_npx.csv",
+      "sha256": "2c932134a20aed4fd705a684b28b093de541705a13b20dcf3c28e9649317c395"
+    },
+    {
+      "url": "https://ftp.pride.ebi.ac.uk/pride/data/archive/2025/11/PAD000022/Olink3K_sample_descriptions.xlsx",
+      "sha256": "e17f56833b858e6cf4dc6fb5ad63ceb135a98318852cc29ce329b094b2f347f1"
+    }
+  ],
+  "samples": 32,
+  "protein_assays": 134,
+  "clock_names": [
+    "organagechronologicalbrain",
+    "organagechronologicalheart",
+    "organagechronologicalkidney",
+    "organagemortalitybrain"
+  ],
+  "selection": "First 32 sorted Olink SampleIDs among author-analyzed, non-replicate subjects with finite NPX and PASS sample/assay QC for all 134 selected assays.",
+  "transformations": [
+    "Strip leading zero padding from spreadsheet sample IDs to join the NPX CSV.",
+    "Select assays listed in PAD000022_assays.csv, then pivot samples into rows.",
+    "Retain source NPX values, including values below LOD; no imputation or scaling.",
+    "Join the published de-identified SubjectID as subject_id metadata."
+  ],
+  "sample_ids": [
+    "227979487",
+    "227979500",
+    "227979563",
+    "227980531",
+    "227980548",
+    "227980732",
+    "227980734",
+    "227980755",
+    "227995544",
+    "227995554",
+    "229860695",
+    "229860837",
+    "229861486",
+    "229861518",
+    "229865443",
+    "229865552",
+    "229865638",
+    "229865648",
+    "229865848",
+    "229865933",
+    "229866725",
+    "229866739",
+    "229867075",
+    "229867282",
+    "229867284",
+    "229867540",
+    "231139541",
+    "231139807",
+    "231139828",
+    "231140687",
+    "231142194",
+    "231142738"
+  ],
+  "limitations": [
+    "Only 134 assays are included; use this subset for the listed OrganAge models.",
+    "Exact ages are not provided; PAC, HPS and PAOPAC cannot be scored with this example.",
+    "Plate-control NPX has not been harmonized to the clocks' UK Biobank training cohort.",
+    "This QC-selected subset is for demonstrating scoring, not assessing clock accuracy or calibration."
+  ],
+  "artifacts_sha256": {
+    "PAD000022_subset.pkl": "687e9b3e51338e47f9ab03e83f528c669c061faa944beee9776e3cf596028e31",
+    "PAD000022_subset.csv": "24ad3e2169e7a743219c3668f10af997f8b9655107c72548406b6c87b2e7f7f7",
+    "PAD000022_assays.csv": "705affb49418fea97db04747351a13d389961b27b2fb0fa859041b5aba98e42e"
+  }
+}

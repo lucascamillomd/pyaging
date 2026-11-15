@@ -21,41 +21,14 @@ import torch
 
 import pyaging as pya
 from pyaging.predict._pred_utils import check_features_in_adata
+from tests.helpers import RecordingLogger, load_local_clock
 
 PARAMS_DIR = Path(__file__).resolve().parents[1] / "data" / "bioage_params"
-WEIGHTS_DIR = Path(__file__).resolve().parents[2] / "clocks" / "weights"
-
-
-class _SilentLogger:
-    """The pipeline's logger interface, quieted."""
-
-    def warning(self, message, indent_level=2):
-        pass
-
-    def info(self, message, indent_level=2):
-        pass
-
-    def error(self, message, indent_level=2):
-        pass
-
-    def start_progress(self, message, indent_level=1):
-        pass
-
-    def finish_progress(self, message, indent_level=1):
-        pass
 
 
 @pytest.fixture(scope="module")
 def reference():
     return json.loads((PARAMS_DIR / "reference_predictions.json").read_text())
-
-
-def _weights(name):
-    """Load a clock's weights, skipping when the gitignored build output is absent."""
-    path = WEIGHTS_DIR / f"{name}.pt"
-    if not path.exists():
-        pytest.skip(f"{path} is build output; generate it by running clocks/notebooks/{name}.ipynb")
-    return torch.load(path, weights_only=False)
 
 
 def _predict(model, rows, features):
@@ -73,7 +46,7 @@ CLOCKS = ["kdmage", "homeostaticdysregulation", "phenoagesaopaulo"]
 @pytest.mark.parametrize("clock", CLOCKS)
 def test_bioage_clocks_apply_log1p_to_crp_alone(clock):
     """BioAge's lncrp is log1p(CRP in mg/dL), not ln, and only that column moves."""
-    model = _weights(clock)
+    model = load_local_clock(clock)
     index = model.features.index("c_reactive_protein")
 
     # Distinct positive values, so a transform applied to the whole tensor rather
@@ -87,7 +60,7 @@ def test_bioage_clocks_apply_log1p_to_crp_alone(clock):
 @pytest.mark.parametrize("clock", CLOCKS)
 def test_bioage_clocks_survive_a_zero_crp(reference, clock):
     """A below-detection or constant-imputed 0 is a valid input: log1p(0) is 0."""
-    model = _weights(clock)
+    model = load_local_clock(clock)
     row = dict(reference["rows"][0], c_reactive_protein=0.0)
     assert np.isfinite(_predict(model, [row], model.features)).all()
 
@@ -100,7 +73,7 @@ def test_a_below_detection_zero_crp_is_scored_as_the_reference_scores_it(clock):
     made these three clocks disagree with BioAge for the commonest way a
     below-detection reading is coded.
     """
-    model = _weights(clock)
+    model = load_local_clock(clock)
     index = model.features.index("c_reactive_protein")
     row = torch.ones(1, len(model.features), dtype=torch.float64)
     row[0, index] = 0.0
@@ -112,13 +85,13 @@ def test_a_below_detection_zero_crp_is_scored_as_the_reference_scores_it(clock):
 
 
 def test_kdmage_matches_bioage_reference(reference):
-    model = _weights("kdmage")
+    model = load_local_clock("kdmage")
     predicted = _predict(model, reference["rows"], model.features)
     np.testing.assert_allclose(predicted, reference["expected"]["kdmage"], rtol=0, atol=1e-6)
 
 
 def test_kdmage_uses_sex_specific_parameters(reference):
-    model = _weights("kdmage")
+    model = load_local_clock("kdmage")
     row = dict(reference["rows"][0])
     as_female = dict(row, female=1.0)
     as_male = dict(row, female=0.0)
@@ -128,14 +101,14 @@ def test_kdmage_uses_sex_specific_parameters(reference):
 
 
 def test_kdmage_feature_names_are_harmonized():
-    model = _weights("kdmage")
+    model = load_local_clock("kdmage")
     assert model.features[-2:] == ["age", "female"]
     assert not {"sex", "gender", "Age", "Female"} & set(model.features)
 
 
 def test_kdmage_takes_raw_crp_not_a_logged_value():
     """CRP is supplied raw in mg/dL package-wide; the clock applies BioAge's log1p."""
-    model = _weights("kdmage")
+    model = load_local_clock("kdmage")
     assert "c_reactive_protein" in model.features
     assert "log_crp" not in model.features
 
@@ -155,7 +128,7 @@ def test_kdmage_buffers_are_keyed_by_biomarker_name_not_position():
     no-op and a positional build would be indistinguishable. Permute the JSON and the
     shipped buffers must still be reproduced, which is only true of a name-keyed build.
     """
-    model = _weights("kdmage")
+    model = load_local_clock("kdmage")
     params = json.loads((PARAMS_DIR / "kdmage.json").read_text())
 
     permuted = copy.deepcopy(params)
@@ -204,7 +177,7 @@ def test_kdmage_reference_values_are_the_mean_of_the_sex_specific_intercepts():
     """An absent biomarker should contribute ~zero to the numerator, so the reference
     is q. q is sex-specific and reference_values is one vector, hence the mean.
     """
-    model = _weights("kdmage")
+    model = load_local_clock("kdmage")
     assert model.reference_values is not None
     crp = model.features.index("c_reactive_protein")
 
@@ -223,7 +196,7 @@ def test_kdmage_reference_fill_beats_zero_fill_for_a_missing_biomarker(reference
     """Filling an absent biomarker with its reference must land far closer to the
     exact na.rm estimate than the 0 the pipeline would otherwise substitute.
     """
-    model = _weights("kdmage")
+    model = load_local_clock("kdmage")
     params = json.loads((PARAMS_DIR / "kdmage.json").read_text())
     position = model.features.index(dropped)
 
@@ -241,7 +214,7 @@ def test_kdmage_worst_case_missing_biomarker_error_is_bounded(reference):
     intercepts, so it cancels the numerator term only approximately; the residual is
     the half-gap between the sexes, largest for forced expiratory volume.
     """
-    model = _weights("kdmage")
+    model = load_local_clock("kdmage")
     params = json.loads((PARAMS_DIR / "kdmage.json").read_text())
 
     worst_reference = worst_zero = 0.0
@@ -260,13 +233,13 @@ def test_kdmage_worst_case_missing_biomarker_error_is_bounded(reference):
 
 def test_kdmage_a_missing_column_uses_the_reference_through_the_pipeline(reference):
     """The vector is only worth setting if predict_age's imputation actually reads it."""
-    model = _weights("kdmage")
+    model = load_local_clock("kdmage")
     params = json.loads((PARAMS_DIR / "kdmage.json").read_text())
     row = reference["rows"][0]
 
     frame = pd.DataFrame([{name: row[name] for name in model.features if name != "albumin"}])
     adata = pya.pp.df_to_adata(frame, imputer_strategy="constant", verbose=False)
-    check_features_in_adata(adata, model, _SilentLogger())
+    check_features_in_adata(adata, model, RecordingLogger())
     matrix = torch.tensor(np.asarray(adata.obsm["X_kdmage"], dtype=float), dtype=torch.float64)
     model.eval().to(torch.float64)
     with torch.inference_mode():
@@ -288,13 +261,13 @@ def _standardized(model, row, sex):
 
 
 def test_homeostaticdysregulation_matches_bioage_reference(reference):
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
     predicted = _predict(model, reference["rows"], model.features)
     np.testing.assert_allclose(predicted, reference["expected"]["homeostaticdysregulation"], rtol=0, atol=1e-6)
 
 
 def test_homeostaticdysregulation_is_lowest_at_the_reference_center(reference):
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
     biomarkers = model.features[:-1]
     center_row = {name: value.item() for name, value in zip(biomarkers, model.reference_mean_female, strict=True)}
     center_row["c_reactive_protein"] = math.expm1(center_row["c_reactive_protein"])
@@ -308,7 +281,7 @@ def test_homeostaticdysregulation_is_lowest_at_the_reference_center(reference):
 
 
 def test_homeostaticdysregulation_output_is_not_in_years():
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
     assert "not" in model.metadata["notes"].lower()
     assert "age" not in model.features
 
@@ -319,7 +292,7 @@ def test_homeostaticdysregulation_centers_on_a_nonzero_standardized_center():
     constant. The residual offset is real and reaches 0.19 standard deviations; a port
     that treats it as zero is silently wrong by ~1-3% on every subject.
     """
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
     assert abs(model.center_male).max().item() > 0.1
     assert abs(model.center_female).max().item() > 0.05
 
@@ -328,7 +301,7 @@ def test_homeostaticdysregulation_center_is_load_bearing_for_the_prediction(refe
     """Pin the size of the error a dropped ``center`` would introduce, so the term
     cannot be removed as a no-op refinement.
     """
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
     predicted = _predict(model, reference["rows"], model.features)
 
     uncentered = []
@@ -348,7 +321,7 @@ def test_homeostaticdysregulation_buffers_are_keyed_by_biomarker_name_not_positi
     shipped buffers must still be reproduced — including the covariance, which has to
     be permuted on both axes.
     """
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
     params = json.loads((PARAMS_DIR / "homeostaticdysregulation.json").read_text())
     biomarkers = model.features[:-1]
 
@@ -386,7 +359,7 @@ def test_homeostaticdysregulation_reference_values_sit_at_the_reference_centre()
     sexes. Creatinine is irreducibly the worst, its two centres being 2.4 standard
     deviations apart.
     """
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
     assert model.reference_values is not None
     assert len(model.reference_values) == len(model.features)
 
@@ -405,7 +378,7 @@ def test_homeostaticdysregulation_reference_fill_beats_zero_fill(reference):
     reads as a measurement 5 to 25 standard deviations from the reference centre, and
     because the score is a distance, that one column dominates it.
     """
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
 
     worst_reference = worst_zero = 0.0
     for dropped in model.features[:-1]:
@@ -427,7 +400,7 @@ def test_homeostaticdysregulation_a_missing_biomarker_biases_the_score_downward(
     marker's own contribution shrinks it for every marker on average, and by enough to
     matter against the 1.98-6.76 spread the reference subjects occupy.
     """
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
     baseline = _predict(model, reference["rows"], model.features)
 
     worst_drop = 0.0
@@ -451,7 +424,7 @@ def test_homeostaticdysregulation_zero_filled_crp_is_the_one_benign_omission(ref
     deviations below a reference centre that already sits near the floor, because the
     reference cohort was screened to ``crp < 2``.
     """
-    model = _weights("homeostaticdysregulation")
+    model = load_local_clock("homeostaticdysregulation")
     position = model.features.index("c_reactive_protein")
     centre = (model.reference_mean_male + model.center_male * model.reference_sd_male)[position]
     floor = (math.log1p(0.01) - centre) / model.reference_sd_male[position]
@@ -464,19 +437,19 @@ def test_homeostaticdysregulation_zero_filled_crp_is_the_one_benign_omission(ref
 
 
 def test_phenoagesaopaulo_matches_bioage_reference(reference):
-    model = _weights("phenoagesaopaulo")
+    model = load_local_clock("phenoagesaopaulo")
     predicted = _predict(model, reference["rows"], model.features)
     np.testing.assert_allclose(predicted, reference["expected"]["phenoagesaopaulo"], rtol=0, atol=1e-6)
 
 
 def test_phenoagesaopaulo_excludes_the_three_dropped_biomarkers():
-    model = _weights("phenoagesaopaulo")
+    model = load_local_clock("phenoagesaopaulo")
     assert not {"creatinine", "albumin", "alkaline_phosphatase"} & set(model.features)
     assert "age" in model.features
 
 
 def test_phenoagesaopaulo_increases_with_age(reference):
-    model = _weights("phenoagesaopaulo")
+    model = load_local_clock("phenoagesaopaulo")
     row = dict(reference["rows"][0])
     younger = _predict(model, [dict(row, age=40.0)], model.features)
     older = _predict(model, [dict(row, age=70.0)], model.features)
@@ -487,7 +460,7 @@ def test_phenoagesaopaulo_has_no_sex_term():
     """The refit is pooled across sexes, unlike kdmage and homeostaticdysregulation,
     so there is no ``female`` column to code and no sex-specific parameter set.
     """
-    model = _weights("phenoagesaopaulo")
+    model = load_local_clock("phenoagesaopaulo")
     assert "female" not in model.features
 
 
@@ -504,7 +477,7 @@ def test_phenoagesaopaulo_uses_its_own_refit_gompertz_constants():
     are not Levine's published ones, so reusing ``mortality_to_phenoage`` would be
     wrong even though the algebraic shape is identical.
     """
-    model = _weights("phenoagesaopaulo")
+    model = load_local_clock("phenoagesaopaulo")
     assert model.postprocess_name == "mortality_to_phenoage_saopaulo"
     assert not math.isclose(model.ba_i.item(), 141.50225, abs_tol=0.1)
     assert not math.isclose(model.ba_d.item(), 0.090165, abs_tol=1e-3)
@@ -520,7 +493,7 @@ def test_phenoagesaopaulo_reference_values_are_the_training_means():
     """An absent predictor should contribute the population-average amount to the
     linear predictor, which for a linear model is exactly its training mean.
     """
-    model = _weights("phenoagesaopaulo")
+    model = load_local_clock("phenoagesaopaulo")
     params = json.loads((PARAMS_DIR / "phenoagesaopaulo.json").read_text())
     crp = model.features.index("c_reactive_protein")
 
@@ -537,7 +510,7 @@ def test_phenoagesaopaulo_reference_fill_beats_zero_fill(reference):
     by that subject's own deviation, whereas the 0 the pipeline would otherwise
     substitute is not a physiological value for any of these assays.
     """
-    model = _weights("phenoagesaopaulo")
+    model = load_local_clock("phenoagesaopaulo")
     worst_reference = worst_zero = 0.0
     for dropped in model.features[:-1]:
         position = model.features.index(dropped)

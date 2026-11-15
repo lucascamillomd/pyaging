@@ -1,0 +1,1437 @@
+{
+  "paopac": {
+    "clock_name": "paopac",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "\u231b",
+    "research_only": true,
+    "citation": "Xu, H., et al. Proteome-aware organ proxy aging clocks. bioRxiv (2026).",
+    "doi": "https://doi.org/10.64898/2026.04.24.720503",
+    "notes": "Conventional PAOPAC from the authors' MIT v1.0.0 release: 800 LightGBM trees with 189 Olink protein predictors and TDI, plus chronological age for cohort correction. Supply plasma Olink Explore 3072 NPX (assay-normalized log2 relative abundance), not linear abundance, concentrations, counts or pre-standardized values. NPX labeling alone does not establish equivalence across assays, panels, batches or plasma and serum. Exact duplicate protein columns are averaged on the NPX scale, then names uppercased; newly colliding names are rejected. The original interface applies 2**NPX, fills missing or absent values with zero on that linear scale, and fits StandardScaler over the complete supplied cohort. TDI is optional and read only from the protein matrix; it is exponentiated and standardized like the other inputs. TDI in sample metadata is ignored; absent TDI becomes zero. Required chronological age is supplied as an age column in years. Final output is raw predicted age minus LOWESS(raw predicted age minus chronological age, chronological age), with frac=0.75 and the original statsmodels defaults. Predictions depend on cohort composition, including cohort ages; this is not a fixed per-sample age or a portable age-acceleration residual. Very small or age-degenerate cohorts can produce trivial corrections. No fixed UKB scaler or LOWESS curve is supplied by the original release. Preserve NaNs when preparing AnnData to reproduce the author's missing-value rule. Nature Biotechnology trial supplement S2 identifies the Conventional endpoint; exact identity of that trial's private model artifact with this later public release has not been verified. MIT source; preprint CC BY 4.0. No author approval of this conversion is claimed.",
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "LightGBM with cohort standardization and LOWESS correction",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "bioRxiv",
+    "last_author": "Jing-Dong J. Han",
+    "n_features": 191,
+    "citations": 1,
+    "citations_date": "2026-10-02"
+  },
+  "pasta": {
+    "clock_name": "pasta",
+    "data_type": "transcriptomics",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "\u2705",
+    "citation": "Salignon, J., et al. (2026). Pasta, a versatile transcriptomic clock, maps the chemical and genetic determinants of aging and rejuvenation. Advanced Science, e76740.",
+    "doi": "https://doi.org/10.1002/advs.76740",
+    "notes": "Human Pasta age-shift classifier on within-sample rank-transformed expression. Its classifier score is rescaled to a relative age difference on a human-year axis; it is not an absolute chronological-age prediction.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "transcriptomic age"
+    ],
+    "training_target": [
+      "age ordering"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "ridge logistic regression",
+    "platform": [
+      "RNA-seq",
+      "gene expression microarray"
+    ],
+    "population": "human, age unspecified",
+    "journal": "Advanced Science",
+    "last_author": "Christian G. Riedel",
+    "n_features": 8113,
+    "citations": 2,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "median_fill_and_rank_normalization",
+    "postprocess": "scale_and_shift",
+    "reference_values": true
+  },
+  "pastamouse": {
+    "clock_name": "pastamouse",
+    "data_type": "transcriptomics",
+    "species": "Mus musculus",
+    "year": 2026,
+    "approved_by_author": "\u2705",
+    "citation": "Salignon, J., et al. (2026). Pasta, a versatile transcriptomic clock, maps the chemical and genetic determinants of aging and rejuvenation. Advanced Science, e76740.",
+    "doi": "https://doi.org/10.1002/advs.76740",
+    "notes": "Mouse application of the human Pasta model after one-to-one orthologue mapping, rank transformation, and median imputation of missing genes. The output is a human-year-scaled relative age difference, not mouse chronological age.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "transcriptomic age"
+    ],
+    "training_target": [
+      "age ordering"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "orthologue-transferred ridge logistic regression",
+    "platform": [
+      "RNA-seq",
+      "gene expression microarray"
+    ],
+    "population": "human, age unspecified",
+    "journal": "Advanced Science",
+    "last_author": "Christian G. Riedel",
+    "n_features": 1600,
+    "citations": 2,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "median_fill_and_rank_normalization",
+    "postprocess": "scale_and_shift",
+    "reference_values": true
+  },
+  "pcbrainage": {
+    "clock_name": "pcbrainage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Thrush, K. L., Bennett, D. A., Gaiteri, C., Horvath, S., van Dyck, C. H., Higgins-Chen, A. T., and Levine, M. E. (2022). Aging the brain: multi-region methylation principal component based clock in the context of Alzheimer\u2019s disease. Aging 14(14), 5641\u20135668.",
+    "doi": "https://doi.org/10.18632/aging.204196",
+    "notes": "Brain chronological-age clock trained in dorsolateral prefrontal cortex. The original PCA and regression are composed algebraically without retraining; missing CpGs use the authors\u2019 GSE74193 adult brain means. No age-acceleration residualization is performed.",
+    "research_only": null,
+    "tissue": [
+      "brain cortex"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 357852,
+    "citations": 40,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcdnamtl": {
+    "clock_name": "pcdnamtl",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Principal-component proxy trained to reproduce the original DNAmTL clock output; the returned score remains in kilobases. Figure-level base-pair deviations are a separate analysis-scale conversion.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "leukocyte telomere length"
+    ],
+    "training_target": [
+      "DNAmTL output"
+    ],
+    "unit": [
+      "kilobases"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78464,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "pcgrimage": {
+    "clock_name": "pcgrimage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Principal-component proxy trained to reproduce the original DNAm GrimAge score; age and sex are additional model inputs.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "DNAm GrimAge output"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "pcgrimageadm": {
+    "clock_name": "pcgrimageadm",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm adrenomedullin score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "adrenomedullin"
+    ],
+    "training_target": [
+      "DNAm adrenomedullin output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimageb2m": {
+    "clock_name": "pcgrimageb2m",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm beta-2-microglobulin score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "beta-2-microglobulin"
+    ],
+    "training_target": [
+      "DNAm beta-2-microglobulin output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78465,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagecystatinc": {
+    "clock_name": "pcgrimagecystatinc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm cystatin C score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "cystatin C"
+    ],
+    "training_target": [
+      "DNAm cystatin C output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagegdf15": {
+    "clock_name": "pcgrimagegdf15",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm GDF15 score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "GDF-15"
+    ],
+    "training_target": [
+      "DNAm GDF15 output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78465,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimageleptin": {
+    "clock_name": "pcgrimageleptin",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm leptin score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "leptin"
+    ],
+    "training_target": [
+      "DNAm leptin output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagepackyrs": {
+    "clock_name": "pcgrimagepackyrs",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm smoking pack-years score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "smoking exposure"
+    ],
+    "training_target": [
+      "DNAm smoking pack-years output"
+    ],
+    "unit": [
+      "pack-years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagepai1": {
+    "clock_name": "pcgrimagepai1",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm PAI1 score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "PAI-1"
+    ],
+    "training_target": [
+      "DNAm PAI1 output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78465,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pcgrimagetimp1": {
+    "clock_name": "pcgrimagetimp1",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Standalone principal-component proxy trained to reproduce the original DNAm TIMP1 score. Coefficients are composed exactly from the author PCA rotation and proxy regression. CpGs use the author GSE40279 reference. Sex (female=1, male=0) and chronological age must be supplied when selected by the original component regression; missing demographic inputs are rejected. Selected demographic inputs: female, age.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "TIMP-1"
+    ],
+    "training_target": [
+      "DNAm TIMP1 output"
+    ],
+    "unit": [
+      "picograms per milliliter"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78466,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "reference_values": true
+  },
+  "pchannum": {
+    "clock_name": "pchannum",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Principal-component proxy trained to reproduce the original Hannum whole-blood age-clock score.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "Hannum clock output"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78464,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "pchorvath2013": {
+    "clock_name": "pchorvath2013",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Principal-component proxy of the 2013 Horvath pan-tissue clock, trained against the original clock score using substituted multi-tissue datasets.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "Horvath clock output"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78464,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log_linear",
+    "reference_values": true
+  },
+  "pcphenoage": {
+    "clock_name": "pcphenoage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Principal-component DNAm PhenoAge model trained directly on phenotypic-age scores rather than as a proxy of the original CpG clock.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "phenotypic age"
+    ],
+    "training_target": [
+      "phenotypic age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78464,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "pcskinandblood": {
+    "clock_name": "pcskinandblood",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Higgins-Chen, Albert T., et al. \"A computational solution for bolstering reliability of epigenetic clocks: implications for clinical trials and longitudinal tracking.\" Nature Aging 2 (2022): 644\u2013661.",
+    "doi": "https://doi.org/10.1038/s43587-022-00248-2",
+    "notes": "Principal-component proxy of the skin-and-blood age clock, trained against the original Horvath2 score using skin, blood, and fibroblast datasets.",
+    "research_only": null,
+    "tissue": [
+      "skin",
+      "whole blood",
+      "cultured fibroblasts"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "skin-and-blood clock output"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Nature Aging",
+    "last_author": "Morgan E. Levine",
+    "n_features": 78464,
+    "citations": 546,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log_linear",
+    "reference_values": true
+  },
+  "pedbe": {
+    "clock_name": "pedbe",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2020,
+    "approved_by_author": "\u231b",
+    "citation": "McEwen, Lisa M., et al. \"The PedBE clock accurately estimates DNA methylation age in pediatric buccal cells.\" Proceedings of the National Academy of Sciences 117 (2020): 23329\u201323335.",
+    "doi": "https://doi.org/10.1073/pnas.1820843116",
+    "notes": "Pediatric chronological-age estimator developed specifically for noninvasive buccal epithelial-cell samples.",
+    "research_only": null,
+    "tissue": [
+      "buccal epithelium"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "children and adolescents",
+    "journal": "Proceedings of the National Academy of Sciences of the United States of America",
+    "last_author": "Michael S. Kobor",
+    "n_features": 94,
+    "citations": 301,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log_linear"
+  },
+  "petkovich": {
+    "clock_name": "petkovich",
+    "data_type": "DNA methylation",
+    "species": "Mus musculus",
+    "year": 2017,
+    "approved_by_author": "\u231b",
+    "citation": "Petkovich, Daniel A., et al. \"Using DNA methylation profiling to evaluate biological age and longevity interventions.\" Cell metabolism 25.4 (2017): 954-960.",
+    "doi": "https://doi.org/10.1016/j.cmet.2017.03.016",
+    "notes": "Mouse blood DNA-methylation age clock built by regression on reduced-representation bisulfite-sequencing CpGs, estimating biological age and shown to be slowed by lifespan-extending interventions such as caloric restriction and dwarfism.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "months"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "bisulfite sequencing"
+    ],
+    "population": "mice",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 90,
+    "citations": 453,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "petkovich"
+  },
+  "phenoage": {
+    "clock_name": "phenoage",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591.",
+    "doi": "https://doi.org/10.18632/aging.101414",
+    "notes": "Clinical Phenotypic Age combines chronological age with nine blood biomarkers and expresses modeled mortality risk as an equivalent age in years. Supply raw C-reactive protein in mg/dL; pyaging applies its natural logarithm, flooring values at 0.01 mg/dL. Before 0.5.0, callers supplied log_crp instead. Starting in pyaging 0.5.7, Gompertz gamma is 0.0076927 as specified in the original supplementary methods; earlier versions incorrectly used the Cox selection penalty 0.0192, inflating finite estimates by approximately 9.619365 years for otherwise identical inputs. This correction applies to clinical phenoage, not the separately fitted DNA-methylation clocks. Use pyaging >=0.5.7 with this artifact because the formula is implemented in the package class.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "phenotypic age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "penalized hazards regression with Gompertz calibration",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 10,
+    "citations": 3848,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "natural_log_crp",
+    "postprocess": "mortality_to_phenoage"
+  },
+  "phenoagesaopaulo": {
+    "clock_name": "phenoagesaopaulo",
+    "data_type": "clinical biomarkers",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "\u231b",
+    "citation": [
+      "Kwon, Dayoon, and Daniel W. Belsky. \"A toolkit for quantification of biological age from blood chemistry and organ function test data: BioAge.\" GeroScience 43.6 (2021): 2795-2808.",
+      "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
+    ],
+    "doi": "https://doi.org/10.1007/s11357-021-00480-5",
+    "notes": "PhenoAge refit on NHANES III adults aged 20-84 with BioAge::phenoage_calc(), dropping creatinine, albumin, and alkaline phosphatase and keeping the remaining six biomarkers plus chronological age. The coefficients and the mortality-to-age constants are refit, so they differ from the published PhenoAge and its constants do not apply. Biomarkers are on BioAge's SI-unit variants, which are natively pyaging's unit convention, and C-reactive protein is supplied raw in mg/dL and log1p-transformed inside the clock. The refit is pooled across sexes, so unlike kdmage and homeostaticdysregulation this clock takes no female column. The refit has no publication of its own: it was produced for pyaging 0.5.0 by clocks/notebooks/phenoagesaopaulo.ipynb with the BioAge toolkit, so the DOI, journal, last author and citation count are the toolkit's, and Levine 2018 is listed beside it as the method reference that defines PhenoAge.",
+    "research_only": null,
+    "tissue": [
+      "blood"
+    ],
+    "predicts": [
+      "phenotypic age"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "Gompertz hazards regression with age calibration",
+    "platform": [
+      "clinical laboratory assays"
+    ],
+    "population": "adults",
+    "journal": "GeroScience",
+    "last_author": "Daniel W. Belsky",
+    "n_features": 7,
+    "citations": 404,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "log1p_crp",
+    "postprocess": "mortality_to_phenoage_saopaulo",
+    "reference_values": true
+  },
+  "pipekelasticnet": {
+    "clock_name": "pipekelasticnet",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u2705",
+    "citation": "Pipek, Orsolya Anna, and Istv\u00e1n Csabai. \"A revised multi-tissue, multi-platform epigenetic clock model for methylation array data.\" Journal of Mathematical Chemistry 61 (2023): 376\u2013388.",
+    "doi": "https://doi.org/10.1007/s10910-022-01381-4",
+    "notes": "Pan-tissue, cross-platform elastic-net chronological-age clock trained on all eligible CpGs; 239 CpGs retained non-zero coefficients.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Journal of Mathematical Chemistry",
+    "last_author": "Istv\u00e1n Csabai",
+    "n_features": 239,
+    "citations": 3,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log_linear"
+  },
+  "pipekfilteredh": {
+    "clock_name": "pipekfilteredh",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u2705",
+    "citation": "Pipek, Orsolya Anna, and Istv\u00e1n Csabai. \"A revised multi-tissue, multi-platform epigenetic clock model for methylation array data.\" Journal of Mathematical Chemistry 61 (2023): 376\u2013388.",
+    "doi": "https://doi.org/10.1007/s10910-022-01381-4",
+    "notes": "Penalized refit restricted to the 308 original Horvath CpGs shared with the study probe set; 272 CpGs retained non-zero coefficients.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Journal of Mathematical Chemistry",
+    "last_author": "Istv\u00e1n Csabai",
+    "n_features": 272,
+    "citations": 3,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log_linear"
+  },
+  "pipekretrainedh": {
+    "clock_name": "pipekretrainedh",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u2705",
+    "citation": "Pipek, Orsolya Anna, and Istv\u00e1n Csabai. \"A revised multi-tissue, multi-platform epigenetic clock model for methylation array data.\" Journal of Mathematical Chemistry 61 (2023): 376\u2013388.",
+    "doi": "https://doi.org/10.1007/s10910-022-01381-4",
+    "notes": "Unpenalized refit of all 308 original Horvath CpGs shared across 27K, 450K, and EPIC data; unlike the other variants it was fit without cross-validation.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "linear regression",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Journal of Mathematical Chemistry",
+    "last_author": "Istv\u00e1n Csabai",
+    "n_features": 308,
+    "citations": 3,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log_linear"
+  },
+  "prostatecancerkirby": {
+    "clock_name": "prostatecancerkirby",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2017,
+    "approved_by_author": "\u231b",
+    "citation": "Kirby, M. K., et al. \u201cGenome-wide DNA methylation measurements in prostate tissues uncovers novel prostate cancer diagnostic biomarkers and transcription factor binding patterns.\u201d BMC Cancer 17: 273 (2017).",
+    "doi": "https://doi.org/10.1186/s12885-017-3252-2",
+    "notes": "Three-CpG prostate-tissue diagnostic classifier distinguishing malignant from benign-adjacent tissue; it was trained on 73 tumors and 63 benign-adjacent samples and externally validated in TCGA.",
+    "research_only": null,
+    "tissue": [
+      "prostate"
+    ],
+    "predicts": [
+      "prostate cancer"
+    ],
+    "training_target": [
+      "prostate cancer"
+    ],
+    "unit": [
+      "log odds"
+    ],
+    "model_type": "logistic regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adult men",
+    "journal": "BMC Cancer",
+    "last_author": "Richard M. Myers",
+    "n_features": 3,
+    "citations": 63,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "reedbmi": {
+    "clock_name": "reedbmi",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2020,
+    "approved_by_author": "\u231b",
+    "citation": "Reed, Zoe E., et al. \"The association of DNA methylation with body mass index: distinguishing between predictors and biomarkers.\" Clinical Epigenetics 12 (2020): 50.",
+    "doi": "https://doi.org/10.1186/s13148-020-00841-5",
+    "notes": "Weighted blood-DNA-methylation score built from published BMI EWAS effect estimates and evaluated across the ARIES life course; it is a biomarker associated with concurrent BMI, not a calibrated prediction in kilograms.",
+    "research_only": null,
+    "tissue": [
+      "whole blood",
+      "cord blood"
+    ],
+    "predicts": [
+      "BMI methylation score"
+    ],
+    "training_target": [
+      "body mass index"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "weighted methylation aggregation",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "all ages",
+    "journal": "Clinical Epigenetics",
+    "last_author": "Gibran Hemani",
+    "n_features": 135,
+    "citations": 88,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "reg": {
+    "clock_name": "reg",
+    "data_type": "transcriptomics",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "\u2705",
+    "citation": "Salignon, J., et al. (2026). Pasta, a versatile transcriptomic clock, maps the chemical and genetic determinants of aging and rejuvenation. Advanced Science, e76740.",
+    "doi": "https://doi.org/10.1002/advs.76740",
+    "notes": "Baseline chronological-age regression model from the Pasta study, using rank-transformed multi-tissue human expression.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "ridge regression",
+    "platform": [
+      "RNA-seq",
+      "gene expression microarray"
+    ],
+    "population": "human, age unspecified",
+    "journal": "Advanced Science",
+    "last_author": "Christian G. Riedel",
+    "n_features": 8113,
+    "citations": 2,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "median_fill_and_rank_normalization",
+    "postprocess": "add_constant",
+    "reference_values": true
+  },
+  "replitali": {
+    "clock_name": "replitali",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Endicott, J.L., Nolte, P.A., Shen, H. & Laird, P.W. Cell division drives DNA methylation loss in late-replicating domains in primary human cells. Nature Communications 13, 6659 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-022-34268-8",
+    "notes": "Final RepliTali model estimating relative cumulative replicative history from methylation in common partially methylated domains; it was fitted to normalized population doublings across serially cultured primary human cells.",
+    "research_only": null,
+    "tissue": [
+      "cultured primary human cells"
+    ],
+    "predicts": [
+      "replicative history"
+    ],
+    "training_target": [
+      "population doublings"
+    ],
+    "unit": [
+      "population doublings"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "human cell cultures",
+    "journal": "Nature Communications",
+    "last_author": "Peter W. Laird",
+    "n_features": 87,
+    "citations": 93,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "replitalinorm": {
+    "clock_name": "replitalinorm",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Endicott, J.L., Nolte, P.A., Shen, H. & Laird, P.W. Cell division drives DNA methylation loss in late-replicating domains in primary human cells. Nature Communications 13, 6659 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-022-34268-8",
+    "notes": "Upstream starting-PD normalization model used during RepliTali construction. It was trained only in the chronologically youngest fetal skin fibroblast line (AG06561) to estimate the unobserved pre-culture replicative-history offset; it is not the final 87-CpG RepliTali model.",
+    "research_only": null,
+    "tissue": [
+      "cultured fibroblasts"
+    ],
+    "predicts": [
+      "replicative history"
+    ],
+    "training_target": [
+      "population doublings"
+    ],
+    "unit": [
+      "population doublings"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "human cell cultures",
+    "journal": "Nature Communications",
+    "last_author": "Peter W. Laird",
+    "n_features": 218,
+    "citations": 93,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "retroelementagev1": {
+    "clock_name": "retroelementagev1",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Ndhlovu, Lishomwa C., et al. \"Retro-age: A unique epigenetic biomarker of aging captured by DNA methylation states of retroelements.\" Aging Cell 23 (2024): e14288.",
+    "doi": "https://doi.org/10.1111/acel.14288",
+    "notes": "Whole-blood Retroelement-Age V1, trained by 10-fold-cross-validated elastic net on EPIC v1.0 CpGs annotated to HERV and active LINE elements.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Aging Cell",
+    "last_author": "Michael J. Corley",
+    "n_features": 1317,
+    "citations": 31,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "retroelementagev2": {
+    "clock_name": "retroelementagev2",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Ndhlovu, Lishomwa C., et al. \"Retro-age: A unique epigenetic biomarker of aging captured by DNA methylation states of retroelements.\" Aging Cell 23 (2024): e14288.",
+    "doi": "https://doi.org/10.1111/acel.14288",
+    "notes": "Composite Retroelement-Age V2 extends the retroelement annotation to CpGs compatible across EPIC v1.0 and v2.0 and was trained by 10-fold-cross-validated elastic net.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Aging Cell",
+    "last_author": "Michael J. Corley",
+    "n_features": 1378,
+    "citations": 31,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "senchronoage": {
+    "clock_name": "senchronoage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "\u231b",
+    "citation": "Kasamoto, K., Gibson, J., Moqri, M., Smith, R. & Higgins-Chen, A.T. DNA methylation signatures of cellular senescence are not reversed by senolytic treatment. Aging Cell 25, e70430 (2026).",
+    "doi": "https://doi.org/10.1111/acel.70430",
+    "notes": "Senescence-enriched chronological-age predictor restricted to CpGs whose directions were concordant across in-vitro senescence, age and mortality analyses.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Aging Cell",
+    "last_author": "Albert T. Higgins-Chen",
+    "n_features": 187,
+    "citations": 0,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "sencultureage": {
+    "clock_name": "sencultureage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "\u231b",
+    "citation": "Kasamoto, K., Gibson, J., Moqri, M., Smith, R. & Higgins-Chen, A.T. DNA methylation signatures of cellular senescence are not reversed by senolytic treatment. Aging Cell 25, e70430 (2026).",
+    "doi": "https://doi.org/10.1111/acel.70430",
+    "notes": "Binomial elastic-net classifier of in-vitro cellular senescence, trained after ComBat correction on pooled human fibroblast and mesenchymal-stromal-cell datasets and restricted to direction-concordant senescence/age/mortality CpGs.",
+    "research_only": null,
+    "tissue": [
+      "cultured fibroblasts",
+      "cultured mesenchymal stromal cells"
+    ],
+    "predicts": [
+      "cellular senescence"
+    ],
+    "training_target": [
+      "cellular senescence"
+    ],
+    "unit": [
+      "log odds"
+    ],
+    "model_type": "elastic net logistic regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "human cell cultures",
+    "journal": "Aging Cell",
+    "last_author": "Albert T. Higgins-Chen",
+    "n_features": 142,
+    "citations": 0,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "senmortalityage": {
+    "clock_name": "senmortalityage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "\u231b",
+    "citation": "Kasamoto, K., Gibson, J., Moqri, M., Smith, R. & Higgins-Chen, A.T. DNA methylation signatures of cellular senescence are not reversed by senolytic treatment. Aging Cell 25, e70430 (2026).",
+    "doi": "https://doi.org/10.1111/acel.70430",
+    "notes": "Senescence-enriched elastic-net Cox predictor of mortality, restricted to direction-concordant senescence/age/mortality CpGs and trained in the Framingham Heart Study.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Aging Cell",
+    "last_author": "Albert T. Higgins-Chen",
+    "n_features": 91,
+    "citations": 0,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "skinandblood": {
+    "clock_name": "skinandblood",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Horvath, S., et al. \u201cEpigenetic clock for skin and blood cells applied to Hutchinson Gilford Progeria Syndrome and ex vivo studies.\u201d Aging 10(7), 1758\u20131775 (2018).",
+    "doi": "https://doi.org/10.18632/aging.101508",
+    "notes": "Multi-tissue 391-CpG elastic-net chronological-age clock optimized with training data from buccal cells, whole blood, epithelium, fibroblasts, skin and cord blood; it is particularly accurate for skin-derived and cultured cells.",
+    "research_only": null,
+    "tissue": [
+      "buccal epithelium",
+      "whole blood",
+      "epithelium",
+      "cultured fibroblasts",
+      "skin",
+      "cord blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Aging",
+    "last_author": "Kenneth Raj",
+    "n_features": 391,
+    "citations": 893,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log_linear"
+  },
+  "stemtoc": {
+    "clock_name": "stemtoc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u2705",
+    "citation": "Zhu, Tianlei, et al. \"An improved epigenetic counter to track mitotic age in cells.\" Nature Communications 15 (2024): 4211.",
+    "doi": "https://doi.org/10.1038/s41467-024-48649-8",
+    "notes": "Relative mitotic-age counter based on the 95th percentile across 371 in-vivo-filtered mitotic CpGs.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue",
+      "cultured human cells",
+      "whole blood"
+    ],
+    "predicts": [
+      "mitotic age"
+    ],
+    "training_target": [
+      "population doublings",
+      "chronological age"
+    ],
+    "unit": [
+      "beta value"
+    ],
+    "model_type": "95th-percentile methylation aggregation",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "all ages",
+    "journal": "Nature Communications",
+    "last_author": "Andrew E. Teschendorff",
+    "n_features": 371,
+    "citations": 29,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "0.95 quantile",
+    "reference_values": true
+  },
+  "stemtocvitro": {
+    "clock_name": "stemtocvitro",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Zhu, Tianlei, et al. \"An improved epigenetic counter to track mitotic age in cells.\" Nature Communications 15 (2024): 4211.",
+    "doi": "https://doi.org/10.1038/s41467-024-48649-8",
+    "notes": "In-vitro precursor of stemTOC based on the 95th percentile across 629 population-doubling-associated CpGs.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue",
+      "cultured human cells"
+    ],
+    "predicts": [
+      "mitotic age"
+    ],
+    "training_target": [
+      "population doublings"
+    ],
+    "unit": [
+      "beta value"
+    ],
+    "model_type": "95th-percentile methylation aggregation",
+    "platform": [
+      "Illumina 450K",
+      "Illumina EPIC"
+    ],
+    "population": "prenatal and newborn",
+    "journal": "Nature Communications",
+    "last_author": "Andrew E. Teschendorff",
+    "n_features": 629,
+    "citations": 29,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "0.95 quantile",
+    "reference_values": true
+  },
+  "stoch": {
+    "clock_name": "stoch",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u2705",
+    "citation": "Tong, Huige, et al. \"Quantifying the stochastic component of epigenetic aging.\" Nature Aging 4 (2024): 886\u2013901.",
+    "doi": "https://doi.org/10.1038/s43587-024-00600-8",
+    "notes": "Stochastic chronological-age clock built from simulated methylation trajectories at the Horvath clock CpGs; it is a stochastic counterpart, not the original Horvath clock.",
+    "research_only": null,
+    "tissue": [
+      "sorted monocytes"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Andrew E. Teschendorff",
+    "n_features": 353,
+    "citations": 76,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "stocp": {
+    "clock_name": "stocp",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u2705",
+    "citation": "Tong, Huige, et al. \"Quantifying the stochastic component of epigenetic aging.\" Nature Aging 4 (2024): 886\u2013901.",
+    "doi": "https://doi.org/10.1038/s43587-024-00600-8",
+    "notes": "Stochastic chronological-age clock built from simulated methylation trajectories at PhenoAge CpGs; despite its CpG source, its fitted outcome and returned construct are chronological age, not PhenoAge.",
+    "research_only": null,
+    "tissue": [
+      "sorted monocytes"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Nature Aging",
+    "last_author": "Andrew E. Teschendorff",
+    "n_features": 513,
+    "citations": 76,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  }
+}
