@@ -1,5 +1,10 @@
+import gzip
+import json
 import os
+import re
 from copy import deepcopy
+from functools import lru_cache
+from importlib import resources
 from numbers import Integral
 
 import anndata
@@ -277,12 +282,18 @@ def build_cohort_feature_matrix(
     _align_features_into_obsm(adata, model, frame.to_numpy(), frame.columns, logger, indent_level)
 
 
+@lru_cache(maxsize=1)
+def _load_dnam_feature_medians() -> dict[str, float]:
+    source = resources.files("pyaging.data").joinpath("dnam_feature_medians.json.gz")
+    with source.open("rb") as compressed, gzip.GzipFile(fileobj=compressed) as table:
+        return json.load(table)["features"]
+
+
 def _align_features_into_obsm(adata, model, source_values, source_features, logger, indent_level: int) -> None:
     """Fill ``obsm["X_{clock}"]`` from ``source_values``, one column per model feature.
 
-    Features the source does not carry take the model's reference value (or 0
-    when it has none), and the substitutions are recorded so downstream checks
-    can tell the input's own values apart from the pipeline's.
+    Absent columns use model references, then packaged human CpG beta medians
+    for eligible clocks, then zero.
     """
 
     if source_features.has_duplicates:
@@ -311,9 +322,21 @@ def _align_features_into_obsm(adata, model, source_values, source_features, logg
         supplied_values = cp.asnumpy(supplied_values)
     matrix[:, existing_features_mask] = supplied_values
 
-    matrix[:, missing_features_mask] = (
-        np.array(model.reference_values)[missing_features_mask] if model.reference_values is not None else 0
-    )
+    median_count = 0
+    fill_values = 0
+    if missing_features and model.reference_values is not None:
+        fill_values = np.asarray(model.reference_values)[missing_features_mask]
+    elif (
+        0 < len(missing_features) < len(model.features)
+        and model.metadata.get("species") == "Homo sapiens"
+        and model.metadata.get("data_type") == "DNA methylation"
+        and getattr(model, "use_dnam_median_fallback", True) is not False
+        and any(re.fullmatch(r"cg[0-9]{8}", feature) for feature in missing_features)
+    ):
+        medians = _load_dnam_feature_medians()
+        fill_values = [medians.get(feature, 0.0) for feature in missing_features]
+        median_count = sum(feature in medians for feature in missing_features)
+    matrix[:, missing_features_mask] = fill_values
     adata.obsm[f"X_{model.metadata['clock_name']}"] = matrix
 
     num_missing_features = len(missing_features)
@@ -343,6 +366,12 @@ def _align_features_into_obsm(adata, model, source_values, source_features, logg
         if model.reference_values is not None:
             logger.info(
                 f"Using reference feature values for {model.metadata['clock_name']}",
+                indent_level=indent_level + 1,
+            )
+        elif median_count:
+            logger.info(
+                f"Using packaged CpG medians for {median_count} missing features "
+                f"and zero for {num_missing_features - median_count}",
                 indent_level=indent_level + 1,
             )
         else:
