@@ -38,8 +38,11 @@ def test_public_hf_repository_serves_small_runtime_assets(tmp_path):
     code = """
 import os
 
+import numpy as np
+import pandas as pd
 import torch
 
+from pyaging.data import download_example_data
 from pyaging.utils._hf import download_hf_file
 
 data_dir = os.environ["PYAGING_SMOKE_DATA_DIR"]
@@ -55,6 +58,15 @@ assert all(os.path.commonpath([path, os.environ["HF_HUB_CACHE"]]) == os.environ[
            for path in (metadata_path, clock_path, example_path))
 assert "horvath2013" in torch.load(metadata_path, weights_only=False)
 assert torch.load(clock_path, weights_only=False).metadata["clock_name"].lower() == "horvath2013"
+
+proteomics_path = download_example_data("PAD000022", dir=data_dir, verbose=False)
+proteomics = pd.read_pickle(proteomics_path)
+assert proteomics.shape == (32, 135)
+assert proteomics.index.is_unique and proteomics.subject_id.is_unique
+assert np.isfinite(proteomics.drop(columns="subject_id").to_numpy()).all()
+assert proteomics.attrs["accession"] == "PAD000022"
+assert proteomics.attrs["license"] == "CC0-1.0"
+assert proteomics.attrs["platform"] == "Olink Explore 3072"
 """
     env["PYAGING_SMOKE_DATA_DIR"] = str(tmp_path / "data")
     subprocess.run([sys.executable, "-c", code], check=True, env=env)

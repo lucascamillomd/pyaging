@@ -1,0 +1,82 @@
+[
+  {
+    "upstream_id": "DNAmADM",
+    "pyaging_id": "grimage2adm",
+    "feature_set_matches_including_covariates": true,
+    "max_abs_v1_coefficient_difference": 6.927539061507559e-06,
+    "max_relative_coefficient_difference": 5.409856722798323e-08,
+    "bias_difference": 8.72343747460036e-06,
+    "within_float32_precision": true,
+    "meaning": "Existing proxy family identity supported at serialized float32 precision, not full numerical pipeline parity."
+  },
+  {
+    "upstream_id": "DNAmB2M",
+    "pyaging_id": "grimage2b2m",
+    "feature_set_matches_including_covariates": true,
+    "max_abs_v1_coefficient_difference": 0.027000000001862645,
+    "max_relative_coefficient_difference": 5.729734721029925e-08,
+    "bias_difference": 0.01799999992363155,
+    "within_float32_precision": true,
+    "meaning": "Existing proxy family identity supported at serialized float32 precision, not full numerical pipeline parity."
+  },
+  {
+    "upstream_id": "DNAmCystatinC_GrimAgeV1",
+    "pyaging_id": "grimage2cystatinc",
+    "feature_set_matches_including_covariates": true,
+    "max_abs_v1_coefficient_difference": 0.011950000014621764,
+    "max_relative_coefficient_difference": 5.219396336070222e-08,
+    "bias_difference": 0.01600000006146729,
+    "within_float32_precision": true,
+    "meaning": "Existing proxy family identity supported at serialized float32 precision, not full numerical pipeline parity."
+  },
+  {
+    "upstream_id": "DNAmGDF15",
+    "pyaging_id": "grimage2gdf15",
+    "feature_set_matches_including_covariates": true,
+    "max_abs_v1_coefficient_difference": 5.8007812413052307e-05,
+    "max_relative_coefficient_difference": 5.424280724053968e-08,
+    "bias_difference": 4.015624995190592e-05,
+    "within_float32_precision": true,
+    "meaning": "Existing proxy family identity supported at serialized float32 precision, not full numerical pipeline parity."
+  },
+  {
+    "upstream_id": "DNAmLeptin",
+    "pyaging_id": "grimage2leptin",
+    "feature_set_matches_including_covariates": true,
+    "max_abs_v1_coefficient_difference": 0.0016250000044237822,
+    "max_relative_coefficient_difference": 5.337088063013375e-08,
+    "bias_difference": 5.500000042957254e-05,
+    "within_float32_precision": true,
+    "meaning": "Existing proxy family identity supported at serialized float32 precision, not full numerical pipeline parity."
+  },
+  {
+    "upstream_id": "DNAmPACKYRS",
+    "pyaging_id": "grimage2packyrs",
+    "feature_set_matches_including_covariates": true,
+    "max_abs_v1_coefficient_difference": 3.0653515636913653e-06,
+    "max_relative_coefficient_difference": 6.88310284745416e-08,
+    "bias_difference": 3.58784181031524e-07,
+    "within_float32_precision": true,
+    "meaning": "Existing proxy family identity supported at serialized float32 precision, not full numerical pipeline parity."
+  },
+  {
+    "upstream_id": "DNAmPAI1",
+    "pyaging_id": "grimage2pai1",
+    "feature_set_matches_including_covariates": true,
+    "max_abs_v1_coefficient_difference": 0.001454999997804407,
+    "max_relative_coefficient_difference": 5.663763539691936e-08,
+    "bias_difference": 5.942968755334732e-05,
+    "within_float32_precision": true,
+    "meaning": "Existing proxy family identity supported at serialized float32 precision, not full numerical pipeline parity."
+  },
+  {
+    "upstream_id": "DNAmTIMP1",
+    "pyaging_id": "grimage2timp1",
+    "feature_set_matches_including_covariates": true,
+    "max_abs_v1_coefficient_difference": 0.0002121562501997687,
+    "max_relative_coefficient_difference": 4.975449949571725e-08,
+    "bias_difference": 0.00015312499999708962,
+    "within_float32_precision": true,
+    "meaning": "Existing proxy family identity supported at serialized float32 precision, not full numerical pipeline parity."
+  }
+]

@@ -16,5 +16,6 @@ pyaging.utils._utils
 
 .. automodule:: pyaging.utils._utils
    :members:
+   :exclude-members: Columns
    :undoc-members:
    :show-inheritance:

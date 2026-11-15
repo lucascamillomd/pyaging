@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 
 from ..logger._live import SimpleStep, display_enabled, live_step, quiet_hf_bars
+from ..utils._files import atomic_output_path
 from ..utils._hf import download_hf_file
 
 _EXAMPLE_DATA_FILENAMES = {
@@ -12,6 +13,7 @@ _EXAMPLE_DATA_FILENAMES = {
     "ENCFF386QWG": "ENCFF386QWG.bigWig",
     "GSE65765": "GSE65765_CPM.pkl",
     "blood_chemistry_example": "blood_chemistry_example.pkl",
+    "PAD000022": "PAD000022_subset.pkl",
 }
 
 
@@ -20,14 +22,16 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     Downloads example datasets for various types of biological data used in aging studies.
 
     This function facilitates the download of example datasets for different types of biological data,
-    including methylation, histone mark, RNA-seq, and ATAC-seq data. It is designed to provide quick
+    including methylation, histone mark, RNA-seq, ATAC-seq, and proteomics data. It is designed to provide quick
     access to standard datasets for users to test and explore the functionalities of the pyaging package.
 
     Parameters
     ----------
     data_type : str
         The type of data to download. Valid options are 'GSE139307', 'GSE130735', 'GSE223748',
-        'ENCFF386QWG', 'GSE65765', 'GSE193140', and 'blood_chemistry_example'.
+        'ENCFF386QWG', 'GSE65765', 'GSE193140', 'blood_chemistry_example', and 'PAD000022'.
+        'PAD000022' contains 32 real plasma samples with 134 Olink Explore 3072 NPX features
+        for the brain, heart, and kidney OrganAge models.
 
     dir : str
         Directory where the example file is placed (default "pyaging_data"). The download
@@ -53,7 +57,7 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
 
     Examples
     --------
-    >>> download_example_data("methylation")
+    >>> download_example_data("GSE139307")
     >>> # This will download the example methylation dataset to the local system.
 
     """
@@ -63,13 +67,15 @@ def download_example_data(data_type: str, dir: str = "pyaging_data", verbose: bo
     enabled = display_enabled(verbose)
     filename = _EXAMPLE_DATA_FILENAMES[data_type]
     destination = Path(dir) / filename
+    if destination.is_dir():
+        raise IsADirectoryError(destination)
     if destination.exists():
         SimpleStep(filename, enabled=enabled).done(f"example data already at {destination}")
         return str(destination)
 
     with quiet_hf_bars(verbose), live_step(f"downloading {filename}", verbose) as (step, pipeline_logger):
         cache_path = download_hf_file(filename, dir, pipeline_logger, indent_level=1)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(cache_path, destination)
+        with atomic_output_path(destination) as temporary_path:
+            shutil.copy(cache_path, temporary_path)
         step.done(f"example data at {destination}")
     return str(destination)

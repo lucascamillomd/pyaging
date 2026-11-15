@@ -1,0 +1,70 @@
+{
+  "celldrift": {
+    "clock_name": "celldrift",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "⌛",
+    "citation": "Minteer, C. J., et al. (2023). More than bad luck: Cancer and aging are linked to replication-driven changes to the epigenome. Science Advances, 9(29), eadf4163.",
+    "doi": "https://doi.org/10.1126/sciadv.adf4163",
+    "notes": "Replication signature trained on 31 serially passaged hTERT-immortalized human astrocyte samples. The released 62-PC elastic-net predictor over 2,322 CpGs is folded algebraically into a single linear score. Output is calibrated to cumulative population doublings, not years. Original-author missingness is preserved: supplied NaNs become zero, whereas absent CpGs use module means. GitHub commit 066b3e816795f3c0b372ff8d33f59185a490bd8b; DOI 10.5281/zenodo.7693699. Upstream software license is unspecified (Zenodo: Other (Open)).",
+    "research_only": null,
+    "tissue": [
+      "cultured human cells"
+    ],
+    "predicts": [
+      "mitotic age"
+    ],
+    "training_target": [
+      "population doublings"
+    ],
+    "unit": [
+      "population doublings"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "human cell cultures",
+    "journal": "Science Advances",
+    "last_author": "Morgan E. Levine",
+    "n_features": 2322,
+    "citations": 29,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4"
+  },
+  "miage": {
+    "clock_name": "miage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "⌛",
+    "citation": "Youn, A., and Wang, S. (2018). The MiAge Calculator: a DNA methylation-based mitotic age calculator of human tissue types. Epigenetics, 13(2), 192–206.",
+    "doi": "https://doi.org/10.1080/15592294.2017.1389361",
+    "notes": "Mitotic-age estimator using the authors’ 268-CpG fitted b/c/d parameters and five-start bounded L-BFGS-B least squares (bounds of 10–10,000 on the relative-mitotic-age scale). The scale is identifiable only up to an unknown common factor, so scores are not absolute division counts. The scalar optimizer runs on CPU in float64, including when other clocks run on CUDA. Missing CpGs and supplied NaNs are omitted from each sample’s objective. The original all-NaN tie returns 2,008; this is an optimizer starting value with no biological meaning, so measured clock CpGs are required for interpretation. Original author function_library.r and site_specific_parameters.Rdata are preserved by an archived mirror at anilpsori/DNAm_pipelines_and_biomarkers commit d84d6adfc039355d5f9c962fc5faa7d1054f56b2; the original Columbia download returned HTTP403 during verification. All 268 CpG IDs and shared annotation fields match the original publisher supplement in order. No software/weight license is declared by the archived author files; the separate publisher supplement is CC BY4.0.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "mitotic age"
+    ],
+    "training_target": [
+      "replicative history"
+    ],
+    "unit": [
+      "relative cell divisions"
+    ],
+    "model_type": "dynamic methylation transmission model",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "human, age unspecified",
+    "journal": "Epigenetics",
+    "last_author": "Shuang Wang",
+    "n_features": 268,
+    "citations": 98,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4"
+  }
+}

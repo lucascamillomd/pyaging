@@ -16,7 +16,7 @@
 
 `pyaging` is a cutting-edge Python package designed for the longevity research community, offering a comprehensive suite of GPU-optimized biological aging clocks.
 
-[Installation](https://pyaging.readthedocs.io/en/latest/installation.html) - [Clock gallery](https://pyaging.readthedocs.io/en/latest/clock_glossary.html) - [Search, cite, get metadata and clock parameters](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_utils.html) - [Illumina Human Methylation Arrays](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_dnam_illumina_human_array.html) - [Illumina Mammalian Methylation Arrays](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_dnam_illumina_mammalian_array.html) - [RRBS DNA methylation](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_dnam_rrbs.html) - [Bulk histone mark ChIP-Seq](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_histonemarkchipseq.html) - [Bulk ATAC-Seq](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_atacseq.html) - [Bulk RNA-Seq](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_rnaseq.html) - [Blood chemistry](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_bloodchemistry.html) - [CpGPTGrimAge3](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_cpgptgrimage3.html) - [API Reference](https://pyaging.readthedocs.io/en/latest/pyaging.html)
+[Installation](https://pyaging.readthedocs.io/en/latest/installation.html) - [Clock gallery](https://pyaging.readthedocs.io/en/latest/clock_glossary.html) - [Retrieving metadata](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_metadata.html) - [CpGPTGrimAge3: the top mortality clock](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_cpgptgrimage3.html) - [DNA methylation](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_dnam.html) - [Histone mark](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_histone_mark.html) - [Chromatin accessibility](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_chromatin_accessibility.html) - [Transcriptomics](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_transcriptomics.html) - [Proteomics](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_proteomics.html) - [Blood chemistry](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_blood_chemistry.html) - [API Reference](https://pyaging.readthedocs.io/en/latest/pyaging.html)
 
 With a growing number of aging clocks and biomarkers of aging, comparing and analyzing them can be challenging. `pyaging` simplifies this process, allowing researchers to input various molecular layers (DNA methylation, histone ChIP-Seq, ATAC-seq, transcriptomics, etc.) and quickly analyze them using multiple aging clocks, thanks to its GPU-backed infrastructure. This makes it an ideal tool for large datasets and multi-layered analysis.
 
@@ -48,7 +48,21 @@ pya.pred.predict_age(adata, ["Horvath2013", "AltumAge", "DunedinPACE"])
 adata.obs.head()
 ```
 
-Clock weights are downloaded on demand from per-clock repositories under the [`pyaging` Hugging Face organization](https://huggingface.co/pyaging) (example data comes from [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data)). Set the `PYAGING_DATA_REVISION` environment variable to a release tag (e.g. `v0.3.1`) to pin downloads to a specific data revision for reproducibility; it defaults to `main`, the live data release.
+Clock weights are downloaded on demand from per-clock repositories under the [`pyaging` Hugging Face organization](https://huggingface.co/pyaging) (example data comes from [`lucascamillomd/pyaging-data`](https://huggingface.co/lucascamillomd/pyaging-data)). Set `PYAGING_DATA_REVISION` to an existing data release tag, such as `v0.5.5`, to pin downloads; it defaults to `main`. Version 0.5.5 adds PAC and simplifies proteomic OrganAge to 46 full-panel models with shorter names. See the [proteomics tutorial](https://pyaging.readthedocs.io/en/latest/tutorials/tutorial_proteomics.html) for assay normalization, protein identifiers and model availability. Model weights retain the original authors’ licensing terms.
+
+### Run the same clocks across datasets
+
+Reuse loaded models with a bounded cache:
+
+```python
+clocks = ["Horvath2013", "AltumAge"]
+cache = pya.pred.ClockCache(maxsize=len(clocks))
+for adata in datasets:  # Each dataset is a separate AnnData object.
+    pya.pred.predict_age(adata, clocks, clock_cache=cache)
+cache.clear()
+```
+
+The cache avoids repeated download checks, deserialization, and device transfers. It holds at most `maxsize` models and keeps separate entries for each device and data revision. It is optional; ordinary calls retain no model cache. Clear it to refresh weights from a moving `main` revision. See the [prediction guide](https://pyaging.readthedocs.io/en/latest/pyaging.predict.html) for memory and cohort guidance.
 
 ## ❓ Can't find an aging clock?
 
