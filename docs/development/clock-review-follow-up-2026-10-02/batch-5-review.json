@@ -1,0 +1,543 @@
+{
+  "batch": 5,
+  "reviewed_clocks": [
+    "paopac",
+    "pasta",
+    "pastamouse",
+    "pcbrainage",
+    "pcdnamtl",
+    "pcgrimage",
+    "pcgrimageadm",
+    "pcgrimageb2m",
+    "pcgrimagecystatinc",
+    "pcgrimagegdf15",
+    "pcgrimageleptin",
+    "pcgrimagepackyrs",
+    "pcgrimagepai1",
+    "pcgrimagetimp1",
+    "pchannum",
+    "pchorvath2013",
+    "pcphenoage",
+    "pcskinandblood",
+    "pedbe",
+    "petkovich",
+    "phenoage",
+    "phenoagesaopaulo",
+    "pipekelasticnet",
+    "pipekfilteredh",
+    "pipekretrainedh",
+    "prostatecancerkirby",
+    "reedbmi",
+    "reg",
+    "replitali",
+    "replitalinorm",
+    "retroelementagev1",
+    "retroelementagev2",
+    "senchronoage",
+    "sencultureage",
+    "senmortalityage",
+    "skinandblood",
+    "stemtoc",
+    "stemtocvitro",
+    "stoch",
+    "stocp"
+  ],
+  "corrections": [],
+  "retained": [
+    {
+      "name": "paopac",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://doi.org/10.64898/2026.04.24.720503",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for paopac; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pasta",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.biorxiv.org/content/10.1101/2025.06.04.657785v2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pasta; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pastamouse",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.biorxiv.org/content/10.1101/2025.06.04.657785v2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pastamouse; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcbrainage",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.aging-us.com/article/204196/text",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcbrainage; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcdnamtl",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcdnamtl; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcgrimage",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcgrimage; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcgrimageadm",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcgrimageadm; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcgrimageb2m",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcgrimageb2m; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcgrimagecystatinc",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcgrimagecystatinc; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcgrimagegdf15",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcgrimagegdf15; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcgrimageleptin",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcgrimageleptin; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcgrimagepackyrs",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcgrimagepackyrs; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcgrimagepai1",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcgrimagepai1; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcgrimagetimp1",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcgrimagetimp1; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pchannum",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pchannum; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pchorvath2013",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pchorvath2013; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcphenoage",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcphenoage; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pcskinandblood",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-022-00248-2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pcskinandblood; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pedbe",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7519312/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pedbe; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "petkovich",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5578459/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for petkovich; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "phenoage",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://doi.org/10.18632/aging.101414",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for phenoage; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "phenoagesaopaulo",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://doi.org/10.18632/aging.101414",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for phenoagesaopaulo; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pipekelasticnet",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://link.springer.com/article/10.1007/s10910-022-01381-4",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pipekelasticnet; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pipekfilteredh",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://link.springer.com/article/10.1007/s10910-022-01381-4",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pipekfilteredh; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "pipekretrainedh",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://link.springer.com/article/10.1007/s10910-022-01381-4",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for pipekretrainedh; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "prostatecancerkirby",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5392915/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for prostatecancerkirby; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "reedbmi",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7106582/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for reedbmi; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "reg",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.biorxiv.org/content/10.1101/2025.06.04.657785v2",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for reg; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "replitali",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9643452/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for replitali; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "replitalinorm",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9643452/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for replitalinorm; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "retroelementagev1",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11464121/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for retroelementagev1; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "retroelementagev2",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11464121/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for retroelementagev2; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "senchronoage",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12938503/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for senchronoage; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "sencultureage",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12938503/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for sencultureage; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "senmortalityage",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12938503/",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for senmortalityage; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "skinandblood",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.aging-us.com/article/101508/text",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for skinandblood; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "stemtoc",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s41467-024-48649-8",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for stemtoc; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "stemtocvitro",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s41467-024-48649-8",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for stemtocvitro; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "stoch",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-024-00600-8",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for stoch; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    },
+    {
+      "name": "stocp",
+      "reason": "Citation identity and the reviewed scientific fields match the evidence ledger; DOI maps to this clock in the dated citation audit with the same title-linked work, count, and observation date. The completed methods audit reports no open fields or material correction for this record.",
+      "source_url": "https://www.nature.com/articles/s43587-024-00600-8",
+      "source_locator": "Evidence-ledger primary source; methods_audit_2026-10-02.json entry for stocp; exact DOI/title/count/date checked against citation_audit_2026-10-02.json"
+    }
+  ],
+  "unresolved": [
+    {
+      "name": "paopac",
+      "issue": "The exact identity and preparation of the Conventional PAOPAC artifact used in the Nature Biotechnology trial versus the later public MIT v1.0.0 release remain unverified. The primary preprint full text was inaccessible in the reviewed audit; public author-code execution confirms behavior of the public artifact but cannot establish artifact identity with the private trial model.",
+      "missing_evidence": "A source from the authors or trial data/code directly linking the trial model artifact and preprocessing to the later public v1.0.0 release, or accessible full methods that establish the linkage."
+    }
+  ],
+  "training_details": [
+    {
+      "name": "paopac",
+      "facts": "The UK Biobank source population comprised adults recruited at ages 40 to 69 years.",
+      "source_url": "https://doi.org/10.1038/s41586-023-06592-6",
+      "source_locator": "Methods: UKB participants; trial Discussion identifying original UK Biobank training"
+    },
+    {
+      "name": "pasta",
+      "facts": "Healthy human donor data from GTEx, GEO, and Expression Atlas.",
+      "source_url": "https://www.biorxiv.org/content/10.1101/2025.06.04.657785v2",
+      "source_locator": "Methods, Transcriptomic database"
+    },
+    {
+      "name": "pastamouse",
+      "facts": "Mouse genes were restricted to one-to-one human orthologues.",
+      "source_url": "https://www.biorxiv.org/content/10.1101/2025.06.04.657785v2",
+      "source_locator": "Methods, Extending Pasta"
+    },
+    {
+      "name": "pcbrainage",
+      "facts": "The training dataset contains 399 individuals aged 20 years and older.",
+      "source_url": "https://www.aging-us.com/article/204196/text",
+      "source_locator": "Article header; Results: Model design and testing; Methods"
+    },
+    {
+      "name": "pcdnamtl",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcgrimage",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcgrimageadm",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcgrimageb2m",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcgrimagecystatinc",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcgrimagegdf15",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcgrimageleptin",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcgrimagepackyrs",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcgrimagepai1",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcgrimagetimp1",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pchannum",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pchorvath2013",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcphenoage",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pcskinandblood",
+      "facts": "Training cohorts and sample types are specified in the study dataset table.",
+      "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs43587-022-00248-2/MediaObjects/43587_2022_248_MOESM1_ESM.pdf",
+      "source_locator": "Supplementary Tables, training datasets"
+    },
+    {
+      "name": "pedbe",
+      "facts": "The study included 1,721 healthy individuals aged 0 to 20 years.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7519312/",
+      "source_locator": "Abstract"
+    },
+    {
+      "name": "petkovich",
+      "facts": "mice (C57BL/6), ages 3-35 months",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5578459/",
+      "source_locator": "Methods: training/sample cohort"
+    },
+    {
+      "name": "phenoage",
+      "facts": "NHANES III adults aged 20 years or older (n=9,926)",
+      "source_url": "https://doi.org/10.18632/aging.101414",
+      "source_locator": "Abstract; Figure 1; Methods, 'Estimating phenotypic age' and 'Developing DNAm PhenoAge'"
+    },
+    {
+      "name": "phenoagesaopaulo",
+      "facts": "filter(age >= 20, age <= 84)",
+      "source_url": "https://github.com/lucascamillomd/pyaging/blob/main/clocks/notebooks/phenoagesaopaulo.ipynb",
+      "source_locator": "clocks/notebooks/phenoagesaopaulo.ipynb, the R script's NHANES III training filter"
+    },
+    {
+      "name": "pipekelasticnet",
+      "facts": "training data covered a broad chronological-age range",
+      "source_url": "https://link.springer.com/article/10.1007/s10910-022-01381-4",
+      "source_locator": "Supplementary file 1 referenced in Methods"
+    },
+    {
+      "name": "pipekfilteredh",
+      "facts": "training data covered a broad chronological-age range",
+      "source_url": "https://link.springer.com/article/10.1007/s10910-022-01381-4",
+      "source_locator": "Supplementary file 1 referenced in Methods"
+    },
+    {
+      "name": "pipekretrainedh",
+      "facts": "training data covered a broad chronological-age range",
+      "source_url": "https://link.springer.com/article/10.1007/s10910-022-01381-4",
+      "source_locator": "Supplementary file 1 referenced in Methods"
+    },
+    {
+      "name": "prostatecancerkirby",
+      "facts": "The training cohort had ages 43–73 years and supplied tumor/benign-adjacent prostate tissues.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5392915/",
+      "source_locator": "Table 1, Clinical data"
+    },
+    {
+      "name": "reedbmi",
+      "facts": "mothers and children ... at multiple time points",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7106582/",
+      "source_locator": "Abstract: Methods"
+    },
+    {
+      "name": "reg",
+      "facts": "Healthy human donor data from GTEx, GEO, and Expression Atlas.",
+      "source_url": "https://www.biorxiv.org/content/10.1101/2025.06.04.657785v2",
+      "source_locator": "Methods, Transcriptomic database"
+    },
+    {
+      "name": "replitali",
+      "facts": "Seven primary human cell cultures were profiled; final-model samples were split into 122 training and 60 test observations.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9643452/",
+      "source_locator": "Results, paragraph 9; Methods, “RepliTali construction”"
+    },
+    {
+      "name": "replitalinorm",
+      "facts": "Only the chronologically youngest fetal fibroblast line was used to train the starting-PD normalizer.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9643452/",
+      "source_locator": "Methods, “RepliTali construction”"
+    },
+    {
+      "name": "retroelementagev1",
+      "facts": "12,670 people ... ages ranging from 12 to 100 years old",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11464121/",
+      "source_locator": "Results: discovery cohort"
+    },
+    {
+      "name": "retroelementagev2",
+      "facts": "12,670 people ... ages ranging from 12 to 100 years old",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11464121/",
+      "source_locator": "Results: discovery cohort"
+    },
+    {
+      "name": "senchronoage",
+      "facts": "GSE40279 contains 656 participants aged 19–101.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12938503/",
+      "source_locator": "Methods, section 4.4.1"
+    },
+    {
+      "name": "sencultureage",
+      "facts": "Training pooled GSE197723 and GSE227160 senescent and control cultures.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12938503/",
+      "source_locator": "Results, section 2.3; Table 1"
+    },
+    {
+      "name": "senmortalityage",
+      "facts": "The FHS cohorts comprised 2,748 Offspring and 1,457 Third Generation participants; the model used a 70/30 split.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12938503/",
+      "source_locator": "Methods, section 4.5.1; Results, section 2.3"
+    },
+    {
+      "name": "skinandblood",
+      "facts": "The ten training datasets sum to 896 samples and span cord blood through donors aged 94 years.",
+      "source_url": "https://www.aging-us.com/article/101508/text",
+      "source_locator": "Table 1, rows 1–10 marked Train"
+    },
+    {
+      "name": "stemtoc",
+      "facts": "The derivation cohorts are fetal/neonatal tissues, normal cell cultures, and for stemTOC adult blood cohorts.",
+      "source_url": "https://www.nature.com/articles/s41467-024-48649-8",
+      "source_locator": "Methods, derivation cohorts"
+    },
+    {
+      "name": "stemtocvitro",
+      "facts": "The derivation cohorts are fetal/neonatal tissues, normal cell cultures, and for stemTOC adult blood cohorts.",
+      "source_url": "https://www.nature.com/articles/s41467-024-48649-8",
+      "source_locator": "Methods, derivation cohorts"
+    },
+    {
+      "name": "stoch",
+      "facts": "MESA monocytes: minimum age 44 years, maximum age 83 years",
+      "source_url": "https://www.nature.com/articles/s43587-024-00600-8",
+      "source_locator": "Results: simulation parameter estimation"
+    },
+    {
+      "name": "stocp",
+      "facts": "MESA monocytes: minimum age 44 years, maximum age 83 years",
+      "source_url": "https://www.nature.com/articles/s43587-024-00600-8",
+      "source_locator": "Results: simulation parameter estimation"
+    }
+  ],
+  "review_notes": [
+    "All 40 assigned records were checked against the current clock registry, their evidence-ledger entries, and complete methods-audit entries. Candidate values match the reviewed ledger values; all assigned methods-audit entries report no unresolved fields.",
+    "All 40 citation DOI values map to the assigned clock name in the date-stamped citation audit. The audit title, citation count, and 2026-10-02 observation date match each candidate record. Same-paper model variants share that publication count; preprint and journal counts were not added together.",
+    "Live primary-source checks covered the published Pasta article (including human and mouse model descriptions), the PCBrainAge article, and the stemTOC article. Existing primary-source audit records were used for remaining fields. PAOPAC limitations are retained as unresolved; no live full-text review of its preprint is claimed.",
+    "Training details quote only source-backed cohort, sample, age, or health facts in the evidence ledger. Broad or unspecified cohorts are left broad. No scores were recalculated and no shared registry, model, or notebook files were edited."
+  ]
+}

@@ -1,0 +1,344 @@
+{
+  "reviewed_clocks": [
+    "stocz",
+    "stubbs",
+    "systemsage",
+    "systemsageblood",
+    "systemsagebrain",
+    "systemsageheart",
+    "systemsagehormone",
+    "systemsageimmune",
+    "systemsageinflammation",
+    "systemsagekidney",
+    "systemsageliver",
+    "systemsagelung",
+    "systemsagemetabolic",
+    "systemsagemusculoskeletal",
+    "tage",
+    "tagemortality",
+    "thompson",
+    "twelvecelldeconvolutebloodepicbas",
+    "twelvecelldeconvolutebloodepicbmem",
+    "twelvecelldeconvolutebloodepicbnv",
+    "twelvecelldeconvolutebloodepiccd4mem",
+    "twelvecelldeconvolutebloodepiccd4nv",
+    "twelvecelldeconvolutebloodepiccd8mem",
+    "twelvecelldeconvolutebloodepiccd8nv",
+    "twelvecelldeconvolutebloodepiceos",
+    "twelvecelldeconvolutebloodepicmono",
+    "twelvecelldeconvolutebloodepicneu",
+    "twelvecelldeconvolutebloodepicnk",
+    "twelvecelldeconvolutebloodepictreg",
+    "vidalbralo",
+    "weidner",
+    "wu",
+    "xchrom",
+    "ychrom",
+    "yingadaptage",
+    "yingcausage",
+    "yingdamage",
+    "zhangblup",
+    "zhangen",
+    "zhangmortality"
+  ],
+  "corrections": [],
+  "retained": [
+    {
+      "name": "stocz",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-024-00600-8"
+    },
+    {
+      "name": "stubbs",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1186/s13059-017-1203-5"
+    },
+    {
+      "name": "systemsage",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsageblood",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsagebrain",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsageheart",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsagehormone",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsageimmune",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsageinflammation",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsagekidney",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsageliver",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsagelung",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsagemetabolic",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "systemsagemusculoskeletal",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3"
+    },
+    {
+      "name": "tage",
+      "reason": "Retained: exact DOI citation/count mapping agrees; source-specific semantics also checked live against the primary Nature article and Gladyshev-Lab/tAge. Chronological scaled-difference output retains the packaged mouse-month reference scale; mortality remains unscaled log10(hazard ratio).",
+      "source": "https://doi.org/10.1038/s41586-026-10542-3"
+    },
+    {
+      "name": "tagemortality",
+      "reason": "Retained: exact DOI citation/count mapping agrees; source-specific semantics also checked live against the primary Nature article and Gladyshev-Lab/tAge. Chronological scaled-difference output retains the packaged mouse-month reference scale; mortality remains unscaled log10(hazard ratio).",
+      "source": "https://doi.org/10.1038/s41586-026-10542-3"
+    },
+    {
+      "name": "thompson",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.18632/aging.101590"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepicbas",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepicbmem",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepicbnv",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepiccd4mem",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepiccd4nv",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepiccd8mem",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepiccd8nv",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepiceos",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepicmono",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepicneu",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepicnk",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepictreg",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7"
+    },
+    {
+      "name": "vidalbralo",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.3389/fgene.2016.00126"
+    },
+    {
+      "name": "weidner",
+      "reason": "Retained: paper identity/count mapping agrees; primary paper confirms the assay and live source confirms the published PDE4C pyrosequencing site is upstream of cg17861230. Existing metadata already documents that the array-probe substitution is only an approximation.",
+      "source": "https://doi.org/10.1186/gb-2014-15-2-r24"
+    },
+    {
+      "name": "wu",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.18632/aging.102399"
+    },
+    {
+      "name": "xchrom",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1186/s12864-021-07675-2"
+    },
+    {
+      "name": "ychrom",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1186/s12864-021-07675-2"
+    },
+    {
+      "name": "yingadaptage",
+      "reason": "Retained: exact paper identity/count mapping and primary-source confirmed clock fitting facts agree; exact cohort age/platform and one-site feature discrepancies remain open in unresolved.",
+      "source": "https://doi.org/10.1038/s43587-023-00557-0"
+    },
+    {
+      "name": "yingcausage",
+      "reason": "Retained: exact paper identity/count mapping and primary-source confirmed clock fitting facts agree; exact cohort age/platform and one-site feature discrepancies remain open in unresolved.",
+      "source": "https://doi.org/10.1038/s43587-023-00557-0"
+    },
+    {
+      "name": "yingdamage",
+      "reason": "Retained: exact paper identity/count mapping and primary-source confirmed clock fitting facts agree; exact cohort age/platform and one-site feature discrepancies remain open in unresolved.",
+      "source": "https://doi.org/10.1038/s43587-023-00557-0"
+    },
+    {
+      "name": "zhangblup",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1186/s13073-019-0667-1"
+    },
+    {
+      "name": "zhangen",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1186/s13073-019-0667-1"
+    },
+    {
+      "name": "zhangmortality",
+      "reason": "DOI, paper title, publication year/journal/last-author identity, DOI-linked citation count and packaged feature count agree with current metadata and the source audit; scientific description reviewed against the evidence ledger and methods audit.",
+      "source": "https://doi.org/10.1038/ncomms14617"
+    }
+  ],
+  "unresolved": [
+    {
+      "name": "yingadaptage, yingcausage, yingdamage",
+      "issue": "The source states 2,664 whole-blood samples for clock fitting, but accessible primary text does not establish their exact cohort breakdown, training age range, or assay platform. It separately reports 450K for meQTL instruments and describes Generation Scotland in adjacent association work; neither proves the fitted-clock cohort/platform. Primary paper also reports 1,000/586/1,090 sites while the packaged model has 999/585/1,089 inputs; the reason for each one-site difference remains unknown.",
+      "missing_evidence": "A primary-source account or author release mapping the 2,664 training samples to cohorts, age distribution, assay platform, and the omitted site in each packaged model."
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepic*",
+      "issue": "The paper’s 1,200-site IDOL-Ext EPIC library and the inherited 240-site Biolearn replacement are not equivalent feature sets; the paper’s training/validation performance cannot be attributed to the replacement.",
+      "missing_evidence": "Author/Biolearn provenance or validation establishing the replacement model’s relationship to the published IDOL-Ext library."
+    },
+    {
+      "name": "zhangmortality",
+      "issue": "The paper’s primary score is a cohort-cutoff binary aberrant-methylation count. The package implements a continuous weighted-beta score; no author-provided implementation supporting that continuous formula was found in the existing audit.",
+      "missing_evidence": "Author code or explicit primary-source endorsement of the continuous weighted-beta formula."
+    }
+  ],
+  "training_details": [
+    {
+      "name": "stocz",
+      "source": "https://doi.org/10.1038/s43587-024-00600-8",
+      "source_locator": "Methods/Results: stochastic clock construction; MESA monocyte age range",
+      "source_backed_facts": "Stochastic counterpart to Zhang, built from simulated methylation trajectories at Zhang CpGs. The source identifies MESA monocyte profiles spanning ages 44–83; the model is not the original Zhang clock."
+    },
+    {
+      "name": "stubbs",
+      "source": "https://doi.org/10.1186/s13059-017-1203-5",
+      "source_locator": "Results and Methods: mouse age predictor training samples; coefficient model",
+      "source_backed_facts": "Mouse RRBS model spans newborns through 41 weeks, across multiple tissues. 17,992 common input loci reduce to 329 nonzero clock sites before quadratic calibration."
+    },
+    {
+      "name": "systemsage and systemsageblood/brain/heart/hormone/immune/inflammation/kidney/liver/lung/metabolic/musculoskeletal",
+      "source": "https://doi.org/10.1038/s43587-025-00958-3",
+      "source_locator": "Methods: Datasets used for training Systems Age; Supplementary Information",
+      "source_backed_facts": "The shared paper reports HRS EPIC clinical data across ages 51–100, FHS Offspring mortality training, and FHS cohorts for scaling. System scores use mortality-associated biomarker dimensions; composite Systems Age integrates the system scores and DNAm chronological-age prediction. Package record count is 125,175 methylation features. This supports the broad “older adults” label; component clocks share one citation and citation count."
+    },
+    {
+      "name": "tage and tagemortality",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13233323/",
+      "source_locator": "Methods: Integration of multi-study gene expression data; multi-tissue clock development; author tAge package README and inst/python/tage_predict.py",
+      "source_backed_facts": "Paper reports 11,165 expression samples with known age across mouse (3,876), rat (663), macaque (2,623), and human (4,003). Packaged multi-species scaled-difference model has 10,487 mouse-Entrez features. Author package defines mortality output as log10(hazard ratio), with no age rescaling; chronological outputs are normalized age rescaled into age units. The pyaging mortality record therefore remains unitless/log10 hazard, and chronological packaged output is on the mouse-month scale (48 months baked in); per-species conversion follows the author package’s species factors, which differ slightly from paper Methods."
+    },
+    {
+      "name": "thompson",
+      "source": "https://doi.org/10.18632/aging.101590",
+      "source_locator": "Results and Table 2: datasets, sample span and clock construction",
+      "source_backed_facts": "Mouse RRBS clock trained on 1,147 samples from ten tissues and multiple strains; combined data span prenatal age through 32.2 months. The packaged all-CpG model has 582 features."
+    },
+    {
+      "name": "twelvecelldeconvolutebloodepic*",
+      "source": "https://doi.org/10.1038/s41467-021-27864-7",
+      "source_locator": "Methods: cell reference donors, array validation and IDOL-Ext library",
+      "source_backed_facts": "Reference cells came from 56 healthy donors (41 male, 15 female), mean age 32.2 years, range 19–58, with multiple self-identified ancestries. The paper’s EPIC IDOL-Ext library has 1,200 CpGs; pyaging’s inherited Biolearn replacement is 240 CpGs and is not the paper’s published 1,200-feature library, as documented in the existing ledger."
+    },
+    {
+      "name": "vidalbralo",
+      "source": "https://doi.org/10.3389/fgene.2016.00126",
+      "source_locator": "Methods: Definition of DmAM and model development",
+      "source_backed_facts": "Eight-CpG whole-blood age estimator selected and fitted in 390 healthy adults older than 20 years, with a multiplex MS-SNuPE assay design."
+    },
+    {
+      "name": "weidner",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4053864/",
+      "source_locator": "Results: Age-related DNAm changes in blood samples; Methods: pyrosequencing. Primary paper and original-author follow-up on PDE4C assay identity.",
+      "source_backed_facts": "Feature discovery used 575 blood methylation profiles ages 0–78. Final three-site equation was fit to targeted bisulfite-pyrosequencing values in 82 blood samples and independently validated in 69. Published PDE4C pyrosequencing target is upstream of Illumina cg17861230; the pyaging label substitutes the neighboring array probe, so direct cg17861230 input is an assay approximation."
+    },
+    {
+      "name": "wu",
+      "source": "https://doi.org/10.18632/aging.102399",
+      "source_locator": "Abstract: model development sample count and ages",
+      "source_backed_facts": "Child blood model trained on 716 samples ages 9–212 months; pyaging converts the published month-scale output to years."
+    },
+    {
+      "name": "xchrom and ychrom",
+      "source": "https://doi.org/10.1186/s12864-021-07675-2",
+      "source_locator": "Methods: Model construction; GSE105018 training and EPIC validation",
+      "source_backed_facts": "Feature screening and PCA used 800 females and 800 males at age 18 from 450K GSE105018; EPIC cohort was used for validation, not the 450K training platform."
+    },
+    {
+      "name": "yingadaptage, yingcausage, yingdamage",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11070280/",
+      "source_locator": "Results: Developing causality-enriched epigenetic clocks; Methods and cited reference 31",
+      "source_backed_facts": "Primary paper states that chronological age was modeled by elastic net on whole-blood methylation from 2,664 individuals. It reports 586 CausAge, 1,000 AdaptAge, and 1,090 DamAge sites, while the packaged inputs are 585, 999, and 1,089. Exact fitting-cohort breakdown, ages, and platform are not resolved by the accessible cited source; do not infer these from the separately discussed Generation Scotland analysis or from 450K meQTL instrument data."
+    },
+    {
+      "name": "zhangblup and zhangen",
+      "source": "https://doi.org/10.1186/s13073-019-0667-1",
+      "source_locator": "Methods: Study population, Table 1, and final model description",
+      "source_backed_facts": "The combined 14-cohort collection spans ages 2–104 years. ZhangBLUP uses 319,607 quality-controlled probes; ZhangEN uses 514 selected CpGs."
+    },
+    {
+      "name": "zhangmortality",
+      "source": "https://doi.org/10.1038/ncomms14617",
+      "source_locator": "Methods: Study population and data collection; main paper and supplement score definitions",
+      "source_backed_facts": "ESTHER recruited adults ages 50–75. Paper defines a binary count of ten CpGs beyond cohort-specific quartile cutoffs. Pyaging instead implements the continuous LASSO-weighted sum of ten raw beta values; existing audit found no author code for that continuous formula."
+    }
+  ]
+}

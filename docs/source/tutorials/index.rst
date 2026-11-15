@@ -1,19 +1,15 @@
+:orphan:
+
 Tutorials
 =========
 
-One walkthrough per supported data type. Each downloads a small public
-example dataset, builds an AnnData object, runs one or more clocks, and reads
-out the predictions.
+Choose a tutorial for your data type, or start by retrieving clock metadata.
 
-.. toctree::
-   :maxdepth: 1
-
-   tutorial_utils
-   tutorial_dnam_illumina_human_array
-   tutorial_cpgptgrimage3
-   tutorial_dnam_illumina_mammalian_array
-   tutorial_dnam_rrbs
-   tutorial_histonemarkchipseq
-   tutorial_atacseq
-   tutorial_rnaseq
-   tutorial_bloodchemistry
+* :doc:`tutorial_metadata`
+* :doc:`tutorial_cpgptgrimage3`
+* :doc:`tutorial_dnam`
+* :doc:`tutorial_histone_mark`
+* :doc:`tutorial_chromatin_accessibility`
+* :doc:`tutorial_transcriptomics`
+* :doc:`tutorial_proteomics`
+* :doc:`tutorial_blood_chemistry`

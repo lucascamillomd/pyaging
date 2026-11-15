@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "purpose": "Ranked metadata schema plan following independent methylCIPHERv2 review. Proposal only; no canonical metadata changed.",
+  "catalog_scope": {"internal_catalog_ids": 147, "public_requestable_entries": 131, "hidden_internal_branches": 16, "hidden_branch_composition": {"sex_routed": 14, "cAge_internal": 2}, "mutual_public_crosswalk": 104, "note": "Do not describe all 147 internal catalog IDs as public accepted/requestable clocks."},
+  "migration_policy": {
+    "legacy_fields": "Keep existing fields and semantics. New nested fields are optional during migration; generate display aliases rather than immediately deleting established fields.",
+    "unknown_values": "Use value=null with status=unknown when not found; use status=not_applicable only when the concept does not apply. Empty arrays mean known-none, never unknown.",
+    "evidence": "Every new scientific claim should carry field-level source, locator, source date or snapshot hash, and evidence status. Upstream catalog values are discovery leads, not confirmed evidence.",
+    "review_states": ["reported", "paper_confirmed", "code_confirmed", "inferred", "unknown", "not_applicable"]
+  },
+  "confirmed_metadata_issues_for_plan": [
+    {
+      "finding": "Nine GrimAge2 proxy metadata records advertise postprocess=cox_to_years, but the respective model classes return the score unchanged; PAI-1 is the exception.",
+      "evidence": "src/pyaging/models/_models.py:2553-2721; clocks/metadata/clock_metadata.json",
+      "classification": "stale runtime metadata, not a numerical scoring defect",
+      "plan": "Correct declarations in the planned metadata pass and add a consistency check linking metadata transforms to model behavior."
+    },
+    {
+      "finding": "Upstream methylCIPHER HypoClock declares an identity transform over mean beta, while pyaging returns 1 minus mean beta.",
+      "evidence": "mc_catalog.json:HypoClock.recipe.score; src/pyaging/models/_models.py:431-451",
+      "classification": "unresolved score-orientation variant",
+      "plan": "Review original paper and author code before deciding either implementation is incorrect; do not merge output semantics yet."
+    },
+    {
+      "finding": "Feature-panel audit found 68 exact panel matches, 32 unavailable locally, four larger pyaging raw inputs due to normalization/background features; all 19 n_features differences are covariate or normalization terms.",
+      "evidence": "feature_comparison.json",
+      "classification": "resolved count semantics, with partial evidence limits",
+      "plan": "Retain distinct raw input, scoring panel, normalization panel, covariate, and effective model counts."
+    }
+  ],
+  "ranked_additions": [
+    {
+      "rank": 1,
+      "field": "feature_contract",
+      "priority": "high",
+      "semantics": "Describe the raw input feature panel, transformed basis and effective serialized model terms separately. Counts must never silently substitute for one another.",
+      "proposed_schema": {
+        "raw_input": {
+          "basis": "raw_probe | derived_feature | mixed | none",
+          "count": "integer|null",
+          "identifier_namespace": "string|null",
+          "value_type": "string|null",
+          "value_scale": {"min": "number|null", "max": "number|null", "unit": "string|null"}
+        },
+        "transforms": [
+          {"name": "string", "order": "integer", "fit_scope": "per_sample | per_cohort | fixed_reference", "parameters_source": "string|null"}
+        ],
+        "model_basis": "raw_input | derived_feature | principal_component | mixed | unknown",
+        "model_dimension": "integer|null",
+        "nonzero_term_count": "integer|null",
+        "scoring_panel_count": "integer|null",
+        "normalization_panel_count": "integer|null",
+        "panel_evidence": {"status": "reported|paper_confirmed|code_confirmed|inferred|unknown|not_applicable", "source": "string|null", "locator": "string|null"}
+      },
+      "null_and_na": "Set counts to null when not measured or not reported; dimension/basis status is unknown unless source establishes it. Use zero only for an explicitly empty/not-applicable panel.",
+      "validation": "Cross-check supplied feature names and counts against serialized artifacts and runtime preprocessing. If a model uses PCs, store raw CpG count and PC dimension separately. Retain legacy n_features as the existing effective implementation count until a deliberate versioned migration.",
+      "ui": "Show input CpGs/derived inputs and model dimension as separate labels; show normalization panel only when present.",
+      "cost": "Medium: metadata extraction plus schema/model-asset validators and compact catalog rendering."
+    },
+    {
+      "rank": 2,
+      "field": "input_contract and output_contract",
+      "priority": "high",
+      "semantics": "Separate author's described model requirements from pyaging's executable scoring contract; include direct and transitive derived-model inputs.",
+      "proposed_schema": {
+        "input_contract": {
+          "assay": "string|null",
+          "value_type": "string|null",
+          "value_scale": {"min": "number|null", "max": "number|null", "unit": "string|null"},
+          "required_covariates": [{"name": "string", "unit": "string|null", "allowed_values": ["string|number"], "required": "boolean", "source": "paper|runtime|derived"}],
+          "required_model_inputs": [{"clock_id_or_feature": "string", "role": "raw_feature|derived_clock|metadata|covariate", "required": "boolean"}],
+          "preprocessing": [{"name": "string", "scope": "per_sample|cohort|fixed_reference", "order": "integer", "parameters": "object|null"}],
+          "missingness": {"absent_feature_policy": "reference_fill|zero_fill|omit|error|custom|unknown", "partial_value_policy": "mean|reference_fill|omit|error|custom|unknown"}
+        },
+        "output_contract": {
+          "construct": "string|null",
+          "unit": "string|null",
+          "scale": {"min": "number|null", "max": "number|null"},
+          "postprocessing": [{"name": "string", "order": "integer"}],
+          "calibration": "string|null"
+        }
+      },
+      "null_and_na": "An empty required_covariates or required_model_inputs list means verified no such requirements. Use null only when unknown. Distinguish a derived proxy dependency from a raw methylation feature.",
+      "validation": "Validate against implemented model class and `predict_age` dependency graph; make output construct/unit consistent with existing predicts/unit metadata. Record cohort-dependent transforms explicitly.",
+      "ui": "Provide a concise input/output summary and expand detailed steps. Expose covariate names and derived prerequisites before users run a clock.",
+      "cost": "Medium-high: multi-input models and runtime transforms require per-model extraction; no score change is required."
+    },
+    {
+      "rank": 3,
+      "field": "training_design",
+      "priority": "medium-high",
+      "semantics": "Capture the fit/feature-selection dataset and participant descriptors with explicit distinction between methylation sample ages, outcome ages, and validation cohorts.",
+      "proposed_schema": {
+        "cohorts": [{"name": "string", "role": "fit|feature_selection|calibration|validation|compatibility", "sample_count": "integer|null", "tissue": ["controlled term"], "platform": ["controlled term"]}],
+        "age_at_methylation": {"min": "number|null", "max": "number|null", "unit": "string|null"},
+        "age_at_outcome": {"min": "number|null", "max": "number|null", "unit": "string|null"},
+        "health_status": "string|null",
+        "sex_distribution": "object|string|null",
+        "ancestry": ["string"]
+      },
+      "null_and_na": "Unreported descriptors are null/status unknown. not_applicable is allowed only where the clock has no relevant training cohort, such as a directly specified non-trained score.",
+      "validation": "Counts should be cohort-role-specific and must not sum overlapping datasets without an explicit participant-overlap note. Age fields state whether age belongs to assay sample or outcome label.",
+      "ui": "Show cohort and sample count first; put sex, ancestry, health status and age spans in expanded provenance details.",
+      "cost": "Medium-high: requires review against papers/supplements and field-specific evidence for up to 240 records."
+    },
+    {
+      "rank": 4,
+      "field": "platform_compatibility",
+      "priority": "medium",
+      "semantics": "Separate platforms used in model fitting/feature selection from those supported, validated, or merely compatible at scoring time.",
+      "proposed_schema": {
+        "training_platforms": ["controlled term"],
+        "validated_platforms": [{"platform": "controlled term", "cohort": "string|null", "evidence": "string|null"}],
+        "scoring_compatibility": [{"platform": "controlled term", "basis": "exact_panel|overlap|imputation|transfer|author_claim|unknown", "evidence": "string|null"}]
+      },
+      "null_and_na": "Empty arrays mean none documented after review; use status unknown when compatibility was not assessed.",
+      "validation": "Training platforms must cite fit/feature selection; validation and compatibility must cite distinct evidence. Do not infer platform support solely from probe overlap.",
+      "ui": "Label trained-on and usable/validated-on independently.",
+      "cost": "Medium: controlled vocabulary already exists for platform; additional values and UI labels are needed."
+    },
+    {
+      "rank": 5,
+      "field": "source_and_rights",
+      "priority": "medium",
+      "semantics": "Keep scientific evidence, upstream source provenance, package authorship/copyright, model-weight license, redistribution permission, and author approval as separate concepts.",
+      "proposed_schema": {
+        "upstream_source": {"repository": "string|null", "commit": "string|null", "file": "string|null", "sha256": "string|null"},
+        "model_license": {"identifier": "string|null", "evidence": "string|null", "status": "explicit|unspecified|unknown"},
+        "redistribution": {"status": "permitted|restricted|not_assessed|unknown", "evidence": "string|null"},
+        "author_approval": {"status": "approved|requested|not_requested|unknown", "evidence": "string|null"}
+      },
+      "null_and_na": "Never convert a package license or a repository availability label into model redistribution permission or author approval. Unknown approval is not pending unless a request was actually sent.",
+      "validation": "Require direct license/permission evidence for legal claims. Keep package license outside per-clock model license.",
+      "ui": "Show only verified model license and approval labels; show not assessed where relevant rather than implying clearance.",
+      "cost": "Low-medium schema work; high review effort for third-party weights."
+    }
+  ],
+  "defer_or_keep": [
+    {"item": "Do not replace `population` with training cohort text", "reason": "Population is a broad controlled summary; cohort identity and participant age/ancestry need separate structured fields."},
+    {"item": "Do not copy upstream codebook values wholesale", "reason": "Its `clock_meta_v1.csv` is joined without per-field provenance; unknown and not-applicable cells collapse to NA."},
+    {"item": "Do not equate upstream n_cpgs with pyaging n_features", "reason": "Upstream n_cpgs is a score-panel count; pyaging n_features counts its packaged implementation basis and can refer to transformed/nonzero terms."},
+    {"item": "Do not equate upstream `license` with author approval", "reason": "Mixed labels do not establish per-weight redistribution terms, package copyright, or author endorsement."},
+    {"item": "Do not call a matched biological construct identical implementation", "reason": "GrimAge v1 component IDs and pyaging GrimAge2 component records have distinct citation roles; a tensor audit supports shared fitted proxies, but not full-pipeline equivalence."}
+  ],
+  "documentation_plan": [
+    {"change": "Replace the standalone proteomic clocks documentation page with tutorial-linked guidance and per-clock notes.", "content": "State prerequisites, units, transformation and status of input proxies; link to the relevant executable tutorial."},
+    {"change": "Refresh discoverability of the existing tAge and tAgeMortality material in the bulk-RNA tutorial.", "content": "The tutorial already contains executed examples; improve navigation and clearly state expected expression input, normalization, target/output scale, and cohort dependence without duplicating examples."}
+  ],
+  "sources": [
+    {"source": "methylCIPHERv2@f9e5c724b2d64199b696a882161fe245a39fcf6c", "locators": ["R/list_clocks.R:3-47", "R/calc_clocks.R:10-45,60-111", "README.md:10-18,121-130", "data-raw/sync.R:70-118,297-367", "DESCRIPTION:5-23"]},
+    {"source": "pyaging working tree", "locators": ["clocks/metadata/controlled_vocabulary.json:11-12", "clocks/metadata/clock_metadata.json", "clocks/metadata/evidence_ledger.jsonl"]}
+  ]
+}

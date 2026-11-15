@@ -54,8 +54,12 @@ def impute_missing_values(adata: anndata.AnnData, strategy: str, logger, indent_
 
     """
 
-    # Add percent of NAs to adata object
-    adata.var["percent_na"] = np.isnan(adata.X).sum(axis=0) / adata.X.shape[0]
+    if strategy not in ("mean", "median", "constant", "knn"):
+        raise ValueError(f"Invalid imputer strategy: {strategy}")
+
+    # Empty cohorts have no observed missing values.
+    missing_counts = np.isnan(adata.X).sum(axis=0)
+    adata.var["percent_na"] = missing_counts / adata.n_obs if adata.n_obs else np.zeros(adata.n_vars)
 
     # Check for missing values
     if adata.var["percent_na"].sum() == 0:
@@ -66,16 +70,14 @@ def impute_missing_values(adata: anndata.AnnData, strategy: str, logger, indent_
             "mean": SimpleImputer(strategy="mean", keep_empty_features=True),
             "median": SimpleImputer(strategy="median", keep_empty_features=True),
             "constant": SimpleImputer(strategy="constant", fill_value=0, keep_empty_features=True),
-            "knn": KNNImputer(),
+            "knn": KNNImputer(keep_empty_features=True),
         }
 
         # Select the appropriate imputer
-        imputer = imputers.get(strategy)
-        if not imputer:
-            raise ValueError(f"Invalid imputer strategy: {strategy}")
+        imputer = imputers[strategy]
         logger.info(f"Imputing missing values using {strategy} strategy", indent_level=2)
         adata.X = imputer.fit_transform(adata.X)
-        adata.layers["X_imputed"] = adata.X
+        adata.layers["X_imputed"] = adata.X.copy()
 
 
 @progress("Log data statistics")
@@ -118,7 +120,7 @@ def log_data_statistics(X: np.ndarray, logger, indent_level: int = 1) -> float:
     """
     n_obs, n_features = X.shape
     total_nas = np.isnan(X).sum()
-    percent_nas = 100 * total_nas / (n_obs * n_features)
+    percent_nas = 100 * total_nas / X.size if X.size else 0.0
 
     # Log various data statistics
     logger.info(f"There are {n_obs} observations", indent_level=2)
@@ -177,8 +179,13 @@ def create_anndata_object(
 
     """
 
-    # Identify columns with only NAs and store the boolean series
-    na_column_mask = df.isna().all()
+    # Validate before dropping all-NA columns: dropping a duplicate label would
+    # otherwise remove its nonmissing counterpart as well.
+    if not df.columns.astype(str).is_unique:
+        raise ValueError("There are duplicate feature names!")
+
+    # With no samples, columns are unknown rather than known to be all missing.
+    na_column_mask = df.isna().all() if len(df) else pd.Series(False, index=df.columns)
 
     # Calculate the number of columns with only NAs directly
     num_columns_dropped = na_column_mask.sum()
@@ -198,20 +205,26 @@ def create_anndata_object(
         # Drop columns with only NAs
         df = df.drop(columns=columns_with_nas)
 
-    # Extract information from df
-    X = df.values
-    obs_names = df.index.astype(str)
-    var_names = df.columns.astype(str)
+    nonnumeric = [name for name, dtype in df.dtypes.items() if not pd.api.types.is_numeric_dtype(dtype)]
+    if nonnumeric:
+        raise TypeError(f"Feature columns must be numeric; move nonnumeric columns to metadata_cols: {nonnumeric[:3]}")
+    if any(pd.api.types.is_complex_dtype(dtype) for dtype in df.dtypes):
+        raise ValueError("Feature values must be real numbers, not complex values.")
 
-    # Check for duplicate features
-    if len(np.unique(var_names)) != len(var_names):
-        logger.error("There are duplicate feature names!")
-        raise ValueError("There are duplicate feature names!")
+    # Copy to detach from pandas, whose copy-on-write arrays may be read-only.
+    # Nullable numeric and mixed boolean/numeric columns need an explicit dtype.
+    X = df.to_numpy(copy=True)
+    if X.dtype.kind == "O":
+        X = df.to_numpy(dtype=np.float64, na_value=np.nan, copy=True)
+    if np.isinf(X).any():
+        raise ValueError("Feature values must be finite or missing; infinity is not supported.")
+    obs_names = df.index.map(str) if isinstance(df.index, pd.MultiIndex) else df.index.astype(str)
+    var_names = df.columns.astype(str)
 
     obs = pd.DataFrame(index=obs_names)
     var = pd.DataFrame(index=var_names)
 
-    adata = anndata.AnnData(X=X, obs=obs, var=var, layers={"X_original": X})
+    adata = anndata.AnnData(X=X, obs=obs, var=var, layers={"X_original": X.copy()})
 
     return adata
 
@@ -272,6 +285,10 @@ def add_metadata_to_anndata(
 
     # Add metadata to the AnnData object
     logger.info("Adding provided metadata to adata.obs", indent_level=2)
+    metadata = metadata.copy()
+    metadata.index = (
+        metadata.index.map(str) if isinstance(metadata.index, pd.MultiIndex) else metadata.index.astype(str)
+    )
     metadata = metadata.reindex(adata.obs_names)
     adata.obs = metadata
 
@@ -392,7 +409,7 @@ def load_ensembl_metadata(dir: str, logger, indent_level: int = 1) -> pd.DataFra
     ]
 
     # Read and filter the gene data
-    genes = pd.read_csv(genes_path)
-    genes = genes[genes["chr"].apply(lambda x: x in chromosomes)]
+    genes = pd.read_csv(genes_path, dtype={"chr": str})
+    genes = genes[genes["chr"].isin(chromosomes)]
     genes.index = genes.gene_id
     return genes

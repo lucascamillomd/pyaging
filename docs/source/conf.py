@@ -6,15 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import os
 import shutil
-import sys
 from importlib import metadata
 from pathlib import Path
-
-from sphinx.util import logging as sphinx_logging
-
-logger = sphinx_logging.getLogger(__name__)
 
 project = "pyaging"
 copyright = "2023, Lucas Paulo de Lima Camillo"
@@ -79,6 +73,7 @@ exclude_patterns = [
     "clock_notebooks/template.ipynb",
 ]
 html_static_path = ["../_static"]
+templates_path = ["_templates"]
 source_suffix = [".rst", ".md"]
 
 # -- Options for HTML output -------------------------------------------------
@@ -124,6 +119,25 @@ html_context = {
     "github_repo": "pyaging",
     "github_version": "main",
 }
+
+# Keep published tutorial URLs working after notebook renames and the RRBS merge.
+_tutorial_redirects = {
+    "tutorial_utils": ("tutorial_metadata", ""),
+    "tutorial_dnam_illumina_human_array": ("tutorial_dnam", "#Human-arrays"),
+    "tutorial_dnam_illumina_mammalian_array": ("tutorial_dnam", "#Mammalian-arrays"),
+    "tutorial_dnam_rrbs": ("tutorial_dnam", "#Mouse-RRBS"),
+    "tutorial_dnam_human": ("tutorial_dnam", "#Human-arrays"),
+    "tutorial_dnam_mammals": ("tutorial_dnam", "#Mammalian-arrays"),
+    "tutorial_histonemarkchipseq": ("tutorial_histone_mark", ""),
+    "tutorial_atacseq": ("tutorial_chromatin_accessibility", ""),
+    "tutorial_rnaseq": ("tutorial_transcriptomics", ""),
+    "tutorial_bloodchemistry": ("tutorial_blood_chemistry", ""),
+}
+html_context["tutorial_redirects"] = {
+    f"tutorials/{old}": (f"tutorials/{new}", fragment) for old, (new, fragment) in _tutorial_redirects.items()
+}
+html_additional_pages = {old: "tutorial_redirect.html" for old in html_context["tutorial_redirects"]}
+
 html_logo = "../_static/logo.png"
 html_favicon = "../_static/logo.png"
 html_css_files = [
@@ -139,22 +153,7 @@ html_js_files = ["clock_explorer_core.js", "clock_explorer.js"]
 nbsphinx_execute = "never"
 suppress_warnings = ["nbsphinx.ipywidgets"]
 
-# -- Generate Clock Explorer data at build time (local + Read the Docs) -------
-
-
-def _generate_clock_data(app):
-    # Ensure this conf dir is importable when builder-inited fires (Read the Docs
-    # does not keep the confdir on sys.path by the time the event runs).
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    try:
-        from make_clock_data import generate
-
-        local_metadata = Path(__file__).resolve().parents[2] / "clocks" / "metadata" / "all_clock_metadata.pt"
-        n = generate(metadata_path=local_metadata) if local_metadata.is_file() else generate()
-        logger.info("[clocks] regenerated clocks.json with %s clocks", n)
-    except Exception as exc:  # noqa: BLE001 — never break the build
-        logger.warning("[clocks] using committed clocks.json (%s)", exc)
-
-
-def setup(app):
-    app.connect("builder-inited", _generate_clock_data)
+# The catalogue JSON and CSV are committed release artifacts. Serve them as-is:
+# regenerating from Hugging Face during a docs build can replace new entries
+# with an older aggregate when docs deploy before the model upload completes.
+# Refresh them explicitly with docs/source/make_clock_data.py when updating clocks.

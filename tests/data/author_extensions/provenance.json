@@ -1,0 +1,14 @@
+{
+  "source": "Original authors only; no methylCIPHER or Biolearn parameters or predictions.",
+  "r_version": "4.5.3",
+  "prc_author_repository": "https://github.com/MorganLevineLab/prcPhenoAge",
+  "prc_commit": "0af213c60035d8dd568d9d9ba2df90cfbca19596",
+  "prc_coefficients_sha256": "089e2a3661d604c2822f56710b4076d2e36e07e2d2ce64de61f2958b3e9d0043",
+  "intrin_author_archive": "https://zenodo.org/records/10426597",
+  "intrin_model_sha256": "79c2d1b624c494156c7ee213e2eb62dbb90c133f8ddf4938982a90c301b0c9fa",
+  "input": "Synthetic deterministic beta matrices created by generate_reference.R; no patient data.",
+  "oracle": "Unmodified calcPRCPhenoAge and calcnonPRCPhenoAge with imputation=FALSE; glmnet predict(cv.glmnet) default lambda.1se plus author returnAge.",
+  "data_resolution_adapter": "The R data() lookup loads the original bundled .rda files directly instead of requiring an installed prcPhenoAge package.",
+  "glmnet_version": "5.1",
+  "intrin_demo_sha256": "90517825578d294ee76ef43cc384b6865cb30625b04d0f35df2299d33fe3b324"
+}

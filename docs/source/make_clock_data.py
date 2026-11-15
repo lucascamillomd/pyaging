@@ -141,6 +141,8 @@ def generate(metadata_path=None):
         for f in FIELDS:
             value = m.get(f)
             row[f] = _finite(_as_array(value)) if f in ARRAY_FIELDS else _finite(_shorten(value))
+        if row["data_type"] == "clinical biomarkers":
+            row["data_type"] = "blood chemistry"
         row["approved_by_author"] = _approval(m.get("approved_by_author"))
         row["research_only"] = _research_only(m.get("research_only"))
         row["notebook"] = f"clock_notebooks/{name}.html"

@@ -1,10 +1,13 @@
 import gc
+from functools import partial
 
 import anndata
 import torch
 
 from ..logger._live import ClockRunDisplay, DisplayLogger, display_enabled, quiet_hf_bars
+from ._cache import ClockCache
 from ._pred_utils import (
+    _validate_batch_size,
     add_pred_ages_and_clock_metadata_adata,
     apply_cohort_transform,
     build_cohort_feature_matrix,
@@ -23,6 +26,8 @@ def predict_age(
     batch_size: int = 1024,
     clean: bool = True,
     verbose: bool = True,
+    *,
+    clock_cache: ClockCache | None = None,
 ) -> None:
     """
     Predicts biological age using specified aging clocks.
@@ -56,6 +61,11 @@ def predict_age(
         notebooks and terminals, a plain summary when output is captured,
         and fully silent when False. Defaults to True.
 
+    clock_cache: ClockCache or None
+        Optional bounded cache of prepared models to reuse across datasets.
+        Keep the same cache instance for repeated calls. Clear it to refresh
+        weights at mutable revisions such as ``main``. Defaults to no reuse.
+
     Returns
     -------
     None
@@ -87,6 +97,9 @@ def predict_age(
       the samples to centre against. Without it the cohort centres on every sample. Predictions are
       differences against that reference, not absolute values.
 
+    Pasta, Reg, and PastaMouse fill missing values with a median computed over the whole cohort
+    before ranking each sample. Their inference batch size does not change that reference.
+
     The function automatically handles the transfer of data and models to the appropriate compute
     device (CPU or GPU) based on system configuration.
 
@@ -97,12 +110,14 @@ def predict_age(
     >>> adata.obs["horvath2013"]  # Access predicted ages by clock name
 
     """
-    # Ensure clock_names is a list with lowercase names
+    _validate_batch_size(batch_size)
+    if adata.n_obs == 0:
+        raise ValueError("Prediction requires at least one sample.")
+
     if isinstance(clock_names, str):
         clock_names = [clock_names]
     clock_names = [clock_name.lower() for clock_name in clock_names]
 
-    # Set device for PyTorch operations
     device = set_torch_device()
 
     enabled = display_enabled(verbose)
@@ -114,14 +129,25 @@ def predict_age(
     with quiet_hf_bars(verbose), display:
         for clock_name in clock_names:
             display.start_clock(clock_name, "loading weights")
-            # Pipeline warnings surface on the display
             pipeline_logger = DisplayLogger(lambda m, name=clock_name: display.warn(name, m))
 
-            # Load and prepare the clock
-            model = load_clock(clock_name, device, dir, pipeline_logger)
+            if clock_cache is None:
+                model = load_clock(clock_name, device, dir, pipeline_logger)
+            else:
+                model = clock_cache._get_or_load(
+                    clock_name, device, partial(load_clock, clock_name, device, dir, pipeline_logger)
+                )
+
+            # Validate before generic alignment can fill absent required inputs.
+            validate_inputs = getattr(model, "validate_inputs", None)
+            if validate_inputs is not None:
+                validate_inputs(adata)
 
             # Clocks saved before either attribute existed lack both.
             transform_name = getattr(model, "cohort_transform", None)
+            prepare_input_frame = getattr(model, "prepare_input_frame", None)
+            if transform_name is not None and prepare_input_frame is not None:
+                raise ValueError(f"Clock '{clock_name}' declares two incompatible input preparation methods.")
             required_flag = getattr(model, "required_uns_flag", None)
             # A clock whose input contract nothing can satisfy for it refuses to
             # run unmarked input. A declared transform supersedes the flag: it
@@ -132,11 +158,9 @@ def predict_age(
                     f"Clock '{clock_name}' needs preprocessed input (adata.uns['{required_flag}'] is missing)."
                 )
 
-            # Disclaimer for commercial clocks
             if model.metadata.get("research_only", False):
                 display.warn(clock_name, "research use only")
 
-            # Check and update adata for missing features
             if transform_name is not None:
                 # Cohort-relative clock: its features live in the space the
                 # transform produces, not in adata.X.
@@ -145,15 +169,21 @@ def predict_age(
                     cohort_frames[transform_name] = apply_cohort_transform(adata, transform_name, dir, pipeline_logger)
                 display.stage(clock_name, "matching features")
                 build_cohort_feature_matrix(adata, model, cohort_frames[transform_name], pipeline_logger)
+            elif prepare_input_frame is not None:
+                # Some author interfaces normalize identifiers before matching
+                # features. Keep their prepared frame separate from adata.X so
+                # other clocks still receive the caller's original inputs.
+                display.stage(clock_name, "preparing inputs")
+                frame = prepare_input_frame(adata)
+                build_cohort_feature_matrix(adata, model, frame, pipeline_logger)
+                del frame
             else:
                 display.stage(clock_name, "matching features")
                 check_features_in_adata(adata, model, pipeline_logger)
 
-            # Warn if the input values look implausible for these features
             display.stage(clock_name, "checking feature ranges")
             check_feature_ranges(adata, model, pipeline_logger)
 
-            # Perform age prediction applying preprocessing and postprocessing steps
             display.stage(clock_name, "predicting")
 
             def progress_callback(completed, total, name=clock_name):
@@ -163,17 +193,18 @@ def predict_age(
                 adata, model, device, batch_size, pipeline_logger, progress_callback=progress_callback
             )
 
-            # Add predicted ages and clock metadata to adata
             display.stage(clock_name, "writing results")
             add_pred_ages_and_clock_metadata_adata(adata, model, predicted_ages_tensor, dir, pipeline_logger)
 
-            # Delete the clock matrix object
             if clean:
                 del adata.obsm[f"X_{clock_name}"]
 
-            # Flush memory
-            gc.collect()
-            torch.cuda.empty_cache()
+            # Release references before collecting memory and loading the next
+            # clock, so two large models need not coexist on the GPU.
+            del model, predicted_ages_tensor
+            if clock_cache is None:
+                gc.collect()
+                torch.cuda.empty_cache()
 
             display.finish_clock(clock_name)
         display.finish(n_samples=adata.n_obs)
