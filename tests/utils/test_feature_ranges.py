@@ -62,6 +62,15 @@ def test_none_feature_unit_falls_back_to_the_registry_unit():
     assert by_feature["albumin"]["unit"] == "g/dL"
 
 
+def test_feature_ranges_accepts_feature_iterator_without_losing_names():
+    records = resolve_feature_ranges(iter(["age", "female"]), "clinical biomarkers")
+
+    assert records == [
+        {"feature": "age", "unit": "years", "low": 0.0, "high": 122.5},
+        {"feature": "female", "unit": "indicator (1 = female, 0 = male)", "low": 0.0, "high": 1.0},
+    ]
+
+
 def test_get_feature_ranges_rejects_a_clock_without_features(monkeypatch):
     class _FeaturelessClock:
         features = None
@@ -209,3 +218,14 @@ def test_relative_transcriptomics_is_unbounded():
     (record,) = resolve_feature_ranges(["12575"], "transcriptomics (relative)")
     assert record["unit"] is None
     assert math.isinf(-record["low"]) and math.isinf(record["high"])
+
+
+def test_proteomics_units_are_model_specific_and_npx_allows_negative_values():
+    (unknown,) = resolve_feature_ranges(["some_protein"], "proteomics")
+    assert unknown["unit"] is None
+    records = resolve_feature_ranges(["ADIPOQ", "age"], "proteomics", ["NPX", "years"])
+    assert records[0]["unit"] == "NPX"
+    assert records[0]["low"] == -math.inf
+    assert records[0]["high"] == math.inf
+    assert records[1]["unit"] == "years"
+    assert records[1]["low"] == 0.0

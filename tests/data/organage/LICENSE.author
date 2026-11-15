@@ -1,0 +1,36 @@
+(Academic / Non-Commercial License)
+
+Copyright (c) 2025
+Ludger J.E. Goeminne and Vadim N. Gladyshev
+
+This software and its associated files (the “Software”) are licensed under a dual-license model:
+
+Academic / Non-Commercial License (this license)
+Commercial License (available separately)
+Permission is hereby granted, free of charge, to any individual or institution, to use, copy, modify, and distribute the Software solely for non-commercial academic or research purposes, subject to the following conditions:
+
+1. Non-Commercial Use Only
+The Software may not be used, in whole or in part, for any commercial purpose. Commercial purposes include, but are not limited to:
+
+Use in a commercial product or service
+Use by a for-profit entity for internal research or development
+Use to generate revenue, directly or indirectly
+Use in regulatory submissions or clinical decision support systems
+
+2. Attribution
+Any academic or research use of the Software must include appropriate citation of the following publication:
+
+Ludger J.E. Goeminne, Anastasiya Vladimirova, Alec Eames, Alexander Tyshkovskiy,
+M. Austin Argentieri, Kejun Ying, Mahdi Moqri, Vadim N. Gladyshev (2025).
+Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems,
+Cell Metabolism, Volume 37, Issue 1, p205–222.e6.
+DOI: https://doi.org/10.1016/j.cmet.2024.10.005
+
+3. No Warranty
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+4. Third-Party Software
+The Software depends on third-party packages that are licensed under their own respective licenses. This license applies only to the original portions of the Software and does not override or modify the terms of any third-party licenses, including but not limited to GPL-licensed components.
+
+5. Commercial Licensing
+Any commercial use of the Software requires a separate commercial license. Interested parties should contact the copyright holders or their institutional technology transfer office to negotiate commercial licensing terms.

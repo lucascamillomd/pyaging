@@ -76,25 +76,18 @@ def quantile_normalize_with_gold_standard(x, gold_standard_means):
     """
     Apply quantile normalization on x using gold standard means.
     """
-    # Create a copy of x to avoid modifying a view
-    x_normalized = x.copy()
-
     # Sort the gold standard means
     sorted_gold_standard = np.sort(gold_standard_means)
+    # Integer counts still need to retain fractional reference quantiles.
+    x_normalized = np.array(x, dtype=np.result_type(x.dtype, sorted_gold_standard.dtype), copy=True)
+    quantile_indices = np.round(np.linspace(0, len(sorted_gold_standard) - 1, x.shape[1])).astype(int)
+    normalized_data = sorted_gold_standard[quantile_indices]
 
     # Iterate through each row in x_normalized
     for i in range(x_normalized.shape[0]):
         # Sort the row data and store the original indices
         sorted_indices = np.argsort(x_normalized[i, :])
-        sorted_data = x_normalized[i, sorted_indices]
-
-        # Map the sorted data to their quantile values in the gold standard
-        quantile_indices = np.round(np.linspace(0, len(sorted_gold_standard) - 1, len(sorted_data))).astype(int)
-        normalized_data = sorted_gold_standard[quantile_indices]
-
-        # Re-order the normalized data to the original order
-        original_order_indices = np.argsort(sorted_indices)
-        x_normalized[i, :] = normalized_data[original_order_indices]
+        x_normalized[i, sorted_indices] = normalized_data
 
     return x_normalized
 
@@ -124,8 +117,9 @@ def mortality_to_phenoage_saopaulo(x, m_n, m_d, ba_n, ba_d, ba_i):
     torch.Tensor
         Phenotypic age in years.
     """
-    mortality_score = 1 - torch.exp(m_n * torch.exp(x) / m_d)
-    return torch.log(ba_n * torch.log(1 - mortality_score)) / ba_d + ba_i
+    # log(1 - mortality) is m_n * exp(x) / m_d. Work in log space
+    # so the intermediate mortality cannot round to zero or one.
+    return (x + torch.log(ba_n * m_n / m_d)) / ba_d + ba_i
 
 
 # Lowest C-reactive protein ``PhenoAge`` will take the natural log of, in mg/dL. Its

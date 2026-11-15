@@ -1,0 +1,1612 @@
+{
+  "organagechronologicaladipose": {
+    "clock_name": "organagechronologicaladipose",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adipose OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicaladrenal": {
+    "clock_name": "organagechronologicaladrenal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adrenal OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalartery": {
+    "clock_name": "organagechronologicalartery",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Artery OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 14,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalbrain": {
+    "clock_name": "organagechronologicalbrain",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Brain OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 118,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalconventional": {
+    "clock_name": "organagechronologicalconventional",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Conventional OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2916,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalesophagus": {
+    "clock_name": "organagechronologicalesophagus",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Esophagus OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalfemale": {
+    "clock_name": "organagechronologicalfemale",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Female OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 6,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalheart": {
+    "clock_name": "organagechronologicalheart",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Heart OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 7,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalimmune": {
+    "clock_name": "organagechronologicalimmune",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Immune OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 124,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalintestine": {
+    "clock_name": "organagechronologicalintestine",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Intestine OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 31,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalkidney": {
+    "clock_name": "organagechronologicalkidney",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Kidney OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 9,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalliver": {
+    "clock_name": "organagechronologicalliver",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Liver OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 79,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicallung": {
+    "clock_name": "organagechronologicallung",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Lung OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 11,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalmale": {
+    "clock_name": "organagechronologicalmale",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Male OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 55,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalmultiorgan": {
+    "clock_name": "organagechronologicalmultiorgan",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Multi-organ OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 569,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalmuscle": {
+    "clock_name": "organagechronologicalmuscle",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Muscle OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 20,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalorganismal": {
+    "clock_name": "organagechronologicalorganismal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Organismal OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2347,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalpancreas": {
+    "clock_name": "organagechronologicalpancreas",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pancreas OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 28,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalpituitary": {
+    "clock_name": "organagechronologicalpituitary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pituitary OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 12,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalsalivary": {
+    "clock_name": "organagechronologicalsalivary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Salivary OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalskin": {
+    "clock_name": "organagechronologicalskin",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Skin OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 17,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalstomach": {
+    "clock_name": "organagechronologicalstomach",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Stomach OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 12,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagechronologicalthyroid": {
+    "clock_name": "organagechronologicalthyroid",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Thyroid OrganAge chronological model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is predicted age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityadipose": {
+    "clock_name": "organagemortalityadipose",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adipose OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityadrenal": {
+    "clock_name": "organagemortalityadrenal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Adrenal OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 4,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityartery": {
+    "clock_name": "organagemortalityartery",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Artery OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 14,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitybrain": {
+    "clock_name": "organagemortalitybrain",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Brain OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 118,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityconventional": {
+    "clock_name": "organagemortalityconventional",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Conventional OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2916,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityesophagus": {
+    "clock_name": "organagemortalityesophagus",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Esophagus OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 5,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityfemale": {
+    "clock_name": "organagemortalityfemale",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Female OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 6,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityheart": {
+    "clock_name": "organagemortalityheart",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Heart OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 7,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityimmune": {
+    "clock_name": "organagemortalityimmune",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Immune OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 124,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityintestine": {
+    "clock_name": "organagemortalityintestine",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Intestine OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 31,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitykidney": {
+    "clock_name": "organagemortalitykidney",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Kidney OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 9,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityliver": {
+    "clock_name": "organagemortalityliver",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Liver OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 79,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitylung": {
+    "clock_name": "organagemortalitylung",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Lung OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 11,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitymale": {
+    "clock_name": "organagemortalitymale",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Male OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 55,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitymultiorgan": {
+    "clock_name": "organagemortalitymultiorgan",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Multi-organ OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 569,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitymuscle": {
+    "clock_name": "organagemortalitymuscle",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Muscle OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 20,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityorganismal": {
+    "clock_name": "organagemortalityorganismal",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Organismal OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors. This additional author-released model was not discussed in the main manuscript.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2347,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitypancreas": {
+    "clock_name": "organagemortalitypancreas",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pancreas OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 28,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitypituitary": {
+    "clock_name": "organagemortalitypituitary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Pituitary OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 12,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitysalivary": {
+    "clock_name": "organagemortalitysalivary",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Salivary OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 10,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalityskin": {
+    "clock_name": "organagemortalityskin",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Skin OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 17,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitystomach": {
+    "clock_name": "organagemortalitystomach",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Stomach OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 12,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  },
+  "organagemortalitythyroid": {
+    "clock_name": "organagemortalitythyroid",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Goeminne, L. J. E., et al. \"Plasma protein-based organ-specific aging and mortality models unveil diseases as accelerated aging of organismal systems.\" Cell Metabolism 37, 205–222.e6 (2025).",
+    "doi": "https://doi.org/10.1016/j.cmet.2024.10.005",
+    "notes": "Thyroid OrganAge mortality model for Olink Explore 3072, using author-recommended fold 1. Trained on UK Biobank plasma measured with Olink Explore 3072. Input columns are original case-sensitive protein symbols (e.g. NTproBNP, HLA-DRA), not UniProt IDs or Olink assay IDs. Values are assay-normalized Olink NPX on the log2 relative-abundance scale, not raw counts, concentrations, linear abundances or z-scores. No additional centering or cohort scaling is applied. Absent proteins contribute zero; NaNs in supplied proteins propagate, matching the original Example_Script.R scoring expressions. For other assays, the authors recommend a symmetric abundance distribution, protein-wise mean subtraction and SD division, then multiplication by the full-model UKB protein SDs in Table S3. This cohort-dependent cross-platform preparation is not performed by pyaging. The optional Example_Script.R SD-matching step is also external; NPX labeling alone does not establish comparability across Olink panels, batches, plasma and serum. Output is relative natural-log mortality hazard, not age in years. The 2026 Insilico trial used conventional OrganAge models on Olink Explore 3072 serum; organ-specific variants are not the six-clock comparison endpoints. pyaging returns the original raw score and does not apply the trial wrapper's cohort harmonization or mortality-to-years conversion. Models labelled Female and Male contain protein features; neither requires a sex covariate. Academic/non-commercial research use only; commercial use requires a separate license from the authors.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "log hazard"
+    ],
+    "model_type": "elastic net Cox regression",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Cell Metabolism",
+    "last_author": "Vadim N. Gladyshev",
+    "n_features": 2,
+    "citations": 128,
+    "citations_date": "2026-10-02",
+    "version": "0.5.5",
+    "reference_values": true
+  }
+}

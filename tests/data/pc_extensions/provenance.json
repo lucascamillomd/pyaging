@@ -1,0 +1,53 @@
+{
+  "created": "2026-10-02",
+  "authors": {
+    "PCBrainAge": {
+      "repository": "https://github.com/MorganLevineLab/calcPCBrainAge",
+      "commit": "8a4a0bf93fe715e48d495af46edf17f10d988afa",
+      "doi": "10.18632/aging.204196",
+      "license_declaration": "MIT License",
+      "license_source": "DESCRIPTION",
+      "separate_license_file": false
+    },
+    "PCGrimAge": {
+      "repository": "https://github.com/MorganLevineLab/PC-Clocks",
+      "commit": "5e65bce1eeb600949fce0853e46ed2aa6210051d",
+      "doi": "10.1038/s43587-022-00248-2",
+      "weights_url": "https://yale.app.box.com/s/kq0b0a7lxckxjvaz7x5n4keaug7tewry",
+      "weights_file_id": "904007593153",
+      "license_declaration": null,
+      "license_note": "No explicit code or weight license was found in the pinned original PC-Clocks repository."
+    }
+  },
+  "source_sha256": {
+    "calcPCBrainAge/DESCRIPTION": "06dba30e2195b2aa53f45f4d69da536a6897831aa307dfabe8d91a4c62150941",
+    "calcPCBrainAge/NAMESPACE": "736cb2c31c983b3a07d06d09b8ef93d89972f312c1db584ff253a0281d082bac",
+    "calcPCBrainAge/R/PCBrainAge_Model.R": "676330cfa311e478b1aa8b23eb91a9aa92f1a680957e114b4d656f44dd73fb1e",
+    "calcPCBrainAge/R/calcPCBrainAge.R": "963eb2ad14b1445bd184e5d48e65d9c41581cd5cac162a1664c85631a21ff621",
+    "calcPCBrainAge/R/imputeMissingBrainCpGs.R": "6c8edc0416d5e0dcc61776a5b3944c8a89aec61eed193ec5f1c29b2251d943b2",
+    "calcPCBrainAge/R/meanImpute.R": "7efc2fc20957100316c0e44be15bcc0c71e5b869027e42983750cee7f91301ba",
+    "calcPCBrainAge/README.Rmd": "35f64d3ccadf7cb22854f270ea049c35efa6a8f97dcdebfbd58ba2f3da78a720",
+    "calcPCBrainAge/README.md": "8fc4f6c3f31850a74c9d664d88bd09bf5c06aa18b85eb701c373a180bf403094",
+    "calcPCBrainAge/calcPCBrainAge.Rproj": "24bd927789b96b7f321c6f1299510040edc21a9f189bcbcd1b7af680269d908e",
+    "calcPCBrainAge/data/centering1.rda": "dc5e71232da555f6886aaabd8ea73846ab137c5630dfeec4904887c689798063",
+    "calcPCBrainAge/data/centering2.rda": "b351675c55fba779e954f18ecb37e890e720f0bcb50f2841b7b1c0c304a12f43",
+    "calcPCBrainAge/data/imputeMissingBrainCpGs.rda": "59bd33f1d665c559738375a4245580147df51bfca9d370ac581b3e82594cf917",
+    "calcPCBrainAge/data/modelFit.rda": "741d8e6a4265bdbc1fb9b411ec45d93a5b3613530101f3634bf42adbe697d1d0",
+    "calcPCBrainAge/data/rotation1.rda": "7d9b2e33315b72a0b77e6d33f156fce44bbd08c5534d9039a450813d673c8550",
+    "calcPCBrainAge/data/rotation2.rda": "8e74fcfc6eb6738f682a51f88357f52e37dab73e2a118d5556a45aaf6b0fb885",
+    "calcPCBrainAge/data/rotation3.rda": "83a4b4bbd60069180c48d70e2474e8d6482cdeeebaf1990724ddfb11f07a4fc2",
+    "calcPCBrainAge/man/PCBrainAge_Model.Rd": "52ccf8bb87216383b14f12f30b31057c1182474bee63531e72cc8099137843c0",
+    "calcPCBrainAge/man/calcPCBrainAge.Rd": "aff8c53d0d46757e0461aca9beb6829d2997d02dbb0c06357c9ab3d6b830081d",
+    "calcPCBrainAge/man/imputeMissingBrainCpGs.Rd": "13b10c7ff9480747749fb79dd8db65a28ade35b8cf215a7055802f646df03fae",
+    "calcPCBrainAge/man/meanImpute.Rd": "fff910dd28f75e40dfd3714a06418d93d207d00052dc347307fe14643c6f5088",
+    "PC-Clocks/run_calcPCClocks.R": "ebdaface80c0ca7f4da7f88aa774d85d7c3e0894b9d35b5cf9939f3067287591",
+    "PC-Clocks/README.rtf": "deaf9e8c10093894bfb76c050f0f1feffb985393592446d4809b11c18e50da08",
+    "PC-Clocks/CITATION.cff": "e80c90605fc29bcfa07687c1618ce0f109c4bcf3d6e52bbbf97181e40c35ae82",
+    "CalcAllPCClocks.RData": "3136f589644056913104da92633f4dc06d76e82a03880472e27c6ea5dacdb4a5"
+  },
+  "derivation": "Original double-precision PCA rotation multiplied by original regression; subtract centered weighted mean from original intercept. Selected sex and age coefficients retained unchanged.",
+  "reference_engine": "R 4.5.3 (2026-03-11), arm64",
+  "oracle": "PCBrainAge: unmodified author calcPCBrainAge function; PCGrimAge components: unmodified PCA and eight prediction assignment lines from author run_calcPCClocks.R",
+  "third_party_reimplementations_used": false,
+  "input_contract": "PCBrainAge includes all 357,852 original cg/ch probes. PCGrimAge proxies require finite supplied age/female only when selected by the original component, with no demographic defaults. Missing methylation probes use original author reference means."
+}

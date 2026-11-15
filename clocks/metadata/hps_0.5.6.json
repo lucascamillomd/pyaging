@@ -1,0 +1,35 @@
+{
+  "hps": {
+    "clock_name": "hps",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "⌛",
+    "citation": "Kuo, C.-L., et al. \"A proteomic signature of healthspan.\" Proceedings of the National Academy of Sciences 122, e2414086122 (2025).",
+    "doi": "https://doi.org/10.1073/pnas.2414086122",
+    "notes": "Healthspan Proteomic Score (HPS) from the original Kuo lab R release: 86 Olink Explore 3072 plasma protein NPX values plus chronological age in years. Returns the modeled probability of remaining free of the study's major-disease-or-death endpoint over the next 10 years, on a 0-1 scale; higher is healthier. It is not predicted years of life, biological age, or an age-adjusted residual. The endpoint includes cancer excluding nonmelanoma skin cancer, diabetes, heart failure, myocardial infarction, stroke, COPD, dementia, or death. Supply original lowercase identifiers, including separate nppb and ntprobnp assays. NPX is assay-normalized log2 relative abundance, not raw counts, concentrations, linear abundances or z-scores. The study used within-batch and across-batch intensity normalization; NPX labeling alone does not establish comparability across panels, batches, plasma and serum. No additional scaling, normalization or imputation occurs during scoring. All 87 predictor columns are required; supplied NaNs propagate. The study used upstream k-nearest-neighbor imputation (k=10, multiUS); any imputation is a separate caller decision. The Gompertz model was fit in 30,184 UK Biobank adults initially free of the specified endpoint conditions; the healthy cohort age range was 39-70. The August 2025 correction only changes author affiliations. Research use only. The original repository specifies no code license; the publication is CC BY-NC-ND 4.0. This independent Torch implementation uses the published fitted numerical parameters and does not relicense the authors' R code. No author approval of this conversion is claimed.",
+    "research_only": true,
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "healthspan probability"
+    ],
+    "training_target": [
+      "healthspan"
+    ],
+    "unit": [
+      "probability"
+    ],
+    "model_type": "Gompertz proportional hazards model",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "Proceedings of the National Academy of Sciences",
+    "last_author": "Breno S. Diniz",
+    "n_features": 87,
+    "citations": 21,
+    "citations_date": "2026-10-02"
+  }
+}

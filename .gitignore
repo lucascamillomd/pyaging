@@ -10,6 +10,10 @@ __pycache__/
 # Tool caches
 .pytest_cache/
 .ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
 
 # Packaging artifacts
 build/
@@ -35,7 +39,7 @@ example_data/
 
 # Generated clock weights and aggregate metadata (published to Hugging Face)
 clocks/weights/
-clocks/metadata/all_clock_metadata.pt
+clocks/metadata/*.pt
 clocks/blood_chemistry_example.pkl
 clocks/blood_chemistry_example.csv
 

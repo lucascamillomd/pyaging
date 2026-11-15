@@ -1,0 +1,1404 @@
+{
+  "abec": {
+    "clock_name": "abec",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2020,
+    "approved_by_author": "\u231b",
+    "citation": "Lee, Yunsung, et al. \"Blood-based epigenetic estimators of chronological age in human adults using DNA methylation data from the Illumina MethylationEPIC array.\" BMC genomics 21 (2020): 1-13.",
+    "doi": "https://doi.org/10.1186/s12864-020-07168-8",
+    "notes": "Adult Blood-based EPIC Clock trained by elastic-net regression of chronological age on whole-blood EPIC methylation in 1,592 MoBa-START adults aged 19\u201359 years.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "BMC Genomics",
+    "last_author": "Jon Bohlin",
+    "n_features": 1695,
+    "citations": 22,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "adbahadosingh": {
+    "clock_name": "adbahadosingh",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "\u231b",
+    "citation": "Bahado-Singh, R. O., Vishweswaraiah, S., Aydas, B., et al. (2021). Artificial intelligence and leukocyte epigenomics: Evaluation and prediction of late-onset Alzheimer's disease. PLOS ONE, 16(4), e0248375.",
+    "doi": "https://doi.org/10.1371/journal.pone.0248375",
+    "notes": "PyAging implements the paper\u2019s conventional four-CpG logistic-regression equation and applies a sigmoid to return LOAD case probability; it does not implement the separate high-dimensional deep-learning classifiers also evaluated in the paper.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "late-onset Alzheimer's disease"
+    ],
+    "training_target": [
+      "late-onset Alzheimer's disease"
+    ],
+    "unit": [
+      "probability"
+    ],
+    "model_type": "logistic regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "PLOS ONE",
+    "last_author": "Uppala Radhakrishna",
+    "n_features": 4,
+    "citations": 34,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "sigmoid"
+  },
+  "altumage": {
+    "clock_name": "altumage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L.P., Lapierre, L.R. & Singh, R. A pan-tissue DNA-methylation epigenetic clock based on deep learning. npj Aging 8, 4 (2022).",
+    "doi": "https://doi.org/10.1038/s41514-022-00085-y",
+    "notes": "Pan-tissue chronological-age predictor using a five-hidden-layer neural network and 20,318 CpGs shared across the 27K, 450K and EPIC manifests; the actual training data came from 27K and 450K datasets.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "deep neural network",
+    "platform": [
+      "Illumina 27K",
+      "Illumina 450K"
+    ],
+    "population": "all ages",
+    "journal": "npj Aging",
+    "last_author": "Ritambhara Singh",
+    "n_features": 20318,
+    "citations": 161,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "scale",
+    "reference_values": true
+  },
+  "bitage": {
+    "clock_name": "bitage",
+    "data_type": "transcriptomics",
+    "species": "Caenorhabditis elegans",
+    "year": 2021,
+    "approved_by_author": "\u2705",
+    "citation": "Meyer, David H., and Bj\u00f6rn Schumacher. \"BiT age: A transcriptome-based aging clock near the theoretical limit of accuracy.\" Aging Cell 20 (2021): e13320.",
+    "doi": "https://doi.org/10.1111/acel.13320",
+    "notes": "Binarized whole-organism C. elegans RNA-seq clock that estimates temporally rescaled biological age; the released linear predictor sums coefficients for genes binarized on plus a 103.55-hour intercept.",
+    "research_only": null,
+    "tissue": [
+      "whole organism"
+    ],
+    "predicts": [
+      "biological age"
+    ],
+    "training_target": [
+      "biological age"
+    ],
+    "unit": [
+      "hours"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "RNA-seq"
+    ],
+    "population": "Caenorhabditis elegans",
+    "journal": "Aging Cell",
+    "last_author": "Bj\u00f6rn Schumacher",
+    "n_features": 576,
+    "citations": 184,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "binarize"
+  },
+  "bocklandt": {
+    "clock_name": "bocklandt",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2011,
+    "approved_by_author": "\u231b",
+    "citation": "Bocklandt, S., Lin, W., Sehl, M.E. et al. Epigenetic predictor of age. PLoS ONE 6, e14821 (2011).",
+    "doi": "https://doi.org/10.1371/journal.pone.0014821",
+    "notes": "Package-facing one-CpG identity score: pyaging returns raw cg09809672 methylation with coefficient 1 and zero intercept. The published saliva age regression instead uses EDARADD and NPTX2, including an EDARADD-squared basis term; that published age model is not implemented.",
+    "research_only": null,
+    "tissue": [
+      "saliva"
+    ],
+    "predicts": [
+      "EDARADD methylation"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "beta value"
+    ],
+    "model_type": "single-CpG score",
+    "platform": [
+      "Illumina 27K"
+    ],
+    "population": "adults",
+    "journal": "PLoS ONE",
+    "last_author": "\u00c9ric Vilain",
+    "n_features": 1,
+    "citations": 1071,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "bohlin": {
+    "clock_name": "bohlin",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2016,
+    "approved_by_author": "\u231b",
+    "citation": "Bohlin, J., H\u00e5berg, S. E., Magnus, P. et al. Prediction of gestational age based on genome-wide differentially methylated regions. Genome Biology 17, 207 (2016).",
+    "doi": "https://doi.org/10.1186/s13059-016-1063-4",
+    "notes": "Official minimum-lambda variant of the Bohlin gestational-age LASSO: pyaging implements the 251-CpG lambda.min model and converts its day-scale output to weeks. The paper/package default one-standard-error variant uses 96 CpGs and has nearly identical predictive performance.",
+    "research_only": null,
+    "tissue": [
+      "cord blood"
+    ],
+    "predicts": [
+      "gestational age"
+    ],
+    "training_target": [
+      "gestational age"
+    ],
+    "unit": [
+      "weeks"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "newborns",
+    "journal": "Genome Biology",
+    "last_author": "Wenche Nystad",
+    "n_features": 251,
+    "citations": 241,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "days_to_weeks"
+  },
+  "cabec": {
+    "clock_name": "cabec",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2020,
+    "approved_by_author": "\u231b",
+    "citation": "Lee, Yunsung, et al. \"Blood-based epigenetic estimators of chronological age in human adults using DNA methylation data from the Illumina MethylationEPIC array.\" BMC genomics 21 (2020): 1-13.",
+    "doi": "https://doi.org/10.1186/s12864-020-07168-8",
+    "notes": "Common Adult Blood-based EPIC Clock trained on the extended adult whole-blood dataset but restricted to autosomal CpGs shared by the Illumina 450K and EPIC arrays.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "BMC Genomics",
+    "last_author": "Jon Bohlin",
+    "n_features": 1892,
+    "citations": 22,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "camilloh3k27ac": {
+    "clock_name": "camilloh3k27ac",
+    "data_type": "histone modification",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Asif, M. H., Horvath, S., Larschan, E., & Singh, R. Histone mark age of human tissues and cell types. Science Advances 11, eadk9373 (2025).",
+    "doi": "https://doi.org/10.1126/sciadv.adk9373",
+    "notes": "Pan-tissue chronological-age predictor trained on gene-level H3K27ac ChIP-seq enrichment; ElasticNet feature selection is followed by truncated-SVD PCA and automatic relevance determination regression.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net + ARD regression",
+    "platform": [
+      "ChIP-seq"
+    ],
+    "population": "all ages",
+    "journal": "Science Advances",
+    "last_author": "Ritambhara Singh",
+    "n_features": 1275,
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "camilloh3k27me3": {
+    "clock_name": "camilloh3k27me3",
+    "data_type": "histone modification",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Asif, M. H., Horvath, S., Larschan, E., & Singh, R. Histone mark age of human tissues and cell types. Science Advances 11, eadk9373 (2025).",
+    "doi": "https://doi.org/10.1126/sciadv.adk9373",
+    "notes": "Pan-tissue chronological-age predictor trained on gene-level H3K27me3 ChIP-seq enrichment; ElasticNet feature selection is followed by truncated-SVD PCA and automatic relevance determination regression.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net + ARD regression",
+    "platform": [
+      "ChIP-seq"
+    ],
+    "population": "all ages",
+    "journal": "Science Advances",
+    "last_author": "Ritambhara Singh",
+    "n_features": 922,
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "camilloh3k36me3": {
+    "clock_name": "camilloh3k36me3",
+    "data_type": "histone modification",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Asif, M. H., Horvath, S., Larschan, E., & Singh, R. Histone mark age of human tissues and cell types. Science Advances 11, eadk9373 (2025).",
+    "doi": "https://doi.org/10.1126/sciadv.adk9373",
+    "notes": "Pan-tissue chronological-age predictor trained on gene-level H3K36me3 ChIP-seq enrichment; ElasticNet feature selection is followed by truncated-SVD PCA and automatic relevance determination regression.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net + ARD regression",
+    "platform": [
+      "ChIP-seq"
+    ],
+    "population": "all ages",
+    "journal": "Science Advances",
+    "last_author": "Ritambhara Singh",
+    "n_features": 870,
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "camilloh3k4me1": {
+    "clock_name": "camilloh3k4me1",
+    "data_type": "histone modification",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Asif, M. H., Horvath, S., Larschan, E., & Singh, R. Histone mark age of human tissues and cell types. Science Advances 11, eadk9373 (2025).",
+    "doi": "https://doi.org/10.1126/sciadv.adk9373",
+    "notes": "Pan-tissue chronological-age predictor trained on gene-level H3K4me1 ChIP-seq enrichment; ElasticNet feature selection is followed by truncated-SVD PCA and automatic relevance determination regression.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net + ARD regression",
+    "platform": [
+      "ChIP-seq"
+    ],
+    "population": "all ages",
+    "journal": "Science Advances",
+    "last_author": "Ritambhara Singh",
+    "n_features": 892,
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "camilloh3k4me3": {
+    "clock_name": "camilloh3k4me3",
+    "data_type": "histone modification",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Asif, M. H., Horvath, S., Larschan, E., & Singh, R. Histone mark age of human tissues and cell types. Science Advances 11, eadk9373 (2025).",
+    "doi": "https://doi.org/10.1126/sciadv.adk9373",
+    "notes": "Pan-tissue chronological-age predictor trained on gene-level H3K4me3 ChIP-seq enrichment; ElasticNet feature selection is followed by truncated-SVD PCA and automatic relevance determination regression.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net + ARD regression",
+    "platform": [
+      "ChIP-seq"
+    ],
+    "population": "all ages",
+    "journal": "Science Advances",
+    "last_author": "Ritambhara Singh",
+    "n_features": 1240,
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "camilloh3k9ac": {
+    "clock_name": "camilloh3k9ac",
+    "data_type": "histone modification",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Asif, M. H., Horvath, S., Larschan, E., & Singh, R. Histone mark age of human tissues and cell types. Science Advances 11, eadk9373 (2025).",
+    "doi": "https://doi.org/10.1126/sciadv.adk9373",
+    "notes": "Pan-tissue chronological-age predictor trained on gene-level H3K9ac ChIP-seq enrichment; ElasticNet feature selection is followed by truncated-SVD PCA and automatic relevance determination regression.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net + ARD regression",
+    "platform": [
+      "ChIP-seq"
+    ],
+    "population": "all ages",
+    "journal": "Science Advances",
+    "last_author": "Ritambhara Singh",
+    "n_features": 102,
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "camilloh3k9me3": {
+    "clock_name": "camilloh3k9me3",
+    "data_type": "histone modification",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Asif, M. H., Horvath, S., Larschan, E., & Singh, R. Histone mark age of human tissues and cell types. Science Advances 11, eadk9373 (2025).",
+    "doi": "https://doi.org/10.1126/sciadv.adk9373",
+    "notes": "Pan-tissue chronological-age predictor trained on gene-level H3K9me3 ChIP-seq enrichment; ElasticNet feature selection is followed by truncated-SVD PCA and automatic relevance determination regression.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net + ARD regression",
+    "platform": [
+      "ChIP-seq"
+    ],
+    "population": "all ages",
+    "journal": "Science Advances",
+    "last_author": "Ritambhara Singh",
+    "n_features": 341,
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "camillopanhistone": {
+    "clock_name": "camillopanhistone",
+    "data_type": "histone modification",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Asif, M. H., Horvath, S., Larschan, E., & Singh, R. Histone mark age of human tissues and cell types. Science Advances 11, eadk9373 (2025).",
+    "doi": "https://doi.org/10.1126/sciadv.adk9373",
+    "notes": "Pan-tissue, pan-histone chronological-age predictor trained on gene-level ChIP-seq enrichment from seven histone modifications; ElasticNet feature selection is followed by truncated-SVD PCA and automatic relevance determination regression.",
+    "research_only": null,
+    "tissue": [
+      "multi-tissue"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + elastic net + ARD regression",
+    "platform": [
+      "ChIP-seq"
+    ],
+    "population": "all ages",
+    "journal": "Science Advances",
+    "last_author": "Ritambhara Singh",
+    "n_features": 3739,
+    "citations": 33,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "celldrift": {
+    "clock_name": "celldrift",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Minteer, C. J., et al. (2023). More than bad luck: Cancer and aging are linked to replication-driven changes to the epigenome. Science Advances, 9(29), eadf4163.",
+    "doi": "https://doi.org/10.1126/sciadv.adf4163",
+    "notes": "Replication signature trained on 31 serially passaged hTERT-immortalized human astrocyte samples. The released 62-PC elastic-net predictor over 2,322 CpGs is folded algebraically into a single linear score. Output is calibrated to cumulative population doublings, not years. Original-author missingness is preserved: supplied NaNs become zero, whereas absent CpGs use module means. GitHub commit 066b3e816795f3c0b372ff8d33f59185a490bd8b; DOI 10.5281/zenodo.7693699. Upstream software license is unspecified (Zenodo: Other (Open)).",
+    "research_only": null,
+    "tissue": [
+      "cultured human cells"
+    ],
+    "predicts": [
+      "mitotic age"
+    ],
+    "training_target": [
+      "population doublings"
+    ],
+    "unit": [
+      "population doublings"
+    ],
+    "model_type": "PCA + elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "human cell cultures",
+    "journal": "Science Advances",
+    "last_author": "Morgan E. Levine",
+    "n_features": 2322,
+    "citations": 29,
+    "citations_date": "2026-10-02",
+    "version": "0.5.4",
+    "preprocess": "supplied NaNs to zero; absent CpGs to module means",
+    "reference_values": true
+  },
+  "cellpopage": {
+    "clock_name": "cellpopage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Lujan, Celia, et al. \"An expedited screening platform for the discovery of anti-ageing compounds in vitro and in vivo.\" Genome Medicine 16 (2024): 85.",
+    "doi": "https://doi.org/10.1186/s13073-024-01349-w",
+    "notes": "CellPopAge is an elastic-net DNA-methylation clock using 42 selected CpGs to predict passage-based age of serially cultured adult primary human fibroblast populations and screen compounds that decelerate this measure.",
+    "research_only": null,
+    "tissue": [
+      "cultured fibroblasts"
+    ],
+    "predicts": [
+      "cell-population passage age"
+    ],
+    "training_target": [
+      "cell passage number"
+    ],
+    "unit": [
+      "passages"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "human cell cultures",
+    "journal": "Genome Medicine",
+    "last_author": "Ivana Bjedov",
+    "n_features": 42,
+    "citations": 7,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "compil6": {
+    "clock_name": "compil6",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "\u231b",
+    "citation": "Stevenson, A. J., et al. \u201cCreating and Validating a DNA Methylation-Based Proxy for Interleukin-6.\u201d The Journals of Gerontology: Series A 76(12): 2284\u20132292 (2021).",
+    "doi": "https://doi.org/10.1093/gerona/glab046",
+    "notes": "Thirty-five-CpG whole-blood proxy score for persistent IL-6-related inflammatory burden, fitted against covariate-adjusted normalized plasma IL-6.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "interleukin-6"
+    ],
+    "training_target": [
+      "interleukin-6"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "older adults",
+    "journal": "The Journals of Gerontology: Series A",
+    "last_author": "Riccardo E. Marioni",
+    "n_features": 35,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "corticalclock": {
+    "clock_name": "corticalclock",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2020,
+    "approved_by_author": "\u231b",
+    "citation": "Shireby, G. L., et al. \"Recalibrating the epigenetic clock: implications for assessing biological age in the human cortex.\" Brain 143.12 (2020): 3763-3775.",
+    "doi": "https://doi.org/10.1093/brain/awaa334",
+    "notes": "Cortex-specific DNA-methylation chronological-age estimator trained by elastic net on 1,047 post-mortem cortical samples; its 347-CpG weighted score is back-transformed to years.",
+    "research_only": null,
+    "tissue": [
+      "brain cortex"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "all ages",
+    "journal": "Brain",
+    "last_author": "Jonathan Mill",
+    "n_features": 347,
+    "citations": 216,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "anti_log_linear",
+    "reference_values": true
+  },
+  "cpgptgrimage3": {
+    "clock_name": "cpgptgrimage3",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Sehgal, R., Armstrong, J., et al. CpGPT: a foundation model for DNA methylation. bioRxiv 2024.10.24.619766 (2024).",
+    "doi": "https://doi.org/10.1101/2024.10.24.619766",
+    "notes": "CpGPTGrimAge3 implementation combining chronological age, GrimAge2 DNAm proxies, and CpGPT-predicted plasma-protein proxies in a Cox linear predictor that is calibrated to years. Supply derived methylation protein/lifestyle proxies and age, not a raw CpG matrix or measured proteomics. CpGPT protein proxies come from the proteins checkpoint on its trained standardized scale; required proxies must be present.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "biological age",
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "Cox proportional hazards regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "bioRxiv",
+    "last_author": "Bo Wang",
+    "n_features": 24,
+    "citations": 35,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "scale",
+    "postprocess": "cox_to_years"
+  },
+  "cpgptpcgrimage3": {
+    "clock_name": "cpgptpcgrimage3",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u2705",
+    "citation": "de Lima Camillo, L. P., Sehgal, R., Armstrong, J., et al. CpGPT: a foundation model for DNA methylation. bioRxiv 2024.10.24.619766 (2024).",
+    "doi": "https://doi.org/10.1101/2024.10.24.619766",
+    "notes": "Principal-component CpGPTGrimAge3 implementation combining chronological age, GrimAge2 DNAm proxies, and CpGPT-predicted plasma-protein proxies; 30 proxy inputs are projected to 29 PCs, entered with age into a Cox linear predictor, and calibrated to years. Supply derived methylation protein/lifestyle proxies and age, not a raw CpG matrix or measured proteomics. CpGPT protein proxies come from the proteins checkpoint on its trained standardized scale; required proxies must be present.",
+    "research_only": true,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "biological age",
+      "mortality risk"
+    ],
+    "training_target": [
+      "mortality"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "PCA + Cox regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "bioRxiv",
+    "last_author": "Bo Wang",
+    "n_features": 31,
+    "citations": 35,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "scale",
+    "postprocess": "cox_to_years"
+  },
+  "ctsliver": {
+    "clock_name": "ctsliver",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2024,
+    "approved_by_author": "\u231b",
+    "citation": "Tong, Huige, et al. \"Cell-type specific epigenetic clocks to quantify biological age at cell-type resolution.\" Aging 16 (2024): 14204\u201314237.",
+    "doi": "https://doi.org/10.18632/aging.206184",
+    "notes": "LiverClock is a liver tissue-specific chronological-age clock trained by lasso on age-associated CpGs identified after adjustment for five estimated liver cell fractions; unlike HepClock, it is not hepatocyte-specific.",
+    "research_only": null,
+    "tissue": [
+      "liver"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Andrew E. Teschendorff",
+    "n_features": 90,
+    "citations": 32,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "cvdwesterman": {
+    "clock_name": "cvdwesterman",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2020,
+    "approved_by_author": "\u231b",
+    "citation": "Westerman, K. et al. Epigenomic assessment of cardiovascular disease risk and interactions with traditional risk metrics. Journal of the American Heart Association 9, e015299 (2020).",
+    "doi": "https://doi.org/10.1161/jaha.119.015299",
+    "notes": "Whole-blood DNA-methylation score for cardiovascular risk. The paper's final cross-study learner stacks cohort-specific elastic-net Cox models; the packaged pyaging implementation is a 235-CpG linear score followed by a sigmoid.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "cardiovascular disease risk"
+    ],
+    "training_target": [
+      "cardiovascular disease"
+    ],
+    "unit": [
+      "probability"
+    ],
+    "model_type": "elastic net Cox ensemble",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Journal of the American Heart Association",
+    "last_author": "Jos\u00e9 M. Ordov\u00e1s",
+    "n_features": 235,
+    "citations": 57,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "postprocess": "sigmoid"
+  },
+  "deconvolutebloodepicbcell": {
+    "clock_name": "deconvolutebloodepicbcell",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Koestler, D.C., Butler, R.A. et al. An optimized library for reference-based deconvolution of whole-blood biospecimens assayed using the Illumina HumanMethylationEPIC BeadArray. Genome Biology 19, 64 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1448-7",
+    "notes": "Reference-based constrained deconvolution returning the B cell proportion from EPIC-array blood methylation. Pyaging uses the paper's automatic 600-CpG top-hypermethylated/top-hypomethylated reference, not the paper's preferred 450-CpG EPIC IDOL library.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "B cell proportion"
+    ],
+    "training_target": [
+      "cell-type-specific methylation contrast"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Brock C. Christensen",
+    "n_features": 600,
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "deconvolutebloodepiccd4tcell": {
+    "clock_name": "deconvolutebloodepiccd4tcell",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Koestler, D.C., Butler, R.A. et al. An optimized library for reference-based deconvolution of whole-blood biospecimens assayed using the Illumina HumanMethylationEPIC BeadArray. Genome Biology 19, 64 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1448-7",
+    "notes": "Reference-based constrained deconvolution returning the CD4+ T cell proportion from EPIC-array blood methylation. Pyaging uses the paper's automatic 600-CpG top-hypermethylated/top-hypomethylated reference, not the paper's preferred 450-CpG EPIC IDOL library.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "CD4+ T cell proportion"
+    ],
+    "training_target": [
+      "cell-type-specific methylation contrast"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Brock C. Christensen",
+    "n_features": 600,
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "deconvolutebloodepiccd8tcell": {
+    "clock_name": "deconvolutebloodepiccd8tcell",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Koestler, D.C., Butler, R.A. et al. An optimized library for reference-based deconvolution of whole-blood biospecimens assayed using the Illumina HumanMethylationEPIC BeadArray. Genome Biology 19, 64 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1448-7",
+    "notes": "Reference-based constrained deconvolution returning the CD8+ T cell proportion from EPIC-array blood methylation. Pyaging uses the paper's automatic 600-CpG top-hypermethylated/top-hypomethylated reference, not the paper's preferred 450-CpG EPIC IDOL library.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "CD8+ T cell proportion"
+    ],
+    "training_target": [
+      "cell-type-specific methylation contrast"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Brock C. Christensen",
+    "n_features": 600,
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "deconvolutebloodepicmonocyte": {
+    "clock_name": "deconvolutebloodepicmonocyte",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Koestler, D.C., Butler, R.A. et al. An optimized library for reference-based deconvolution of whole-blood biospecimens assayed using the Illumina HumanMethylationEPIC BeadArray. Genome Biology 19, 64 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1448-7",
+    "notes": "Reference-based constrained deconvolution returning the monocyte proportion from EPIC-array blood methylation. Pyaging uses the paper's automatic 600-CpG top-hypermethylated/top-hypomethylated reference, not the paper's preferred 450-CpG EPIC IDOL library.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "monocyte proportion"
+    ],
+    "training_target": [
+      "cell-type-specific methylation contrast"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Brock C. Christensen",
+    "n_features": 600,
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "deconvolutebloodepicneutrophil": {
+    "clock_name": "deconvolutebloodepicneutrophil",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Koestler, D.C., Butler, R.A. et al. An optimized library for reference-based deconvolution of whole-blood biospecimens assayed using the Illumina HumanMethylationEPIC BeadArray. Genome Biology 19, 64 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1448-7",
+    "notes": "Reference-based constrained deconvolution returning the neutrophil proportion from EPIC-array blood methylation. Pyaging uses the paper's automatic 600-CpG top-hypermethylated/top-hypomethylated reference, not the paper's preferred 450-CpG EPIC IDOL library.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "neutrophil proportion"
+    ],
+    "training_target": [
+      "cell-type-specific methylation contrast"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Brock C. Christensen",
+    "n_features": 600,
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "deconvolutebloodepicnkcell": {
+    "clock_name": "deconvolutebloodepicnkcell",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Salas, L.A., Koestler, D.C., Butler, R.A. et al. An optimized library for reference-based deconvolution of whole-blood biospecimens assayed using the Illumina HumanMethylationEPIC BeadArray. Genome Biology 19, 64 (2018).",
+    "doi": "https://doi.org/10.1186/s13059-018-1448-7",
+    "notes": "Reference-based constrained deconvolution returning the natural killer (NK) cell proportion from EPIC-array blood methylation. Pyaging uses the paper's automatic 600-CpG top-hypermethylated/top-hypomethylated reference, not the paper's preferred 450-CpG EPIC IDOL library.",
+    "research_only": null,
+    "tissue": [
+      "purified blood leukocytes"
+    ],
+    "predicts": [
+      "natural killer cell proportion"
+    ],
+    "training_target": [
+      "cell-type-specific methylation contrast"
+    ],
+    "unit": [
+      "proportion"
+    ],
+    "model_type": "reference-based constrained deconvolution",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Genome Biology",
+    "last_author": "Brock C. Christensen",
+    "n_features": 600,
+    "citations": 487,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "fill_with_reference_means",
+    "reference_values": true
+  },
+  "depressionbarbu": {
+    "clock_name": "depressionbarbu",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2021,
+    "approved_by_author": "\u231b",
+    "citation": "Barbu, Miruna C., et al. \"Epigenetic prediction of major depressive disorder.\" Molecular Psychiatry 26.9 (2021): 5112-5123.",
+    "doi": "https://doi.org/10.1038/s41380-020-0808-3",
+    "notes": "Blood methylation risk score for major depressive disorder, fitted with LASSO in 1,223 cases and 1,824 controls. The training outcome was MDD status residualized for age, sex and ten genetic principal components. The paper used dasen-normalized M-values, with training methylation additionally adjusted for relatedness, blood-cell composition and processing batch. The packaged linear model does not perform those input transformations or adjustments; raw beta values are not the published training input. Its output is a unitless score, not a depression probability or a classifier of prevalent versus incident disease.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "major depressive disorder"
+    ],
+    "training_target": [
+      "major depressive disorder"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Molecular Psychiatry",
+    "last_author": "Andrew M. McIntosh",
+    "n_features": 196,
+    "citations": 93,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "dnamfili": {
+    "clock_name": "dnamfili",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": "Li, X. et al. Derivation and validation of an epigenetic frailty risk score in population-based cohorts of older adults. Nature Communications 13, 5269 (2022).",
+    "doi": "https://doi.org/10.1038/s41467-022-32893-x",
+    "notes": "Epigenetic frailty risk score (eFRS), a weighted 20-CpG whole-blood DNA-methylation score selected by LASSO from replicated frailty-associated loci.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "frailty risk"
+    ],
+    "training_target": [
+      "frailty"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina EPIC",
+      "Illumina 450K"
+    ],
+    "population": "older adults",
+    "journal": "Nature Communications",
+    "last_author": "Hermann Brenner",
+    "n_features": 20,
+    "citations": 24,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "dnamfitage": {
+    "clock_name": "dnamfitage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "McGreevy, K. M., et al. \u201cDNAmFitAge: biological age indicator incorporating physical fitness.\u201d Aging 15(10): 3904\u20133938 (2023).",
+    "doi": "https://doi.org/10.18632/aging.204538",
+    "notes": "Sex-specific Klemera\u2013Doubal biological-age composite that calculates DNAm gait speed, grip strength, VO2max, and original DNAmGrimAge internally from methylation, age, and female inputs.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "physical-fitness biological age"
+    ],
+    "training_target": [
+      "biological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "Klemera\u2013Doubal composite",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 1343,
+    "citations": 105,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "dnamfitagegait": {
+    "clock_name": "dnamfitagegait",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "McGreevy, K. M., et al. \u201cDNAmFitAge: biological age indicator incorporating physical fitness.\u201d Aging 15(10): 3904\u20133938 (2023).",
+    "doi": "https://doi.org/10.18632/aging.204538",
+    "notes": "Sex-gated blood DNAm gait-speed estimator using the published female and male regressions selected by the female input.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "gait speed"
+    ],
+    "training_target": [
+      "gait speed"
+    ],
+    "unit": [
+      "meters per second"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 111,
+    "citations": 105,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "dnamfitagegrip": {
+    "clock_name": "dnamfitagegrip",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "McGreevy, K. M., et al. \u201cDNAmFitAge: biological age indicator incorporating physical fitness.\u201d Aging 15(10): 3904\u20133938 (2023).",
+    "doi": "https://doi.org/10.18632/aging.204538",
+    "notes": "Sex-gated blood DNAm maximum-handgrip-strength estimator using the published female and male regressions selected by the female input.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "grip strength"
+    ],
+    "training_target": [
+      "grip strength"
+    ],
+    "unit": [
+      "kilograms"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 183,
+    "citations": 105,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "dnamfitagevo2max": {
+    "clock_name": "dnamfitagevo2max",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "McGreevy, K. M., et al. \u201cDNAmFitAge: biological age indicator incorporating physical fitness.\u201d Aging 15(10): 3904\u20133938 (2023).",
+    "doi": "https://doi.org/10.18632/aging.204538",
+    "notes": "Joint-sex blood DNAm estimator of maximal oxygen uptake; 40 CpGs plus chronological age are packaged as 41 inputs.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "VO2max"
+    ],
+    "training_target": [
+      "VO2max"
+    ],
+    "unit": [
+      "milliliters per kilogram per minute"
+    ],
+    "model_type": "LASSO regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 41,
+    "citations": 105,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "reference_values": true
+  },
+  "dnamic": {
+    "clock_name": "dnamic",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2025,
+    "approved_by_author": "\u231b",
+    "citation": "Fuentealba, M., Rouch, L., Guyonnet, S. et al. A blood-based epigenetic clock for intrinsic capacity predicts mortality and is associated with clinical, immunological and lifestyle factors. Nature Aging 5, 1207\u20131216 (2025).",
+    "doi": "https://doi.org/10.1038/s43587-025-00883-5",
+    "notes": "Whole-blood DNA-methylation predictor of intrinsic capacity, an average score across cognition, locomotion, psychological, sensory, and vitality domains; trained with tenfold cross-validated elastic net on INSPIRE-T and returning higher values for better capacity.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "intrinsic capacity"
+    ],
+    "training_target": [
+      "intrinsic capacity"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "older adults",
+    "journal": "Nature Aging",
+    "last_author": "David Furman",
+    "n_features": 91,
+    "citations": 45,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "dnamphenoage": {
+    "clock_name": "dnamphenoage",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2018,
+    "approved_by_author": "\u231b",
+    "citation": "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591.",
+    "doi": "https://doi.org/10.18632/aging.101414",
+    "notes": "Blood DNA-methylation estimator trained by elastic net on 513 CpGs common to the 27K, 450K and EPIC arrays to reproduce a mortality-derived clinical Phenotypic Age. The parent DNAmPhenoAge coefficients were fitted on InCHIANTI 450K whole-blood data; the selected sites also occur on 27K and EPIC arrays.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "phenotypic age"
+    ],
+    "training_target": [
+      "phenotypic age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "elastic net regression",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Aging",
+    "last_author": "Steve Horvath",
+    "n_features": 513,
+    "citations": 3848,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  },
+  "dnamphenoagenonprc": {
+    "clock_name": "dnamphenoagenonprc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": [
+      "Rozenblit, M., et al. Evidence of accelerated epigenetic aging of breast tissues in patients with breast cancer is driven by CpGs associated with polycomb-related genes. Clinical Epigenetics 14, 30 (2022).",
+      "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
+    ],
+    "doi": "https://doi.org/10.1186/s13148-022-01249-z",
+    "notes": "Original Levine-lab non-polycomb PhenoAge contribution using 458 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero. The parent DNAmPhenoAge coefficients were fitted on InCHIANTI 450K whole-blood data; the selected sites also occur on 27K and EPIC arrays.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "non-polycomb PhenoAge contribution"
+    ],
+    "training_target": [
+      "phenotypic age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "weighted linear score",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Clinical Epigenetics",
+    "last_author": "Morgan Levine",
+    "n_features": 458,
+    "citations": 23,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "missing_beta_zero_contribution"
+  },
+  "dnamphenoageprc": {
+    "clock_name": "dnamphenoageprc",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2022,
+    "approved_by_author": "\u231b",
+    "citation": [
+      "Rozenblit, M., et al. Evidence of accelerated epigenetic aging of breast tissues in patients with breast cancer is driven by CpGs associated with polycomb-related genes. Clinical Epigenetics 14, 30 (2022).",
+      "Levine, M. E., et al. \"An epigenetic biomarker of aging for lifespan and healthspan.\" Aging 10.4 (2018): 573-591."
+    ],
+    "doi": "https://doi.org/10.1186/s13148-022-01249-z",
+    "notes": "Original Levine-lab polycomb-related PhenoAge contribution using 55 CpGs. Coefficients retain their original values; the 60.664 PhenoAge intercept is excluded from both partitions, so these scores are not standalone calibrated ages. The two contributions plus the original intercept reconstruct DNAmPhenoAge. Follows author imputation=FALSE: absent CpGs and supplied NA values contribute zero. The parent DNAmPhenoAge coefficients were fitted on InCHIANTI 450K whole-blood data; the selected sites also occur on 27K and EPIC arrays.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "polycomb-related PhenoAge contribution"
+    ],
+    "training_target": [
+      "phenotypic age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "weighted linear score",
+    "platform": [
+      "Illumina 450K"
+    ],
+    "population": "adults",
+    "journal": "Clinical Epigenetics",
+    "last_author": "Morgan Levine",
+    "n_features": 55,
+    "citations": 23,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7",
+    "preprocess": "missing_beta_zero_contribution"
+  },
+  "dnamstress": {
+    "clock_name": "dnamstress",
+    "data_type": "DNA methylation",
+    "species": "Homo sapiens",
+    "year": 2023,
+    "approved_by_author": "\u231b",
+    "citation": "Jung, J., et al. \u201cAdditive Effects of Stress and Alcohol Exposure on Accelerated Epigenetic Aging in Alcohol Use Disorder.\u201d Biological Psychiatry 93(4): 331\u2013341 (2023).",
+    "doi": "https://doi.org/10.1016/j.biopsych.2022.06.036",
+    "notes": "Whole-blood methylation score (MS stress) derived as a 211-CpG proxy for a composite of 13 stress-related measures.",
+    "research_only": null,
+    "tissue": [
+      "whole blood"
+    ],
+    "predicts": [
+      "stress exposure"
+    ],
+    "training_target": [
+      "stress exposure"
+    ],
+    "unit": [
+      "unitless"
+    ],
+    "model_type": "bootstrap-stabilized elastic net regression",
+    "platform": [
+      "Illumina EPIC"
+    ],
+    "population": "adults",
+    "journal": "Biological Psychiatry",
+    "last_author": "Falk W. Lohoff",
+    "n_features": 211,
+    "citations": 27,
+    "citations_date": "2026-10-02",
+    "version": "0.5.7"
+  }
+}

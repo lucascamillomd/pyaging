@@ -1,0 +1,784 @@
+{
+  "reviewed_clocks": [
+    "abec",
+    "adbahadosingh",
+    "altumage",
+    "bitage",
+    "bocklandt",
+    "bohlin",
+    "cabec",
+    "camilloh3k27ac",
+    "camilloh3k27me3",
+    "camilloh3k36me3",
+    "camilloh3k4me1",
+    "camilloh3k4me3",
+    "camilloh3k9ac",
+    "camilloh3k9me3",
+    "camillopanhistone",
+    "celldrift",
+    "cellpopage",
+    "compil6",
+    "corticalclock",
+    "cpgptgrimage3",
+    "cpgptpcgrimage3",
+    "ctsliver",
+    "cvdwesterman",
+    "deconvolutebloodepicbcell",
+    "deconvolutebloodepiccd4tcell",
+    "deconvolutebloodepiccd8tcell",
+    "deconvolutebloodepicmonocyte",
+    "deconvolutebloodepicneutrophil",
+    "deconvolutebloodepicnkcell",
+    "depressionbarbu",
+    "dnamfili",
+    "dnamfitage",
+    "dnamfitagegait",
+    "dnamfitagegrip",
+    "dnamfitagevo2max",
+    "dnamic",
+    "dnamphenoage",
+    "dnamphenoagenonprc",
+    "dnamphenoageprc",
+    "dnamstress"
+  ],
+  "corrections": [],
+  "retained": [
+    {
+      "name": "abec",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7590728/"
+    },
+    {
+      "name": "adbahadosingh",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0248375"
+    },
+    {
+      "name": "altumage",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9158789/"
+    },
+    {
+      "name": "bitage",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7963339/"
+    },
+    {
+      "name": "bocklandt",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3120753/"
+    },
+    {
+      "name": "bohlin",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5054559/"
+    },
+    {
+      "name": "cabec",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7590728/"
+    },
+    {
+      "name": "camilloh3k27ac",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+    },
+    {
+      "name": "camilloh3k27me3",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+    },
+    {
+      "name": "camilloh3k36me3",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+    },
+    {
+      "name": "camilloh3k4me1",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+    },
+    {
+      "name": "camilloh3k4me3",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+    },
+    {
+      "name": "camilloh3k9ac",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+    },
+    {
+      "name": "camilloh3k9me3",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+    },
+    {
+      "name": "camillopanhistone",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+    },
+    {
+      "name": "celldrift",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://doi.org/10.1126/sciadv.adf4163"
+    },
+    {
+      "name": "cellpopage",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://link.springer.com/article/10.1186/s13073-024-01349-w"
+    },
+    {
+      "name": "compil6",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8599002/"
+    },
+    {
+      "name": "corticalclock",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://doi.org/10.1093/brain/awaa334"
+    },
+    {
+      "name": "cpgptgrimage3",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.biorxiv.org/content/10.1101/2024.10.24.619766v1.full"
+    },
+    {
+      "name": "cpgptpcgrimage3",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.biorxiv.org/content/10.1101/2024.10.24.619766v1.full"
+    },
+    {
+      "name": "ctsliver",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11723652/"
+    },
+    {
+      "name": "cvdwesterman",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.pure.ed.ac.uk/ws/portalfiles/portal/146349622/JAHA.119.015299.pdf"
+    },
+    {
+      "name": "deconvolutebloodepicbcell",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.nature.com/articles/s43587-025-00987-y"
+    },
+    {
+      "name": "deconvolutebloodepiccd4tcell",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.nature.com/articles/s43587-025-00987-y"
+    },
+    {
+      "name": "deconvolutebloodepiccd8tcell",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.nature.com/articles/s43587-025-00987-y"
+    },
+    {
+      "name": "deconvolutebloodepicmonocyte",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.nature.com/articles/s43587-025-00987-y"
+    },
+    {
+      "name": "deconvolutebloodepicneutrophil",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.nature.com/articles/s43587-025-00987-y"
+    },
+    {
+      "name": "deconvolutebloodepicnkcell",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.nature.com/articles/s43587-025-00987-y"
+    },
+    {
+      "name": "depressionbarbu",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8589651/"
+    },
+    {
+      "name": "dnamfili",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.nature.com/articles/s41467-022-32893-x"
+    },
+    {
+      "name": "dnamfitage",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.aging-us.com/article/204538/text"
+    },
+    {
+      "name": "dnamfitagegait",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.aging-us.com/article/204538/text"
+    },
+    {
+      "name": "dnamfitagegrip",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.aging-us.com/article/204538/text"
+    },
+    {
+      "name": "dnamfitagevo2max",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.aging-us.com/article/204538/text"
+    },
+    {
+      "name": "dnamic",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12270914/"
+    },
+    {
+      "name": "dnamphenoage",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://doi.org/10.18632/aging.101414"
+    },
+    {
+      "name": "dnamphenoagenonprc",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://doi.org/10.1186/s13148-022-01249-z"
+    },
+    {
+      "name": "dnamphenoageprc",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://doi.org/10.1186/s13148-022-01249-z"
+    },
+    {
+      "name": "dnamstress",
+      "reason": "Existing metadata agrees with the audited primary-source record; title/author/year/journal/DOI and scientific claims were retained. Exact-DOI citation count and 2026-10-02 observation match the citation audit.",
+      "source": "https://www.pure.ed.ac.uk/ws/portalfiles/portal/305351682/PIIS0006322322014305.pdf"
+    }
+  ],
+  "unresolved": [
+    {
+      "clock_name": "depressionbarbu",
+      "issue": "The packaged intercept 12.2169841 is not in the current publisher supplement or article. The live supplementary workbook contains 196 CpG/weight rows and no intercept; the live article XML contains no intercept value. The notebook assigns 12.2169841 as a hard-coded “Methylation risk score calibration intercept” but does not cite its source.",
+      "missing_evidence": "Original calibration/model artifact or documented derivation connecting this intercept to the published adjusted-M-value scale. No numerical inference made.",
+      "sources": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC8589651/",
+        "https://static-content.springer.com/esm/art%3A10.1038%2Fs41380-020-0808-3/MediaObjects/41380_2020_808_MOESM4_ESM.xlsx",
+        "https://github.com/lucascamillomd/pyaging/blob/339f9de1ac3b503f194811b58836979a6d703084/clocks/notebooks/depressionbarbu.ipynb"
+      ]
+    },
+    {
+      "clock_name": "cpgptgrimage3",
+      "issue": "The preprint anonymizes mortality-cohort identities and does not establish participant age range or exact array mix. The current preprint endpoint returned HTTP 429 in this review; existing source-checked ledger records that author-maintained tutorial/code document the named implementation.",
+      "missing_evidence": "An accessible primary manuscript or cohort-specific source identifying the mortality training sample and age range. Retained manuscript details remain qualified as source-limited.",
+      "sources": [
+        "https://www.biorxiv.org/content/10.1101/2024.10.24.619766v5",
+        "https://github.com/lcamillo/CpGPT/blob/5bfe6ac5e32c8ef7effc56349fe17770de09b7cb/tutorials/predict_mortality.ipynb"
+      ]
+    },
+    {
+      "clock_name": "cpgptpcgrimage3",
+      "issue": "The preprint anonymizes mortality-cohort identities and does not establish participant age range or exact array mix. The current preprint endpoint returned HTTP 429 in this review; existing source-checked ledger records that author-maintained tutorial/code document the named implementation.",
+      "missing_evidence": "An accessible primary manuscript or cohort-specific source identifying the mortality training sample and age range. Retained manuscript details remain qualified as source-limited.",
+      "sources": [
+        "https://www.biorxiv.org/content/10.1101/2024.10.24.619766v5",
+        "https://github.com/lcamillo/CpGPT/blob/5bfe6ac5e32c8ef7effc56349fe17770de09b7cb/tutorials/predict_mortality.ipynb"
+      ]
+    },
+    {
+      "clock_name": "cvdwesterman",
+      "issue": "The paper’s final cross-study learner is described as a 1,305-CpG union/ensemble, while the packaged model contains 235 coefficients followed by a sigmoid. The paper does not document the provenance mapping to the packaged implementation.",
+      "missing_evidence": "Author source or derivation establishing the relationship between the published final learner and the packaged 235-feature score. The current notes preserve the implementation distinction.",
+      "sources": [
+        "https://www.pure.ed.ac.uk/ws/portalfiles/portal/146349622/JAHA.119.015299.pdf",
+        "https://github.com/lucascamillomd/pyaging/blob/321d99bbbaf92339abea5affca25cd8022969795/clocks/notebooks/cvdwesterman.ipynb"
+      ]
+    }
+  ],
+  "training_details": [
+    {
+      "clock_name": "abec",
+      "facts": [
+        {
+          "fact": "adults aged 19–59 years (MoBa-START; n=1,592)",
+          "locator": "Methods: training/sample cohort",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7590728/"
+        },
+        {
+          "fact": "Adult Blood-based EPIC Clock trained by elastic-net regression of chronological age on whole-blood EPIC methylation in 1,592 MoBa-START adults aged 19–59 years.",
+          "locator": "Abstract, Results, and clock-construction Methods",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7590728/"
+        }
+      ]
+    },
+    {
+      "clock_name": "adbahadosingh",
+      "facts": [
+        {
+          "fact": "Cases: 83.17 (7.97); Controls: 80.04 (8.42)",
+          "locator": "Supplemental Table S1, Age row",
+          "source_url": "https://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0248375.s001"
+        }
+      ]
+    },
+    {
+      "clock_name": "altumage",
+      "facts": [
+        {
+          "fact": "Training/testing comprised 13,505 normal-tissue samples; prenatal datasets were encoded relative to 40 gestational weeks.",
+          "locator": "Methods, paragraphs 60–61",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9158789/"
+        }
+      ]
+    },
+    {
+      "clock_name": "bitage",
+      "facts": [
+        {
+          "fact": "993 independent RNA-seq from 61 independent public datasets",
+          "locator": "Dataset description and validation",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7963339/"
+        }
+      ]
+    },
+    {
+      "clock_name": "bocklandt",
+      "facts": [
+        {
+          "fact": "Discovery used 34 male monozygotic twin pairs aged 21–55; validation included unrelated adults aged 18–70.",
+          "locator": "Abstract; Results, validation subsection",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3120753/"
+        },
+        {
+          "fact": "The packaged object contains only cg09809672 with coefficient 1.",
+          "locator": "Bocklandt.csv, sole data row; zero-intercept package construction",
+          "source_url": "https://raw.githubusercontent.com/bio-learn/biolearn/180852e2bab473303cb85da627178b1695ee9d86/biolearn/data/Bocklandt.csv"
+        }
+      ]
+    },
+    {
+      "clock_name": "bohlin",
+      "facts": [
+        {
+          "fact": "The model was trained in 1,068 MoBa newborns and tested in 685 additional MoBa newborns.",
+          "locator": "Abstract; Results, “GA prediction by ultrasound and LMP estimates”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5054559/"
+        }
+      ]
+    },
+    {
+      "clock_name": "cabec",
+      "facts": [
+        {
+          "fact": "adults aged 18–88 years (MoBa-START plus GEO; n=2,227)",
+          "locator": "Methods: training/sample cohort",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7590728/"
+        },
+        {
+          "fact": "Common Adult Blood-based EPIC Clock trained on the extended adult whole-blood dataset but restricted to autosomal CpGs shared by the Illumina 450K and EPIC arrays.",
+          "locator": "Abstract, Results, and clock-construction Methods",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7590728/"
+        }
+      ]
+    },
+    {
+      "clock_name": "camilloh3k27ac",
+      "facts": [
+        {
+          "fact": "Samples span embryonic through 90-plus years and are roughly sex-balanced; cancer samples were removed for predictor evaluation.",
+          "locator": "Results, “Dynamics of histone mark during aging”; Methods, “Age predictor performance evaluation”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+        }
+      ]
+    },
+    {
+      "clock_name": "camilloh3k27me3",
+      "facts": [
+        {
+          "fact": "Samples span embryonic through 90-plus years and are roughly sex-balanced; cancer samples were removed for predictor evaluation.",
+          "locator": "Results, “Dynamics of histone mark during aging”; Methods, “Age predictor performance evaluation”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+        }
+      ]
+    },
+    {
+      "clock_name": "camilloh3k36me3",
+      "facts": [
+        {
+          "fact": "Samples span embryonic through 90-plus years and are roughly sex-balanced; cancer samples were removed for predictor evaluation.",
+          "locator": "Results, “Dynamics of histone mark during aging”; Methods, “Age predictor performance evaluation”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+        }
+      ]
+    },
+    {
+      "clock_name": "camilloh3k4me1",
+      "facts": [
+        {
+          "fact": "Samples span embryonic through 90-plus years and are roughly sex-balanced; cancer samples were removed for predictor evaluation.",
+          "locator": "Results, “Dynamics of histone mark during aging”; Methods, “Age predictor performance evaluation”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+        }
+      ]
+    },
+    {
+      "clock_name": "camilloh3k4me3",
+      "facts": [
+        {
+          "fact": "Samples span embryonic through 90-plus years and are roughly sex-balanced; cancer samples were removed for predictor evaluation.",
+          "locator": "Results, “Dynamics of histone mark during aging”; Methods, “Age predictor performance evaluation”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+        }
+      ]
+    },
+    {
+      "clock_name": "camilloh3k9ac",
+      "facts": [
+        {
+          "fact": "Samples span embryonic through 90-plus years and are roughly sex-balanced; cancer samples were removed for predictor evaluation.",
+          "locator": "Results, “Dynamics of histone mark during aging”; Methods, “Age predictor performance evaluation”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+        }
+      ]
+    },
+    {
+      "clock_name": "camilloh3k9me3",
+      "facts": [
+        {
+          "fact": "Samples span embryonic through 90-plus years and are roughly sex-balanced; cancer samples were removed for predictor evaluation.",
+          "locator": "Results, “Dynamics of histone mark during aging”; Methods, “Age predictor performance evaluation”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+        }
+      ]
+    },
+    {
+      "clock_name": "camillopanhistone",
+      "facts": [
+        {
+          "fact": "Samples span embryonic through 90-plus years and are roughly sex-balanced; cancer samples were removed for predictor evaluation.",
+          "locator": "Results, “Dynamics of histone mark during aging”; Methods, “Age predictor performance evaluation”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11691649/"
+        }
+      ]
+    },
+    {
+      "clock_name": "celldrift",
+      "facts": [
+        {
+          "fact": "cultured human cells",
+          "locator": "README.md",
+          "source_url": "https://github.com/MorganLevineLab/CellDRIFT/tree/066b3e816795f3c0b372ff8d33f59185a490bd8b"
+        }
+      ]
+    },
+    {
+      "clock_name": "cellpopage",
+      "facts": [
+        {
+          "fact": "adult primary human fibroblast cultures (39 training samples, passages 10–20)",
+          "locator": "Methods: training/sample cohort",
+          "source_url": "https://link.springer.com/article/10.1186/s13073-024-01349-w"
+        },
+        {
+          "fact": "CellPopAge is an elastic-net DNA-methylation clock using 42 selected CpGs to predict passage-based age of serially cultured adult primary human fibroblast populations and screen compounds that decelerate this measure.",
+          "locator": "Abstract, Results, and clock-construction Methods",
+          "source_url": "https://link.springer.com/article/10.1186/s13073-024-01349-w"
+        }
+      ]
+    },
+    {
+      "clock_name": "compil6",
+      "facts": [
+        {
+          "fact": "The predictor was developed in 875 LBC1936 older adults with mean age 70.",
+          "locator": "Abstract, Method",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8599002/"
+        }
+      ]
+    },
+    {
+      "clock_name": "corticalclock",
+      "facts": [
+        {
+          "fact": "The cortical clock training samples span ages 1–108 years.",
+          "locator": "Results “Developing a novel DNAm clock for the human cortex”; Methods/sample description",
+          "source_url": "https://academic.oup.com/brain/article/143/12/3763/5942151"
+        },
+        {
+          "fact": "Cortex-specific DNA-methylation chronological-age estimator trained by elastic net on 1,047 post-mortem cortical samples; its 347-CpG weighted score is back-transformed to years.",
+          "locator": "Abstract; Materials and methods, 'Cortex training and test datasets' and 'Cortical clock development'",
+          "source_url": "https://doi.org/10.1093/brain/awaa334"
+        }
+      ]
+    },
+    {
+      "clock_name": "cpgptgrimage3",
+      "facts": [
+        {
+          "fact": "cpgptgrimage3 and cpgptpcgrimage3 were trained in blood with the 450k array to predict mortality. it was trained in the FHS cohort with methylation data.",
+          "locator": "Direct author clarification in Codex task, 2026-07-18",
+          "source_url": "https://github.com/lcamillo/CpGPT"
+        },
+        {
+          "fact": "The author tutorial combines age, GrimAge2 outputs and CpGPT proteins-checkpoint predictions; the protein checkpoint returns standardized protein proxies. Packaged model dimensions distinguish the direct and PCA composites.",
+          "locator": "Sections1.2 and6; packaged coefficient and PCA arrays",
+          "source_url": "https://github.com/lcamillo/CpGPT/blob/5bfe6ac5e32c8ef7effc56349fe17770de09b7cb/tutorials/predict_mortality.ipynb"
+        }
+      ]
+    },
+    {
+      "clock_name": "cpgptpcgrimage3",
+      "facts": [
+        {
+          "fact": "cpgptgrimage3 and cpgptpcgrimage3 were trained in blood with the 450k array to predict mortality. it was trained in the FHS cohort with methylation data.",
+          "locator": "Direct author clarification in Codex task, 2026-07-18",
+          "source_url": "https://github.com/lcamillo/CpGPT"
+        },
+        {
+          "fact": "The author tutorial combines age, GrimAge2 outputs and CpGPT proteins-checkpoint predictions; the protein checkpoint returns standardized protein proxies. Packaged model dimensions distinguish the direct and PCA composites.",
+          "locator": "Sections1.2 and6; packaged coefficient and PCA arrays",
+          "source_url": "https://github.com/lcamillo/CpGPT/blob/5bfe6ac5e32c8ef7effc56349fe17770de09b7cb/tutorials/predict_mortality.ipynb"
+        }
+      ]
+    },
+    {
+      "clock_name": "ctsliver",
+      "facts": [
+        {
+          "fact": "adults aged 18–75 years (210 normal liver samples)",
+          "locator": "Methods: training/sample cohort",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11723652/"
+        },
+        {
+          "fact": "LiverClock is a liver tissue-specific chronological-age clock trained by lasso on age-associated CpGs identified after adjustment for five estimated liver cell fractions; unlike HepClock, it is not hepatocyte-specific.",
+          "locator": "Abstract, Results, and clock-construction Methods",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11723652/"
+        }
+      ]
+    },
+    {
+      "clock_name": "cvdwesterman",
+      "facts": [
+        {
+          "fact": "WHI, FHS-JHU, and LBC were the initial training cohorts.",
+          "locator": "Results, Table 1 and model-development text",
+          "source_url": "https://www.pure.ed.ac.uk/ws/portalfiles/portal/146349622/JAHA.119.015299.pdf"
+        }
+      ]
+    },
+    {
+      "clock_name": "deconvolutebloodepicbcell",
+      "facts": [
+        {
+          "fact": "The reference cells came from 37 anonymous healthy adults; donor ages ranged from 19 to 59 years.",
+          "locator": "Methods, reference-sample description (article lines 216–220; especially 218–219)",
+          "source_url": "https://link.springer.com/article/10.1186/s13059-018-1448-7"
+        },
+        {
+          "fact": "The packaged six-cell reference contains 600 CpG rows; the origin paper separately reports a preferred 450-CpG EPIC IDOL library.",
+          "locator": "EPIC_salas_18_reference.csv; 600 implemented probe rows",
+          "source_url": "https://github.com/Bio-Learn/biolearn/blob/master/biolearn/data/EPIC_salas_18_reference.csv"
+        }
+      ]
+    },
+    {
+      "clock_name": "deconvolutebloodepiccd4tcell",
+      "facts": [
+        {
+          "fact": "The reference cells came from 37 anonymous healthy adults; donor ages ranged from 19 to 59 years.",
+          "locator": "Methods, reference-sample description (article lines 216–220; especially 218–219)",
+          "source_url": "https://link.springer.com/article/10.1186/s13059-018-1448-7"
+        },
+        {
+          "fact": "The packaged six-cell reference contains 600 CpG rows; the origin paper separately reports a preferred 450-CpG EPIC IDOL library.",
+          "locator": "EPIC_salas_18_reference.csv; 600 implemented probe rows",
+          "source_url": "https://github.com/Bio-Learn/biolearn/blob/master/biolearn/data/EPIC_salas_18_reference.csv"
+        }
+      ]
+    },
+    {
+      "clock_name": "deconvolutebloodepiccd8tcell",
+      "facts": [
+        {
+          "fact": "The reference cells came from 37 anonymous healthy adults; donor ages ranged from 19 to 59 years.",
+          "locator": "Methods, reference-sample description (article lines 216–220; especially 218–219)",
+          "source_url": "https://link.springer.com/article/10.1186/s13059-018-1448-7"
+        },
+        {
+          "fact": "The packaged six-cell reference contains 600 CpG rows; the origin paper separately reports a preferred 450-CpG EPIC IDOL library.",
+          "locator": "EPIC_salas_18_reference.csv; 600 implemented probe rows",
+          "source_url": "https://github.com/Bio-Learn/biolearn/blob/master/biolearn/data/EPIC_salas_18_reference.csv"
+        }
+      ]
+    },
+    {
+      "clock_name": "deconvolutebloodepicmonocyte",
+      "facts": [
+        {
+          "fact": "The reference cells came from 37 anonymous healthy adults; donor ages ranged from 19 to 59 years.",
+          "locator": "Methods, reference-sample description (article lines 216–220; especially 218–219)",
+          "source_url": "https://link.springer.com/article/10.1186/s13059-018-1448-7"
+        },
+        {
+          "fact": "The packaged six-cell reference contains 600 CpG rows; the origin paper separately reports a preferred 450-CpG EPIC IDOL library.",
+          "locator": "EPIC_salas_18_reference.csv; 600 implemented probe rows",
+          "source_url": "https://github.com/Bio-Learn/biolearn/blob/master/biolearn/data/EPIC_salas_18_reference.csv"
+        }
+      ]
+    },
+    {
+      "clock_name": "deconvolutebloodepicneutrophil",
+      "facts": [
+        {
+          "fact": "The reference cells came from 37 anonymous healthy adults; donor ages ranged from 19 to 59 years.",
+          "locator": "Methods, reference-sample description (article lines 216–220; especially 218–219)",
+          "source_url": "https://link.springer.com/article/10.1186/s13059-018-1448-7"
+        },
+        {
+          "fact": "The packaged six-cell reference contains 600 CpG rows; the origin paper separately reports a preferred 450-CpG EPIC IDOL library.",
+          "locator": "EPIC_salas_18_reference.csv; 600 implemented probe rows",
+          "source_url": "https://github.com/Bio-Learn/biolearn/blob/master/biolearn/data/EPIC_salas_18_reference.csv"
+        }
+      ]
+    },
+    {
+      "clock_name": "deconvolutebloodepicnkcell",
+      "facts": [
+        {
+          "fact": "The reference cells came from 37 anonymous healthy adults; donor ages ranged from 19 to 59 years.",
+          "locator": "Methods, reference-sample description (article lines 216–220; especially 218–219)",
+          "source_url": "https://link.springer.com/article/10.1186/s13059-018-1448-7"
+        },
+        {
+          "fact": "The packaged six-cell reference contains 600 CpG rows; the origin paper separately reports a preferred 450-CpG EPIC IDOL library.",
+          "locator": "EPIC_salas_18_reference.csv; 600 implemented probe rows",
+          "source_url": "https://github.com/Bio-Learn/biolearn/blob/master/biolearn/data/EPIC_salas_18_reference.csv"
+        }
+      ]
+    },
+    {
+      "clock_name": "depressionbarbu",
+      "facts": [
+        {
+          "fact": "adults (Generation Scotland cohort)",
+          "locator": "Methods: training/sample cohort",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8589651/"
+        },
+        {
+          "fact": "M-values and adjusted MDD-status residuals were used for LASSO; the score was tested separately against prevalent and incident case-control status.",
+          "locator": "Methods: DNA methylation and Training dataset; Results: Association of MRS with depression",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8589651/"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamfili",
+      "facts": [
+        {
+          "fact": "ESTHER recruited adults aged 50-75; KORA-Age enrolled adults aged at least 65.",
+          "locator": "Methods, Study population",
+          "source_url": "https://www.nature.com/articles/s41467-022-32893-x"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamfitage",
+      "facts": [
+        {
+          "fact": "DNAmFitAge was formed in FHS and BLSA adults and combines sex-appropriate female and male fitness-component estimates.",
+          "locator": "Methods: DNAm biomarkers of fitness parameters and DNAmFitAge construction",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10258016/"
+        },
+        {
+          "fact": "The packaged implementation embeds gait, grip, VO2max, and original GrimAge and exposes only methylation, female, and age inputs.",
+          "locator": "Model construction and embedded-component assertions",
+          "source_url": "https://pyaging.readthedocs.io/en/latest/clock_notebooks/dnamfitage.html"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamfitagegait",
+      "facts": [
+        {
+          "fact": "The female and male models were fit separately in adult development cohorts.",
+          "locator": "Methods: DNAm biomarkers of fitness parameters and DNAmFitAge construction",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10258016/"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamfitagegrip",
+      "facts": [
+        {
+          "fact": "The female and male models were fit separately in adult development cohorts.",
+          "locator": "Methods: DNAm biomarkers of fitness parameters and DNAmFitAge construction",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10258016/"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamfitagevo2max",
+      "facts": [
+        {
+          "fact": "Development used FHS (n=1,830), BLSA (n=820), and Budapest (n=307) adults.",
+          "locator": "Methods, Study cohorts",
+          "source_url": "https://www.aging-us.com/article/204538/text"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamic",
+      "facts": [
+        {
+          "fact": "INSPIRE-T participants ranged from 20 to 102 years; 933 DNAm profiles entered model development.",
+          "locator": "Methods, cohort description; Results, “DNAm-based predictor of IC”",
+          "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12270914/"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamphenoage",
+      "facts": [
+        {
+          "fact": "adults (21-100 years)",
+          "locator": "Abstract; Figure 1; Methods, 'Estimating phenotypic age' and 'Developing DNAm PhenoAge'",
+          "source_url": "https://doi.org/10.18632/aging.101414"
+        },
+        {
+          "fact": "InCHIANTI supplied the 450K training measurements, while cross-platform overlap was a compatibility restriction.",
+          "locator": "Supplementary Methods pp.2-3; main text: An epigenetic biomarker of aging",
+          "source_url": "https://cdn.aging-us.com/article/101414/supplementary/SD1/0/aging-v10i4-101414-supplementary-material-SD1.pdf"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamphenoagenonprc",
+      "facts": [
+        {
+          "fact": "adults (21-100 years)",
+          "locator": "Abstract; Figure 1; Methods, 'Estimating phenotypic age' and 'Developing DNAm PhenoAge'",
+          "source_url": "https://doi.org/10.18632/aging.101414"
+        },
+        {
+          "fact": "InCHIANTI supplied the 450K training measurements, while cross-platform overlap was a compatibility restriction.",
+          "locator": "Supplementary Methods pp.2-3; main text: An epigenetic biomarker of aging",
+          "source_url": "https://cdn.aging-us.com/article/101414/supplementary/SD1/0/aging-v10i4-101414-supplementary-material-SD1.pdf"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamphenoageprc",
+      "facts": [
+        {
+          "fact": "adults (21-100 years)",
+          "locator": "Abstract; Figure 1; Methods, 'Estimating phenotypic age' and 'Developing DNAm PhenoAge'",
+          "source_url": "https://doi.org/10.18632/aging.101414"
+        },
+        {
+          "fact": "InCHIANTI supplied the 450K training measurements, while cross-platform overlap was a compatibility restriction.",
+          "locator": "Supplementary Methods pp.2-3; main text: An epigenetic biomarker of aging",
+          "source_url": "https://cdn.aging-us.com/article/101414/supplementary/SD1/0/aging-v10i4-101414-supplementary-material-SD1.pdf"
+        }
+      ]
+    },
+    {
+      "clock_name": "dnamstress",
+      "facts": [
+        {
+          "fact": "The epigenomic cohort consisted of 615 participants: 372 AUD cases and 243 healthy controls.",
+          "locator": "Methods, Study Participants",
+          "source_url": "https://www.pure.ed.ac.uk/ws/portalfiles/portal/305351682/PIIS0006322322014305.pdf"
+        }
+      ]
+    }
+  ],
+  "review_scope_note": "All 40 inputs were compared field-by-field with their evidence-ledger entries. Exact-DOI citation counts and observation dates were checked against the 2026-10-02 citation audit. Crossref exact-DOI lookups found no bibliographic mismatch; its bioRxiv record omits a container-title field, while the bioRxiv record itself confirms the venue and author list. Primary paper landing pages/XML were requested live; some publisher endpoints returned 403/429, recorded above where this limits a claim. Existing source snapshots remain the evidence basis for those inaccessible records."
+}

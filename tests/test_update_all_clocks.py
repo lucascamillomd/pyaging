@@ -39,7 +39,8 @@ REGISTRY_FIELDS = (
 )
 
 
-def _load_update_all_clocks_module():
+@pytest.fixture
+def update_all_clocks():
     script_path = Path(__file__).parents[1] / "clocks" / "update_all_clocks.py"
     spec = importlib.util.spec_from_file_location("update_all_clocks", script_path)
     assert spec is not None
@@ -190,8 +191,7 @@ def _symlink_identity(path):
     )
 
 
-def test_runtime_metadata_fields_are_explicitly_ordered():
-    update_all_clocks = _load_update_all_clocks_module()
+def test_runtime_metadata_fields_are_explicitly_ordered(update_all_clocks):
 
     assert update_all_clocks.RUNTIME_METADATA_FIELDS == (
         "version",
@@ -242,8 +242,7 @@ print(json.dumps(module._generated_metadata_entry(clock, "0.3.0")[1]))
     assert outputs == ['{"version": "0.3.0", "preprocess": "pre", "postprocess": "post", "reference_values": true}'] * 2
 
 
-def test_merge_clock_metadata_uses_registry_for_curated_fields_and_generated_runtime():
-    update_all_clocks = _load_update_all_clocks_module()
+def test_merge_clock_metadata_uses_registry_for_curated_fields_and_generated_runtime(update_all_clocks):
     registry = {
         "clock": _registry_entry(
             "clock",
@@ -272,8 +271,7 @@ def test_merge_clock_metadata_uses_registry_for_curated_fields_and_generated_run
     assert list(merged_metadata["clock"])[-2:] == ["version", "preprocess"]
 
 
-def test_generated_metadata_entry_contains_only_runtime_fields():
-    update_all_clocks = _load_update_all_clocks_module()
+def test_generated_metadata_entry_contains_only_runtime_fields(update_all_clocks):
     clock = _clock("clock")
     clock.preprocess_name = "runtime_preprocess"
     clock.postprocess_name = "runtime_postprocess"
@@ -290,8 +288,7 @@ def test_generated_metadata_entry_contains_only_runtime_fields():
     }
 
 
-def test_load_curated_metadata_reads_canonical_utf8_json_registry(tmp_path):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_load_curated_metadata_reads_canonical_utf8_json_registry(update_all_clocks, tmp_path):
     registry_path = tmp_path / "clock_metadata.json"
     registry = {
         "alpha": _registry_entry("alpha", notes="Café clock"),
@@ -303,9 +300,9 @@ def test_load_curated_metadata_reads_canonical_utf8_json_registry(tmp_path):
 
 
 def test_load_curated_metadata_accepts_registry_without_optional_runtime_fields(
+    update_all_clocks,
     tmp_path,
 ):
-    update_all_clocks = _load_update_all_clocks_module()
     registry_path = tmp_path / "clock_metadata.json"
     entry = _registry_entry("clock")
     entry.pop("version")
@@ -315,8 +312,7 @@ def test_load_curated_metadata_accepts_registry_without_optional_runtime_fields(
     assert update_all_clocks.load_curated_metadata(registry_path) == registry
 
 
-def test_regeneration_requires_registry_before_loading_weights(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_regeneration_requires_registry_before_loading_weights(update_all_clocks, tmp_path, monkeypatch):
     weights_dir = tmp_path / "weights"
     weights_dir.mkdir()
     (weights_dir / "clock.pt").touch()
@@ -346,8 +342,7 @@ def test_regeneration_requires_registry_before_loading_weights(tmp_path, monkeyp
         ('{"clock":', "Invalid curated metadata JSON"),
     ],
 )
-def test_load_curated_metadata_rejects_non_strict_json(tmp_path, text, message):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_load_curated_metadata_rejects_non_strict_json(update_all_clocks, tmp_path, text, message):
     registry_path = tmp_path / "clock_metadata.json"
     registry_path.write_text(text, encoding="utf-8")
 
@@ -398,8 +393,7 @@ def test_load_curated_metadata_rejects_non_strict_json(tmp_path, text, message):
         ),
     ],
 )
-def test_load_curated_metadata_rejects_invalid_registry(tmp_path, registry, message):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_load_curated_metadata_rejects_invalid_registry(update_all_clocks, tmp_path, registry, message):
     registry_path = tmp_path / "clock_metadata.json"
     _write_registry(registry_path, registry)
 
@@ -408,8 +402,7 @@ def test_load_curated_metadata_rejects_invalid_registry(tmp_path, registry, mess
 
 
 @pytest.mark.parametrize("directory_state", ["missing", "empty"])
-def test_regeneration_requires_nonempty_weights_directory(tmp_path, monkeypatch, directory_state):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_regeneration_requires_nonempty_weights_directory(update_all_clocks, tmp_path, monkeypatch, directory_state):
     weights_dir = tmp_path / "weights"
     if directory_state == "empty":
         weights_dir.mkdir()
@@ -432,7 +425,7 @@ def test_regeneration_requires_nonempty_weights_directory(tmp_path, monkeypatch,
     save.assert_not_called()
 
 
-def test_broken_later_weight_keeps_earlier_clock_committed_and_stops(tmp_path, monkeypatch):
+def test_broken_later_weight_keeps_earlier_clock_committed_and_stops(update_all_clocks, tmp_path, monkeypatch):
     """A later broken weight stops the run without corrupting anything.
 
     Regeneration streams one clock at a time to bound peak disk, so alpha has
@@ -441,7 +434,6 @@ def test_broken_later_weight_keeps_earlier_clock_committed_and_stops(tmp_path, m
     still holds its original bytes, the aggregate was never written, and no
     staging residue survives.
     """
-    update_all_clocks = _load_update_all_clocks_module()
     weights_dir = tmp_path / "weights"
     weights_dir.mkdir()
     (weights_dir / "alpha.pt").touch()
@@ -482,8 +474,9 @@ def test_broken_later_weight_keeps_earlier_clock_committed_and_stops(tmp_path, m
         (("alpha",), ("alpha", "weight_only")),
     ],
 )
-def test_registry_and_weight_sets_must_match_before_staging(tmp_path, monkeypatch, registry_names, weight_names):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_registry_and_weight_sets_must_match_before_staging(
+    update_all_clocks, tmp_path, monkeypatch, registry_names, weight_names
+):
     weights_dir = tmp_path / "weights"
     weights_dir.mkdir()
     for clock_name in weight_names:
@@ -507,8 +500,7 @@ def test_registry_and_weight_sets_must_match_before_staging(tmp_path, monkeypatc
     stage.assert_not_called()
 
 
-def test_invalid_updated_clock_name_is_never_staged(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_invalid_updated_clock_name_is_never_staged(update_all_clocks, tmp_path, monkeypatch):
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path)
     clock_path = weights_dir / "clock.pt"
     original_load = update_all_clocks.torch.load
@@ -531,8 +523,7 @@ def test_invalid_updated_clock_name_is_never_staged(tmp_path, monkeypatch):
     _assert_snapshot(original)
 
 
-def test_later_stage_save_failure_leaves_unreached_targets_untouched(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_later_stage_save_failure_leaves_unreached_targets_untouched(update_all_clocks, tmp_path, monkeypatch):
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
     targets = [weights_dir / "alpha.pt", weights_dir / "beta.pt", metadata_path]
     os.chmod(targets[0], 0o640)
@@ -565,9 +556,8 @@ def test_later_stage_save_failure_leaves_unreached_targets_untouched(tmp_path, m
 
 
 @pytest.mark.parametrize("failure_point", [1, 2, 3])
-def test_replace_failure_rolls_back_its_own_target_and_stops(tmp_path, monkeypatch, failure_point):
+def test_replace_failure_rolls_back_its_own_target_and_stops(update_all_clocks, tmp_path, monkeypatch, failure_point):
     """A failed swap restores its own target; already-published ones stay published."""
-    update_all_clocks = _load_update_all_clocks_module()
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
     targets = [weights_dir / "alpha.pt", weights_dir / "beta.pt", metadata_path]
     modes = [0o640, 0o600]
@@ -600,8 +590,7 @@ def test_replace_failure_rolls_back_its_own_target_and_stops(tmp_path, monkeypat
     assert _transaction_residue(tmp_path) == []
 
 
-def test_backup_cleanup_failure_does_not_roll_back_committed_targets(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_backup_cleanup_failure_does_not_roll_back_committed_targets(update_all_clocks, tmp_path, monkeypatch):
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path)
     clock_path = weights_dir / "clock.pt"
     original_cleanup = update_all_clocks._cleanup_backup
@@ -635,8 +624,7 @@ def test_backup_cleanup_failure_does_not_roll_back_committed_targets(tmp_path, m
     assert str(residue[0]) in str(error.value)
 
 
-def test_success_preserves_weight_and_aggregate_symlink_entries(tmp_path):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_success_preserves_weight_and_aggregate_symlink_entries(update_all_clocks, tmp_path):
     (
         weights_dir,
         registry_path,
@@ -661,8 +649,9 @@ def test_success_preserves_weight_and_aggregate_symlink_entries(tmp_path):
     assert _transaction_residue(tmp_path) == []
 
 
-def test_replace_failure_restores_symlink_backing_targets_without_touching_links(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_replace_failure_restores_symlink_backing_targets_without_touching_links(
+    update_all_clocks, tmp_path, monkeypatch
+):
     (
         weights_dir,
         registry_path,
@@ -703,8 +692,7 @@ def test_replace_failure_restores_symlink_backing_targets_without_touching_links
     assert _transaction_residue(tmp_path) == []
 
 
-def test_rejects_dangling_and_aliased_weight_symlinks_before_loading(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_rejects_dangling_and_aliased_weight_symlinks_before_loading(update_all_clocks, tmp_path, monkeypatch):
     weights_dir = tmp_path / "weights"
     weights_dir.mkdir()
     backing = tmp_path / "backing.pt"
@@ -743,8 +731,7 @@ def test_rejects_dangling_and_aliased_weight_symlinks_before_loading(tmp_path, m
     load.assert_not_called()
 
 
-def test_regeneration_streams_one_clock_at_a_time_without_path_read_bytes(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_regeneration_streams_one_clock_at_a_time_without_path_read_bytes(update_all_clocks, tmp_path, monkeypatch):
     names = tuple(f"clock_{index:03d}" for index in range(24))
     weights_dir = tmp_path / "weights"
     weights_dir.mkdir()
@@ -807,7 +794,7 @@ def test_regeneration_streams_one_clock_at_a_time_without_path_read_bytes(tmp_pa
     assert live == 0
 
 
-def test_regeneration_never_holds_more_than_one_staged_copy_on_disk(tmp_path, monkeypatch):
+def test_regeneration_never_holds_more_than_one_staged_copy_on_disk(update_all_clocks, tmp_path, monkeypatch):
     """Peak extra disk is one clock, not the catalogue.
 
     Staging every clock before publishing any of them needed free space equal
@@ -815,7 +802,6 @@ def test_regeneration_never_holds_more_than_one_staged_copy_on_disk(tmp_path, mo
     disk. Sampling the staging directory at both ends of each publish pins the
     replacement down to a single staged copy at a time.
     """
-    update_all_clocks = _load_update_all_clocks_module()
     clock_names = tuple(f"clock_{index:03d}" for index in range(8))
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, clock_names)
     samples = []
@@ -847,14 +833,13 @@ def test_regeneration_never_holds_more_than_one_staged_copy_on_disk(tmp_path, mo
     assert _staged_copies(tmp_path) == []
 
 
-def test_rerunning_after_an_interrupted_run_completes_the_catalogue(tmp_path, monkeypatch):
+def test_rerunning_after_an_interrupted_run_completes_the_catalogue(update_all_clocks, tmp_path, monkeypatch):
     """Per-clock atomicity makes an interrupted run recoverable by re-running it.
 
     Restamping is idempotent, so the clocks that committed before the failure
     are re-stamped to the same bytes and the run finishes the rest. The
     aggregate is published last, so it is never written by the failed run.
     """
-    update_all_clocks = _load_update_all_clocks_module()
     clock_names = ("clocka", "clockb", "clockc")
     weights_dir, registry_path, metadata_path = _write_real_model_inputs(tmp_path, clock_names)
     original_publish = update_all_clocks._publish_replace
@@ -894,8 +879,7 @@ def test_rerunning_after_an_interrupted_run_completes_the_catalogue(tmp_path, mo
     assert _transaction_residue(tmp_path) == []
 
 
-def test_successful_regeneration_publishes_valid_registry_backed_transaction(tmp_path, monkeypatch):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_successful_regeneration_publishes_valid_registry_backed_transaction(update_all_clocks, tmp_path, monkeypatch):
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path)
     clock_path = weights_dir / "clock.pt"
     old_mode = clock_path.stat().st_mode & 0o7777
@@ -927,8 +911,7 @@ def test_successful_regeneration_publishes_valid_registry_backed_transaction(tmp
     assert _transaction_residue(tmp_path) == []
 
 
-def test_selected_regeneration_restamps_only_selected_and_preserves_other_versions(tmp_path):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_selected_regeneration_restamps_only_selected_and_preserves_other_versions(update_all_clocks, tmp_path):
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta", "gamma"))
     for path in weights_dir.glob("*.pt"):
         clock = torch.load(path, weights_only=False)
@@ -954,8 +937,9 @@ def test_selected_regeneration_restamps_only_selected_and_preserves_other_versio
     assert _transaction_residue(tmp_path) == []
 
 
-def test_selected_regeneration_rejects_aggregate_alias_to_unselected_weight_without_mutation(tmp_path):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_selected_regeneration_rejects_aggregate_alias_to_unselected_weight_without_mutation(
+    update_all_clocks, tmp_path
+):
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
     metadata_path.unlink()
     metadata_path.symlink_to(weights_dir / "beta.pt")
@@ -975,8 +959,7 @@ def test_selected_regeneration_rejects_aggregate_alias_to_unselected_weight_with
     assert _transaction_residue(tmp_path) == []
 
 
-def test_selected_regeneration_cli_collects_repeated_clock_options():
-    update_all_clocks = _load_update_all_clocks_module()
+def test_selected_regeneration_cli_collects_repeated_clock_options(update_all_clocks):
 
     args = update_all_clocks._parse_args(
         ["v0.5.2", "--clock", "dnamfitage", "--clock", "dnamfitagegait", "--clock", "dnamfitagegrip"]
@@ -993,8 +976,9 @@ def test_selected_regeneration_cli_collects_repeated_clock_options():
         (("missing",), "Selected clock names are not in the registry: \\['missing'\\]"),
     ],
 )
-def test_selected_regeneration_rejects_invalid_selections_without_mutation(tmp_path, selected_names, message):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_selected_regeneration_rejects_invalid_selections_without_mutation(
+    update_all_clocks, tmp_path, selected_names, message
+):
     weights_dir, registry_path, metadata_path = _write_inputs(tmp_path, ("alpha", "beta"))
     snapshot = _snapshot([*sorted(weights_dir.glob("*.pt")), metadata_path])
 
@@ -1041,8 +1025,7 @@ def _write_real_model_inputs(tmp_path, clock_names):
     return weights_dir, registry_path, tmp_path / "all_clock_metadata.pt"
 
 
-def test_regeneration_of_real_model_clocks_covers_every_registry_entry(tmp_path):
-    update_all_clocks = _load_update_all_clocks_module()
+def test_regeneration_of_real_model_clocks_covers_every_registry_entry(update_all_clocks, tmp_path):
     clock_names = ("clocka", "clockb")
     weights_dir, registry_path, metadata_path = _write_real_model_inputs(tmp_path, clock_names)
 
@@ -1060,8 +1043,7 @@ def test_regeneration_of_real_model_clocks_covers_every_registry_entry(tmp_path)
         assert torch.load(weights_dir / f"{clock_name}.pt", weights_only=False).metadata == result[clock_name]
 
 
-def test_script_only_reads_runtime_attributes_the_model_class_defines():
-    update_all_clocks = _load_update_all_clocks_module()
+def test_script_only_reads_runtime_attributes_the_model_class_defines(update_all_clocks):
     clock = _ConcreteClock()
     clock.metadata["clock_name"] = "clock"
 

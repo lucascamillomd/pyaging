@@ -46,7 +46,7 @@ Inside this repository, use `uv sync` and run commands through `uv run`. Histone
 - Keep non-feature columns out of `adata.X` by passing them through `metadata_cols`.
 - For EPIC v2 data, aggregate duplicated probe suffixes before conversion with `pya.pp.epicv2_probe_aggregation`.
 - `df_to_adata` accepts `mean`, `median`, `constant`, or `knn` imputation. Choose deliberately; `knn` is the default and may be expensive for large matrices.
-- `predict_age` fills missing clock features with model reference values when available and otherwise with zero. Missing-feature details are stored in `adata.uns`.
+- `predict_age` fills absent features using the model's reference vector first. For eligible human DNAm beta clocks without a vector, it uses the packaged Hannum and BoA CpG medians where available and zero otherwise. Missing-feature details are stored in `adata.uns`.
 - The package selects CUDA when available and otherwise runs on CPU. Adjust `batch_size` when memory is constrained.
 
 ## Quick example: AltumAge
