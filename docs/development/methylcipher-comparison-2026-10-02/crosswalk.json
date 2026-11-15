@@ -1,0 +1,1325 @@
+[
+  {
+    "methylcipher_id": "AdaptAge",
+    "pyaging_id": "yingadaptage",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "CausalityAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Age_prediction",
+    "pyaging_id": "systemsage",
+    "status": "related_internal_component",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Chronological component of SystemsAge; not equivalent to the final SystemsAge output.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "AlcoholMcCartney",
+    "pyaging_id": "mccartneyalcohol",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "BMIMcCartney",
+    "pyaging_id": "mccartneybmi",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Blood",
+    "pyaging_id": "systemsageblood",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "BodyFatMcCartney",
+    "pyaging_id": "mccartneybodyfat",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Bohlin251",
+    "pyaging_id": "bohlin",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "Bohlin",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Bohlin96",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Bohlin",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Brain",
+    "pyaging_id": "systemsagebrain",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "CausAge",
+    "pyaging_id": "yingcausage",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "CausalityAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "CellDRIFT",
+    "pyaging_id": "celldrift",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "CellDRIFT",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "CellPopAge",
+    "pyaging_id": "cellpopage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "CellPopAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmADM",
+    "pyaging_id": "grimage2adm",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Same original fitted surrogate family reused in GrimAge2: feature/covariate sets and coefficients/intercepts match at serialized float32 precision. Citation roles differ (2019 origin, 2022 reuse); end-to-end parity is not established.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmB2M",
+    "pyaging_id": "grimage2b2m",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Same original fitted surrogate family reused in GrimAge2: feature/covariate sets and coefficients/intercepts match at serialized float32 precision. Citation roles differ (2019 origin, 2022 reuse); end-to-end parity is not established.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmCRP",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmClockCortical",
+    "pyaging_id": "corticalclock",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "DNAmClockCortical",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmCystatinC_GrimAgeV1",
+    "pyaging_id": "grimage2cystatinc",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Same original fitted surrogate family reused in GrimAge2: feature/covariate sets and coefficients/intercepts match at serialized float32 precision. Citation roles differ (2019 origin, 2022 reuse); end-to-end parity is not established.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmCystatinC_PhysAge",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmDHEAS",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmFEV1_wAge_Female",
+    "pyaging_id": null,
+    "status": "unmatched_routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Hidden sex-specific branch of an unmatched public routed predictor; not an independently requestable clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmFEV1_wAge_Male",
+    "pyaging_id": null,
+    "status": "unmatched_routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Hidden sex-specific branch of an unmatched public routed predictor; not an independently requestable clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmFI_Li",
+    "pyaging_id": "dnamfili",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFI_Li",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmFitAge_Female",
+    "pyaging_id": "dnamfitage",
+    "status": "routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Sex-specific component of the matched routed pyaging model; not a separate pyaging clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmFitAge_Male",
+    "pyaging_id": "dnamfitage",
+    "status": "routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Sex-specific component of the matched routed pyaging model; not a separate pyaging clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmGDF15",
+    "pyaging_id": "grimage2gdf15",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Same original fitted surrogate family reused in GrimAge2: feature/covariate sets and coefficients/intercepts match at serialized float32 precision. Citation roles differ (2019 origin, 2022 reuse); end-to-end parity is not established.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmGait_noAge_Female",
+    "pyaging_id": "dnamfitagegait",
+    "status": "routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Sex-specific component of the matched routed pyaging model; not a separate pyaging clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmGait_noAge_Male",
+    "pyaging_id": "dnamfitagegait",
+    "status": "routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Sex-specific component of the matched routed pyaging model; not a separate pyaging clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmGait_wAge_Female",
+    "pyaging_id": null,
+    "status": "unmatched_routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Hidden sex-specific branch of an unmatched public routed predictor; not an independently requestable clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmGait_wAge_Male",
+    "pyaging_id": null,
+    "status": "unmatched_routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Hidden sex-specific branch of an unmatched public routed predictor; not an independently requestable clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmGrip_noAge_Female",
+    "pyaging_id": "dnamfitagegrip",
+    "status": "routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Sex-specific component of the matched routed pyaging model; not a separate pyaging clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmGrip_noAge_Male",
+    "pyaging_id": "dnamfitagegrip",
+    "status": "routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Sex-specific component of the matched routed pyaging model; not a separate pyaging clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmGrip_wAge_Female",
+    "pyaging_id": null,
+    "status": "unmatched_routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Hidden sex-specific branch of an unmatched public routed predictor; not an independently requestable clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmGrip_wAge_Male",
+    "pyaging_id": null,
+    "status": "unmatched_routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Hidden sex-specific branch of an unmatched public routed predictor; not an independently requestable clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmHDL",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmHbA1c",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmIC",
+    "pyaging_id": "dnamic",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "DNAmIC",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmIL6_Stevenson",
+    "pyaging_id": "compil6",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "DNAmIL6_Stevenson",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmLeptin",
+    "pyaging_id": "grimage2leptin",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Same original fitted surrogate family reused in GrimAge2: feature/covariate sets and coefficients/intercepts match at serialized float32 precision. Citation roles differ (2019 origin, 2022 reuse); end-to-end parity is not established.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmPACKYRS",
+    "pyaging_id": "grimage2packyrs",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Same original fitted surrogate family reused in GrimAge2: feature/covariate sets and coefficients/intercepts match at serialized float32 precision. Citation roles differ (2019 origin, 2022 reuse); end-to-end parity is not established.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmPAI1",
+    "pyaging_id": "grimage2pai1",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Same original fitted surrogate family reused in GrimAge2: feature/covariate sets and coefficients/intercepts match at serialized float32 precision. Citation roles differ (2019 origin, 2022 reuse); end-to-end parity is not established.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmPeakflow",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmPhysAge",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmPhysAge_years",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmPulsePr",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmSex_Wang_ChrX",
+    "pyaging_id": "xchrom",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "DNAmSex_Wang",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmSex_Wang_ChrY",
+    "pyaging_id": "ychrom",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "DNAmSex_Wang",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmStress",
+    "pyaging_id": "dnamstress",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "DNAmStress",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmTIMP1",
+    "pyaging_id": "grimage2timp1",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Same original fitted surrogate family reused in GrimAge2: feature/covariate sets and coefficients/intercepts match at serialized float32 precision. Citation roles differ (2019 origin, 2022 reuse); end-to-end parity is not established.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmTL",
+    "pyaging_id": "dnamtl",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "DNAmTL",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmVO2max_Female",
+    "pyaging_id": "dnamfitagevo2max",
+    "status": "routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Sex-specific component of the matched routed pyaging model; not a separate pyaging clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmVO2max_Male",
+    "pyaging_id": "dnamfitagevo2max",
+    "status": "routed_component",
+    "methylcipher_kind": "clock",
+    "group": "DNAmFitAge",
+    "note": "Sex-specific component of the matched routed pyaging model; not a separate pyaging clock.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "DNAmWHR",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PhysAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmlogA1C",
+    "pyaging_id": "grimage2loga1c",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmlogCRP",
+    "pyaging_id": "grimage2logcrp",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DamAge",
+    "pyaging_id": "yingdamage",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "CausalityAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DunedinPACE",
+    "pyaging_id": "dunedinpace",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "Dunedin",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DunedinPoAm38",
+    "pyaging_id": "dunedinpoam38",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "Dunedin",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "EducationMcCartney",
+    "pyaging_id": "mccartneyeducation",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Ensaya",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Ensaya",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "EpiTOC",
+    "pyaging_id": "epitoc1",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "EpiTOC",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "EpiTOC2",
+    "pyaging_id": "epitoc2",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "EpiTOC2",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Garma",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Garma",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "GarmaGeneral",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Garma",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "GarmaMiddle",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Garma",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "GarmaOld",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Garma",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "GarmaYoung",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Garma",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "GrimAgeV1",
+    "pyaging_id": "grimage",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "GrimAgeV2",
+    "pyaging_id": "grimage2",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "GrimAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "HDLCholesterolMcCartney",
+    "pyaging_id": "mccartneyhdlcholesterol",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "HRSInChPhenoAge",
+    "pyaging_id": "hrsinchphenoage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "HRSInChPhenoAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Hannum",
+    "pyaging_id": "hannum",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "Hannum",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Heart",
+    "pyaging_id": "systemsageheart",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Hormone",
+    "pyaging_id": "systemsagehormone",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Horvath1",
+    "pyaging_id": "horvath2013",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "Horvath1",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Horvath2",
+    "pyaging_id": "skinandblood",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "Horvath2",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "HypoClock",
+    "pyaging_id": "hypoclock",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "EpiTOC2",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Immune",
+    "pyaging_id": "systemsageimmune",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Inflammation",
+    "pyaging_id": "systemsageinflammation",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "IntrinClock370",
+    "pyaging_id": "intrinclock370",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "IntrinClock",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "IntrinClock380",
+    "pyaging_id": "intrinclock",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "IntrinClock",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Kidney",
+    "pyaging_id": "systemsagekidney",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Knight",
+    "pyaging_id": "knight",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "Knight",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "LDLCholesterolMcCartney",
+    "pyaging_id": "mccartneyldlcholesterol",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "LeeControl",
+    "pyaging_id": "leecontrol",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "LeePlacentalAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "LeeRefinedRobust",
+    "pyaging_id": "leerefinedrobust",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "LeePlacentalAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "LeeRobust",
+    "pyaging_id": "leerobust",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "LeePlacentalAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Lin",
+    "pyaging_id": "lin",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "Lin",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Liver",
+    "pyaging_id": "systemsageliver",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Lung",
+    "pyaging_id": "systemsagelung",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Mayne",
+    "pyaging_id": "mayne",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "Mayne",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Metabolic",
+    "pyaging_id": "systemsagemetabolic",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "MiAge",
+    "pyaging_id": "miage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "MiAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "MusculoSkeletal",
+    "pyaging_id": "systemsagemusculoskeletal",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PAYA",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "PAYA",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCADM",
+    "pyaging_id": "pcgrimageadm",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCB2M",
+    "pyaging_id": "pcgrimageb2m",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCBrainAge",
+    "pyaging_id": "pcbrainage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "PCBrainAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCCystatinC",
+    "pyaging_id": "pcgrimagecystatinc",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCDNAmTL",
+    "pyaging_id": "pcdnamtl",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCGDF15",
+    "pyaging_id": "pcgrimagegdf15",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCGrimAge",
+    "pyaging_id": "pcgrimage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCHannum",
+    "pyaging_id": "pchannum",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCHorvath1",
+    "pyaging_id": "pchorvath2013",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCHorvath2",
+    "pyaging_id": "pcskinandblood",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCLeptin",
+    "pyaging_id": "pcgrimageleptin",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCPACKYRS",
+    "pyaging_id": "pcgrimagepackyrs",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCPAI1",
+    "pyaging_id": "pcgrimagepai1",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCPhenoAge",
+    "pyaging_id": "pcphenoage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PCTIMP1",
+    "pyaging_id": "pcgrimagetimp1",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PCClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PedBE",
+    "pyaging_id": "pedbe",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "PedBE",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "PhenoAge",
+    "pyaging_id": "dnamphenoage",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "PhenoAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "RepliTali",
+    "pyaging_id": "replitali",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "RepliTali",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "RepliTaliNorm",
+    "pyaging_id": "replitalinorm",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "RepliTali",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Retroelement_Age450K",
+    "pyaging_id": "retroelementagev1",
+    "status": "related_variant",
+    "methylcipher_kind": "clock",
+    "group": "Retroelement_Age",
+    "note": "Separate 450K-calibrated variant; do not assume equivalence from shared publication or feature count.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Retroelement_AgeMammal_Retro",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Retroelement_Age_Mammal",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Retroelement_AgeMammal_Transposable",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Retroelement_Age_Mammal",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Retroelement_AgeV1",
+    "pyaging_id": "retroelementagev1",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "Retroelement_Age",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Retroelement_AgeV2",
+    "pyaging_id": "retroelementagev2",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "Retroelement_Age",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Retroelement_TissueAge",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "Retroelement_Age",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "SenChronoAge",
+    "pyaging_id": "senchronoage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "SenescenceAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "SenCultureAge",
+    "pyaging_id": "sencultureage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "SenescenceAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "SenMortalityAge",
+    "pyaging_id": "senmortalityage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "SenescenceAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "SmokingMcCartney",
+    "pyaging_id": "mccartneysmoking",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "StocH",
+    "pyaging_id": "stoch",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "StocClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "StocP",
+    "pyaging_id": "stocp",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "StocClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "StocZ",
+    "pyaging_id": "stocz",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "StocClocks",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "SystemsAge",
+    "pyaging_id": "systemsage",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "SystemsAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "TotalCholesterolMcCartney",
+    "pyaging_id": "mccartneytotalcholesterol",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "TotalHDLRatioMcCartney",
+    "pyaging_id": "mccartneytotalhdlratio",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "VidalBralo",
+    "pyaging_id": "vidalbralo",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "VidalBralo",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "WHRMcCartney",
+    "pyaging_id": "mccartneywhr",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "McCartney",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Weidner",
+    "pyaging_id": "weidner",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "Weidner",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Zhang2019BLUP",
+    "pyaging_id": "zhangblup",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "Zhang2019",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "Zhang2019EN",
+    "pyaging_id": "zhangen",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "Zhang2019",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "ZhangMortality",
+    "pyaging_id": "zhangmortality",
+    "status": "matched_name",
+    "methylcipher_kind": "clock",
+    "group": "ZhangMortality",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "cAge",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "clock",
+    "group": "cAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "cAge_gt_20",
+    "pyaging_id": null,
+    "status": "unmatched_internal_component",
+    "methylcipher_kind": "score_routed_member",
+    "group": "cAge",
+    "note": "Internal branch of unmatched cAge, not a standalone pyaging model.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "cAge_le_20",
+    "pyaging_id": null,
+    "status": "unmatched_internal_component",
+    "methylcipher_kind": "score_routed_member",
+    "group": "cAge",
+    "note": "Internal branch of unmatched cAge, not a standalone pyaging model.",
+    "public_requestable": false
+  },
+  {
+    "methylcipher_id": "non_prcPhenoAge",
+    "pyaging_id": "dnamphenoagenonprc",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "prcPhenoAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "prcPhenoAge",
+    "pyaging_id": "dnamphenoageprc",
+    "status": "matched_alias",
+    "methylcipher_kind": "clock",
+    "group": "prcPhenoAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmFEV1_wAge",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "sex_routed_alias",
+    "group": "DNAmFitAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmFitAge",
+    "pyaging_id": "dnamfitage",
+    "status": "matched_name",
+    "methylcipher_kind": "sex_routed_alias",
+    "group": "DNAmFitAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmGait_noAge",
+    "pyaging_id": "dnamfitagegait",
+    "status": "matched_alias",
+    "methylcipher_kind": "sex_routed_alias",
+    "group": "DNAmFitAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmGait_wAge",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "sex_routed_alias",
+    "group": "DNAmFitAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmGrip_noAge",
+    "pyaging_id": "dnamfitagegrip",
+    "status": "matched_alias",
+    "methylcipher_kind": "sex_routed_alias",
+    "group": "DNAmFitAge",
+    "note": "Identity based on named model, publication and implementation family; numerical parity is not implied.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmGrip_wAge",
+    "pyaging_id": null,
+    "status": "not_in_pyaging",
+    "methylcipher_kind": "sex_routed_alias",
+    "group": "DNAmFitAge",
+    "note": "No matching canonical entry; outside mutual-clock metadata correction scope.",
+    "public_requestable": true
+  },
+  {
+    "methylcipher_id": "DNAmVO2max",
+    "pyaging_id": "dnamfitagevo2max",
+    "status": "matched_alias",
+    "methylcipher_kind": "sex_routed_alias",
+    "group": "DNAmFitAge",
+    "note": "Upstream sex aliases both route the same joint-sex predictor; verify covariate/panel union rather than treating two fitted models.",
+    "public_requestable": true
+  }
+]

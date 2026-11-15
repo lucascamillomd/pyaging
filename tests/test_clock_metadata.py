@@ -57,7 +57,7 @@ def test_registry_has_every_implementation_notebook(registry):
         "dnamfitagegripf",
         "dnamfitagegripm",
     }
-    assert len(registry) == 177
+    assert len(registry) == 240
     assert retired.isdisjoint(registry)
     assert set(registry) == notebook_names
 
@@ -70,15 +70,61 @@ def test_registry_uses_controlled_arrays(registry, vocabulary):
             assert record[field], f"{clock_name}.{field}"
 
 
-def test_evidence_is_complete_and_resolved(registry, ledger):
+def test_evidence_is_complete_and_unresolved_fields_are_disclosed(registry, ledger):
     validate_evidence(registry, ledger)
+    audit = load_json(METADATA_DIR / "methods_audit_2026-10-02.json")
+    reviewed = {record["clock_name"]: record for record in audit["clocks"]}
+    assert len(audit["clocks"]) == len(reviewed) == len(registry)
+    assert set(reviewed) == set(registry)
     for clock_name, record in ledger.items():
+        review = reviewed[clock_name]
+        checked = set(review["checked_fields"])
+        unresolved = set(review["unresolved_fields"])
+        assert not checked & unresolved, clock_name
+        assert set(AUDITED_FIELDS) <= checked | unresolved, clock_name
+        assert review["artifact_feature_count"] == registry[clock_name]["n_features"]
+        assert (review["review_status"] == "partial") == bool(unresolved), clock_name
         for field in AUDITED_FIELDS:
-            assert record["fields"][field]["status"] != "unresolved", f"{clock_name}.{field}"
+            evidence = record["fields"][field]
+            if evidence["status"] == "unresolved":
+                # A source-access gap must stay visible, rather than acquiring a
+                # misleading confirmed label just to satisfy a completeness test.
+                assert field in unresolved, f"{clock_name}.{field}"
+                assert evidence["note"] and record["access_issues"], f"{clock_name}.{field}"
 
 
 def test_reedbmi_access_issues_do_not_contradict_corrected_feature_count(ledger):
     assert not any("134 CpGs" in issue for issue in ledger["reedbmi"]["access_issues"])
+
+
+@pytest.mark.parametrize(
+    "class_name",
+    [
+        "GrimAge2ADM",
+        "GrimAge2B2M",
+        "GrimAge2CystatinC",
+        "GrimAge2GDF15",
+        "GrimAge2Leptin",
+        "GrimAge2LogA1C",
+        "GrimAge2LogCRP",
+        "GrimAge2PackYrs",
+        "GrimAge2PAI1",
+        "GrimAge2TIMP1",
+    ],
+)
+def test_grimage2_surrogates_have_no_age_conversion_label(registry, class_name):
+    from pyaging.models import _models
+
+    name = class_name.lower()
+    values = torch.tensor([-1.0, 0.0, 2.0])
+    torch.testing.assert_close(getattr(_models, class_name)().postprocess(values), values)
+    assert registry[name].get("postprocess") is None
+    path = WEIGHTS_DIR / f"{name}.pt"
+    if path.exists():
+        model = torch.load(path, weights_only=False, map_location="cpu")
+        assert model.postprocess_name is None
+        assert model.metadata.get("postprocess") is None
+        torch.testing.assert_close(model.postprocess(values), values)
 
 
 def _write_consistent_artifact_fixture(tmp_path, registry, clock_name="tiny"):
@@ -313,7 +359,7 @@ def test_local_runtime_artifacts_match_registry():
     validate_artifact_consistency(ROOT)
 
 
-def test_every_built_clock_carries_the_registry_feature_units():
+def test_every_built_clock_carries_the_expected_feature_units():
     """A stored ``feature_units`` shadows the registry, so a stale copy must not survive a build.
 
     ``resolve_feature_ranges`` resolves a unit as ``override or entry["unit"]``,
@@ -336,6 +382,13 @@ def test_every_built_clock_carries_the_registry_feature_units():
                 getattr(model, "feature_range_data_type", None) or model.metadata.get("data_type"),
             )
         ]
+        if model.metadata.get("data_type") == "proteomics":
+            # The currently packaged Olink models declare NPX explicitly; the
+            # modality itself must not assign NPX to future non-Olink assays.
+            assert all(platform.startswith("Olink Explore") for platform in model.metadata["platform"])
+            expected = ["years" if feature == "age" else "NPX" for feature in model.features]
+            if model.metadata.get("clock_name") == "paopac":
+                expected[model.features.index("TDI")] = "Townsend deprivation index; author protein-matrix transform"
         if getattr(model, "feature_units", None) != expected:
             stale.append(path.stem)
 

@@ -1,6 +1,8 @@
-import os
 from functools import wraps
+from inspect import signature
+from pathlib import Path
 from pprint import pformat
+from urllib.parse import unquote, urlsplit
 from urllib.request import urlretrieve
 
 import torch
@@ -9,6 +11,7 @@ from rich.table import Table
 from rich.text import Text
 
 from ..logger._live import MUTED, live_step
+from ._files import atomic_output_path
 from ._hf import download_hf_file
 
 
@@ -17,8 +20,8 @@ def progress(message: str) -> None:
     A decorator to add progress logging to a function.
 
     This decorator wraps a function to add starting and finishing progress messages to the
-    logger. It extracts the `indent_level` from keyword arguments, defaults to 1 if not provided,
-    and assumes the logger is the last positional argument. It logs the start and end of the
+    logger. It resolves the `logger` and `indent_level` arguments from the function signature,
+    accepting positional or keyword arguments. It logs the start and end of the
     function execution with the provided message.
 
     Parameters
@@ -32,17 +35,10 @@ def progress(message: str) -> None:
     decorator : function
         A decorator function that wraps the original function with progress logging.
 
-    Raises
-    ------
-    AttributeError
-        If the logger object is not found as the last positional argument, an AttributeError
-        might be raised when attempting to call `start_progress` or `finish_progress`.
-
     Notes
     -----
-    The decorator assumes that the logger object is passed as the last positional argument to the
-    function being decorated. It manipulates `kwargs` to extract `indent_level` if provided,
-    otherwise defaults to 1. The `indent_level` controls the indentation of the log messages.
+    The decorated function must accept a ``logger`` argument. Its declared ``indent_level``
+    default is used when omitted; functions without that parameter use an indentation of 1.
 
     This will log 'Processing data started' before the `data_processing` function begins and
     'Processing data finished' after it completes.
@@ -57,12 +53,14 @@ def progress(message: str) -> None:
     """
 
     def decorator(func):
+        function_signature = signature(func)
+
         @wraps(func)
         def wrapper(*args, **kwargs):
-            # Extract indent_level from kwargs, default to 1 if not provided
-            indent_level = kwargs.get("indent_level", 1)
-
-            logger = args[-1]  # Assumes logger is the last positional argument
+            bound = function_signature.bind(*args, **kwargs)
+            bound.apply_defaults()
+            indent_level = bound.arguments.get("indent_level", 1)
+            logger = bound.arguments["logger"]
             logger.start_progress(f"{message} started", indent_level=indent_level)
             result = func(*args, **kwargs)
             logger.finish_progress(f"{message} finished", indent_level=indent_level)
@@ -135,20 +133,23 @@ def download(url: str, dir: str, logger, indent_level: int = 1) -> None:
 
     Notes
     -----
-    The local filename is the basename of the URL. Existing local files are reused without
-    contacting the remote host.
+    The local filename is the basename of the URL path, excluding its query and fragment.
+    Existing local files are reused without contacting the remote host. New files are
+    published atomically, so a failed download is not reused as a complete cached file.
     """
-    file_path = os.path.join(dir, url.split("/")[-1])
+    filename = Path(unquote(urlsplit(url).path)).name
+    file_path = Path(dir) / filename
 
-    if os.path.exists(file_path):
+    if file_path.is_dir():
+        raise IsADirectoryError(file_path)
+    if file_path.exists():
         logger.info(f"Data found in {file_path}", indent_level=indent_level + 1)
         return
 
-    if not os.path.exists(dir):
-        os.mkdir(dir)
     logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
     logger.indent_level = indent_level + 1
-    urlretrieve(url, file_path, reporthook=logger.request_report_hook)
+    with atomic_output_path(file_path) as temporary_path:
+        urlretrieve(url, temporary_path, reporthook=logger.request_report_hook)
 
 
 def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data", verbose: bool = True) -> None:

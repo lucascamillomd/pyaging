@@ -1,0 +1,35 @@
+{
+  "paopac": {
+    "clock_name": "paopac",
+    "data_type": "proteomics",
+    "species": "Homo sapiens",
+    "year": 2026,
+    "approved_by_author": "⌛",
+    "research_only": true,
+    "citation": "Xu, H., et al. Proteome-aware organ proxy aging clocks. bioRxiv (2026).",
+    "doi": "https://doi.org/10.64898/2026.04.24.720503",
+    "notes": "Conventional PAOPAC from the authors' MIT v1.0.0 release: 800 LightGBM trees with 189 Olink protein predictors and TDI, plus chronological age for cohort correction. Supply plasma Olink Explore 3072 NPX (assay-normalized log2 relative abundance), not linear abundance, concentrations, counts or pre-standardized values. NPX labeling alone does not establish equivalence across assays, panels, batches or plasma and serum. Exact duplicate protein columns are averaged on the NPX scale, then names uppercased; newly colliding names are rejected. The original interface applies 2**NPX, fills missing or absent values with zero on that linear scale, and fits StandardScaler over the complete supplied cohort. TDI is optional and read only from the protein matrix; it is exponentiated and standardized like the other inputs. TDI in sample metadata is ignored; absent TDI becomes zero. Required chronological age is supplied as an age column in years. Final output is raw predicted age minus LOWESS(raw predicted age minus chronological age, chronological age), with frac=0.75 and the original statsmodels defaults. Predictions depend on cohort composition, including cohort ages; this is not a fixed per-sample age or a portable age-acceleration residual. Very small or age-degenerate cohorts can produce trivial corrections. No fixed UKB scaler or LOWESS curve is supplied by the original release. Preserve NaNs when preparing AnnData to reproduce the author's missing-value rule. Nature Biotechnology trial supplement S2 identifies the Conventional endpoint; exact identity of that trial's private model artifact with this later public release has not been verified. MIT source; preprint CC BY 4.0. No author approval of this conversion is claimed.",
+    "tissue": [
+      "plasma"
+    ],
+    "predicts": [
+      "chronological age"
+    ],
+    "training_target": [
+      "chronological age"
+    ],
+    "unit": [
+      "years"
+    ],
+    "model_type": "LightGBM with cohort standardization and LOWESS correction",
+    "platform": [
+      "Olink Explore 3072"
+    ],
+    "population": "adults",
+    "journal": "bioRxiv",
+    "last_author": "Jing-Dong J. Han",
+    "n_features": 191,
+    "citations": 1,
+    "citations_date": "2026-10-02"
+  }
+}

@@ -1,0 +1,700 @@
+{
+  "reviewed_clocks": [
+    "intrinclock370",
+    "kdmage",
+    "knight",
+    "leecontrol",
+    "leerefinedrobust",
+    "leerobust",
+    "lin",
+    "linage2",
+    "mammalian1",
+    "mammalian2",
+    "mammalian3",
+    "mammalianblood2",
+    "mammalianblood3",
+    "mammalianfemale",
+    "mammalianlifespan",
+    "mammalianskin2",
+    "mammalianskin3",
+    "mayne",
+    "mccartneyalcohol",
+    "mccartneybmi",
+    "mccartneybodyfat",
+    "mccartneyeducation",
+    "mccartneyhdlcholesterol",
+    "mccartneyldlcholesterol",
+    "mccartneysmoking",
+    "mccartneytotalcholesterol",
+    "mccartneytotalhdlratio",
+    "mccartneywhr",
+    "meer",
+    "miage",
+    "neusin",
+    "ocampoatac1",
+    "ocampoatac2",
+    "organagechronologicaladipose",
+    "organagechronologicaladrenal",
+    "organagechronologicalartery",
+    "organagechronologicalbrain",
+    "organagechronologicalconventional",
+    "organagechronologicalesophagus",
+    "organagechronologicalfemale"
+  ],
+  "corrections": [
+    {
+      "clock_name": "ocampoatac1",
+      "field": "citation",
+      "old_value": "Morandini, F. et al. ATAC-clock: An aging clock based on chromatin accessibility. GeroScience 46, 635-650 (2024).",
+      "new_value": "Morandini, F., Rechsteiner, C., Perez, K., et al. “ATAC-clock: An aging clock based on chromatin accessibility.” GeroScience 46(2), 1789–1806 (2024).",
+      "source_url": "https://link.springer.com/article/10.1007/s11357-023-00986-0",
+      "source_locator": "Publisher article bibliographic header; Crossref exact DOI record; issue 46(2), pages 1789–1806. Online publication was 2023-11-04, so the registry year 2023 is retained as first-online publication year.",
+      "evidence": "Publisher/PubMed bibliographic record gives GeroScience 46(2):1789–1806 (2024); current citation range 635–650 is incorrect. Exact DOI and title match.",
+      "confidence": "high",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "ocampoatac2",
+      "field": "citation",
+      "old_value": "Morandini, F. et al. ATAC-clock: An aging clock based on chromatin accessibility. GeroScience 46, 635-650 (2024).",
+      "new_value": "Morandini, F., Rechsteiner, C., Perez, K., et al. “ATAC-clock: An aging clock based on chromatin accessibility.” GeroScience 46(2), 1789–1806 (2024).",
+      "source_url": "https://link.springer.com/article/10.1007/s11357-023-00986-0",
+      "source_locator": "Publisher article bibliographic header; Crossref exact DOI record; issue 46(2), pages 1789–1806. Online publication was 2023-11-04, so the registry year 2023 is retained as first-online publication year.",
+      "evidence": "Publisher/PubMed bibliographic record gives GeroScience 46(2):1789–1806 (2024); current citation range 635–650 is incorrect. Exact DOI and title match.",
+      "confidence": "high",
+      "coordinator_disposition": "implemented"
+    },
+    {
+      "clock_name": "mccartneybmi",
+      "field": "postprocess",
+      "old_value": "sigmoid",
+      "new_value": "identity",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation and LASSO regression; Additional file 1 coefficient workbook Tables S1, S4–S7 and S10; the published predictor is linear LASSO score of methylation against covariate-adjusted phenotype residual.",
+      "evidence": "The original method applies fitted LASSO coefficients to CpGs to construct DNAm predictor scores; the supplementary author coefficient sheet is linear weights (no sigmoid). For independent synthetic fixture x[cg06500161]=1 and all other model CpGs=0, direct author-weight score=0.446551968319017; current sigmoid gives 0.609819121472805. Do not interpret the score as a probability or inverse-transform it to an absolute phenotype because the paper residualized phenotype on age, sex and 10 genetic PCs before fitting.",
+      "confidence": "high",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneybmi",
+      "field": "unit",
+      "old_value": [
+        "unitless"
+      ],
+      "new_value": [
+        "BMI residual (author-transformed scale)"
+      ],
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation; exact transformations are described in Additional file 4, which requires direct supplement inspection.",
+      "evidence": "The linear score targets covariate-adjusted BMI on its fitted scale, not the current sigmoid-bounded unitless output. the named phenotype residual describes the target scale without claiming the exact transformation; no unadjusted phenotype can be recovered without the original covariates and residualization model.",
+      "confidence": "moderate",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneybodyfat",
+      "field": "postprocess",
+      "old_value": "sigmoid",
+      "new_value": "identity",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation and LASSO regression; Additional file 1 coefficient workbook Tables S1, S4–S7 and S10; the published predictor is linear LASSO score of methylation against covariate-adjusted phenotype residual.",
+      "evidence": "The original method applies fitted LASSO coefficients to CpGs to construct DNAm predictor scores; the supplementary author coefficient sheet is linear weights (no sigmoid). For independent synthetic fixture x[cg06500161]=1 and all other model CpGs=0, direct author-weight score=17.0092599822649; current sigmoid gives 0.999999958982213. Do not interpret the score as a probability or inverse-transform it to an absolute phenotype because the paper residualized phenotype on age, sex and 10 genetic PCs before fitting.",
+      "confidence": "high",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneybodyfat",
+      "field": "unit",
+      "old_value": [
+        "unitless"
+      ],
+      "new_value": [
+        "percentage-point residual"
+      ],
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation; exact transformations are described in Additional file 4, which requires direct supplement inspection.",
+      "evidence": "The linear score targets covariate-adjusted body fat percentage on its fitted scale, not the current sigmoid-bounded unitless output. percentage-point residual describes that residual scale; no unadjusted phenotype can be recovered without the original covariates and residualization model.",
+      "confidence": "moderate",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneyeducation",
+      "field": "postprocess",
+      "old_value": "sigmoid",
+      "new_value": "identity",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation and LASSO regression; Additional file 1 coefficient workbook Tables S1, S4–S7 and S10; the published predictor is linear LASSO score of methylation against covariate-adjusted phenotype residual.",
+      "evidence": "The original method applies fitted LASSO coefficients to CpGs to construct DNAm predictor scores; the supplementary author coefficient sheet is linear weights (no sigmoid). For independent synthetic fixture x[cg06807993]=1 and all other model CpGs=0, direct author-weight score=3.12531698820141; current sigmoid gives 0.957925050037133. Do not interpret the score as a probability or inverse-transform it to an absolute phenotype because the paper residualized phenotype on age, sex and 10 genetic PCs before fitting.",
+      "confidence": "high",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneyeducation",
+      "field": "unit",
+      "old_value": [
+        "unitless"
+      ],
+      "new_value": [
+        "ordinal-scale residual"
+      ],
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation; exact transformations are described in Additional file 4, which requires direct supplement inspection.",
+      "evidence": "The linear score targets covariate-adjusted educational attainment on its fitted scale, not the current sigmoid-bounded unitless output. ordinal-scale residual describes that residual scale; no unadjusted phenotype can be recovered without the original covariates and residualization model.",
+      "confidence": "moderate",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneyhdlcholesterol",
+      "field": "postprocess",
+      "old_value": "sigmoid",
+      "new_value": "identity",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation and LASSO regression; Additional file 1 coefficient workbook Tables S1, S4–S7 and S10; the published predictor is linear LASSO score of methylation against covariate-adjusted phenotype residual.",
+      "evidence": "The original method applies fitted LASSO coefficients to CpGs to construct DNAm predictor scores; the supplementary author coefficient sheet is linear weights (no sigmoid). For independent synthetic fixture x[cg08461397]=1 and all other model CpGs=0, direct author-weight score=1.27640342738827; current sigmoid gives 0.781836938303057. Do not interpret the score as a probability or inverse-transform it to an absolute phenotype because the paper residualized phenotype on age, sex and 10 genetic PCs before fitting.",
+      "confidence": "high",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneyhdlcholesterol",
+      "field": "unit",
+      "old_value": [
+        "unitless"
+      ],
+      "new_value": [
+        "mmol/L residual"
+      ],
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation; exact transformations are described in Additional file 4, which requires direct supplement inspection.",
+      "evidence": "The linear score targets covariate-adjusted HDL cholesterol on its fitted scale, not the current sigmoid-bounded unitless output. mmol/L residual describes that residual scale; no unadjusted phenotype can be recovered without the original covariates and residualization model.",
+      "confidence": "moderate",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneyldlcholesterol",
+      "field": "postprocess",
+      "old_value": "sigmoid",
+      "new_value": "identity",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation and LASSO regression; Additional file 1 coefficient workbook Tables S1, S4–S7 and S10; the published predictor is linear LASSO score of methylation against covariate-adjusted phenotype residual.",
+      "evidence": "The original method applies fitted LASSO coefficients to CpGs to construct DNAm predictor scores; the supplementary author coefficient sheet is linear weights (no sigmoid). For independent synthetic fixture x[cg17140673]=1 and all other model CpGs=0, direct author-weight score=2.34049972246798; current sigmoid gives 0.912176126604352. Do not interpret the score as a probability or inverse-transform it to an absolute phenotype because the paper residualized phenotype on age, sex and 10 genetic PCs before fitting.",
+      "confidence": "high",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneyldlcholesterol",
+      "field": "unit",
+      "old_value": [
+        "unitless"
+      ],
+      "new_value": [
+        "mmol/L residual"
+      ],
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation; exact transformations are described in Additional file 4, which requires direct supplement inspection.",
+      "evidence": "The linear score targets covariate-adjusted LDL with remnant cholesterol on its fitted scale, not the current sigmoid-bounded unitless output. mmol/L residual describes that residual scale; no unadjusted phenotype can be recovered without the original covariates and residualization model.",
+      "confidence": "moderate",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneytotalcholesterol",
+      "field": "postprocess",
+      "old_value": "sigmoid",
+      "new_value": "identity",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation and LASSO regression; Additional file 1 coefficient workbook Tables S1, S4–S7 and S10; the published predictor is linear LASSO score of methylation against covariate-adjusted phenotype residual.",
+      "evidence": "The original method applies fitted LASSO coefficients to CpGs to construct DNAm predictor scores; the supplementary author coefficient sheet is linear weights (no sigmoid). For independent synthetic fixture x[cg26832552]=1 and all other model CpGs=0, direct author-weight score=1.87027436936261; current sigmoid gives 0.866490021095919. Do not interpret the score as a probability or inverse-transform it to an absolute phenotype because the paper residualized phenotype on age, sex and 10 genetic PCs before fitting.",
+      "confidence": "high",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    },
+    {
+      "clock_name": "mccartneytotalcholesterol",
+      "field": "unit",
+      "old_value": [
+        "unitless"
+      ],
+      "new_value": [
+        "mmol/L residual"
+      ],
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: phenotype preparation; exact transformations are described in Additional file 4, which requires direct supplement inspection.",
+      "evidence": "The linear score targets covariate-adjusted total cholesterol on its fitted scale, not the current sigmoid-bounded unitless output. mmol/L residual describes that residual scale; no unadjusted phenotype can be recovered without the original covariates and residualization model.",
+      "confidence": "moderate",
+      "coordinator_disposition": "deferred: changes scores and needs complete original-author output-scale/reference validation"
+    }
+  ],
+  "retained": [
+    {
+      "name": "intrinclock370",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1038/s42003-024-06609-4"
+    },
+    {
+      "name": "kdmage",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://github.com/dayoonkwon/BioAge/tree/b1f9fc02f086cd4aa74185f2335ab1366082e7fe/R"
+    },
+    {
+      "name": "knight",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1186/s13059-016-1068-z"
+    },
+    {
+      "name": "leecontrol",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6628997/"
+    },
+    {
+      "name": "leerefinedrobust",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6628997/"
+    },
+    {
+      "name": "leerobust",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6628997/"
+    },
+    {
+      "name": "lin",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://www.aging-us.com/article/100908/text"
+    },
+    {
+      "name": "linage2",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12019333/"
+    },
+    {
+      "name": "mammalian1",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6"
+    },
+    {
+      "name": "mammalian2",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6"
+    },
+    {
+      "name": "mammalian3",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6"
+    },
+    {
+      "name": "mammalianblood2",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6"
+    },
+    {
+      "name": "mammalianblood3",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6"
+    },
+    {
+      "name": "mammalianfemale",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1126/sciadv.adm7273"
+    },
+    {
+      "name": "mammalianlifespan",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11160467/"
+    },
+    {
+      "name": "mammalianskin2",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6"
+    },
+    {
+      "name": "mammalianskin3",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6"
+    },
+    {
+      "name": "mayne",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.2217/epi-2016-0103"
+    },
+    {
+      "name": "mccartneyalcohol",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "mccartneybmi",
+      "reason": "The primary article and supplementary coefficient tables support the shared 2018 McCartney citation, whole-blood training, trait target and adjusted-score interpretation. The current sigmoid and unit label are separately listed above as supported corrections.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "mccartneybodyfat",
+      "reason": "The primary article and supplementary coefficient tables support the shared 2018 McCartney citation, whole-blood training, trait target and adjusted-score interpretation. The current sigmoid and unit label are separately listed above as supported corrections.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "mccartneyeducation",
+      "reason": "The primary article and supplementary coefficient tables support the shared 2018 McCartney citation, whole-blood training, trait target and adjusted-score interpretation. The current sigmoid and unit label are separately listed above as supported corrections.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "mccartneyhdlcholesterol",
+      "reason": "The primary article and supplementary coefficient tables support the shared 2018 McCartney citation, whole-blood training, trait target and adjusted-score interpretation. The current sigmoid and unit label are separately listed above as supported corrections.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "mccartneyldlcholesterol",
+      "reason": "The primary article and supplementary coefficient tables support the shared 2018 McCartney citation, whole-blood training, trait target and adjusted-score interpretation. The current sigmoid and unit label are separately listed above as supported corrections.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "mccartneysmoking",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "mccartneytotalcholesterol",
+      "reason": "The primary article and supplementary coefficient tables support the shared 2018 McCartney citation, whole-blood training, trait target and adjusted-score interpretation. The current sigmoid and unit label are separately listed above as supported corrections.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "mccartneytotalhdlratio",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "mccartneywhr",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "meer",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://elifesciences.org/articles/40675"
+    },
+    {
+      "name": "miage",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5873367/"
+    },
+    {
+      "name": "neusin",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11723652/"
+    },
+    {
+      "name": "ocampoatac1",
+      "reason": "DOI resolves to the ATAC-clock primary article; title, last author Alejandro Ocampo, PBMC/ATAC-seq model, chronological-age target and year 2023 first-online date agree. Correct only the citation issue pagination.",
+      "source_url": "https://link.springer.com/article/10.1007/s11357-023-00986-0"
+    },
+    {
+      "name": "ocampoatac2",
+      "reason": "DOI resolves to the ATAC-clock primary article; title, last author Alejandro Ocampo, PBMC/ATAC-seq model, chronological-age target and year 2023 first-online date agree. Correct only the citation issue pagination.",
+      "source_url": "https://link.springer.com/article/10.1007/s11357-023-00986-0"
+    },
+    {
+      "name": "organagechronologicaladipose",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    },
+    {
+      "name": "organagechronologicaladrenal",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    },
+    {
+      "name": "organagechronologicalartery",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    },
+    {
+      "name": "organagechronologicalbrain",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    },
+    {
+      "name": "organagechronologicalconventional",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    },
+    {
+      "name": "organagechronologicalesophagus",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    },
+    {
+      "name": "organagechronologicalfemale",
+      "reason": "Exact DOI/title and publication identity match the primary article; reviewed output construct, tissue, model family and platform are consistent with the paper or the original-author model release. Current-day citation count is retained where the exact DOI/title mapping matches the 2026-10-02 OpenAlex audit.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    }
+  ],
+  "unresolved": [
+    {
+      "name": "mccartney-d10-output-scales",
+      "issue": "The original paper and Additional file 1 support linear coefficient scoring and residualized phenotypes, but the exact phenotype transformation/unit mapping for every D10 trait was not independently extracted from Additional file 4 during this bounded review. The six sigmoid findings are supported by the original equation and publisher coefficient fixture; runtime changes are deferred.",
+      "missing_evidence": "Direct readable text for Additional file 4 (phenotype transformation details) and/or author implementation reproducing one complete published model against an author reference example.",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1"
+    },
+    {
+      "name": "knight-training-count",
+      "issue": "The primary paper establishes six training cohorts and provides cohort-specific descriptions, but this review did not independently sum a pooled training N from the cohort table/supplement.",
+      "missing_evidence": "Extract and reconcile the six training-cohort sample counts from the primary paper and its Additional file 1 before recording a combined N.",
+      "source_url": "https://doi.org/10.1186/s13059-016-1068-z"
+    },
+    {
+      "name": "mayne-training-range",
+      "issue": "The primary source supports pooled healthy placenta datasets and the gestational-age clock, but exact pooled training N and age range were not verified from a readable primary-paper/supplement passage in this review.",
+      "missing_evidence": "Readable primary article or supplement cohort table with pooled training sample counts and gestational-age range.",
+      "source_url": "https://doi.org/10.2217/epi-2016-0103"
+    },
+    {
+      "name": "organage-variant-training-details",
+      "issue": "The paper-level UK Biobank and broader cohort facts are source-backed, but each of the seven organ/system coefficient variants does not have an independently reconciled cohort N or age span in this review.",
+      "missing_evidence": "Variant-to-cohort mapping in the original author code/data supplement and corresponding training counts/age spans.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005"
+    }
+  ],
+  "training_details": [
+    {
+      "name": "intrinclock370",
+      "facts": "Human multi-tissue chronological-age methylation clock. The paper assembled 14,601 samples across 71 datasets; after QC and the study split, 9,104 were in the training set and 2,994 in validation. Original author demo distinguishes lambda.1se 370-CpG from lambda.min 380-CpG fits. The clock was designed to be relatively robust to immune-cell-composition shifts.",
+      "source_url": "https://doi.org/10.1038/s42003-024-06609-4",
+      "source_locator": "Methods: dataset collection/QC and train-validation split; Results: IntrinClock development; original author Zenodo artifact RunningIntrinClock/demo.R and final_model_small.RData"
+    },
+    {
+      "name": "kdmage",
+      "facts": "Klemera–Doubal clinical biological-age implementation uses sex-specific NHANES III reference fits. The pinned original BioAge code filters training participants to age 30–75 and excludes pregnancy; the target is chronological age. This is a calibration/reference fit, not a single prospective cohort prediction model.",
+      "source_url": "https://github.com/dayoonkwon/BioAge/tree/b1f9fc02f086cd4aa74185f2335ab1366082e7fe/R",
+      "source_locator": "Author functions kdm_nhanes.R and kdm_calc.R; original BioAge article DOI 10.1007/s11357-021-00480-5"
+    },
+    {
+      "name": "knight",
+      "facts": "Gestational-age DNAm predictor trained across six newborn cord-blood/neonatal blood-spot cohorts. Cohort-specific sample counts are tabulated by source study; shared 148-CpG model uses sites available on 27K/450K arrays. Output is gestational age at birth in weeks.",
+      "source_url": "https://doi.org/10.1186/s13059-016-1068-z",
+      "source_locator": "Methods: Description of cohorts; Results: Predicting DNAm GA in neonates; Additional file 3 coefficient CSV"
+    },
+    {
+      "name": "leecontrol",
+      "facts": "Placental GA model trained on 963 placentas designated control; cases with recognized major placental pathology were excluded by the control cohort definition. The paper reports 546 selected CpGs; predicts GA in weeks.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6628997/",
+      "source_locator": "Results: Control placental clock; Table 1; Supplementary Figure S4"
+    },
+    {
+      "name": "leerefinedrobust",
+      "facts": "Refined RPC was refit using 733 uncomplicated term placentas (GA >36 weeks) selected from the original RPC training set, using original RPC CpGs as candidate set; paper reports 395 selected CpGs. Output is GA in weeks.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6628997/",
+      "source_locator": "Results: Refined robust placental clock for uncomplicated term pregnancies"
+    },
+    {
+      "name": "leerobust",
+      "facts": "Robust placental clock was trained using 1,102 placental samples spanning pregnancies with and without common complications; paper reports 558 selected CpGs. Output is GA in weeks.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6628997/",
+      "source_locator": "Abstract; Results: Robust placental clock; Table 1"
+    },
+    {
+      "name": "lin",
+      "facts": "Whole-blood 99-CpG age estimator. Age-associated CpG discovery in 27K data included a broad age range (reported selection samples span birth to 78 years); the multivariate 450K fitting step reused the adult Hannum dataset. Mortality association was a later evaluation of predicted-age residuals, not the training target.",
+      "source_url": "https://www.aging-us.com/article/100908/text",
+      "source_locator": "Results: Age-related DNAm changes in blood samples; Methods: DNAm profiles and selection of AR-CpGs; Methods: derivation of age predictors"
+    },
+    {
+      "name": "linage2",
+      "facts": "Clinical clock fitted to 20-year mortality in NHANES IV 1999–2000 and evaluated in the independent 2001–2002 wave. This is an adult survey population; the displayed biological-age estimate is mortality-risk-derived rather than a chronological-age training target.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12019333/",
+      "source_locator": "Methods: clock construction / statistics and reproducibility; Results: 20-year mortality"
+    },
+    {
+      "name": "mammalian1",
+      "facts": "Universal pan-mammalian chronological-age models were developed from 11,754 methylation samples across 185 mammal species (eutherian, marsupial and monotreme groups), across tissues. The three variants use distinct target transforms but all report age in years.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6",
+      "source_locator": "Abstract; Methods: Three universal pan-mammalian clocks; author repository UniversalPanMammalianClock"
+    },
+    {
+      "name": "mammalian2",
+      "facts": "Universal pan-mammalian chronological-age models were developed from 11,754 methylation samples across 185 mammal species (eutherian, marsupial and monotreme groups), across tissues. The three variants use distinct target transforms but all report age in years.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6",
+      "source_locator": "Abstract; Methods: Three universal pan-mammalian clocks; author repository UniversalPanMammalianClock"
+    },
+    {
+      "name": "mammalian3",
+      "facts": "Universal pan-mammalian chronological-age models were developed from 11,754 methylation samples across 185 mammal species (eutherian, marsupial and monotreme groups), across tissues. The three variants use distinct target transforms but all report age in years.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6",
+      "source_locator": "Abstract; Methods: Three universal pan-mammalian clocks; author repository UniversalPanMammalianClock"
+    },
+    {
+      "name": "mammalianblood2",
+      "facts": "Blood-specific variants of the universal mammalian clocks, trained on the blood subset of the Mammalian Methylation Consortium rather than the full tissue pool; chronological age is the target under the variant-specific relative-age/log-age transform.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6",
+      "source_locator": "Results: Universal blood clocks; Methods: Three universal pan-mammalian clocks; author repository coefficient objects"
+    },
+    {
+      "name": "mammalianblood3",
+      "facts": "Blood-specific variants of the universal mammalian clocks, trained on the blood subset of the Mammalian Methylation Consortium rather than the full tissue pool; chronological age is the target under the variant-specific relative-age/log-age transform.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6",
+      "source_locator": "Results: Universal blood clocks; Methods: Three universal pan-mammalian clocks; author repository coefficient objects"
+    },
+    {
+      "name": "mammalianfemale",
+      "facts": "Female-sex classifier developed from multi-species mammalian methylation data on the conserved mammalian array; binary sex label is the target and the packaged output is female probability.",
+      "source_url": "https://doi.org/10.1126/sciadv.adm7273",
+      "source_locator": "Methods and author supplement: sex prediction model; author source repository MammalianMethylationPredictors"
+    },
+    {
+      "name": "mammalianlifespan",
+      "facts": "Species-level maximum-life-span estimator fit to methylation data from about 15,000 samples covering 348 mammalian species. Target is species maximum lifespan (the package exponentiates the log-scale estimate to years), not an individual remaining lifespan.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11160467/",
+      "source_locator": "Abstract; Methods and Supplemental Tables S5–S7; original author Zenodo record https://doi.org/10.5281/zenodo.10783145"
+    },
+    {
+      "name": "mammalianskin2",
+      "facts": "Skin-specific variants trained on the skin subset of the Mammalian Methylation Consortium; chronological age is the target under variant-specific relative-age/log-age transforms.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6",
+      "source_locator": "Results: Universal skin clocks; Methods: Three universal pan-mammalian clocks; author repository coefficient objects"
+    },
+    {
+      "name": "mammalianskin3",
+      "facts": "Skin-specific variants trained on the skin subset of the Mammalian Methylation Consortium; chronological age is the target under variant-specific relative-age/log-age transforms.",
+      "source_url": "https://doi.org/10.1038/s43587-023-00462-6",
+      "source_locator": "Results: Universal skin clocks; Methods: Three universal pan-mammalian clocks; author repository coefficient objects"
+    },
+    {
+      "name": "mayne",
+      "facts": "Placental gestational-age elastic-net predictor trained on a pooled set of healthy human placenta methylation datasets; the authors report 62 selected CpGs. Early-onset preeclampsia samples were evaluated for age acceleration after model training.",
+      "source_url": "https://doi.org/10.2217/epi-2016-0103",
+      "source_locator": "Abstract; Results: placental gestational-age prediction; Supplementary Table 5"
+    },
+    {
+      "name": "mccartneyalcohol",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "mccartneybmi",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "mccartneybodyfat",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "mccartneyeducation",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "mccartneyhdlcholesterol",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "mccartneyldlcholesterol",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "mccartneysmoking",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "mccartneytotalcholesterol",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "mccartneytotalhdlratio",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "mccartneywhr",
+      "facts": "Ten whole-blood DNAm EpiScores were fitted in 5,087 Generation Scotland STRADL participants from EPIC data; age range is 18–99 years for the parent cohort. Phenotypes were adjusted for age, sex and 10 genetic PCs, then modeled by 10-fold LASSO; continuous scores were evaluated out of sample in 895 LBC1936 participants using 450K data. Outcomes include phenotype-specific transforms (e.g. BMI/alcohol/smoking log transforms).",
+      "source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+      "source_locator": "Methods: Training dataset; Phenotype preparation; LASSO regression; out-of-sample prediction cohort. Original coefficients: https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx"
+    },
+    {
+      "name": "meer",
+      "facts": "Whole-lifespan multi-tissue mouse clock trained on RRBS methylation from C57BL/6N mouse tissues (cortex, liver, heart, lung) across the lifespan; tissue-stratified train/test split and elastic-net fit. The primary article describes a 435-CpG clock and chronological age output.",
+      "source_url": "https://elifesciences.org/articles/40675",
+      "source_locator": "Abstract; Methods: Datasets; author pipeline https://github.com/gr-meer/WLMT"
+    },
+    {
+      "name": "miage",
+      "facts": "Mitotic-age model fitted on 4,020 tumor/adjacent-normal TCGA samples from eight cancer types and tested in 2,221 samples from five other cancer types. The original model estimates relative mitotic age from DNAm inheritance dynamics; absolute division counts are not identifiable. The packaged original parameter panel has 268 CpGs per author supplement/code.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5873367/",
+      "source_locator": "Abstract; Results: MiAge Calculator and unidentifiability; original author code/supplement https://github.com/anilpsori/DNAm_pipelines_and_biomarkers/tree/d84d6adfc039355d5f9c962fc5faa7d1054f56b2/biomarkers/MiAge"
+    },
+    {
+      "name": "neusin",
+      "facts": "Neu-Sin clocks were built from human brain methylation and use cell-type-associated age CpGs. The paper’s neuron and glia clock comparisons rely on brain cohorts; separate liver/hepatocyte clocks used 210 normal EPIC liver samples, age 18–75, for training/model selection. The listed `neusin` implementation is the brain cortex score.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11723652/",
+      "source_locator": "Methods: human brain DNAm datasets and liver datasets; Results: neuron and glia clocks"
+    },
+    {
+      "name": "ocampoatac1",
+      "facts": "Human PBMC ATAC-clock derived from 159 healthy donors aged 20–74; ATAC profiles were available for 157, with 143 passing QC. The article uses nested cross-validation and an independent external dataset. Both outputs are chronological-age estimates in years; the two packaged coefficient tables are variants of the authors’ final clock.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10828344/",
+      "source_locator": "Methods: donor collection, ATAC-seq and training/validation; original author code https://github.com/ATAC-clock/ATAC-clock"
+    },
+    {
+      "name": "ocampoatac2",
+      "facts": "Human PBMC ATAC-clock derived from 159 healthy donors aged 20–74; ATAC profiles were available for 157, with 143 passing QC. The article uses nested cross-validation and an independent external dataset. Both outputs are chronological-age estimates in years; the two packaged coefficient tables are variants of the authors’ final clock.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10828344/",
+      "source_locator": "Methods: donor collection, ATAC-seq and training/validation; original author code https://github.com/ATAC-clock/ATAC-clock"
+    },
+    {
+      "name": "organagechronologicaladipose",
+      "facts": "Chronological OrganAge elastic-net models were developed from UK Biobank plasma proteomics measured on Olink Explore 3072. The paper reports over 50,000 UK Biobank participants plus other cohorts; organ/system-specific variants and sex-stratified models are coefficient variants of the same original study. UKB consists of adults; source does not support assigning one shared age interval to every released coefficient table.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005",
+      "source_locator": "Original author paper: Human cohorts / chronological age models; original author code and coefficient tables https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicaladrenal",
+      "facts": "Chronological OrganAge elastic-net models were developed from UK Biobank plasma proteomics measured on Olink Explore 3072. The paper reports over 50,000 UK Biobank participants plus other cohorts; organ/system-specific variants and sex-stratified models are coefficient variants of the same original study. UKB consists of adults; source does not support assigning one shared age interval to every released coefficient table.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005",
+      "source_locator": "Original author paper: Human cohorts / chronological age models; original author code and coefficient tables https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalartery",
+      "facts": "Chronological OrganAge elastic-net models were developed from UK Biobank plasma proteomics measured on Olink Explore 3072. The paper reports over 50,000 UK Biobank participants plus other cohorts; organ/system-specific variants and sex-stratified models are coefficient variants of the same original study. UKB consists of adults; source does not support assigning one shared age interval to every released coefficient table.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005",
+      "source_locator": "Original author paper: Human cohorts / chronological age models; original author code and coefficient tables https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalbrain",
+      "facts": "Chronological OrganAge elastic-net models were developed from UK Biobank plasma proteomics measured on Olink Explore 3072. The paper reports over 50,000 UK Biobank participants plus other cohorts; organ/system-specific variants and sex-stratified models are coefficient variants of the same original study. UKB consists of adults; source does not support assigning one shared age interval to every released coefficient table.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005",
+      "source_locator": "Original author paper: Human cohorts / chronological age models; original author code and coefficient tables https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalconventional",
+      "facts": "Chronological OrganAge elastic-net models were developed from UK Biobank plasma proteomics measured on Olink Explore 3072. The paper reports over 50,000 UK Biobank participants plus other cohorts; organ/system-specific variants and sex-stratified models are coefficient variants of the same original study. UKB consists of adults; source does not support assigning one shared age interval to every released coefficient table.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005",
+      "source_locator": "Original author paper: Human cohorts / chronological age models; original author code and coefficient tables https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalesophagus",
+      "facts": "Chronological OrganAge elastic-net models were developed from UK Biobank plasma proteomics measured on Olink Explore 3072. The paper reports over 50,000 UK Biobank participants plus other cohorts; organ/system-specific variants and sex-stratified models are coefficient variants of the same original study. UKB consists of adults; source does not support assigning one shared age interval to every released coefficient table.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005",
+      "source_locator": "Original author paper: Human cohorts / chronological age models; original author code and coefficient tables https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    },
+    {
+      "name": "organagechronologicalfemale",
+      "facts": "Chronological OrganAge elastic-net models were developed from UK Biobank plasma proteomics measured on Olink Explore 3072. The paper reports over 50,000 UK Biobank participants plus other cohorts; organ/system-specific variants and sex-stratified models are coefficient variants of the same original study. UKB consists of adults; source does not support assigning one shared age interval to every released coefficient table.",
+      "source_url": "https://doi.org/10.1016/j.cmet.2024.10.005",
+      "source_locator": "Original author paper: Human cohorts / chronological age models; original author code and coefficient tables https://github.com/ludgergoeminne/organAging/tree/5147b0301ec7f4abdb10ef650d04f47454ddc8fd"
+    }
+  ],
+  "mccartney_d10_fixture": {
+    "basis": "Original publisher-supplied Additional file 1 workbook, not methylCIPHER/Biolearn weights. For each test row, assign beta=1 at listed CpG and beta=0 at all other model CpGs; listed coefficient is the direct linear prediction with no intercept in the supplementary table.",
+    "source_url": "https://static-content.springer.com/esm/art%3A10.1186%2Fs13059-018-1514-1/MediaObjects/13059_2018_1514_MOESM1_ESM.xlsx",
+    "method_source_url": "https://link.springer.com/article/10.1186/s13059-018-1514-1",
+    "caveat": "This synthetic fixture verifies the published coefficient equation and exposes the sigmoid effect; it is not a cohort-level performance validation. Runtime code was not changed."
+  }
+}

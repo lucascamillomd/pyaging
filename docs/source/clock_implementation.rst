@@ -24,6 +24,7 @@ one per clock.
    clock_notebooks/camilloh3k9ac
    clock_notebooks/camilloh3k9me3
    clock_notebooks/camillopanhistone
+   clock_notebooks/celldrift
    clock_notebooks/cellpopage
    clock_notebooks/compil6
    clock_notebooks/corticalclock
@@ -43,8 +44,10 @@ one per clock.
    clock_notebooks/dnamfitagegait
    clock_notebooks/dnamfitagegrip
    clock_notebooks/dnamfitagevo2max
-   clock_notebooks/dnamphenoage
    clock_notebooks/dnamic
+   clock_notebooks/dnamphenoage
+   clock_notebooks/dnamphenoagenonprc
+   clock_notebooks/dnamphenoageprc
    clock_notebooks/dnamstress
    clock_notebooks/dnamtl
    clock_notebooks/downsyndrome
@@ -54,13 +57,13 @@ one per clock.
    clock_notebooks/encen100
    clock_notebooks/encen40
    clock_notebooks/ensembleagehumanmouse
+   clock_notebooks/ensembleagestatic
+   clock_notebooks/ensembleagestatictop
    clock_notebooks/epicga
    clock_notebooks/epicmithyper
    clock_notebooks/epicmithypo
    clock_notebooks/epitoc1
    clock_notebooks/epitoc2
-   clock_notebooks/ensembleagestatic
-   clock_notebooks/ensembleagestatictop
    clock_notebooks/epitoc3
    clock_notebooks/garagnani
    clock_notebooks/gliasin
@@ -82,9 +85,11 @@ one per clock.
    clock_notebooks/hepatoxu
    clock_notebooks/homeostaticdysregulation
    clock_notebooks/horvath2013
-   clock_notebooks/hypoclock
+   clock_notebooks/hps
    clock_notebooks/hrsinchphenoage
+   clock_notebooks/hypoclock
    clock_notebooks/intrinclock
+   clock_notebooks/intrinclock370
    clock_notebooks/kdmage
    clock_notebooks/knight
    clock_notebooks/leecontrol
@@ -113,13 +118,71 @@ one per clock.
    clock_notebooks/mccartneytotalhdlratio
    clock_notebooks/mccartneywhr
    clock_notebooks/meer
+   clock_notebooks/miage
    clock_notebooks/neusin
    clock_notebooks/ocampoatac1
    clock_notebooks/ocampoatac2
+   clock_notebooks/organagechronologicaladipose
+   clock_notebooks/organagechronologicaladrenal
+   clock_notebooks/organagechronologicalartery
+   clock_notebooks/organagechronologicalbrain
+   clock_notebooks/organagechronologicalconventional
+   clock_notebooks/organagechronologicalesophagus
+   clock_notebooks/organagechronologicalfemale
+   clock_notebooks/organagechronologicalheart
+   clock_notebooks/organagechronologicalimmune
+   clock_notebooks/organagechronologicalintestine
+   clock_notebooks/organagechronologicalkidney
+   clock_notebooks/organagechronologicalliver
+   clock_notebooks/organagechronologicallung
+   clock_notebooks/organagechronologicalmale
+   clock_notebooks/organagechronologicalmultiorgan
+   clock_notebooks/organagechronologicalmuscle
+   clock_notebooks/organagechronologicalorganismal
+   clock_notebooks/organagechronologicalpancreas
+   clock_notebooks/organagechronologicalpituitary
+   clock_notebooks/organagechronologicalsalivary
+   clock_notebooks/organagechronologicalskin
+   clock_notebooks/organagechronologicalstomach
+   clock_notebooks/organagechronologicalthyroid
+   clock_notebooks/organagemortalityadipose
+   clock_notebooks/organagemortalityadrenal
+   clock_notebooks/organagemortalityartery
+   clock_notebooks/organagemortalitybrain
+   clock_notebooks/organagemortalityconventional
+   clock_notebooks/organagemortalityesophagus
+   clock_notebooks/organagemortalityfemale
+   clock_notebooks/organagemortalityheart
+   clock_notebooks/organagemortalityimmune
+   clock_notebooks/organagemortalityintestine
+   clock_notebooks/organagemortalitykidney
+   clock_notebooks/organagemortalityliver
+   clock_notebooks/organagemortalitylung
+   clock_notebooks/organagemortalitymale
+   clock_notebooks/organagemortalitymultiorgan
+   clock_notebooks/organagemortalitymuscle
+   clock_notebooks/organagemortalityorganismal
+   clock_notebooks/organagemortalitypancreas
+   clock_notebooks/organagemortalitypituitary
+   clock_notebooks/organagemortalitysalivary
+   clock_notebooks/organagemortalityskin
+   clock_notebooks/organagemortalitystomach
+   clock_notebooks/organagemortalitythyroid
+   clock_notebooks/pac
+   clock_notebooks/paopac
    clock_notebooks/pasta
    clock_notebooks/pastamouse
+   clock_notebooks/pcbrainage
    clock_notebooks/pcdnamtl
    clock_notebooks/pcgrimage
+   clock_notebooks/pcgrimageadm
+   clock_notebooks/pcgrimageb2m
+   clock_notebooks/pcgrimagecystatinc
+   clock_notebooks/pcgrimagegdf15
+   clock_notebooks/pcgrimageleptin
+   clock_notebooks/pcgrimagepackyrs
+   clock_notebooks/pcgrimagepai1
+   clock_notebooks/pcgrimagetimp1
    clock_notebooks/pchannum
    clock_notebooks/pchorvath2013
    clock_notebooks/pcphenoage

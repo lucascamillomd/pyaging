@@ -1,0 +1,9 @@
+# Batch 6 clock review
+
+Reviewed all 40 assigned clocks. DOI-to-paper title, publication year, journal and last-author identity, citation count/date mapping, and packaged feature counts agree with the existing metadata, citation audit and methods audit. Shared clocks retain their shared paper-level count: Systems Age (57), tAge (21), twelve-cell deconvolution (302), Ying clocks (208), and Zhang 2019 clocks (550). Other batch publications also match their DOI-linked snapshot counts. Counts were not refetched.
+
+The accessible primary articles and author tAge package were checked live for substantive uncertainties. The tAge package confirms that mortality is `log10(hazard ratio)` and must stay unscaled; its chronological scaled-difference packaged weights are on the mouse-month reference scale, with species-specific conversion governed by the author package. The output remains cohort-relative after centering. Weidner’s paper confirms the three CpG training/validation sets and the PDE4C assay identity: the pyrosequenced site is upstream of cg17861230, so that array label is an approximation. The source-backed correction to the Weidner note is already present in current metadata.
+
+The YING paper confirms 2,664 whole-blood samples for chronological-age model fitting and reports 1,000/586/1,090 sites for AdaptAge/CausAge/DamAge; the packaged feature counts remain 999/585/1,089. The exact fitting cohort composition, training ages, platform, and one-site discrepancies remain unresolved. I did not infer these from the paper’s separate Generation Scotland analysis or its 450K meQTL instrument source. Systems Age training facts, the 240-versus-1,200 twelve-cell library distinction, and the ZhangMortality score-form discrepancy are retained from the existing source audits and recorded with their limits.
+
+No metadata corrections are proposed. Detailed evidence, source locators, retained decisions, and open evidence gaps are in `batch-6-review.json`.
