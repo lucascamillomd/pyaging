@@ -7,9 +7,17 @@ the fallback whenever a clock's own repository cannot be read.
 
 Set the ``PYAGING_DATA_REVISION`` environment variable to pin downloads to a
 specific existing revision of the data repositories for reproducibility. Defaults to ``main``, the live data release.
+
+A clock's weight file is resolved against the Hub once per process and
+revision; later loads of that clock reuse the resolved local path without a
+request. A long-running process therefore sees a new push to a mutable
+revision such as ``main`` only after it restarts.
 """
 
+import contextvars
 import os
+import re
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import suppress
 
 import httpx
@@ -29,6 +37,13 @@ REPO_ID = "lucascamillomd/pyaging-data"
 CLOCKS_OWNER = "pyaging"
 DEFAULT_REVISION = "main"
 
+# Hugging Face repository names: no leading/trailing "-" or ".", no "--" or "..".
+_CLOCK_NAME = re.compile(r"(?!.*(?:--|\.\.))[a-z0-9](?:[a-z0-9_.-]{0,94}[a-z0-9_])?")
+_PREFETCH_WORKERS = 8
+
+# (clock name, revision) -> resolved weight path, for the life of the process.
+_resolved_weights: dict[tuple[str, str], str] = {}
+
 
 class _SilentProgressBar(tqdm):
     """A per-download bar that honors pyaging's silent display context."""
@@ -39,8 +54,11 @@ class _SilentProgressBar(tqdm):
 
 
 def get_data_revision() -> str:
-    """Resolve the data-repo revision, honoring PYAGING_DATA_REVISION at call time."""
-    return os.environ.get("PYAGING_DATA_REVISION", DEFAULT_REVISION)
+    """Resolve the data-repo revision, honoring PYAGING_DATA_REVISION at call time.
+
+    An unset, empty or whitespace-only value means :data:`DEFAULT_REVISION`.
+    """
+    return os.environ.get("PYAGING_DATA_REVISION", "").strip() or DEFAULT_REVISION
 
 
 class PyAgingHubError(RuntimeError):
@@ -116,15 +134,54 @@ def download_hf_file(
     return path
 
 
+def _clear_resolved_weights() -> None:
+    """Forget every weight path resolved in this process."""
+    _resolved_weights.clear()
+
+
+def _normalize_clock_name(clock_name: str) -> str:
+    """Return the canonical clock id, rejecting names no clock repository can have."""
+    name = clock_name.strip().lower()
+    if not _CLOCK_NAME.fullmatch(name):
+        raise PyAgingResourceNotFoundError(f"'{clock_name}' is not a valid clock name")
+    return name
+
+
+def _remembered_weights(key: tuple[str, str]) -> str | None:
+    path = _resolved_weights.get(key)
+    # The cache may have been pruned since the path was resolved.
+    return path if path is not None and os.path.isfile(path) else None
+
+
 def download_clock_weights(clock_name: str, dir: str = "pyaging_data", logger=None, indent_level: int = 1) -> str:
     """Download a clock's weight file, preferring its dedicated repository.
 
     Each clock lives in ``pyaging/<clock_name>``; the shared data
     repository is the fallback when the per-clock repository cannot be read,
-    including when it lacks the requested revision. Both use the same revision.
-    The repo's ``config.json`` is fetched alongside the weights - it carries
-    the audited clock metadata and is the file the Hub counts as a download.
+    including when it lacks the requested revision or, offline, has no cached
+    copy. Both use the same revision. The repo's ``config.json`` is fetched
+    alongside the weights - it carries the audited clock metadata and is the
+    file the Hub counts as a download.
+
+    The name is stripped and lowercased; a name that cannot be a clock id
+    raises :class:`PyAgingResourceNotFoundError` without contacting the Hub.
+    The resolved path is remembered for the life of the process per clock and
+    revision, so repeated loads make no request and a new push to a mutable
+    revision such as ``main`` is seen only after the process restarts.
     """
+    clock_name = _normalize_clock_name(clock_name)
+    key = (clock_name, get_data_revision())
+    path = _remembered_weights(key)
+    if path is not None:
+        if logger is not None:
+            logger.info(f"Data available at {path}", indent_level=indent_level + 1)
+        return path
+    path = _resolve_clock_weights(clock_name, dir, logger, indent_level)
+    _resolved_weights[key] = path
+    return path
+
+
+def _resolve_clock_weights(clock_name: str, dir: str, logger, indent_level: int) -> str:
     clock_repo = f"{CLOCKS_OWNER}/{clock_name}"
     filename = f"{clock_name}.pt"
     try:
@@ -140,6 +197,47 @@ def download_clock_weights(clock_name: str, dir: str = "pyaging_data", logger=No
         # users a typoed clock name must still reach the shared-repository fallback and
         # its clock-not-available message.
         return download_hf_file(filename, dir, logger, indent_level=indent_level)
+    except PyAgingDownloadError as exc:
+        if not isinstance(exc.__cause__, LocalEntryNotFoundError):
+            raise
+        # Offline (or unreachable) without a cached per-clock copy: the shared
+        # repository may still hold this file cached at the same revision.
+        try:
+            return download_hf_file(filename, dir, logger, indent_level=indent_level)
+        except PyAgingHubError:
+            raise exc from exc.__cause__
     with suppress(PyAgingHubError):
         download_hf_file("config.json", dir, repo_id=clock_repo)
     return path
+
+
+def _prefetch_one(clock_name: str, dir: str) -> None:
+    with suppress(Exception):
+        download_clock_weights(clock_name, dir)
+
+
+def prefetch_clock_weights(clock_names, dir: str = "pyaging_data") -> None:
+    """Resolve several clocks' weight files concurrently before they are loaded.
+
+    Never raises: a clock that cannot be resolved here is reported by the
+    later serial :func:`download_clock_weights` call in its usual way.
+    """
+    try:
+        if isinstance(clock_names, str):
+            clock_names = [clock_names]
+        revision = get_data_revision()
+        pending = []
+        for clock_name in clock_names:
+            with suppress(Exception):
+                name = _normalize_clock_name(clock_name)
+                if name not in pending and _remembered_weights((name, revision)) is None:
+                    pending.append(name)
+        if len(pending) < 2:
+            return
+        with ThreadPoolExecutor(max_workers=min(_PREFETCH_WORKERS, len(pending))) as executor:
+            for name in pending:
+                # Each worker needs its own copy: a context cannot be entered by two
+                # threads at once, and it carries the caller's quiet-progress-bar setting.
+                executor.submit(contextvars.copy_context().run, _prefetch_one, name, dir)
+    except Exception:
+        return

@@ -124,8 +124,13 @@ def test_miage_pipeline_matches_original_author_r(miage_model, batch_size, parti
     weights = tmp_path / "miage.pt"
     torch.save(miage_model, weights)
     monkeypatch.setattr(_pred_utils, "download_clock_weights", lambda *args, **kwargs: weights)
-    predict_age(adata, "MiAge", batch_size=batch_size, verbose=False)
-    np.testing.assert_allclose(adata.obs["miage"], expected["partial" if partial else "full"], rtol=0, atol=1e-3)
+    with pytest.warns(UserWarning, match="no usable data"):
+        predict_age(adata, "MiAge", batch_size=batch_size, verbose=False)
+    expected = expected["partial" if partial else "full"].copy()
+    # The author's optimizer returns its first start (2008) for a sample without
+    # any measured CpG; predict_age reports such a sample as NaN instead.
+    expected["all_nan"] = np.nan
+    np.testing.assert_allclose(adata.obs["miage"], expected, rtol=0, atol=1e-3)
     assert set(adata.uns["miage_missing_features"]) == set(dropped)
     np.testing.assert_array_equal(adata.X, original)
 

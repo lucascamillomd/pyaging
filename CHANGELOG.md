@@ -1,5 +1,72 @@
 # Changelog
 
+## 0.6.3
+
+This package release uses existing model weights and Hugging Face files. It does
+not create a `v0.6.3` data tag.
+
+Changes that can alter predictions:
+
+- epiTOC2 and EpiTOC3 average over the CpGs a sample has, as the authors' R
+  code does. A missing CpG was scored as beta = -1, which reversed the sign of
+  the estimate when about 10% of CpGs were absent.
+- Clocks that read `age` or `female` (GrimAge, GrimAge2 and its proxies,
+  PCGrimAge, DNAmFitAge, CpGPTGrimAge3, clinical PhenoAge and others) raise a
+  `ValueError` when those columns are not features. They were replaced by a
+  reference value or zero, so every sample was scored at the same age and sex.
+- A NaN inside a supplied column is filled like an absent feature (a finite
+  reference value, else a packaged CpG median) or left as NaN. Rank-based
+  clocks such as DunedinPACE read it as the highest value. The share of such
+  cells is stored in `adata.uns["<clock>_percent_nan_values"]` and reported
+  as a `UserWarning`.
+- A sample with no observed values is no longer imputed into a cohort-average
+  sample. It stays NaN through `df_to_adata` and receives NaN predictions.
+- DunedinPACE, Stubbs and `quantile_normalize_with_gold_standard` resolve
+  tied values as `preprocessCore::normalize.quantiles.use.target` does.
+  Results on rounded beta values no longer depend on sort order or device.
+- Mammalian2/3 and their blood and skin variants raise a `ValueError` when a
+  sample has no species column set, instead of using the first species.
+- `bigwig_to_df` reads bigWigs with Ensembl chromosome names (`1`, `X`), which
+  returned all zeros. A file with none of the gene chromosomes raises a
+  `ValueError`; genes on a chromosome the file lacks are NaN with a warning.
+
+Fixes:
+
+- Preserve metadata columns in `epicv2_probe_aggregation`.
+- `predict_age` accepts AnnData opened with `backed="r"`, ignores whitespace
+  and repeated clock names, and leaves no `X_<clock>` matrix behind when a
+  clock fails.
+- `find_clock_by_doi` matches bare DOIs, `doi:` prefixes and DOI URLs in any
+  letter case. `get_clock_metadata` reports an unknown clock without raising
+  `KeyError`.
+- An empty `PYAGING_DATA_REVISION` means the default revision. Offline, clock
+  weights cached only in the shared data repository are found. Malformed
+  clock names report "clock not available".
+- `df_to_adata` accepts a single column name for `metadata_cols`.
+- `pyaging.utils.download` takes a `timeout` and no longer hangs on a stalled
+  server. The clock metadata file loads with `torch.load(weights_only=True)`.
+- BiTAge and `binarize` no longer overwrite their input. `Logger` no longer
+  reconfigures loggers it did not create.
+
+Performance:
+
+- `imputer_strategy="knn"` reproduces scikit-learn's `KNNImputer` about 60
+  times faster with a third of the peak memory. Exactly tied neighbours are
+  ordered by sample position.
+- Clock weights and metadata are checked against the Hub once per process and
+  revision, and several clocks are resolved concurrently. A long-running
+  process sees a new push to `main` after a restart or `ClockCache.clear()`.
+- DunedinPACE, Stubbs, Pasta, Reg, stemTOC and BiTAge preprocess whole batches
+  at once. SystemsAge no longer copies its 4 GB rotation on every batch.
+- `import pyaging` no longer loads scikit-learn or statsmodels, and
+  `epicv2_probe_aggregation` uses about a tenth of the peak memory.
+
+Release tooling:
+
+- `make release` pushes the commit before publishing weights and pushes the
+  tag last, after a preflight check of the branch, version and tag. The
+  release workflow runs the tutorials before publishing to PyPI.
+
 ## 0.6.2
 
 - Use the [Kuo et al. (2021) equation](https://doi.org/10.1111/acel.13376) for

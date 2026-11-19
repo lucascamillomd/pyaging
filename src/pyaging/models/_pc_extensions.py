@@ -17,6 +17,9 @@ class PCBrainAge(LinearReferenceClock):
 class _PCGrimAgeProxy(LinearReferenceClock):
     """Keep the selected original demographic covariates mandatory."""
 
+    # A NaN demographic covariate must raise rather than be filled.
+    handles_nan = True
+
     def __init__(self):
         super().__init__()
         self.required_covariates = []

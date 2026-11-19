@@ -3,6 +3,7 @@
 import importlib.util
 import json
 from pathlib import Path
+from unittest.mock import Mock
 
 import pytest
 
@@ -89,3 +90,95 @@ def test_model_card_does_not_infer_a_weight_license_from_package_license():
 def test_tage_gene_mapping_is_shipped_as_a_tage_sidecar():
     """The preprocessing downloads this asset from ``pyaging/tage``, so the sync must upload it."""
     assert [path.name for path in hf_repo_sync._sidecar_assets("tage")] == ["tage_gene_mapping.csv.gz"]
+
+
+def _sync_fixture(tmp_path, monkeypatch, *, weights, registry):
+    weights_dir = tmp_path / "weights"
+    weights_dir.mkdir()
+    for name in weights:
+        weights_dir.joinpath(f"{name}.pt").write_bytes(name.encode())
+    metadata = tmp_path / "clock_metadata.json"
+    metadata.write_text(json.dumps({name: {"clock_name": name, "year": 2013} for name in registry}))
+    monkeypatch.setattr(hf_repo_sync, "WEIGHTS_DIR", weights_dir)
+    monkeypatch.setattr(hf_repo_sync, "METADATA_FILE", metadata)
+    api = Mock()
+    api.get_paths_info.return_value = []
+    hub_clients = []
+
+    def create_hub_client():
+        hub_clients.append(api)
+        return api
+
+    monkeypatch.setattr(hf_repo_sync, "HfApi", create_hub_client)
+    return api, hub_clients
+
+
+def _run_sync(monkeypatch, *arguments):
+    monkeypatch.setattr("sys.argv", ["hf_repo_sync.py", *arguments])
+    try:
+        return hf_repo_sync.main()
+    except SystemExit as error:
+        return error.code
+
+
+def _synced_repos(api):
+    return [call.args[0] for call in api.create_commit.call_args_list]
+
+
+def _tagged_repos(api):
+    return [call.args[0] for call in api.create_tag.call_args_list]
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [[], ["--tag", "v9.9.9", "--tag-only"], ["--allow-missing"], ["typoclock"]],
+    ids=["sync", "tag-only", "allow-missing", "selected"],
+)
+def test_weight_missing_from_registry_is_rejected_before_contacting_hub(tmp_path, monkeypatch, capsys, arguments):
+    _, hub_clients = _sync_fixture(
+        tmp_path, monkeypatch, weights=["horvath2013", "typoclock"], registry=["horvath2013"]
+    )
+
+    assert _run_sync(monkeypatch, *arguments) != 0
+    assert "typoclock" in capsys.readouterr().err
+    assert hub_clients == []
+
+
+@pytest.mark.parametrize("arguments", [[], ["--tag", "v9.9.9", "--tag-only"]], ids=["sync", "tag-only"])
+def test_registry_clocks_without_weights_fail_a_full_run_before_contacting_hub(
+    tmp_path, monkeypatch, capsys, arguments
+):
+    _, hub_clients = _sync_fixture(
+        tmp_path, monkeypatch, weights=["horvath2013"], registry=["horvath2013", "hannum", "phenoage"]
+    )
+
+    assert _run_sync(monkeypatch, *arguments) != 0
+    err = capsys.readouterr().err
+    assert "hannum" in err
+    assert "phenoage" in err
+    assert hub_clients == []
+
+
+@pytest.mark.parametrize("arguments", [[], ["--tag", "v9.9.9", "--tag-only"]], ids=["sync", "tag-only"])
+def test_allow_missing_reports_skipped_clocks_and_publishes_the_rest(tmp_path, monkeypatch, capsys, arguments):
+    api, _ = _sync_fixture(tmp_path, monkeypatch, weights=["horvath2013"], registry=["horvath2013", "hannum"])
+
+    assert _run_sync(monkeypatch, *arguments, "--allow-missing") == 0
+    assert "hannum" in capsys.readouterr().err
+    if "--tag-only" in arguments:
+        assert _synced_repos(api) == []
+        assert _tagged_repos(api) == ["pyaging/horvath2013"]
+    else:
+        assert _synced_repos(api) == ["pyaging/horvath2013"]
+        operations = api.create_commit.call_args.kwargs["operations"]
+        config = next(operation for operation in operations if operation.path_in_repo == "config.json")
+        assert json.loads(config.path_or_fileobj) == {"clock_name": "horvath2013", "year": 2013}
+
+
+def test_explicit_clock_selection_does_not_require_other_weights(tmp_path, monkeypatch, capsys):
+    api, _ = _sync_fixture(tmp_path, monkeypatch, weights=["horvath2013"], registry=["horvath2013", "hannum"])
+
+    assert _run_sync(monkeypatch, "horvath2013", "--tag", "v9.9.9") == 0
+    assert "hannum" not in capsys.readouterr().err
+    assert _synced_repos(api) == ["pyaging/horvath2013"]
+    assert _tagged_repos(api) == ["pyaging/horvath2013"]

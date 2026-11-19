@@ -26,6 +26,9 @@ class OrganAge(pyagingModel):
     scoring is the caller's separate data-preparation decision.
     """
 
+    # Present NaN propagates, as in the authors' example.
+    handles_nan = True
+
     def preprocess(self, x):
         return x
 

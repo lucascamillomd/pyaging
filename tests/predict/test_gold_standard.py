@@ -233,6 +233,11 @@ def test_all_clocks(clock_name):
         np.abs(np.random.normal(loc=0.5, scale=1, size=(1, len(partial_clock_features)))),
         columns=partial_clock_features,
     )
+    # Required covariates are never substituted, so supply any the dropout removed
+    # at the value the pinned predictions were computed with: the reference, else 0.
+    for position, feature in enumerate(clock.features):
+        if feature in {"age", "female"} and feature not in random_df.columns:
+            random_df[feature] = 0.0 if clock.reference_values is None else float(clock.reference_values[position])
     random_adata = pya.pp.df_to_adata(random_df, imputer_strategy="constant", verbose=False)
     check_features_in_adata(random_adata, clock, logger, indent_level=indent_level)
     predictions = predict_ages_with_model(

@@ -8,10 +8,9 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = _build
 
-# The conf.py `builder-inited` hook regenerates clocks.json (with a committed
-# fallback if the remote host is unreachable), so `html` does not depend on
-# `data` and builds offline. Run `make data` only to refresh the committed
-# artifacts by hand.
+# `html` serves the committed _static/clocks.json and clock_glossary.csv as-is
+# and builds offline. `make data` downloads the aggregate metadata from Hugging
+# Face to refresh those committed files; run it by hand when clocks change.
 html:
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 

@@ -78,4 +78,4 @@ def test_load_clock_metadata_downloads_hf_file_and_loads_returned_path(monkeypat
 
     assert result is metadata
     download_hf_file.assert_called_once_with("all_clock_metadata.pt", str(tmp_path), logger, indent_level=2)
-    torch_load.assert_called_once_with(returned_path, weights_only=False)
+    torch_load.assert_called_once_with(returned_path, weights_only=True)

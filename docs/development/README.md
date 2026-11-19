@@ -28,20 +28,46 @@ built weights. CI runs the offline suite on macOS and Linux with Python
 # Package and data releases
 
 The Git tag triggers `.github/workflows/release.yaml`, which verifies the
-version and main-branch ancestry, tests, builds, and publishes to PyPI before
-creating the GitHub release. Published package versions and tags stay fixed.
+version and main-branch ancestry, tests, builds, and runs the online tutorials
+against Hugging Face `main`. It publishes to PyPI only when both pass, then
+creates the GitHub release. Published package versions and tags stay fixed.
 
-Model publication is a separate operation. `make release` and `release-slim`
-both upload clock artifacts and tag Hugging Face repositories; they are not
-package-only release commands. The shared data repository remains an active
-fallback for per-clock repositories. Set `PYAGING_DATA_REVISION` to an existing
-data revision when reproducibility is required; package-only releases need not
-create a matching data tag.
+`make release VERSION=vX.Y.Z` and `make release-slim VERSION=vX.Y.Z` both
+upload clock artifacts and tag Hugging Face repositories; they are not
+package-only release commands. Installed packages read Hugging Face `main`, so
+the steps run in this order:
+
+1. `release-preflight` stops unless the branch is `main`, `VERSION` has the
+   form `vX.Y.Z`, and the tag exists neither locally nor on `origin`.
+2. Local work: version bump, lint, build, clock metadata, tests and docs.
+   `release` also re-executes the clock notebooks and tutorials.
+3. `commit` commits and pushes `main`.
+4. `upload-clocks-to-hf` uploads per-clock weights and sidecars, then the
+   aggregate metadata.
+5. `tag-hf-data-repo` tags the data repository and every per-clock repository
+   with `VERSION`.
+6. `tag` pushes the Git tag, which starts the PyPI release.
+
+Git and Hugging Face tags keep the `v` prefix; the package version and the
+version stamped into clock metadata use the bare number. If a step after
+`commit` fails, fix the cause and rerun the same command: `commit` succeeds when
+there is nothing new to commit.
+
+The shared data repository remains an active fallback for per-clock
+repositories. Set `PYAGING_DATA_REVISION` to an existing data revision when
+reproducibility is required. A package-only release need not create a data tag,
+but a release whose weights changed must have its Hugging Face data tag. The
+`v0.6.1` and `v0.6.2` tags were added on 2026-11-19, after those releases:
+on the shared repository, on `pyaging/phenoage`, and on the eight clocks that
+have no copy in the shared repository. 0.6.0 and 0.6.3 changed no weights and have no tag.
 
 For an authorized data release, `clocks/hf_repo_sync.py` uploads weights,
 metadata, model cards, and clock-specific `*_*.csv.gz` sidecars. tAge requires
 `tage_gene_mapping.csv.gz` in `pyaging/tage`; both tAge clocks use that mapping.
-Upload weights and sidecars before aggregate metadata, then verify anonymous
+It stops before contacting the Hub when a weight file is not in
+`clocks/metadata/clock_metadata.json`, and, in a run without clock names, when a
+registered clock has no local weight; name the clocks to sync, or pass
+`--allow-missing` to skip the missing ones deliberately. Upload weights and sidecars before aggregate metadata, then verify anonymous
 downloads, predictions, and the clock gallery. Tutorials using new remote
 artifacts must be executed after those artifacts are published.
 

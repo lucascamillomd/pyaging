@@ -1,5 +1,6 @@
 import os
 import re
+import warnings
 
 import anndata
 import numpy as np
@@ -21,6 +22,15 @@ from ._preprocess_utils import (
     load_ensembl_metadata,
     log_data_statistics,
 )
+
+
+def _bigwig_chromosome(chromosome: str, lengths: dict[str, int]) -> str | None:
+    """Return the name the bigWig uses for an Ensembl chromosome, or None if it is absent."""
+    bare = chromosome[3:] if chromosome.startswith("chr") else chromosome
+    candidates = ["chr" + bare, bare]
+    if bare in ("MT", "M"):
+        candidates += ["chrM", "MT", "chrMT", "M"]
+    return next((name for name in candidates if name in lengths), None)
 
 
 def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: bool = True) -> pd.DataFrame:
@@ -54,11 +64,17 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
     ImportError
         If pyBigWig is not installed and the function is called.
 
+    ValueError
+        If a bigWig file contains none of the gene chromosomes.
+
     Notes
     -----
     The function utilizes Ensembl gene annotations and assumes the presence of genes on standard chromosomes
     (1-22, X). Non-standard chromosomes or regions outside annotated genes are not processed. The signal
-    transformation uses the arcsinh function for normalization. This function requires pyBigWig to be installed.
+    transformation uses the arcsinh function for normalization. Chromosomes may be named "chr1" (UCSC) or
+    "1" (Ensembl) in the bigWig. Genes with no covered bases are 0. Genes on a chromosome the file lacks are
+    NaN, and a warning lists those chromosomes; regions running past the chromosome end are clipped to it.
+    This function requires pyBigWig to be installed.
     If pyBigWig is not available, an ImportError will be raised. To use this function, ensure you have installed
     pyaging with the 'histone' extra: pip install pyaging[histone]
 
@@ -80,26 +96,44 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
     with live_step("processing bigWig files", verbose) as (step, pipeline_logger):
         genes = load_ensembl_metadata(dir, pipeline_logger, indent_level=1)
 
-        regions = list(zip(genes["chr"], genes["start"], genes["end"], strict=True))
-        signals = np.zeros((len(bw_files), len(regions)), dtype=float)
+        regions = list(zip(genes["chr"].astype(str), genes["start"], genes["end"], strict=True))
+        gene_chromosomes = list(dict.fromkeys(chromosome for chromosome, _, _ in regions))
+        # NaN marks a gene the file cannot describe (absent chromosome, or coordinates past
+        # its end). A gene with no covered bases is 0: many bigWigs omit zero-signal intervals.
+        signals = np.full((len(bw_files), len(regions)), np.nan)
         for index, bw_file in enumerate(bw_files):
             step.update(f"processing {os.path.basename(bw_file)} ({index + 1}/{len(bw_files)})")
 
             with open_bw(bw_file) as bw:
-                for gene_index, (chromosome, start, end) in enumerate(regions):
-                    try:
-                        signal = bw.stats(
-                            "chr" + str(chromosome),
-                            start - 1,
-                            end,
-                            type="mean",
-                            exact=True,
-                        )[0]
-                    except Exception:
-                        signal = None
+                lengths = bw.chroms()
+                resolved = {chromosome: _bigwig_chromosome(chromosome, lengths) for chromosome in gene_chromosomes}
+                absent = [chromosome for chromosome, name in resolved.items() if name is None]
+                if absent and len(absent) == len(resolved):
+                    raise ValueError(
+                        f"bigWig file {bw_file!r} contains none of the gene chromosomes "
+                        f"(it has {list(lengths)[:5]}); expected names such as 'chr1' or '1'."
+                    )
+                if absent:
+                    warnings.warn(
+                        f"bigWig file {bw_file!r} lacks chromosomes {absent}; their genes are set to NaN.",
+                        UserWarning,
+                        stacklevel=2,
+                    )
 
-                    if signal is not None:
-                        signals[index, gene_index] = np.arcsinh(signal)
+                for gene_index, (chromosome, start, end) in enumerate(regions):
+                    name = resolved[chromosome]
+                    if name is None:
+                        continue
+                    # pyBigWig rejects intervals that run past the chromosome end.
+                    end = min(end, lengths[name])
+                    if start - 1 >= end:
+                        continue
+                    try:
+                        signal = bw.stats(name, start - 1, end, type="mean", exact=True)[0]
+                    except RuntimeError:
+                        continue
+
+                    signals[index, gene_index] = 0.0 if signal is None else np.arcsinh(signal)
 
         df_concat = pd.DataFrame(signals, index=bw_files, columns=genes.gene_id.tolist())
 
@@ -111,7 +145,7 @@ def bigwig_to_df(bw_files: str | list[str], dir: str = "pyaging_data", verbose: 
 
 def df_to_adata(
     df: pd.DataFrame,
-    metadata_cols: list[str] | None = None,
+    metadata_cols: str | list[str] | None = None,
     imputer_strategy: str = "knn",
     verbose: bool = True,
 ) -> anndata.AnnData:
@@ -128,9 +162,9 @@ def df_to_adata(
     df : pd.DataFrame
         The DataFrame containing biological data. Rows represent samples, and columns represent features.
 
-    metadata_cols : list[str], optional
-        A list with the name of the columns in 'df' which are part of the metadata. They will be added
-        to adata.obs rather than adata.X.
+    metadata_cols : str or list[str], optional
+        The name, or a list-like of names, of the columns in 'df' which are part of the metadata. They
+        will be added to adata.obs rather than adata.X.
 
     imputer_strategy : str, optional
         The strategy for imputing missing values in 'df'. Supported strategies include 'mean',
@@ -150,6 +184,9 @@ def df_to_adata(
     ------
     TypeError
         If the input 'df' is not a pandas DataFrame.
+
+    KeyError
+        If any of 'metadata_cols' is not a column of 'df'.
 
     Notes
     -----
@@ -171,6 +208,13 @@ def df_to_adata(
     with live_step("building AnnData object", verbose) as (step, pipeline_logger):
         if metadata_cols is None:
             metadata_cols = []
+        elif isinstance(metadata_cols, str) or not pd.api.types.is_list_like(metadata_cols):
+            metadata_cols = [metadata_cols]
+        else:
+            metadata_cols = list(metadata_cols)
+        missing_cols = [column for column in metadata_cols if column not in df.columns]
+        if missing_cols:
+            raise KeyError(f"Metadata columns not found in df: {missing_cols}")
         if len(metadata_cols) > 0:
             metadata = df.loc[:, metadata_cols]
             df = df.drop(metadata_cols, axis=1)
@@ -253,9 +297,17 @@ def epicv2_probe_aggregation(df: pd.DataFrame, verbose: bool = True):
         # Average every column that maps to a probe CpG (including an unsuffixed copy of it);
         # pass all other columns through unchanged.
         is_probe = np.asarray(cpg_sites.isin(cpg_sites[np.asarray(is_probe, dtype=bool)]), dtype=bool)
-        aggregated_probes = df.loc[:, is_probe].T.groupby(cpg_sites[is_probe], sort=False).mean().T
+        # For float64 probes, averaging a lone probe only renames it, so only duplicated CpGs (a
+        # small fraction of an array) are grouped. For other dtypes the groupby's output dtype
+        # depends on every probe column (and, for float32, on whether values are missing), so
+        # all probes are grouped together.
+        float64_probes = (df.dtypes[is_probe] == np.float64).all()
+        grouped = is_probe & cpg_sites.duplicated(keep=False) if float64_probes else is_probe
+        single = is_probe & ~grouped
+        aggregated_probes = df.loc[:, grouped].T.groupby(cpg_sites[grouped], sort=False).mean().T
+        single_probes = df.loc[:, single].set_axis(cpg_sites[single], axis=1)
         others = df.loc[:, ~is_probe].set_axis(cpg_sites[~is_probe], axis=1)
-        aggregated_df = pd.concat([others, aggregated_probes], axis=1)[cpg_sites.unique()]
+        aggregated_df = pd.concat([others, single_probes, aggregated_probes], axis=1)[cpg_sites.unique()]
         step.done(f"{df.shape[1]} probes aggregated into {aggregated_df.shape[1]} unique CpG sites")
 
     return aggregated_df

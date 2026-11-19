@@ -44,9 +44,11 @@ Inside this repository, use `uv sync` and run commands through `uv run`. Histone
 - Preserve meaningful sample identifiers in `df.index`.
 - Human methylation clocks expect beta values and CpG names such as `cg00000029`.
 - Keep non-feature columns out of `adata.X` by passing them through `metadata_cols`.
+- Clocks that read per-sample covariates need them as numeric feature columns, not `metadata_cols`: `age` in years and `female` as 1 or 0. `predict_age` raises a `ValueError` when one is absent, and a sample whose covariate is NaN is predicted as NaN.
 - For EPIC v2 data, aggregate duplicated probe suffixes before conversion with `pya.pp.epicv2_probe_aggregation`.
 - `df_to_adata` accepts `mean`, `median`, `constant`, or `knn` imputation. Choose deliberately; `knn` is the default and may be expensive for large matrices.
 - `predict_age` fills absent features using the model's reference vector first. For eligible human DNAm beta clocks without a vector, it uses the packaged Hannum and BoA CpG medians where available and zero otherwise. Missing-feature details are stored in `adata.uns`.
+- A NaN inside a supplied column is filled like an absent feature when the clock has a finite reference value or packaged CpG median, and otherwise left as NaN. `adata.uns["<clock>_percent_nan_values"]` records the share of such cells and a `UserWarning` reports them. A sample with no observed values stays NaN through `df_to_adata` and receives NaN predictions.
 - The package selects CUDA when available and otherwise runs on CPU. Adjust `batch_size` when memory is constrained.
 
 ## Quick example: AltumAge
@@ -114,7 +116,9 @@ grimage2_clocks = [
     "grimage2pai1",
 ]
 
+# Four of the GrimAge2 proxies read chronological age as a feature.
 grimage2_input = beta_values.copy()
+grimage2_input["age"] = chronological_age
 grimage2_adata = pya.pp.df_to_adata(grimage2_input, verbose=False)
 pya.pred.predict_age(
     grimage2_adata,

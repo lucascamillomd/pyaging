@@ -5,6 +5,7 @@ import anndata
 import torch
 
 from ..logger._live import ClockRunDisplay, DisplayLogger, display_enabled, quiet_hf_bars
+from ..utils._hf import prefetch_clock_weights
 from ._cache import ClockCache
 from ._pred_utils import (
     _validate_batch_size,
@@ -45,7 +46,8 @@ def predict_age(
 
     clock_names: str or list of str, optional
         Names of the aging clocks to be applied. It can be a single clock name as a string or a list
-        of clock names, by default "horvath2013".
+        of clock names, by default "horvath2013". Case and surrounding whitespace are ignored, and a
+        repeated name runs once.
 
     dir: str
         Retained for backward compatibility. Hugging Face files use its standard cache.
@@ -82,6 +84,12 @@ def predict_age(
     It is important that the input AnnData object's .X attribute contains data suitable for age
     prediction.
 
+    Clocks that read per-sample covariates (`age` in years, `female` as 1 or 0) need them as
+    feature columns in .var_names, not in `metadata_cols`; a clock raises a ValueError when one is
+    absent. NaN values inside supplied columns are filled like absent features where the clock has
+    a finite fallback and reported as a UserWarning, and a sample with no usable data is predicted
+    as NaN. If a clock fails, results already written by earlier clocks are kept.
+
     A few clocks are cohort-relative: they read a sample only in the context of the samples
     predicted alongside it, so their preprocessing is computed here, over the whole input, before
     any batching. The tAge clocks (`tage`, `tagemortality`) work this way. Pass them raw RNA-seq
@@ -116,7 +124,8 @@ def predict_age(
 
     if isinstance(clock_names, str):
         clock_names = [clock_names]
-    clock_names = [clock_name.lower() for clock_name in clock_names]
+    # Each clock writes the same keys, so a repeated name would only rerun it.
+    clock_names = list(dict.fromkeys(clock_name.strip().lower() for clock_name in clock_names))
 
     device = set_torch_device()
 
@@ -127,6 +136,11 @@ def predict_age(
     # recomputing it per clock would be both slow and pointless.
     cohort_frames = {}
     with quiet_hf_bars(verbose), display:
+        # Fetch the weights the loop will need concurrently; each clock still
+        # loads, and reports a failure, in its own turn below.
+        uncached = [name for name in clock_names if clock_cache is None or not clock_cache._contains(name, device)]
+        if len(uncached) > 1:
+            prefetch_clock_weights(uncached, dir)
         for clock_name in clock_names:
             display.start_clock(clock_name, "loading weights")
             pipeline_logger = DisplayLogger(lambda m, name=clock_name: display.warn(name, m))
@@ -181,28 +195,38 @@ def predict_age(
                 display.stage(clock_name, "matching features")
                 check_features_in_adata(adata, model, pipeline_logger)
 
-            display.stage(clock_name, "checking feature ranges")
-            check_feature_ranges(adata, model, pipeline_logger)
+            # Alignment wrote the matrix under the clock's own name, which may
+            # differ from the name it was requested by.
+            matrix_key = f"X_{model.metadata['clock_name']}"
+            try:
+                display.stage(clock_name, "checking feature ranges")
+                check_feature_ranges(adata, model, pipeline_logger)
 
-            display.stage(clock_name, "predicting")
+                display.stage(clock_name, "predicting")
 
-            def progress_callback(completed, total, name=clock_name):
-                display.progress(name, completed, total)
+                def progress_callback(completed, total, name=clock_name):
+                    display.progress(name, completed, total)
 
-            predicted_ages_tensor = predict_ages_with_model(
-                adata, model, device, batch_size, pipeline_logger, progress_callback=progress_callback
-            )
+                predicted_ages_tensor = predict_ages_with_model(
+                    adata, model, device, batch_size, pipeline_logger, progress_callback=progress_callback
+                )
 
-            display.stage(clock_name, "writing results")
-            add_pred_ages_and_clock_metadata_adata(adata, model, predicted_ages_tensor, dir, pipeline_logger)
+                display.stage(clock_name, "writing results")
+                add_pred_ages_and_clock_metadata_adata(adata, model, predicted_ages_tensor, dir, pipeline_logger)
+            except BaseException:
+                # Earlier clocks' results stay; this clock's matrix has no prediction to explain.
+                adata.obsm.pop(matrix_key, None)
+                raise
 
             if clean:
-                del adata.obsm[f"X_{clock_name}"]
+                del adata.obsm[matrix_key]
 
-            # Release references before collecting memory and loading the next
-            # clock, so two large models need not coexist on the GPU.
-            del model, predicted_ages_tensor
-            if clock_cache is None:
+            # Release references before loading the next clock, so two large
+            # models need not coexist on the GPU. The bound methods hold the
+            # model too. On the CPU reference counting already frees it, and a
+            # collection would cost tens of milliseconds per clock for nothing.
+            del model, predicted_ages_tensor, validate_inputs, prepare_input_frame
+            if clock_cache is None and device.type == "cuda":
                 gc.collect()
                 torch.cuda.empty_cache()
 

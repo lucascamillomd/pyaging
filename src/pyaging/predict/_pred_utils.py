@@ -2,6 +2,7 @@ import gzip
 import json
 import os
 import re
+import warnings
 from copy import deepcopy
 from functools import lru_cache
 from importlib import resources
@@ -109,7 +110,7 @@ def load_clock(
     >>> clock = load_clock("horvath2013")
 
     """
-    clock_name = clock_name.lower()
+    clock_name = clock_name.strip().lower()
     if logger is not None:
         return _load_clock_impl(clock_name, device, dir, logger, indent_level)
 
@@ -207,6 +208,18 @@ def check_features_in_adata(
     values are the pipeline's own, so :func:`check_feature_ranges` uses the mask to judge only
     what the user actually supplied.
 
+    A NaN inside a supplied column gets the same per-feature fallback as an absent column, except
+    that there is no zero: without a finite reference or packaged CpG median the cell stays NaN.
+    Clocks with ``handles_nan = True`` receive their NaN cells untouched. The share of NaN cells
+    among the supplied columns is recorded under ``.uns["{clock_name}_percent_nan_values"]`` and
+    any NaN is reported as a ``UserWarning``. Samples whose supplied features are all NaN, or
+    whose ``age``/``female`` covariate is NaN, are left unfilled and predicted as NaN by
+    :func:`predict_ages_with_model`.
+
+    Raises ``ValueError`` when ``adata.X`` is None or a required ``age``/``female`` covariate is
+    not among the features, and ``NameError`` when no feature is present; nothing is written to
+    ``adata`` in either case.
+
     Examples
     --------
     >>> updated_adata = check_features_in_adata(adata, bitage, ["gene1", "gene2"], logger)
@@ -289,21 +302,91 @@ def _load_dnam_feature_medians() -> dict[str, float]:
         return json.load(table)["features"]
 
 
+# Per-sample covariates some clocks read from their feature matrix. A reference
+# or zero in their place would give every sample the same age or sex, so they
+# are never substituted: absent ones are an error, NaN ones void the sample.
+_REQUIRED_COVARIATES = frozenset({"age", "female"})
+
+
+def _warn(logger, message: str, indent_level: int) -> None:
+    """Report on the display and on Python's warnings channel, which stays
+    visible at ``verbose=False`` where the display renders nothing."""
+    logger.warning(message, indent_level=indent_level)
+    warnings.warn(message, UserWarning, stacklevel=3)
+
+
+def _uses_dnam_medians(model, features) -> bool:
+    """Whether packaged human CpG beta medians may stand in for these features."""
+    return (
+        model.metadata.get("species") == "Homo sapiens"
+        and model.metadata.get("data_type") == "DNA methylation"
+        and getattr(model, "use_dnam_median_fallback", True) is not False
+        and any(re.fullmatch(r"cg[0-9]{8}", feature) for feature in features)
+    )
+
+
+def _nan_cell_fallbacks(model, features: np.ndarray, positions: np.ndarray) -> np.ndarray:
+    """Per-feature values for NaN cells: a finite reference, else a packaged
+    CpG median for eligible clocks, else NaN. Unlike absent columns there is no
+    zero, so a clock that cannot use a NaN still shows it in its prediction."""
+    values = np.full(len(features), np.nan)
+    if model.reference_values is not None:
+        values = np.asarray(model.reference_values, dtype=float)[positions]
+        values[~np.isfinite(values)] = np.nan
+    unresolved = np.isnan(values)
+    if unresolved.any() and _uses_dnam_medians(model, features[unresolved]):
+        medians = _load_dnam_feature_medians()
+        values[unresolved] = [medians.get(feature, np.nan) for feature in features[unresolved]]
+    return values
+
+
+def _nan_column_positions(values: np.ndarray) -> np.ndarray:
+    """Positions of the columns of ``values`` that hold at least one NaN.
+
+    Column sums propagate NaN without a boolean copy of the whole matrix, so a
+    complete input costs one pass; only flagged columns are then inspected,
+    which also clears columns whose sum is NaN only because of ``inf - inf``.
+    """
+    if not np.issubdtype(values.dtype, np.floating):
+        return np.empty(0, dtype=np.intp)
+    with np.errstate(invalid="ignore", over="ignore"):
+        candidates = np.flatnonzero(np.isnan(values.sum(axis=0)))
+    return candidates[np.isnan(values[:, candidates]).any(axis=0)]
+
+
+def _missing_covariates_message(adata, clock_name: str, covariates: list) -> str:
+    message = (
+        f"Clock '{clock_name}' requires the per-sample covariate(s) {covariates}, which are not among the "
+        "input features. Supply them as numeric feature columns in adata.var_names (age in years, female as "
+        "1 or 0) rather than through metadata_cols; they cannot be replaced by a reference value."
+    )
+    in_obs = [covariate for covariate in covariates if covariate in adata.obs.columns]
+    if len(in_obs) == 1:
+        message += f" adata.obs has a column named {in_obs[0]!r}; move it into the features."
+    elif in_obs:
+        message += (
+            f" adata.obs has columns named {', '.join(repr(name) for name in in_obs)}; move them into the features."
+        )
+    return message
+
+
 def _align_features_into_obsm(adata, model, source_values, source_features, logger, indent_level: int) -> None:
     """Fill ``obsm["X_{clock}"]`` from ``source_values``, one column per model feature.
 
     Absent columns use model references, then packaged human CpG beta medians
-    for eligible clocks, then zero.
+    for eligible clocks, then zero. NaN cells in supplied columns use the same
+    fallbacks except zero, unless the clock handles NaN itself; samples with no
+    usable data are left unfilled for :func:`predict_ages_with_model` to void.
+    Everything is validated before ``adata`` is written to.
     """
+    clock_name = model.metadata["clock_name"]
 
+    if source_values is None:
+        raise ValueError("adata.X is empty (None); store the feature matrix in adata.X before prediction.")
     if source_features.has_duplicates:
         raise ValueError("Feature names must be unique; aggregate duplicate features before prediction.")
     if not len(model.features):
         raise ValueError("The clock must define at least one feature.")
-
-    # Keep the whole cohort on the host: only inference batches belong on the
-    # model's device, otherwise batch_size cannot limit the GPU memory needed.
-    matrix = np.empty((adata.n_obs, len(model.features)), order="F")
 
     # Find indices of matching features among the source's own feature names
     # pandas retains the index's lookup engine, so another clock can reuse it
@@ -311,41 +394,10 @@ def _align_features_into_obsm(adata, model, source_values, source_features, logg
     model_feature_indices = source_features.get_indexer(model.features)
 
     missing_features_mask = model_feature_indices == -1
-    missing_features = np.array(model.features)[missing_features_mask].tolist()
-
-    existing_features_mask = ~missing_features_mask
-    existing_features_indices = model_feature_indices[existing_features_mask]
-    supplied_values = source_values[:, existing_features_indices]
-    if sparse.issparse(supplied_values):
-        supplied_values = supplied_values.toarray()
-    elif CUPY_AVAILABLE and isinstance(supplied_values, cp.ndarray):
-        supplied_values = cp.asnumpy(supplied_values)
-    matrix[:, existing_features_mask] = supplied_values
-
-    median_count = 0
-    fill_values = 0
-    if missing_features and model.reference_values is not None:
-        fill_values = np.asarray(model.reference_values)[missing_features_mask]
-    elif (
-        0 < len(missing_features) < len(model.features)
-        and model.metadata.get("species") == "Homo sapiens"
-        and model.metadata.get("data_type") == "DNA methylation"
-        and getattr(model, "use_dnam_median_fallback", True) is not False
-        and any(re.fullmatch(r"cg[0-9]{8}", feature) for feature in missing_features)
-    ):
-        medians = _load_dnam_feature_medians()
-        fill_values = [medians.get(feature, 0.0) for feature in missing_features]
-        median_count = sum(feature in medians for feature in missing_features)
-    matrix[:, missing_features_mask] = fill_values
-    adata.obsm[f"X_{model.metadata['clock_name']}"] = matrix
-
+    feature_names = np.array(model.features)
+    missing_features = feature_names[missing_features_mask].tolist()
     num_missing_features = len(missing_features)
     percent_missing = 100 * num_missing_features / len(model.features)
-
-    adata.uns[f"{model.metadata['clock_name']}_percent_na"] = percent_missing
-    adata.uns[f"{model.metadata['clock_name']}_missing_features"] = missing_features
-    # Columns the input carried; check_feature_ranges judges only these.
-    adata.uns[f"{model.metadata['clock_name']}_supplied_features_mask"] = existing_features_mask
 
     if percent_missing == 100:
         message = (
@@ -357,6 +409,90 @@ def _align_features_into_obsm(adata, model, source_values, source_features, logg
         logger.error(message, indent_level=3)
         raise NameError(message)
 
+    missing_covariates = [feature for feature in missing_features if feature in _REQUIRED_COVARIATES]
+    if missing_covariates:
+        message = _missing_covariates_message(adata, clock_name, missing_covariates)
+        logger.error(message, indent_level=indent_level + 1)
+        raise ValueError(message)
+
+    # Keep the whole cohort on the host: only inference batches belong on the
+    # model's device, otherwise batch_size cannot limit the GPU memory needed.
+    matrix = np.empty((adata.n_obs, len(model.features)), order="F")
+
+    existing_features_mask = ~missing_features_mask
+    # Read the source in increasing column order, which backed (on-disk)
+    # matrices require, and write each column straight to its model position.
+    supplied_positions = np.flatnonzero(existing_features_mask)
+    read_order = np.argsort(model_feature_indices[supplied_positions], kind="stable")
+    supplied_positions = supplied_positions[read_order]
+    supplied_values = source_values[:, model_feature_indices[supplied_positions]]
+    if sparse.issparse(supplied_values):
+        supplied_values = supplied_values.toarray()
+    elif CUPY_AVAILABLE and isinstance(supplied_values, cp.ndarray):
+        supplied_values = cp.asnumpy(supplied_values)
+    supplied_values = np.asarray(supplied_values)
+    matrix[:, supplied_positions] = supplied_values
+
+    nan_columns = _nan_column_positions(supplied_values)
+    nan_cells = np.isnan(supplied_values[:, nan_columns])
+    del supplied_values
+    nan_positions = supplied_positions[nan_columns]
+    nan_features = feature_names[nan_positions]
+    no_data_rows = np.zeros(adata.n_obs, dtype=bool)
+    if nan_columns.size == supplied_positions.size:
+        no_data_rows |= nan_cells.all(axis=1)
+    no_data_rows |= nan_cells[:, np.isin(nan_features, list(_REQUIRED_COVARIATES))].any(axis=1)
+    filled_count = 0
+    if nan_columns.size and getattr(model, "handles_nan", False) is not True:
+        fallbacks = _nan_cell_fallbacks(model, nan_features, nan_positions)
+        fill = nan_cells & ~no_data_rows[:, None] & ~np.isnan(fallbacks)
+        filled_count = int(fill.sum())
+        if filled_count:
+            matrix[:, nan_positions] = np.where(fill, fallbacks, matrix[:, nan_positions])
+
+    median_count = 0
+    if missing_features:
+        fill_values = 0
+        if model.reference_values is not None:
+            fill_values = np.asarray(model.reference_values)[missing_features_mask]
+        elif _uses_dnam_medians(model, missing_features):
+            medians = _load_dnam_feature_medians()
+            fill_values = [medians.get(feature, 0.0) for feature in missing_features]
+            median_count = sum(feature in medians for feature in missing_features)
+        matrix[:, missing_features_mask] = fill_values
+
+    nan_count = int(nan_cells.sum())
+    adata.obsm[f"X_{clock_name}"] = matrix
+    adata.uns[f"{clock_name}_percent_na"] = percent_missing
+    adata.uns[f"{clock_name}_missing_features"] = missing_features
+    # Columns the input carried; check_feature_ranges judges only these.
+    adata.uns[f"{clock_name}_supplied_features_mask"] = existing_features_mask
+    adata.uns[f"{clock_name}_percent_nan_values"] = (
+        100 * nan_count / (adata.n_obs * supplied_positions.size) if nan_count else 0.0
+    )
+
+    # Samples with no usable data are reported, by name, when they are predicted.
+    reported = nan_cells[~no_data_rows]
+    reported_count = int(reported.sum())
+    if reported_count:
+        message = (
+            f"{clock_name}: {reported_count} NaN value(s) in {int(reported.any(axis=1).sum())} of {adata.n_obs} "
+            f"samples and {int(reported.any(axis=0).sum())} of {supplied_positions.size} supplied features."
+        )
+        if getattr(model, "handles_nan", False) is True:
+            message += " They were left as NaN for the clock, which handles missing values itself."
+        else:
+            outcomes = []
+            if filled_count:
+                outcomes.append(
+                    f"{filled_count} were filled with the fallback used for absent features (a finite reference "
+                    "value, else a packaged CpG median)"
+                )
+            if reported_count - filled_count:
+                outcomes.append(f"{reported_count - filled_count} had no such fallback and were left as NaN")
+            message += f" {'; '.join(outcomes)}."
+        _warn(logger, message, indent_level + 1)
+
     if len(missing_features) > 0:
         logger.warning(
             f"{num_missing_features} out of {len(model.features)} features "
@@ -365,7 +501,7 @@ def _align_features_into_obsm(adata, model, source_values, source_features, logg
         )
         if model.reference_values is not None:
             logger.info(
-                f"Using reference feature values for {model.metadata['clock_name']}",
+                f"Using reference feature values for {clock_name}",
                 indent_level=indent_level + 1,
             )
         elif median_count:
@@ -432,6 +568,37 @@ def _find_offenders(matrix: np.ndarray, columns: np.ndarray, low: np.ndarray, hi
         counts = ((values < low[block]) | (values > high[block])).sum(axis=0)
         offenders.extend((int(block[position]), int(counts[position])) for position in np.flatnonzero(counts))
     return offenders
+
+
+def _samples_without_data(adata: anndata.AnnData, model: pyagingModel, matrix) -> np.ndarray:
+    """Mask of the samples whose supplied features are all NaN, or whose
+    supplied age/female covariate is NaN.
+
+    Alignment leaves exactly these cells unfilled, so they can be recovered
+    from the matrix on every path that calls :func:`predict_ages_with_model`.
+    Candidate rows shrink block by block, so a complete cohort costs one
+    column read.
+    """
+    matrix = np.asarray(matrix)
+    columns = _supplied_columns(adata, model, matrix.shape[1])
+    no_data = np.zeros(matrix.shape[0], dtype=bool)
+    if not columns.size:
+        return no_data
+    rows = np.flatnonzero(np.isnan(matrix[:, columns[0]]))
+    for start in range(1, columns.size, _SCAN_BLOCK_COLUMNS):
+        if not rows.size:
+            break
+        block = columns[start : start + _SCAN_BLOCK_COLUMNS]
+        rows = rows[np.isnan(matrix[np.ix_(rows, block)]).all(axis=1)]
+    no_data[rows] = True
+    # A matrix assembled outside alignment may come from a model without features.
+    features = getattr(model, "features", None)
+    features = [] if features is None else list(features)
+    covariates = [features.index(name) for name in sorted(_REQUIRED_COVARIATES) if name in features]
+    covariates = [column for column in covariates if column in columns]
+    if covariates:
+        no_data |= np.isnan(matrix[:, covariates]).any(axis=1)
+    return no_data
 
 
 @progress("Check feature ranges")
@@ -613,6 +780,30 @@ def predict_ages_with_model(
         logger.info("There is no postprocessing necessary", indent_level=indent_level + 1)
 
     matrix = adata.obsm[f"X_{model.metadata['clock_name']}"]
+    # A sample with no usable data would otherwise be predicted from whatever
+    # stands in for it, so its prediction is NaN. A per-sample clock never sees
+    # it, so it cannot reject a sample it has nothing to say about. Clocks with
+    # cohort steps (PAOPAC's scaling) still receive it, as the author's
+    # implementation does: dropping it would shift every other prediction.
+    no_data = _samples_without_data(adata, model, matrix)
+    keeps_cohort = any(
+        getattr(model, name, None) is not None for name in ("prepare_cohort_context", "postprocess_cohort")
+    )
+    if no_data.any():
+        names = adata.obs_names[no_data].tolist()
+        shown = ", ".join(repr(name) for name in names[:_MAX_REPORTED_FEATURES])
+        more = ", ..." if len(names) > _MAX_REPORTED_FEATURES else ""
+        _warn(
+            logger,
+            f"{model.metadata['clock_name']}: {len(names)} {'sample has' if len(names) == 1 else 'samples have'} "
+            f"no usable data (every supplied feature NaN, or a NaN age/female covariate) and "
+            f"{'is' if len(names) == 1 else 'are'} predicted as NaN: [{shown}{more}].",
+            indent_level + 1,
+        )
+        if no_data.all():
+            return torch.full((adata.n_obs, 1), float("nan"), dtype=torch.float64, device=device)
+        if not keeps_cohort:
+            matrix = matrix[~no_data]
     starts = range(0, matrix.shape[0], batch_size)
     predictions = []
     with torch.inference_mode():
@@ -640,6 +831,16 @@ def predict_ages_with_model(
         with torch.inference_mode():
             predictions = postprocess_cohort(predictions, torch.as_tensor(matrix, dtype=torch.float64, device="cpu"))
 
+    if no_data.any():
+        mask = torch.as_tensor(no_data, device=predictions.device)
+        # Predictions are inference tensors, which only accept in-place writes in this mode.
+        with torch.inference_mode():
+            if not keeps_cohort:
+                complete = predictions.new_full((adata.n_obs, *predictions.shape[1:]), float("nan"))
+                complete[~mask] = predictions
+                predictions = complete
+            else:
+                predictions[mask] = float("nan")
     return predictions
 
 

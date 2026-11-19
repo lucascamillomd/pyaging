@@ -45,14 +45,8 @@ def test_merged_fitness_clocks_match_retired_sex_specific_oracles(clock_name, ex
     assert predictions == pytest.approx(expected, abs=1e-10)
 
 
-@pytest.mark.parametrize(
-    ("clock_name", "expected"),
-    [
-        ("dnamfitagegait", 1.9238271172398522),
-        ("dnamfitagegrip", 30.54383665460349),
-    ],
-)
-def test_missing_female_uses_grimage_reference(monkeypatch, clock_name, expected):
+@pytest.mark.parametrize("clock_name", ["dnamfitagegait", "dnamfitagegrip"])
+def test_missing_female_is_rejected_rather_than_filled(monkeypatch, clock_name):
     model = _load_local(clock_name)
     frame = pd.DataFrame([{feature: _beta(feature) for feature in model.features if feature != "female"}])
     monkeypatch.setattr(
@@ -60,10 +54,10 @@ def test_missing_female_uses_grimage_reference(monkeypatch, clock_name, expected
         lambda *args, **kwargs: str(WEIGHTS_DIR / f"{clock_name}.pt"),
     )
     adata = pya.pp.df_to_adata(frame, imputer_strategy="constant", verbose=False)
-    pya.pred.predict_age(adata, clock_name, verbose=False)
-    assert float(adata.obs[clock_name].iloc[0]) == pytest.approx(expected, abs=1e-10)
-    assert adata.uns[f"{clock_name}_missing_features"] == ["female"]
-    assert adata.uns[f"{clock_name}_percent_na"] == pytest.approx(100 / len(model.features))
+    with pytest.raises(ValueError, match="'female'"):
+        pya.pred.predict_age(adata, clock_name, verbose=False)
+    assert clock_name not in adata.obs
+    assert not adata.obsm
 
 
 def test_dnamfitage_embeds_grimage_and_matches_retired_two_stage_oracle():
@@ -94,7 +88,7 @@ def test_dnamfitage_embeds_grimage_and_matches_retired_two_stage_oracle():
     assert predictions == pytest.approx([131.19968704579992, 133.55199017157764], abs=1e-10)
 
 
-def test_dnamfitage_missing_age_and_female_use_grimage_references(monkeypatch):
+def test_dnamfitage_missing_age_and_female_are_rejected_rather_than_filled(monkeypatch):
     model = _load_local("dnamfitage")
     frame = pd.DataFrame([{feature: _beta(feature) for feature in model.features if feature not in {"female", "age"}}])
     monkeypatch.setattr(
@@ -102,6 +96,7 @@ def test_dnamfitage_missing_age_and_female_use_grimage_references(monkeypatch):
         lambda *args, **kwargs: str(WEIGHTS_DIR / "dnamfitage.pt"),
     )
     adata = pya.pp.df_to_adata(frame, imputer_strategy="constant", verbose=False)
-    pya.pred.predict_age(adata, "dnamfitage", verbose=False)
-    assert float(adata.obs["dnamfitage"].iloc[0]) == pytest.approx(137.34972213448359, abs=1e-10)
-    assert adata.uns["dnamfitage_missing_features"] == ["female", "age"]
+    with pytest.raises(ValueError, match=r"\['female', 'age'\]"):
+        pya.pred.predict_age(adata, "dnamfitage", verbose=False)
+    assert "dnamfitage" not in adata.obs
+    assert not adata.obsm

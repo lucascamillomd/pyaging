@@ -44,7 +44,8 @@ def test_multiindex_sample_identifiers_preserve_metadata():
 
 @pytest.mark.parametrize("dtype", ["Int64", "Float64", "boolean"])
 def test_nullable_numeric_columns_are_imputed(dtype):
-    frame = pd.DataFrame({"gene": pd.Series([1, None, 0], dtype=dtype)})
+    # A second, observed feature keeps the sample with the missing value non-empty.
+    frame = pd.DataFrame({"gene": pd.Series([1, None, 0], dtype=dtype), "other": [0.5, 0.5, 0.5]})
     adata = df_to_adata(frame, imputer_strategy="constant", verbose=False)
     np.testing.assert_array_equal(adata.X[:, 0], [1.0, 0.0, 0.0])
     assert np.isnan(adata.layers["X_original"][1, 0])

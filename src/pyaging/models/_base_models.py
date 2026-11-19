@@ -6,6 +6,11 @@ import torch.nn.functional as F
 
 
 class pyagingModel(nn.Module, ABC):
+    # Clocks that give NaN inputs their own meaning set this to True;
+    # ``predict_age`` then hands them NaN cells untouched instead of filling
+    # those cells the way it fills features absent from the input.
+    handles_nan = False
+
     def __init__(self):
         super().__init__()
 

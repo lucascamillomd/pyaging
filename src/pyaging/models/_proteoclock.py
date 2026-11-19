@@ -14,6 +14,9 @@ class HPS(pyagingModel):
     No additional scaling, imputation or age residualization is performed.
     """
 
+    # Supplied NaN propagates; the original performs no imputation.
+    handles_nan = True
+
     def __init__(self):
         super().__init__()
         self.register_buffer("gompertz_parameters", torch.empty(2, dtype=torch.float64))
@@ -49,6 +52,9 @@ class PAC(pyagingModel):
     propagate, matching the original function; deliberate upstream imputation
     remains the caller's choice. Output is mortality-equivalent age in years.
     """
+
+    # Supplied NaN propagates, matching the original function.
+    handles_nan = True
 
     def __init__(self):
         super().__init__()

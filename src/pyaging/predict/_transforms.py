@@ -45,15 +45,13 @@ def binarize(x):
     Binarizes an array based on the median of each row, excluding zeros.
     """
 
-    # Create a mask for non-zero elements
-    non_zero_mask = x != 0
+    binarized = np.array(x, copy=True)
+    for i, row in enumerate(binarized):
+        non_zero_elements = row[row != 0]
+        # An all-zero row has no median and nothing in it exceeds one.
+        binarized[i] = row > np.median(non_zero_elements) if non_zero_elements.size else 0
 
-    # Apply mask, calculate median for each row, and change data
-    for i, row in enumerate(x):
-        non_zero_elements = row[non_zero_mask[i]]
-        x[i] = x[i] > np.median(non_zero_elements)
-
-    return x
+    return binarized
 
 
 def tpm_norm_log1p(x, lengths):
@@ -75,6 +73,12 @@ def tpm_norm_log1p(x, lengths):
 def quantile_normalize_with_gold_standard(x, gold_standard_means):
     """
     Apply quantile normalization on x using gold standard means.
+
+    Ties follow ``preprocessCore::normalize.quantiles.use.target``: a tie group
+    spanning sorted positions i..j (0-based) has rank ``(i + j + 2) / 2`` and
+    takes the mean of the two targets either side of a half rank, else the
+    target at the rank. NaN entries stay NaN; the rest of their row is ranked
+    against the full-length target.
     """
     # Sort the gold standard means
     sorted_gold_standard = np.sort(gold_standard_means)
@@ -83,11 +87,24 @@ def quantile_normalize_with_gold_standard(x, gold_standard_means):
     quantile_indices = np.round(np.linspace(0, len(sorted_gold_standard) - 1, x.shape[1])).astype(int)
     normalized_data = sorted_gold_standard[quantile_indices]
 
-    # Iterate through each row in x_normalized
-    for i in range(x_normalized.shape[0]):
-        # Sort the row data and store the original indices
-        sorted_indices = np.argsort(x_normalized[i, :])
-        x_normalized[i, sorted_indices] = normalized_data
+    # argsort places NaN last, so it never splits a group of tied values.
+    order = np.argsort(x_normalized, axis=1)
+    sorted_values = np.take_along_axis(x_normalized, order, axis=1)
+    positions = np.broadcast_to(np.arange(x_normalized.shape[1]), order.shape)
+    starts = np.ones(order.shape, dtype=bool)
+    starts[:, 1:] = sorted_values[:, 1:] != sorted_values[:, :-1]
+    ends = np.ones(order.shape, dtype=bool)
+    ends[:, :-1] = starts[:, 1:]
+    first = np.maximum.accumulate(np.where(starts, positions, 0), axis=1)
+    last = np.minimum.accumulate(np.where(ends, positions, x_normalized.shape[1] - 1)[:, ::-1], axis=1)[:, ::-1]
+    lower = (first + last) // 2
+    upper = lower + (first + last) % 2
+    values = 0.5 * (normalized_data[lower] + normalized_data[upper])
+
+    nan = np.isnan(x_normalized)
+    np.put_along_axis(x_normalized, order, values, axis=1)
+    if nan.any():
+        x_normalized[nan] = np.nan
 
     return x_normalized
 

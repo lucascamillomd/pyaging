@@ -2,8 +2,6 @@
 
 import numpy as np
 import torch
-from sklearn.preprocessing import StandardScaler
-from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from ._base_models import pyagingModel
 
@@ -55,6 +53,9 @@ class PAOPAC(pyagingModel):
     Calling ``forward`` directly treats its complete tensor as one cohort.
     """
 
+    # NaN NPX is zero abundance, and the trees route NaN as zero.
+    handles_nan = True
+
     def validate_inputs(self, adata):
         if not any(str(name).upper() == "AGE" for name in adata.var_names):
             raise ValueError("PAOPAC requires chronological age in an 'age' input column (years).")
@@ -75,6 +76,9 @@ class PAOPAC(pyagingModel):
         return np.where(np.isnan(values), 0.0, values)
 
     def prepare_cohort_context(self, matrix):
+        # Imported on use to keep ``import pyaging`` fast.
+        from sklearn.preprocessing import StandardScaler
+
         scaler = StandardScaler().fit(self._linear_abundance(matrix))
         return torch.from_numpy(np.stack([scaler.mean_, scaler.scale_]))
 
@@ -87,6 +91,9 @@ class PAOPAC(pyagingModel):
         return self.base_model(torch.as_tensor(values, dtype=torch.float64, device=batch.device))
 
     def postprocess_cohort(self, predictions, matrix):
+        # Imported on use to keep ``import pyaging`` fast.
+        from statsmodels.nonparametric.smoothers_lowess import lowess
+
         raw = predictions.detach().cpu().numpy().reshape(-1)
         ages = matrix[:, -1].detach().cpu().numpy()
         # Pin the author's statsmodels 0.14.4 defaults explicitly.

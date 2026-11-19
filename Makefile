@@ -1,4 +1,4 @@
-.PHONY: lint format update build install update-clocks-notebooks update-all-clocks verify-hf-auth verify-hf-data-repo-public create-hf-data-repo upload-clocks-to-hf upload-static-data-to-hf tag-hf-data-repo process-tutorials test test-all test-tutorials docs version commit tag release release-slim clean
+.PHONY: lint format update build install update-clocks-notebooks update-all-clocks verify-hf-auth verify-hf-data-repo-public create-hf-data-repo upload-clocks-to-hf upload-static-data-to-hf tag-hf-data-repo process-tutorials test test-all test-tutorials docs version release-preflight commit tag release release-slim clean
 
 VERSION ?= v$(shell sed -n 's/^__version__ = "\(.*\)"/\1/p' src/pyaging/__init__.py)
 HF_REPO_ID ?= lucascamillomd/pyaging-data
@@ -6,6 +6,11 @@ HF_REPO_OWNER ?= lucascamillomd
 HF_STATIC_DIR ?= hf_static_data
 COMMIT_MSG ?= "Bump to $(VERSION)"
 RELEASE_MSG ?= "Release $(VERSION)"
+# Git and Hugging Face tags keep the leading "v"; the package and the clock
+# metadata use the bare number, as the registry and earlier releases do
+RELEASE_NUMBER = $(patsubst v%,%,$(VERSION))
+# Same list as the CI tutorials job: these notebooks pip install unpinned packages
+TUTORIALS_IGNORE ?= tutorials/tutorial_cpgptgrimage3.ipynb
 
 # Re-runs must move the tag to the freshly uploaded revision, so delete any
 # existing tag before recreating it (exist_ok would silently keep the old one)
@@ -69,7 +74,7 @@ update-clocks-notebooks:
 
 update-all-clocks:
 	@echo "Running script to update all clocks..."
-	@cd clocks && uv run python update_all_clocks.py $(VERSION) || { echo "Updating clocks failed"; exit 1; } && cd ..
+	@cd clocks && uv run python update_all_clocks.py $(RELEASE_NUMBER) || { echo "Updating clocks failed"; exit 1; } && cd ..
 
 verify-hf-auth:
 	@account=$$(uv run hf auth whoami --format json | uv run python -c 'import json, sys; print(json.load(sys.stdin)["user"])'); \
@@ -107,8 +112,9 @@ process-tutorials:
 	@echo "Processing tutorials..."
 	@cd tutorials && \
 	for notebook in *.ipynb; do \
+		case " $(TUTORIALS_IGNORE) " in *" tutorials/$$notebook "*) echo "Skipping $$notebook"; continue;; esac; \
 		echo "Processing tutorial notebook: $$notebook"; \
-		jupyter nbconvert --ExecutePreprocessor.timeout=600 --to notebook --execute --inplace "$$notebook" || { echo "Error processing $$notebook"; exit 1; }; \
+		uv run --no-sync jupyter nbconvert --ExecutePreprocessor.timeout=600 --to notebook --execute --inplace "$$notebook" || { echo "Error processing $$notebook"; exit 1; }; \
 	done && cd ..
 
 test:
@@ -124,7 +130,7 @@ test-all:
 
 test-tutorials:
 	@echo "Running tutorial tests..."
-	uv run pytest --nbmake tutorials/ || { echo "Tutorial tests failed"; exit 1; }
+	uv run pytest --nbmake tutorials/ $(addprefix --ignore=,$(TUTORIALS_IGNORE)) || { echo "Tutorial tests failed"; exit 1; }
 
 docs:
 	@echo "Building documentation..."
@@ -132,12 +138,24 @@ docs:
 
 version:
 	@echo "Updating version in src/pyaging/__init__.py to $(VERSION)..."
-	uv run --no-sync python -c 'import json, pathlib, re, sys; path = pathlib.Path("src/pyaging/__init__.py"); path.write_text(re.sub(r"(?m)^__version__ = .*$$", "__version__ = " + json.dumps(sys.argv[1]), path.read_text()))' "$(patsubst v%,%,$(VERSION))"
+	uv run --no-sync python -c 'import json, pathlib, re, sys; path = pathlib.Path("src/pyaging/__init__.py"); path.write_text(re.sub(r"(?m)^__version__ = .*$$", "__version__ = " + json.dumps(sys.argv[1]), path.read_text()))' "$(RELEASE_NUMBER)"
 
+# Runs before anything is changed or published: an existing tag would otherwise
+# only fail the final `tag` step, after the data had already gone out
+release-preflight:
+	@echo "Checking release preconditions for $(VERSION)..."
+	@echo "$(VERSION)" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$$' || { echo "VERSION must look like v1.2.3, got '$(VERSION)'"; exit 1; }
+	@branch=$$(git rev-parse --abbrev-ref HEAD) && [ "$$branch" = "main" ] || { echo "Releases must run from main, not '$$branch'"; exit 1; }
+	@if git rev-parse -q --verify "refs/tags/$(VERSION)" >/dev/null; then echo "Tag $(VERSION) already exists locally"; exit 1; fi
+	@remote=$$(git ls-remote --tags origin "refs/tags/$(VERSION)") || { echo "Could not list tags on origin"; exit 1; }; \
+	if [ -n "$$remote" ]; then echo "Tag $(VERSION) already exists on origin"; exit 1; fi
+
+# A re-run after a later step failed has nothing new to commit, which is fine;
+# a failed push is not, because every publish step after it assumes main is pushed
 commit:
 	@echo "Committing and pushing changes..."
 	git add src/pyaging uv.lock pyproject.toml Makefile .github tests clocks/notebooks clocks/metadata tutorials docs/source docs/_static docs/development README.md CHANGELOG.md
-	git commit -m $(COMMIT_MSG) || { echo "Git commit failed"; exit 1; }
+	git diff --cached --quiet || git commit -m $(COMMIT_MSG) || { echo "Git commit failed"; exit 1; }
 	git push || { echo "Git push failed"; exit 1; }
 
 tag:
@@ -145,7 +163,10 @@ tag:
 	git tag -a "$(VERSION)" -m $(RELEASE_MSG)
 	git push origin "$(VERSION)" || { echo "Git tag creation or push failed"; exit 1; }
 
+# Installed packages read Hugging Face `main`, so data is published only once
+# the matching commit is on origin, and the tag that triggers PyPI goes last
 release:
+	$(MAKE) release-preflight
 	$(MAKE) version
 	$(MAKE) lint
 	$(MAKE) format
@@ -158,13 +179,14 @@ release:
 	$(MAKE) test
 	$(MAKE) test-tutorials
 	$(MAKE) docs
+	$(MAKE) commit
 	$(MAKE) upload-clocks-to-hf
 	$(MAKE) tag-hf-data-repo
-	$(MAKE) commit
 	$(MAKE) tag
 	@echo "Release $(VERSION) completed successfully"
 
 release-slim:
+	$(MAKE) release-preflight
 	$(MAKE) version
 	$(MAKE) lint
 	$(MAKE) format
@@ -174,9 +196,9 @@ release-slim:
 	$(MAKE) update-all-clocks
 	$(MAKE) test
 	$(MAKE) docs
+	$(MAKE) commit
 	$(MAKE) upload-clocks-to-hf
 	$(MAKE) tag-hf-data-repo
-	$(MAKE) commit
 	$(MAKE) tag
 	@echo "Release $(VERSION) (slim) completed successfully"
 
