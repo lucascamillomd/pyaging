@@ -60,6 +60,83 @@ def _average_ranks(values):
     return ranks
 
 
+def _tie_groups(x):
+    """Sort each row and locate, for every sorted position, its tie group's first and last position.
+
+    Batches are cut from a column-major matrix; row-wise sorting is several times
+    faster on a contiguous copy.
+    """
+    sorted_values, order = torch.sort(x.contiguous(), dim=1)
+    positions = torch.arange(x.size(1), device=x.device).expand_as(order)
+    starts = torch.ones_like(order, dtype=torch.bool)
+    starts[:, 1:] = sorted_values[:, 1:] != sorted_values[:, :-1]
+    ends = torch.ones_like(starts)
+    ends[:, :-1] = starts[:, 1:]
+    first = torch.where(starts, positions, torch.zeros_like(positions)).cummax(dim=1).values
+    last = torch.where(ends, positions, torch.full_like(positions, x.size(1) - 1))
+    last = last.flip(1).cummin(dim=1).values.flip(1)
+    return order, first, last
+
+
+# Rows ranked per pass. Sorting needs index temporaries several times the size
+# of the rows they describe, so ranking a whole batch at once would multiply
+# its peak memory without making it faster.
+_RANK_CHUNK_ROWS = 128
+
+
+def _average_ranks_rows(x):
+    """Row-wise ``_average_ranks`` for a whole batch."""
+    ranked = x.new_empty(x.shape)
+    for start in range(0, x.size(0), _RANK_CHUNK_ROWS):
+        order, first, last = _tie_groups(x[start : start + _RANK_CHUNK_ROWS])
+        averages = (first + last + 2).to(x.dtype) / 2
+        ranked[start : start + _RANK_CHUNK_ROWS].scatter_(1, order, averages)
+    return ranked
+
+
+def _quantile_normalize_rows(x, target):
+    """Give each row's values the per-position ``target``, resolving ties as preprocessCore does.
+
+    ``normalize.quantiles.use.target`` ranks a tie group spanning sorted positions
+    i..j (0-based) at ``(i + j + 2) / 2`` and takes the mean of the two targets
+    either side of a half rank, else the target at the rank. Untied values keep
+    their own target exactly, since ``0.5 * (t + t) == t``.
+    """
+    normalized = x.new_empty(x.shape)
+    for start in range(0, x.size(0), _RANK_CHUNK_ROWS):
+        order, first, last = _tie_groups(x[start : start + _RANK_CHUNK_ROWS])
+        lower = (first + last) // 2
+        upper = lower + (first + last) % 2
+        values = 0.5 * (target[lower] + target[upper])
+        normalized[start : start + _RANK_CHUNK_ROWS].scatter_(1, order, values)
+    return normalized
+
+
+def _quantile_without_sentinel(x, q):
+    """``q`` quantile of each row over the entries that are not the ``-1`` sentinel; NaN when none are."""
+    # nanquantile skips the sentinel once it is NaN; a NaN the sample itself
+    # carries still makes its quantile NaN, as torch.quantile does.
+    quantiles = torch.nanquantile(torch.where(x == -1, torch.nan, x), q, dim=1, keepdim=True)
+    return torch.where(torch.isnan(x).any(dim=1, keepdim=True), torch.nan, quantiles)
+
+
+def _species_indices(x_species):
+    """Pick each sample's species column, refusing samples that name none.
+
+    ``argmax`` of a row without any positive indicator is column 0, which would
+    silently score the sample with the first species' life history.
+    """
+    missing = ~(x_species > 0).any(dim=1)
+    if missing.any():
+        raise ValueError(
+            f"{int(missing.sum())} sample(s) have no species set. Species-aware mammalian clocks convert "
+            "relative age with the species' gestation and lifespan: add a column named after the species, "
+            "exactly as it appears in the clock's features (for example 'Homo sapiens'), set to 1 for "
+            "every sample of that species."
+        )
+    return torch.argmax(x_species, dim=1)
+
+
 class AltumAge(pyagingModel):
     def __init__(self):
         super().__init__()
@@ -85,20 +162,12 @@ class BiTAge(pyagingModel):
         """
         Binarizes an array based on the median of each row, excluding zeros.
         """
-        # Create a mask for non-zero elements
-        non_zero_mask = x != 0
-
-        # Apply mask, calculate median for each row, and binarize data
-        for i in range(x.size(0)):
-            non_zero_elements = x[i][non_zero_mask[i]]
-            if non_zero_elements.nelement() > 0:
-                median_value = non_zero_elements.median()
-                x[i] = (x[i] > median_value).float()
-            else:
-                # Handle the case where all elements are zero
-                x[i] = torch.zeros_like(x[i])
-
-        return x
+        # nanmedian over the non-zero entries keeps torch.median's lower median; an
+        # all-zero row has no median, so nothing exceeds it and the row stays zero.
+        median = torch.nanmedian(torch.where(x == 0, torch.nan, x), dim=1, keepdim=True).values
+        # torch.median of a row holding NaN is NaN, which nothing exceeds either.
+        median = torch.where(torch.isnan(x).any(dim=1, keepdim=True), torch.nan, median)
+        return (x > median).to(x.dtype)
 
     def postprocess(self, x):
         return x
@@ -305,12 +374,7 @@ class DunedinPACE(pyagingModel):
         # Pre-compute the quantile indices
         quantile_indices = torch.linspace(0, len(sorted_gold_standard) - 1, steps=x.size(1)).long()
 
-        # Prepare a tensor to hold normalized data
-        normalized_data = torch.empty_like(x, device=x.device, dtype=x.dtype)
-
-        for i in range(x.size(0)):
-            sorted_indices = torch.argsort(x[i, :])
-            normalized_data[i, sorted_indices] = sorted_gold_standard[quantile_indices]
+        normalized_data = _quantile_normalize_rows(x, sorted_gold_standard[quantile_indices])
 
         # Return only the subset from x that is used in the base model
         return normalized_data[:, self.preprocess_dependencies[0]]
@@ -630,6 +694,9 @@ class Lin(pyagingModel):
 class LinAge2(pyagingModel):
     """Principal-component clinical clock trained on NHANES IV mortality (Fong et al. 2025)."""
 
+    # NaN questionnaire codes read as "no" and NaN visits or lipids as zero, as in the reference.
+    handles_nan = True
+
     def __init__(self):
         super().__init__()
         # The 59 names the loadings, medians and MADs are indexed by, in SVD row order.
@@ -781,7 +848,7 @@ class Mammalian2(pyagingModel):
         """
         Converts output of relative age to age in units of years.
         """
-        indices = torch.argmax(x_species, dim=1)
+        indices = _species_indices(x_species)
         anage_array = self.postprocess_dependencies[0]
         anage_tensor = torch.tensor(anage_array, dtype=x.dtype, device=x.device)
         gestation_time = anage_tensor[indices, 0].unsqueeze(1)
@@ -810,7 +877,7 @@ class Mammalian3(pyagingModel):
         """
         Converts output of to units of years.
         """
-        indices = torch.argmax(x_species, dim=1)
+        indices = _species_indices(x_species)
         anage_array = self.postprocess_dependencies[0]
         anage_tensor = torch.tensor(anage_array, dtype=x.dtype, device=x.device)
 
@@ -868,7 +935,7 @@ class MammalianBlood2(pyagingModel):
         """
         Converts output of relative age to age in units of years.
         """
-        indices = torch.argmax(x_species, dim=1)
+        indices = _species_indices(x_species)
         anage_array = self.postprocess_dependencies[0]
         anage_tensor = torch.tensor(anage_array, dtype=x.dtype, device=x.device)
         gestation_time = anage_tensor[indices, 0].unsqueeze(1)
@@ -897,7 +964,7 @@ class MammalianBlood3(pyagingModel):
         """
         Converts output of to units of years.
         """
-        indices = torch.argmax(x_species, dim=1)
+        indices = _species_indices(x_species)
         anage_array = self.postprocess_dependencies[0]
         anage_tensor = torch.tensor(anage_array, dtype=x.dtype, device=x.device)
 
@@ -955,7 +1022,7 @@ class MammalianSkin2(pyagingModel):
         """
         Converts output of relative age to age in units of years.
         """
-        indices = torch.argmax(x_species, dim=1)
+        indices = _species_indices(x_species)
         anage_array = self.postprocess_dependencies[0]
         anage_tensor = torch.tensor(anage_array, dtype=x.dtype, device=x.device)
         gestation_time = anage_tensor[indices, 0].unsqueeze(1)
@@ -984,7 +1051,7 @@ class MammalianSkin3(pyagingModel):
         """
         Converts output of to units of years.
         """
-        indices = torch.argmax(x_species, dim=1)
+        indices = _species_indices(x_species)
         anage_array = self.postprocess_dependencies[0]
         anage_tensor = torch.tensor(anage_array, dtype=x.dtype, device=x.device)
 
@@ -1289,6 +1356,9 @@ class PCSkinAndBlood(pyagingModel):
 
 
 class Pasta(pyagingModel):
+    # NaN takes the cohort median before ranking.
+    handles_nan = True
+
     def __init__(self):
         super().__init__()
 
@@ -1314,11 +1384,7 @@ class Pasta(pyagingModel):
         median = _global_median(x) if median is None else median.to(device=x.device, dtype=x.dtype)
         x = torch.where(torch.isnan(x), median, x)
 
-        ranked = torch.empty_like(x, dtype=x.dtype)
-        for i in range(x.size(0)):
-            ranked[i] = self._rank_average(x[i])
-
-        return ranked
+        return _average_ranks_rows(x)
 
     def postprocess(self, x):
         """
@@ -1402,6 +1468,9 @@ class PastaMouse(Pasta):
 
 
 class Reg(pyagingModel):
+    # NaN takes the cohort median before ranking.
+    handles_nan = True
+
     def __init__(self):
         super().__init__()
 
@@ -1427,11 +1496,7 @@ class Reg(pyagingModel):
         median = _global_median(x) if median is None else median.to(device=x.device, dtype=x.dtype)
         x = torch.where(torch.isnan(x), median, x)
 
-        ranked = torch.empty_like(x, dtype=x.dtype)
-        for i in range(x.size(0)):
-            ranked[i] = self._rank_average(x[i])
-
-        return ranked
+        return _average_ranks_rows(x)
 
     def postprocess(self, x):
         """
@@ -1591,6 +1656,9 @@ class DepressionBarbu(pyagingModel):
 
 
 class SexScoreBase(pyagingModel):
+    # NaN autosomes are left out of the sample's mean and standard deviation.
+    handles_nan = True
+
     def __init__(self):
         super().__init__()
         self.autosome_indices = None
@@ -1823,12 +1891,7 @@ class Stubbs(pyagingModel):
         # Pre-compute the quantile indices
         quantile_indices = torch.linspace(0, len(sorted_gold_standard) - 1, steps=x.size(1)).long()
 
-        # Prepare a tensor to hold normalized data
-        normalized_data = torch.empty_like(x, device=x.device, dtype=x.dtype)
-
-        for i in range(x.size(0)):
-            sorted_indices = torch.argsort(x[i, :])
-            normalized_data[i, sorted_indices] = sorted_gold_standard[quantile_indices]
+        normalized_data = _quantile_normalize_rows(x, sorted_gold_standard[quantile_indices])
 
         gold_standard_stds = torch.tensor(self.preprocess_dependencies[0], device=x.device, dtype=x.dtype)
 
@@ -2130,6 +2193,9 @@ class YingAdaptAge(pyagingModel):
 
 
 class DNAmFitAge(pyagingModel):
+    # Each component fills NaN from its own reference vector.
+    handles_nan = True
+
     def __init__(self):
         super().__init__()
 
@@ -2197,6 +2263,9 @@ def _fill_dnamfitage_references(x, reference_values):
 
 
 class _DNAmFitAgeSexGated(pyagingModel):
+    # Each sex's model fills NaN from its own reference vector.
+    handles_nan = True
+
     def __init__(self):
         super().__init__()
         self.female_model = None
@@ -2286,13 +2355,7 @@ class stemTOC(pyagingModel):
         super().__init__()
 
     def preprocess(self, x):
-        # Filter out -1 values per row and calculate the 0.95 quantile per row
-        quantiles = []
-        for row in x:
-            filtered_row = row[row != -1]
-            quantile_95 = torch.quantile(filtered_row, 0.95) if len(filtered_row) > 0 else x.new_tensor(float("nan"))
-            quantiles.append(quantile_95)
-        return torch.vstack(quantiles)
+        return _quantile_without_sentinel(x, 0.95)
 
     def postprocess(self, x):
         return x
@@ -2322,10 +2385,7 @@ class epiTOC2(pyagingModel):
         self.beta0 = None
 
     def preprocess(self, x):
-        """
-        Replace NaNs with zero; missing features should already be imputed via reference_values.
-        """
-        return torch.nan_to_num(x, nan=0.0)
+        return x
 
     def forward(self, x):
         x = self.preprocess(x)
@@ -2339,9 +2399,11 @@ class epiTOC2(pyagingModel):
         denom = delta * (1 - beta0)
         denom = torch.where(denom == 0, torch.ones_like(denom), denom)
 
-        contrib = (x - beta0) / denom
-        k = contrib.size(1)
-        vals = 2.0 * torch.sum(contrib, dim=1) / k
+        # The reference values are the -1 "missing" sentinel. Like Teschendorff's R
+        # code, average over the CpGs the sample has; one with none scores NaN.
+        present = (x != -1) & ~torch.isnan(x)
+        contrib = torch.where(present, (x - beta0) / denom, torch.zeros_like(x))
+        vals = 2.0 * torch.sum(contrib, dim=1) / present.sum(dim=1)
 
         return self.postprocess(vals.unsqueeze(1))
 
@@ -2883,11 +2945,27 @@ class SystemsAgeBase(pyagingModel):
         self.transformation_coefs = None
         self.transformation_labels = None
 
+    # Rows of the DNAm rotation cast to the batch dtype at a time. The published
+    # rotation is 125175 x 4018 float32; casting it whole would allocate 4 GB of
+    # float64 on every batch.
+    dnam_rotation_block_rows = 8192
+
     @staticmethod
     def _as_tensor(value, device, dtype):
         if isinstance(value, torch.Tensor):
             return value.to(device=device, dtype=dtype)
         return torch.tensor(value, device=device, dtype=dtype)
+
+    def _project_dnam(self, centered):
+        rotation = self.dnam_rotation
+        if not isinstance(rotation, torch.Tensor):
+            rotation = torch.tensor(rotation, device=centered.device, dtype=centered.dtype)
+        dnam_pcs = centered.new_zeros(centered.shape[0], rotation.shape[1])
+        for start in range(0, rotation.shape[0], self.dnam_rotation_block_rows):
+            stop = start + self.dnam_rotation_block_rows
+            block = rotation[start:stop].to(device=centered.device, dtype=centered.dtype)
+            dnam_pcs.addmm_(centered[:, start:stop], block)
+        return dnam_pcs
 
     def _ensure_loaded(self):
         required = [
@@ -2921,11 +2999,10 @@ class SystemsAgeBase(pyagingModel):
         dtype = x.dtype
 
         dnam_center = self._as_tensor(self.dnam_center, device, dtype)
-        dnam_rotation = self._as_tensor(self.dnam_rotation, device, dtype)
         system_vector = self._as_tensor(self.system_vector, device, dtype)
 
         centered = x - dnam_center
-        dnam_pcs = centered @ dnam_rotation
+        dnam_pcs = self._project_dnam(centered)
 
         system_components = dnam_pcs @ system_vector
 

@@ -1,9 +1,14 @@
+import copy
+import os
+import re
+from collections.abc import Callable
 from functools import wraps
 from inspect import signature
 from pathlib import Path
 from pprint import pformat
+from urllib.error import ContentTooShortError
 from urllib.parse import unquote, urlsplit
-from urllib.request import urlretrieve
+from urllib.request import urlopen
 
 import torch
 from rich.columns import Columns
@@ -12,10 +17,16 @@ from rich.text import Text
 
 from ..logger._live import MUTED, live_step
 from ._files import atomic_output_path
-from ._hf import download_hf_file
+from ._hf import download_hf_file, get_data_revision
+
+_DOI_PREFIX = re.compile(r"^(?:https?://(?:dx\.|www\.)?doi\.org/|doi:)\s*", re.IGNORECASE)
+_DOWNLOAD_BLOCK_SIZE = 8192
+
+# revision -> (resolved metadata path, loaded metadata), for the life of the process.
+_clock_metadata_cache: dict[str, tuple[str, dict]] = {}
 
 
-def progress(message: str) -> None:
+def progress(message: str) -> Callable[[Callable], Callable]:
     """
     A decorator to add progress logging to a function.
 
@@ -77,7 +88,9 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     Loads the clock metadata from Hugging Face.
 
     This function downloads or resolves the metadata file from the standard Hugging Face
-    cache, then reads and returns the metadata.
+    cache, then reads and returns the metadata. The file is resolved and read once per
+    process and data revision; each call returns an independent copy, so a long-running
+    process sees a new push to a mutable revision such as ``main`` only after it restarts.
 
     Parameters
     ----------
@@ -112,12 +125,40 @@ def load_clock_metadata(dir: str, logger, indent_level: int = 2) -> dict:
     <class 'dict'>
 
     """
+    revision = get_data_revision()
+    cached = _clock_metadata_cache.get(revision)
+    # The cache may have been pruned since the file was resolved.
+    if cached is not None and os.path.isfile(cached[0]):
+        return copy.deepcopy(cached[1])
     metadata_path = download_hf_file("all_clock_metadata.pt", dir, logger, indent_level=indent_level)
-    all_clock_metadata = torch.load(metadata_path, weights_only=False)
+    # The metadata holds only plain containers, strings and numbers.
+    all_clock_metadata = torch.load(metadata_path, weights_only=True)
+    _clock_metadata_cache[revision] = (metadata_path, copy.deepcopy(all_clock_metadata))
     return all_clock_metadata
 
 
-def download(url: str, dir: str, logger, indent_level: int = 1) -> None:
+def _clear_clock_metadata_cache() -> None:
+    """Forget the clock metadata loaded in this process."""
+    _clock_metadata_cache.clear()
+
+
+def _retrieve(url: str, destination, reporthook, timeout: float) -> None:
+    """Copy ``url`` to ``destination`` like ``urlretrieve``, bounding every socket wait."""
+    with urlopen(url, timeout=timeout) as response, open(destination, "wb") as output:
+        total = int(response.headers.get("Content-Length", -1))
+        received = 0
+        block_number = 0
+        reporthook(block_number, _DOWNLOAD_BLOCK_SIZE, total)
+        while block := response.read(_DOWNLOAD_BLOCK_SIZE):
+            output.write(block)
+            received += len(block)
+            block_number += 1
+            reporthook(block_number, _DOWNLOAD_BLOCK_SIZE, total)
+    if received < total:
+        raise ContentTooShortError(f"retrieval incomplete: got only {received} out of {total} bytes", None)
+
+
+def download(url: str, dir: str, logger, indent_level: int = 1, timeout: float = 60) -> None:
     """Download a remote file to a flat local directory unless it is already cached.
 
     Parameters
@@ -130,6 +171,9 @@ def download(url: str, dir: str, logger, indent_level: int = 1) -> None:
         Logger object used to report cache and download progress.
     indent_level : int, optional
         The indentation level for logging messages, by default 1.
+    timeout : float, optional
+        Seconds to wait for the connection and for each read before giving up,
+        by default 60. A stalled transfer raises instead of blocking forever.
 
     Notes
     -----
@@ -149,7 +193,7 @@ def download(url: str, dir: str, logger, indent_level: int = 1) -> None:
     logger.info(f"Downloading data to {file_path}", indent_level=indent_level + 1)
     logger.indent_level = indent_level + 1
     with atomic_output_path(file_path) as temporary_path:
-        urlretrieve(url, temporary_path, reporthook=logger.request_report_hook)
+        _retrieve(url, temporary_path, logger.request_report_hook, timeout)
 
 
 def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
@@ -164,7 +208,8 @@ def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data", verbose: bool 
     Parameters
     ----------
     search_doi : str
-        The DOI to search for in the aging clocks' metadata.
+        The DOI to search for in the aging clocks' metadata. A bare DOI, a ``doi:`` prefix
+        and ``https://doi.org/`` URLs are all accepted, in any letter case.
     dir : str
         Retained for backward compatibility. Hugging Face files use its standard cache.
 
@@ -200,12 +245,22 @@ def find_clock_by_doi(search_doi: str, dir: str = "pyaging_data", verbose: bool 
     """
     with live_step("searching clocks by DOI", verbose) as (step, pipeline_logger):
         all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
-        matching_clocks = [name for name, meta in all_clock_metadata.items() if meta.get("doi") == search_doi]
+        wanted = _normalize_doi(search_doi)
+        matching_clocks = [
+            name for name, meta in all_clock_metadata.items() if wanted and _normalize_doi(meta.get("doi")) == wanted
+        ]
         if matching_clocks:
             step.done(f"clocks with DOI {search_doi}: {', '.join(matching_clocks)}")
         else:
             step.warn(f"no clocks found with DOI {search_doi}")
             step.done(f"searched {len(all_clock_metadata)} clocks")
+
+
+def _normalize_doi(doi) -> str | None:
+    """Reduce a DOI, DOI URL or ``doi:`` reference to its lowercase bare form."""
+    if not isinstance(doi, str):
+        return None
+    return _DOI_PREFIX.sub("", doi.strip()).strip().lower() or None
 
 
 def cite_clock(clock_name: str, dir: str = "pyaging_data", verbose: bool = True) -> None:
@@ -261,7 +316,7 @@ def cite_clock(clock_name: str, dir: str = "pyaging_data", verbose: bool = True)
     UnknownClock is not currently available in pyaging
 
     """
-    clock_name = clock_name.lower()
+    clock_name = clock_name.strip().lower()
     pyaging_citation = (
         'de Lima Camillo, Lucas Paulo. "pyaging: a Python-based compendium of '
         'GPU-optimized aging clocks." bioRxiv (2023): 2023-11.'
@@ -371,8 +426,7 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data", verbose: bool
     indicate the start and end of the retrieval process, enhancing user understanding
     of the operation.
 
-    This function assumes that the specified clock name exists in the metadata. If the
-    clock name is not found, an error may occur.
+    If the clock name is not found, a warning reports that the clock is unavailable.
 
     Examples
     --------
@@ -383,10 +437,14 @@ def get_clock_metadata(clock_name: str, dir: str = "pyaging_data", verbose: bool
     ...
 
     """
-    clock_name = clock_name.lower()
+    clock_name = clock_name.strip().lower()
     with live_step(f"loading {clock_name} metadata", verbose) as (step, pipeline_logger):
         all_clock_metadata = load_clock_metadata(dir, pipeline_logger, indent_level=1)
-        clock_dict = all_clock_metadata[clock_name]
+        clock_dict = all_clock_metadata.get(clock_name)
+        if clock_dict is None:
+            step.warn(f"{clock_name} is not currently available in pyaging")
+            step.done("clock not found")
+            return
         grid = Table.grid(padding=(0, 2))
         for key, value in clock_dict.items():
             grid.add_row(f"[{MUTED}]{key}[/]", str(value))

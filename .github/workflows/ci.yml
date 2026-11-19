@@ -11,9 +11,11 @@ on:
 permissions:
   contents: read
 
+# Only a newer push to the same pull request cancels a run in progress. The
+# event name keeps the weekly scheduled run out of the group used by pushes
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lint:

@@ -12,6 +12,9 @@ class CellDRIFT(pyagingModel):
     the released module means, carried in ``reference_values`` for alignment.
     """
 
+    # Supplied NaN is zero, not the module mean.
+    handles_nan = True
+
     def preprocess(self, x):
         return torch.where(torch.isnan(x), torch.zeros_like(x), x)
 
@@ -26,8 +29,11 @@ class MiAge(pyagingModel):
     tensor's dtype/device. Missing beta values are omitted from the objective,
     exactly as ``na.rm=TRUE`` in the original R functions. An all-NaN sample
     therefore returns the first tied start (2008), which is not a valid
-    biological estimate; callers should ensure measured CpGs are available.
+    biological estimate; ``predict_age`` reports such a sample as NaN.
     """
+
+    # NaN betas are omitted from the least-squares objective.
+    handles_nan = True
 
     def __init__(self):
         super().__init__()

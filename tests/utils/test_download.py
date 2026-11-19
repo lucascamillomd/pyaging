@@ -10,8 +10,8 @@ def test_download_is_public_and_uses_cached_flat_basename(monkeypatch, tmp_path)
     cached_path = tmp_path / "metadata.csv"
     cached_path.write_text("cached")
     logger = Mock()
-    urlretrieve = Mock()
-    monkeypatch.setattr(utils_module, "urlretrieve", urlretrieve)
+    retrieve = Mock()
+    monkeypatch.setattr(utils_module, "_retrieve", retrieve)
 
     utils.download(
         "https://data.example.org/nested/metadata.csv",
@@ -21,17 +21,17 @@ def test_download_is_public_and_uses_cached_flat_basename(monkeypatch, tmp_path)
     )
 
     logger.info.assert_called_once_with(f"Data found in {cached_path}", indent_level=3)
-    urlretrieve.assert_not_called()
+    retrieve.assert_not_called()
 
 
 def test_interrupted_download_does_not_poison_cache(monkeypatch, tmp_path):
-    def interrupted_download(url, filename, reporthook):
+    def interrupted_download(url, filename, reporthook, timeout):
         from pathlib import Path
 
         Path(filename).write_bytes(b"partial")
         raise OSError("connection lost")
 
-    monkeypatch.setattr(utils_module, "urlretrieve", interrupted_download)
+    monkeypatch.setattr(utils_module, "_retrieve", interrupted_download)
 
     with pytest.raises(OSError, match="connection lost"):
         utils.download("https://data.example.org/metadata.csv", str(tmp_path), Mock())
@@ -40,12 +40,12 @@ def test_interrupted_download_does_not_poison_cache(monkeypatch, tmp_path):
 
 
 def test_download_uses_url_path_and_creates_nested_directory(monkeypatch, tmp_path):
-    def complete_download(url, filename, reporthook):
+    def complete_download(url, filename, reporthook, timeout):
         from pathlib import Path
 
         Path(filename).write_bytes(b"complete")
 
-    monkeypatch.setattr(utils_module, "urlretrieve", complete_download)
+    monkeypatch.setattr(utils_module, "_retrieve", complete_download)
     destination = tmp_path / "nested" / "data"
 
     utils.download("https://data.example.org/metadata.csv?download=1#table", str(destination), Mock())

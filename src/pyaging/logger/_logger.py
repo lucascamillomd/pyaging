@@ -52,27 +52,38 @@ class Logger:
 
     def __init__(self, namespace="main", level=None):
         self.namespace = namespace
+        # Only a logger created here is configured; one that already exists
+        # (the root logger, the application's, or "pyaging" after import) keeps
+        # its handlers, propagation and level unless a level is passed.
+        existed = isinstance(logging.Logger.manager.loggerDict.get(namespace), logging.Logger)
         self.logger = logging.getLogger(namespace)
+        owned = not existed and self.logger is not logging.getLogger()
         self.previous_timestamp = time.time()  # in seconds
+        # Start times of the progress steps still open, innermost last.
+        self._progress_starts = []
         self.time_passed = 0
         self.warning_logged = False
         self.report_hook_percent_state = None
         self.indent_level = 1
 
         # ensure only one stream handler exists in one logger instance
-        if len(self.logger.handlers) == 0:
-            self.logger_stream_handler = logging.StreamHandler(sys.stdout)
-            self.logger_stream_handler.setFormatter(logging.Formatter(self.FORMAT))
-            self.logger.addHandler(self.logger_stream_handler)
-        else:
-            self.logger_stream_handler = self.logger.handlers[0]
+        if owned and len(self.logger.handlers) == 0:
+            stream_handler = logging.StreamHandler(sys.stdout)
+            stream_handler.setFormatter(logging.Formatter(self.FORMAT))
+            self.logger.addHandler(stream_handler)
+        # May be None (e.g. only a NullHandler): progress output then skips its line control.
+        self.logger_stream_handler = next(
+            (handler for handler in self.logger.handlers if isinstance(handler, logging.StreamHandler)),
+            None,
+        )
 
-        self.logger.propagate = False
+        if owned:
+            self.logger.propagate = False
         self.log_time()
 
         if level is not None:
             self.logger.setLevel(level)
-        else:
+        elif owned:
             self.logger.setLevel(logging.INFO)
 
     def namespaced(self, namespace):
@@ -221,6 +232,26 @@ class Logger:
             **kwargs,
         )
 
+    @contextmanager
+    def _stream_terminator(self, terminator=None):
+        """Use ``terminator`` (None keeps the current one) and flush afterwards."""
+        handler = self.logger_stream_handler
+        if handler is None:
+            yield
+            return
+        saved_terminator = handler.terminator
+        if terminator is not None:
+            handler.terminator = terminator
+        try:
+            yield
+        finally:
+            handler.flush()
+            handler.terminator = saved_terminator
+
+    def _flush_stream(self):
+        if self.logger_stream_handler is not None:
+            self.logger_stream_handler.flush()
+
     def log_time(self):
         now = time.time()
         self.time_passed = now - self.previous_timestamp
@@ -231,9 +262,6 @@ class Logger:
         if percent is None:
             assert (count is not None) and (total is not None)
             percent = count / total * 100
-        saved_terminator = self.logger_stream_handler.terminator
-        if percent != 100:
-            self.logger_stream_handler.terminator = ""
         if progress_name != "":
             progress_name = "[" + str(progress_name) + "] "
         message = "\r" + format_logging_message(
@@ -241,25 +269,26 @@ class Logger:
             logging_level=logging.INFO,
             indent_level=indent_level,
         )
-        self.logger.info(message)
-        self.logger_stream_handler.flush()
-        self.logger_stream_handler.terminator = saved_terminator
+        # Partial progress stays on one line; completion ends it.
+        with self._stream_terminator(None if percent == 100 else ""):
+            self.logger.info(message)
 
     def start_progress(self, message, indent_level=1, *args, **kwargs):
         now = time.time()
         self.previous_timestamp = now
+        self._progress_starts.append(now)
         message = format_logging_message("⚙️ " + message, logging.INFO, indent_level=indent_level)
         self.logger.info(message, *args, **kwargs)
-        self.logger_stream_handler.flush()
+        self._flush_stream()
 
     def finish_progress(self, progress_name="", time_unit="s", indent_level=1):
         now = time.time()
-        self.time_passed = now - self.previous_timestamp
+        # Nested steps each measure from their own start; an unmatched finish
+        # measures from the last start_progress or log_time.
+        started = self._progress_starts.pop() if self._progress_starts else self.previous_timestamp
+        self.time_passed = now - started
 
-        saved_terminator = self.logger_stream_handler.terminator
-        self.logger_stream_handler.terminator = ""
-        self.logger_stream_handler.flush()
-        self.logger_stream_handler.terminator = saved_terminator
+        self._flush_stream()
 
         token = "⚠️" if self.warning_logged else "✅"
 
@@ -275,7 +304,7 @@ class Logger:
             )
         else:
             raise NotImplementedError
-        self.logger_stream_handler.flush()
+        self._flush_stream()
         self.warning_logged = False
 
     def request_report_hook(self, bn: int, rs: int, ts: int) -> None:
@@ -301,7 +330,8 @@ class Logger:
 
         cur_percent = min(rs * bn / ts, 1)
 
-        if cur_percent - self.report_hook_percent_state > 0.01:
+        # The completed transfer is reported once, below.
+        if cur_percent < 1 and cur_percent - self.report_hook_percent_state > 0.01:
             self.report_progress(percent=cur_percent * 100, indent_level=self.indent_level)
             self.report_hook_percent_state = cur_percent
         if rs * bn >= ts:

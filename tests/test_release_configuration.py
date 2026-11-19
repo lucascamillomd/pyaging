@@ -190,6 +190,7 @@ def test_hf_uploads_require_a_public_repository():
 def test_release_runs_steps_sequentially_in_one_recipe():
     expected = {
         "release": [
+            "release-preflight",
             "version",
             "lint",
             "format",
@@ -202,12 +203,13 @@ def test_release_runs_steps_sequentially_in_one_recipe():
             "test",
             "test-tutorials",
             "docs",
+            "commit",
             "upload-clocks-to-hf",
             "tag-hf-data-repo",
-            "commit",
             "tag",
         ],
         "release-slim": [
+            "release-preflight",
             "version",
             "lint",
             "format",
@@ -217,9 +219,9 @@ def test_release_runs_steps_sequentially_in_one_recipe():
             "update-all-clocks",
             "test",
             "docs",
+            "commit",
             "upload-clocks-to-hf",
             "tag-hf-data-repo",
-            "commit",
             "tag",
         ],
     }
@@ -239,11 +241,17 @@ def test_parallel_release_dry_run_preserves_publish_sequence():
         text=True,
     )
     output = result.stdout
-    assert output.index("Running offline tests") < output.index("Syncing per-clock repos under the pyaging org")
-    assert output.index("Building documentation") < output.index("Syncing per-clock repos under the pyaging org")
-    clock_sync_at = output.index("Syncing per-clock repos under the pyaging org")
-    assert clock_sync_at < output.index("Committing and pushing changes")
-    assert output.index("Committing and pushing changes") < output.index("Creating and pushing tag")
+    sequence = [
+        "Checking release preconditions",
+        "Running offline tests",
+        "Building documentation",
+        "Committing and pushing changes",
+        "Syncing per-clock repos under the pyaging org",
+        "Tagging HF data repo",
+        "Creating and pushing tag",
+    ]
+    positions = [output.index(message) for message in sequence]
+    assert positions == sorted(positions)
 
 
 def test_hf_repository_card_documents_layout_updates_and_access():
@@ -273,7 +281,7 @@ def test_release_workflow_is_tag_gated_and_publishes_after_verify():
 
     assert workflow["on"] == {"push": {"tags": ["v*"]}}
     assert workflow["permissions"] == {"contents": "read"}
-    assert workflow["jobs"]["publish"]["needs"] == "verify"
+    assert workflow["jobs"]["publish"]["needs"] == ["verify", "tutorials"]
     assert workflow["jobs"]["github-release"]["needs"] == "publish"
     assert workflow["jobs"]["github-release"]["permissions"] == {"contents": "write"}
 
@@ -371,5 +379,33 @@ def test_workflows_have_named_jobs_and_concurrency_controls():
     for name in ("ci.yml", "release.yaml"):
         workflow = _load_workflow(name)
         assert workflow["concurrency"]["group"]
-        assert workflow["concurrency"]["cancel-in-progress"] in {"true", "false"}
         assert all(job.get("name") for job in workflow["jobs"].values())
+    assert _load_workflow("release.yaml")["concurrency"]["cancel-in-progress"] == "false"
+
+
+def test_ci_cancels_superseded_runs_only_for_pull_requests():
+    concurrency = _load_workflow("ci.yml")["concurrency"]
+
+    assert concurrency["cancel-in-progress"] == "${{ github.event_name == 'pull_request' }}"
+    # Scheduled tutorial runs on main must not share a group with pushes to main
+    assert "github.event_name" in concurrency["group"]
+    assert "github.ref" in concurrency["group"]
+
+
+def test_release_runs_the_ci_tutorials_before_publishing():
+    ci_tutorials = _load_workflow("ci.yml")["jobs"]["tutorials"]
+    release = _load_workflow("release.yaml")
+    tutorials = release["jobs"]["tutorials"]
+
+    assert "if" not in tutorials
+    assert "needs" not in tutorials
+    assert [step["run"] for step in tutorials["steps"] if "run" in step] == [
+        step["run"] for step in ci_tutorials["steps"] if "run" in step
+    ]
+    assert [step["uses"] for step in tutorials["steps"] if "uses" in step] == [
+        step["uses"] for step in ci_tutorials["steps"] if "uses" in step
+    ]
+    setup_uv = next(step for step in tutorials["steps"] if step.get("uses", "").startswith("astral-sh/setup-uv@"))
+    # Release jobs never restore a cache that another workflow could have written
+    assert setup_uv["with"]["enable-cache"] == "false"
+    assert "tutorials" in release["jobs"]["publish"]["needs"]

@@ -18,6 +18,8 @@ class DNAmPhenoAgePRC(pyagingModel):
     """
 
     use_dnam_median_fallback = False
+    # Supplied NA contributes zero.
+    handles_nan = True
 
     def preprocess(self, x):
         return torch.where(torch.isnan(x), torch.zeros_like(x), x)

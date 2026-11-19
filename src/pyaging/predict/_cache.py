@@ -5,7 +5,7 @@ from numbers import Integral
 
 import torch
 
-from ..utils._hf import get_data_revision
+from ..utils._hf import _clear_resolved_weights, get_data_revision
 
 
 class ClockCache:
@@ -38,14 +38,27 @@ class ClockCache:
         return self._maxsize
 
     def clear(self) -> None:
-        """Release all model references held by this cache."""
-        self._models.clear()
+        """Release all model references held by this cache.
 
-    def _get_or_load(self, clock_name, device, load):
+        Weight paths resolved in this process are forgotten too, so the next
+        load checks the Hub again and picks up a changed mutable revision.
+        """
+        self._models.clear()
+        _clear_resolved_weights()
+
+    @staticmethod
+    def _key(clock_name, device):
         device = torch.device(device)
         if device.type == "cuda" and device.index is None:
             device = torch.device("cuda", torch.cuda.current_device())
-        key = (clock_name.lower(), str(device), get_data_revision())
+        return (clock_name.lower(), str(device), get_data_revision())
+
+    def _contains(self, clock_name, device) -> bool:
+        """Whether the clock is held, without loading it or marking it as used."""
+        return self._key(clock_name, device) in self._models
+
+    def _get_or_load(self, clock_name, device, load):
+        key = self._key(clock_name, device)
         if key in self._models:
             self._models.move_to_end(key)
             return self._models[key]

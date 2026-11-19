@@ -11,6 +11,10 @@ Usage:
     python clocks/hf_repo_sync.py                 # sync every clock
     python clocks/hf_repo_sync.py horvath2013 ... # sync selected clocks
     python clocks/hf_repo_sync.py --tag v0.3.2    # also (re)tag each repo
+
+A full run (no clock names) fails before contacting the Hub when a registry
+clock has no local weight, so a partial checkout cannot publish or tag a
+subset; pass ``--allow-missing`` to skip those clocks deliberately.
 """
 
 import argparse
@@ -179,6 +183,11 @@ def main() -> int:
     parser.add_argument("clocks", nargs="*", help="clock names to sync (default: all)")
     parser.add_argument("--tag", help="tag to (re)point at the synced revision, e.g. v0.3.2")
     parser.add_argument("--tag-only", action="store_true", help="only move tags; skip uploads")
+    parser.add_argument(
+        "--allow-missing",
+        action="store_true",
+        help="in a full run, skip registry clocks that have no local weight instead of failing",
+    )
     args = parser.parse_args()
     if args.tag_only and not args.tag:
         parser.error("--tag-only requires --tag")
@@ -191,11 +200,21 @@ def main() -> int:
     unknown = [name for name in selected if name not in available]
     if unknown:
         parser.error(f"no weight file for: {', '.join(unknown)}")
+    unregistered = [name for name in selected if name not in registry]
+    if unregistered:
+        parser.error(f"weight file(s) not in {METADATA_FILE.name}: {', '.join(unregistered)}")
+    if not args.clocks:
+        missing = sorted(name for name in registry if name not in available)
+        if missing:
+            print(f"{len(missing)} registry clock(s) have no local weight: {', '.join(missing)}", file=sys.stderr)
+            if not args.allow_missing:
+                print("Build them, name the clocks to sync, or pass --allow-missing.", file=sys.stderr)
+                return 1
 
     api = HfApi()
     failures = []
     for index, clock_name in enumerate(selected, start=1):
-        metadata = registry.get(clock_name, {"clock_name": clock_name})
+        metadata = registry[clock_name]
         for attempt in range(3):
             try:
                 outcome = sync_clock(api, clock_name, metadata, args.tag, args.tag_only)

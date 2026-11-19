@@ -1,10 +1,132 @@
+import warnings
+
 import anndata
 import numpy as np
 import pandas as pd
-from sklearn.impute import KNNImputer, SimpleImputer
 
 from ..utils._hf import download_hf_file
 from ..utils._utils import progress
+
+# Upper bound on the elements of each float64 temporary in the KNN distance computation.
+_KNN_BLOCK_ELEMENTS = 1 << 21
+
+
+def _nan_euclidean_ranking(X: np.ndarray, rows: np.ndarray) -> np.ndarray:
+    """
+    Squared nan-euclidean distances from ``X[rows]`` to every row of ``X``, up to a constant.
+
+    Each entry is the sum of squared differences over the features both samples observe,
+    divided by the number of such features (NaN when there are none). sklearn's
+    ``nan_euclidean_distances`` additionally multiplies by the feature count and takes the
+    square root; neither changes the neighbour ranking, which is all that uniform KNN needs.
+    Products run in float64 through BLAS and are accumulated over feature blocks so that the
+    temporaries stay small whatever the number of features.
+    """
+    n, p = X.shape
+    total = np.zeros((rows.size, n))
+    shared = np.zeros((rows.size, n))
+    step = max(1, _KNN_BLOCK_ELEMENTS // max(n, 1))
+    for start in range(0, p, step):
+        block = X[:, start : start + step]
+        observed = ~np.isnan(block)
+        values = np.where(observed, block, 0.0).astype(np.float64, copy=False)
+        squares = values * values
+        present = observed.astype(np.float64)
+        # Zero-filled values make each product count only features observed by both samples.
+        total += squares[rows] @ present.T
+        total += present[rows] @ squares.T
+        total -= 2.0 * (values[rows] @ values.T)
+        shared += present[rows] @ present.T
+    np.maximum(total, 0.0, out=total)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        total /= shared
+    total[shared == 0] = np.nan
+    return total
+
+
+def _knn_donor_sums(X, missing, donors, columns, n_neighbors):
+    """Sum and count, per column, of the first ``n_neighbors`` donors observing it."""
+    observed = ~missing[np.ix_(donors, columns)]
+    take = observed & (np.cumsum(observed, axis=0) <= n_neighbors)
+    sums = np.where(take, X[np.ix_(donors, columns)], 0.0).sum(axis=0, dtype=np.float64)
+    return sums, take.sum(axis=0)
+
+
+def _knn_nearest_donor_sums(X, missing, donors, columns, n_neighbors):
+    """
+    Like ``_knn_donor_sums``, visiting donors nearest first and stopping once every column
+    has ``n_neighbors`` of them, since most columns need only the first few donors. Returns
+    the positions of the columns still short of donors as well.
+    """
+    sums = np.zeros(columns.size)
+    counts = np.zeros(columns.size, dtype=np.intp)
+    short = np.arange(columns.size)
+    for donor in donors:
+        observed = short[~missing[donor, columns[short]]]
+        sums[observed] += X[donor, columns[observed]]
+        counts[observed] += 1
+        short = short[counts[short] < n_neighbors]
+        if not short.size:
+            break
+    return sums, counts, short
+
+
+def _knn_impute(X: np.ndarray, n_neighbors: int = 5) -> np.ndarray:
+    """
+    Return a copy of ``X`` imputed like ``KNNImputer(keep_empty_features=True).fit_transform``.
+
+    Uniform weights and the nan-euclidean metric, as in sklearn's defaults. For each missing
+    entry, the value is the mean over the ``n_neighbors`` nearest samples (at a defined
+    distance) that observe the column, or the column mean when no such sample exists; columns
+    with no observed value become 0. Donor values always come from the input, never from
+    earlier imputations. Results match sklearn to floating-point rounding, except that exactly
+    tied distances are broken by the lower sample index, whereas sklearn's ``argpartition``
+    breaks them arbitrarily: the two can differ only when tied donors straddle the
+    ``n_neighbors``-th place and disagree on the value. float32 input is averaged in float64
+    and returned as float32.
+    """
+    n = X.shape[0]
+    missing = np.isnan(X)
+    valid = ~missing.all(axis=0)
+    receivers = np.flatnonzero((missing & valid).any(axis=1))
+
+    # The nearest few donors settle almost every column; the rest search all donors at once.
+    window = 8 * n_neighbors
+    # Distance rows per receiver block are capped like the feature blocks above.
+    block = max(1, (4 * _KNN_BLOCK_ELEMENTS) // max(n, 1))
+    column_means = {}
+    result = X.copy(order="K")
+    for start in range(0, receivers.size, block):
+        rows = receivers[start : start + block]
+        distances = _nan_euclidean_ranking(X, rows)
+        for row, distance in zip(rows, distances, strict=True):
+            columns = np.flatnonzero(missing[row] & valid)
+            # Stable sort puts NaN distances last; donors at NaN distance carry no weight.
+            donors = np.argsort(distance, kind="stable")[: np.count_nonzero(~np.isnan(distance))]
+            sums, counts, short = _knn_nearest_donor_sums(X, missing, donors[:window], columns, n_neighbors)
+            if short.size and donors.size > window:
+                sums[short], counts[short] = _knn_donor_sums(X, missing, donors, columns[short], n_neighbors)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                values = sums / counts
+            for index in np.flatnonzero(counts == 0):
+                column = columns[index]
+                if column not in column_means:
+                    column_means[column] = X[~missing[:, column], column].mean(dtype=np.float64)
+                values[index] = column_means[column]
+            result[row, columns] = values
+
+    result[:, ~valid] = 0
+    return result
+
+
+def _fit_imputer(X: np.ndarray, strategy: str) -> np.ndarray:
+    if strategy == "knn":
+        return _knn_impute(X)
+    # Imported lazily: sklearn adds about half a second to `import pyaging`.
+    from sklearn.impute import SimpleImputer
+
+    fill_value = {"fill_value": 0} if strategy == "constant" else {}
+    return SimpleImputer(strategy=strategy, keep_empty_features=True, **fill_value).fit_transform(X)
 
 
 @progress("Impute missing values")
@@ -16,7 +138,8 @@ def impute_missing_values(adata: anndata.AnnData, strategy: str, logger, indent_
     It checks the .X in the adata object for missing values and applies the chosen imputation
     method, which can be mean, median, constant, or K-nearest neighbors (KNN). The function is
     useful in preprocessing steps for datasets where missing data could affect subsequent analyses.
-    It also adds the number of missing values for each sample and each feature.
+    It also records the fraction of missing values for each feature in ``adata.var["percent_na"]``
+    and, when values were imputed, stores a copy of the result in ``adata.layers["X_imputed"]``.
 
     Parameters
     ----------
@@ -40,9 +163,14 @@ def impute_missing_values(adata: anndata.AnnData, strategy: str, logger, indent_
     Notes
     -----
     The 'constant' strategy fills missing values with 0 by default. The 'knn' strategy uses
-    the K-nearest neighbors algorithm to estimate missing values based on similar samples.
+    the K-nearest neighbors algorithm to estimate missing values based on similar samples, with
+    the defaults of scikit-learn's ``KNNImputer`` (5 neighbors, uniform weights).
     This function is particularly useful in datasets where missing values are common, such as
     in biological or medical data.
+
+    Samples with no observed feature are not imputed: they stay NaN in ``adata.X`` and
+    ``adata.layers["X_imputed"]``, do not inform the imputation of other samples, and are
+    reported in a warning because they will receive NaN predictions.
 
     The function ensures that no imputation is performed if there are no missing values in the
     dataset, thus preserving the original data integrity.
@@ -65,19 +193,29 @@ def impute_missing_values(adata: anndata.AnnData, strategy: str, logger, indent_
     if adata.var["percent_na"].sum() == 0:
         logger.info("No missing values found. No imputation necessary", indent_level=2)
     else:
-        # Dictionary mapping strategies to imputer objects
-        imputers = {
-            "mean": SimpleImputer(strategy="mean", keep_empty_features=True),
-            "median": SimpleImputer(strategy="median", keep_empty_features=True),
-            "constant": SimpleImputer(strategy="constant", fill_value=0, keep_empty_features=True),
-            "knn": KNNImputer(keep_empty_features=True),
-        }
+        # A sample without a single observed feature has nothing to impute from: filling it
+        # would fabricate a typical-looking sample, so it stays NaN and is left out of the fit.
+        empty = np.isnan(adata.X).all(axis=1)
+        if empty.any():
+            names = adata.obs_names[empty]
+            shown = ", ".join(repr(name) for name in names[:5]) + (", ..." if len(names) > 5 else "")
+            plural = "s have" if len(names) != 1 else " has"
+            warnings.warn(
+                f"{len(names)} sample{plural} no observed features and will not be imputed: {shown}. "
+                "They will receive NaN predictions.",
+                UserWarning,
+                stacklevel=3,
+            )
 
-        # Select the appropriate imputer
-        imputer = imputers[strategy]
         logger.info(f"Imputing missing values using {strategy} strategy", indent_level=2)
-        adata.X = imputer.fit_transform(adata.X)
-        adata.layers["X_imputed"] = adata.X.copy()
+        if not empty.any():
+            adata.X = _fit_imputer(adata.X, strategy)
+        else:
+            imputed = adata.X.copy(order="K")
+            if not empty.all():
+                imputed[~empty] = _fit_imputer(adata.X[~empty], strategy)
+            adata.X = imputed
+        adata.layers["X_imputed"] = adata.X.copy(order="K")
 
 
 @progress("Log data statistics")
@@ -205,10 +343,13 @@ def create_anndata_object(
         # Drop columns with only NAs
         df = df.drop(columns=columns_with_nas)
 
-    nonnumeric = [name for name, dtype in df.dtypes.items() if not pd.api.types.is_numeric_dtype(dtype)]
-    if nonnumeric:
+    # Check each distinct dtype once; wide frames have hundreds of thousands of columns.
+    dtypes = df.dtypes
+    distinct = dtypes.drop_duplicates()
+    if not all(pd.api.types.is_numeric_dtype(dtype) for dtype in distinct):
+        nonnumeric = [name for name, dtype in dtypes.items() if not pd.api.types.is_numeric_dtype(dtype)]
         raise TypeError(f"Feature columns must be numeric; move nonnumeric columns to metadata_cols: {nonnumeric[:3]}")
-    if any(pd.api.types.is_complex_dtype(dtype) for dtype in df.dtypes):
+    if any(pd.api.types.is_complex_dtype(dtype) for dtype in distinct):
         raise ValueError("Feature values must be real numbers, not complex values.")
 
     # Copy to detach from pandas, whose copy-on-write arrays may be read-only.
@@ -224,7 +365,9 @@ def create_anndata_object(
     obs = pd.DataFrame(index=obs_names)
     var = pd.DataFrame(index=var_names)
 
-    adata = anndata.AnnData(X=X, obs=obs, var=var, layers={"X_original": X.copy()})
+    # order="K" keeps pandas' column-major layout, which df_to_adata keeps for prediction,
+    # and makes the copy a plain memcpy instead of a transpose.
+    adata = anndata.AnnData(X=X, obs=obs, var=var, layers={"X_original": X.copy(order="K")})
 
     return adata
 
